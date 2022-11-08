@@ -1,0 +1,93 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+---
+
+<Layout title="Unlockable">
+	<main>
+		<h1><span class="text-gradient">Futuroptimist</span></h1>
+		<div class="content">
+			<p><strong>Hi, I'm Futuroptimist.</strong></p>
+				
+			<p>I make <a class="button youtube" href="https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ" target="_blank">YouTube videos.</a></p>
+
+			<p>I'm working on <a class="button" href="https://democratized.space" target="_blank">DSPACE</a> and <a class="button unlockable" href="https://unlockable.quest" target="_blank">Unlockable</a>.</p> 
+
+			<p>I go by Esp on <a class="button twitter" href="https://twitter.com/EspToTheFuture" target="_blank">Twitter</a>.</p>
+		</div>
+	</main>
+</Layout>
+
+<style>
+	:root {
+		background-color: hsl(249, 9%, 15%);
+	}
+
+	main {
+		margin: auto;
+		padding: 1.5rem;
+		max-width: 60ch;
+	}
+	h1 {
+		font-size: 3rem;
+		font-weight: 800;
+		margin: 0;
+		text-align: center;
+	}
+	.text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+	.content {
+		line-height: 1.6;
+		margin: 1rem 0;
+		border: 1px solid rgba(var(--accent), 25%);
+		background-color: white;
+		padding: 1rem;
+		border-radius: 0.4rem;
+	}
+	.content code {
+		font-size: 0.875em;
+		font-weight: bold;
+		background: rgba(var(--accent), 12%);
+		color: rgb(var(--accent));
+		border-radius: 4px;
+		padding: 0.3em 0.45em;
+	}
+	.content strong {
+		color: rgb(var(--accent));
+	}
+	.link-card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+		gap: 1rem;
+		padding: 0;
+	}
+	.button {
+		background-color: green;
+		color: white;
+		padding: 2px;
+		padding-left: 5px;
+		padding-right: 5px;
+		border-radius: 20px;
+		text-decoration: none;
+		opacity: 0.8;
+		white-space: nowrap;
+		
+	}
+	.button:hover {
+		opacity: 1;
+	}
+	.youtube {
+		background-color: rgb(255, 19, 19);
+	}
+	.twitter {
+		background-color: #1DA1F2;
+	}
+	.unlockable {
+		background-color: rgb(107, 16, 107);
+	}
+</style>
