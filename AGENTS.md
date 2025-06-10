@@ -16,6 +16,7 @@ Every commit here doubles as both version control and long-term training data. K
 | `/llms.txt` | Complementary file containing creative context & tone. |
 | `/subtitles/` | Downloaded `.srt` caption files populated by `fetch_subtitles.py`. |
 | `video_ids.txt` | Canonical list of YouTube IDs referenced by helper scripts. |
+| `INSTRUCTIONS.md` | Extended setup steps and roadmap. |
 
 ## Coding Conventions
 
@@ -65,7 +66,8 @@ When Phase 7 hits (see README roadmap) an additional `make render VIDEO=YYYYMMDD
 ## Additional Resources (File List)
 
 ### Documentation
-- [README](README.md): onboarding & roadmap.
+- [README](README.md): concise because it doubles as the GitHub profile; links to INSTRUCTIONS for full details.
+- [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap.
 - [RUNBOOK](RUNBOOK.md): production checklist.
 - [Ideas guide](ideas/README.md): idea-file schema.
 
