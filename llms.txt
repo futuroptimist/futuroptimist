@@ -4,11 +4,14 @@
 
 Futuroptimist is maintained in public; code is Python-centric with heavy automation planned (see Roadmap in README). Videos scripts reside under `scripts/YYYYMMDD_slug/` and ideas as checklists in `ideas/`.
 
+Coding style is pragmatic and simple. Use `pathlib` for filesystem paths and keep third-party dependencies minimal.
+
 ## Core Docs
 - [README](README.md): high-level overview & roadmap
 - [Agents guide](AGENTS.md): repository structure, coding conventions, test commands
 - [Runbook](RUNBOOK.md): production workflow checklist
 - [Contributors](CONTRIBUTORS.md): PR guidelines & Code of Conduct
+- Tests live in `tests/` and cover schema validation and helper scripts.
 
 ## Data & Schemas
 - [Video metadata schema](schemas/video_metadata.schema.json)
