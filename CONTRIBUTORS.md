@@ -15,10 +15,12 @@
    make setup    # or ./setup.ps1
    make test
    ```
-3. Keep PRs focused (one logical change).
-4. If you add code, add matching **unit tests**.
-5. Ensure `make test` passes (unit + schema + naming conventions) and `pre-commit` hooks (if installed) are green.
-6. Open PR ➜ fill template (description, rationale, screenshots).
+3. On Linux, you may need to create the virtual env manually:
+   `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`
+4. Keep PRs focused (one logical change).
+5. If you add code, add matching **unit tests** and run `make subtitles` to verify downloads when relevant.
+6. Ensure `make test` passes (unit + schema + naming conventions) and `pre-commit` hooks (if installed) are green.
+7. Open PR ➜ fill template (description, rationale, screenshots).
 
 ## Coding standards
 - Python 3.11+, black formatted, ruff-linted (coming via CI).
