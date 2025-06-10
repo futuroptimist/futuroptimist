@@ -7,14 +7,14 @@
 [NARRATOR]: Today I'm giving you a quick look at four indoor aquariums I've been tinkering with. Stick around to hear about my automation plans at the end.
 
 [NARRATOR]: Over the last 18 months I've gradually improved these tanks. I've also bounced between other hobbies—and spent way too many hours at my day job—but let's focus on the fish.
-[VISUAL]: Collage of all four tanks in a 2×2 grid, then shots of other hobbies and a "day job" meme.
+[VISUAL]: Collage of all four tanks in a 2×2 grid, then shots of other hobbies, games I've played, and some visual representing a software engineering job in an office setting.
 
 [NARRATOR]: This 20 gallon runs the Walstad method, with garden soil under sand and a tasty layer of mulm. It's full of guppies, snails, and microfauna like scuds, Daphnia, and moina. I tried cherry shrimp, but their babies became guppy snacks.
 [VISUAL]: Flash the Walstad Method Wikipedia page.
 [VISUAL]: Quick shot of the mulm entry on Wikipedia.
 [VISUAL]: Close-ups of guppies, shrimp, and microfauna.
 
-[NARRATOR]: Next is a 10 gallon where those original female guppies gave birth during quarantine. Their fry still live here while the adults moved back to the big tank.
+[NARRATOR]: Next is a 10 gallon where those original female guppies gave birth during quarantine, shortly after I acquired them at a local fish store. Their fry, now nearly adults themselves still live here while the adults moved back to the big tank.
 
 [NARRATOR]: Another 10 gallon sits in the back with aquasoil, sand, and plants but no fish yet. It's been cycling for nearly eight months and will probably house my first betta in quarantine. From the photo you'd think I'm gunning for a top spot on /r/stressfulaquariums—this shelf won't be its final home.
 [VISUAL]: Photo of the 10 gallon on its flimsy metal shelf.
@@ -24,6 +24,6 @@
 [NARRATOR]: I top off those buckets often and check parameters, sometimes dosing with products like Quick Start. The guppies eat flakes, pellets, and live foods, plus the occasional pinch of nutritional yeast—mmm. I've kept guppies going for about 16 months now, but Daphnia cultures crash easily, so I'm experimenting with green water and leaf litter for stability.
 [VISUAL]: B-roll of siphoning from buckets, adding Quick Start, feeding flakes and yeast.
 
-[NARRATOR]: Long term I'd love to automate water changes and feeding with peristaltic pumps and microcontrollers, maybe even run everything off solar. Outdoor aquaponics is next on my list.
+[NARRATOR]: Long term I'd love to automate water changes and feeding with peristaltic pumps and microcontrollers, maybe even run everything off solar. Outdoor aquaponics is next on my list, and the project is already well underway
 
-[NARRATOR]: What do you think of my setup? I'm just an amateur trying random things, so let me know if you spot mistakes. This is the roughest version you'll see. Stick around as I level things up, and don't forget to subscribe!
+[NARRATOR]: What do you think of my setup? I'm just an amateur trying random things, so let me know if you spot mistakes or things I could do less stupidly. This is the roughest version you'll see, of course. Stick around as I level things up and make this the most reliable and robust aquarium setup I can imagine, and don't forget to subscribe!
