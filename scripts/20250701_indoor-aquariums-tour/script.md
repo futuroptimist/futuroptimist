@@ -31,6 +31,15 @@
 
 [NARRATOR]: Finally there's a tiny 5 gallon that was neglected for a bit, so right now it only holds snails and microfauna. Because three tanks are lidless, evaporation is fast. I keep two five‑gallon buckets above the tanks and siphon water down with gravity.
 
+[NARRATOR]: To show how each tank looks from the inside, I've waterproofed an Insta360 and dropped it into the water.
+[VISUAL]: Slow shot of the camera sinking into the 20 gallon, followed by 360° footage of guppies all around.
+
+[NARRATOR]: Next up, it tours the fry tank and that cycling betta setup.
+[VISUAL]: Quick montage from inside the fry tank, then the betta tank.
+
+[NARRATOR]: Even the little 5 gallon gets a spin—tiny but lively.
+[VISUAL]: 360° clip from the 5 gallon.
+
 [NARRATOR]: I top off those buckets often and check parameters, sometimes dosing with products like Quick Start. The guppies eat flakes, pellets, and live foods, plus the occasional pinch of nutritional yeast—mmm. I've kept guppies going for about 16 months now, but Daphnia cultures crash easily, so I'm experimenting with green water and leaf litter for stability.
 
 [VISUAL]: B-roll of siphoning from buckets, adding Quick Start, feeding flakes and yeast.

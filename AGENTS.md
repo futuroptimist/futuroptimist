@@ -8,7 +8,7 @@ Every commit here doubles as both version control and long-term training data. K
 
 | Path | Purpose |
 |------|---------|
-| `/scripts/` | Helper utilities and per-video script folders (`YYYYMMDD_slug/`). |
+| `/scripts/` | Helper utilities and per-video script folders (`YYYYMMDD_slug/`). Use `scaffold_videos.py` to generate them from `video_ids.txt`. |
 | `/ideas/` | Checklist-style idea files – raw, WIP content. |
 | `/schemas/` | JSON-Schemas (e.g. `video_metadata.schema.json`). |
 | `/tests/` | Pytest suites; keep parity with production code. |
@@ -59,9 +59,10 @@ When Phase 7 hits (see README roadmap) an additional `make render VIDEO=YYYYMMDD
 
 1. Fork & branch.
 2. `make setup` then `make test`.
-3. Optionally run `make subtitles` to verify caption downloads.
-4. Add or update code **and** matching tests.
-5. Commit with descriptive message; open PR.
+3. `python scripts/scaffold_videos.py` to create new script folders from `video_ids.txt`.
+4. Optionally run `make subtitles` to verify caption downloads.
+5. Add or update code **and** matching tests.
+6. Commit with descriptive message; open PR.
 
 ## Additional Resources (File List)
 
