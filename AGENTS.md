@@ -22,6 +22,13 @@
 * Scripts must be cross-platform – prefer `pathlib` for file paths and avoid
   shell-only tricks.
 
+## Script Format
+
+Video scripts (`scripts/YYYYMMDD_slug/script.md`) combine narration and stage
+directions. Use `[NARRATOR]:` for spoken lines and `[VISUAL]:` for b-roll or
+graphics cues. Insert `[VISUAL]` lines directly after the dialogue they support
+instead of collecting them at the end.
+
 ## Testing & CI
 
 Run all tests:
