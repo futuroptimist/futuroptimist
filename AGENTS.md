@@ -3,6 +3,7 @@
 > Welcome! This file orients both AI assistants and human contributors. Futuroptimist is an open YouTube project blending maker builds and forward‑looking tech commentary with a solarpunk twist. Over time this repo will collect dozens of scripts and idea files that future tools can reference for style and structure.
 
 Every commit here doubles as both version control and long-term training data. Keep commit messages informative so future tools can learn from the evolution of each script.
+Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 
 ## Project Top-Level Layout
 
