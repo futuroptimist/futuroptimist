@@ -16,14 +16,18 @@ def test_e2e_pipeline(monkeypatch):
         monkeypatch.setattr(scaffold, "BASE_DIR", base)
         monkeypatch.setattr(scaffold, "IDS_FILE", base / "video_ids.txt")
         monkeypatch.setattr(scaffold, "VIDEO_SCRIPT_ROOT", base)
+        monkeypatch.setattr(
+            scaffold, "fetch_video_info", lambda vid: ("Video", "20240202")
+        )
 
         # 1a. Scaffold
         scaffold.main()
-        vdir = base / vid
+        vdir = base / "20240202_video"
         assert vdir.exists(), "Video directory created"
         assert (vdir / "script.md").exists()
         meta_data = json.loads((vdir / "metadata.json").read_text())
         assert meta_data["youtube_id"] == vid
+        assert meta_data["publish_date"] == "2024-02-02"
 
         # 2. Fetch subtitles mocked
         calls = []
@@ -45,4 +49,4 @@ def test_e2e_pipeline(monkeypatch):
         # We expect two subprocess calls (primary + fallback)
         assert len(calls) == 2
         # verify fallback without --convert-subs
-        assert "--convert-subs" not in calls[1] 
+        assert "--convert-subs" not in calls[1]
