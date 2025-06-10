@@ -5,6 +5,7 @@
 Futuroptimist is maintained in public; code is Python-centric with heavy automation planned (see Roadmap in README). Videos scripts reside under `scripts/YYYYMMDD_slug/` and ideas as checklists in `ideas/`.
 
 Coding style is pragmatic and simple. Use `pathlib` for filesystem paths and keep third-party dependencies minimal.
+Scripts embed `[VISUAL]` cues inline with `[NARRATOR]` lines rather than in a separate section.
 
 ## Core Docs
 - [README](README.md): high-level overview & roadmap

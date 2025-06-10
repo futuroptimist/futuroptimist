@@ -11,13 +11,10 @@ TEMPLATE_MD = """# {title}
 
 > Draft script for video `{youtube_id}`
 
-## A-Roll
+## Script
 
 [NARRATOR]: <!-- narrator lines here -->
-
-## B-Roll / Inserts
-
-[VISUAL]: <!-- description of footage, VFX, AI gen assets, diagrams -->
+[VISUAL]: <!-- b-roll, graphics, or stage directions -->
 """
 
 TEMPLATE_META = {
