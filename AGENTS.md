@@ -1,6 +1,8 @@
 # Futuroptimist – Agents.md Guide for AI Tools
 
-> This Agents.md provides structured guidance for OpenAI Codex, Cursor, and any AI agents when navigating and contributing to the Futuroptimist repository.
+> Welcome! This file orients both AI assistants and human contributors. Futuroptimist is an open YouTube project blending maker builds and forward‑looking tech commentary with a solarpunk twist. Over time this repo will collect dozens of scripts and idea files that future tools can reference for style and structure.
+
+Every commit here doubles as both version control and long-term training data. Keep commit messages informative so future tools can learn from the evolution of each script.
 
 ## Project Top-Level Layout
 
@@ -28,6 +30,7 @@ Video scripts (`scripts/YYYYMMDD_slug/script.md`) combine narration and stage
 directions. Use `[NARRATOR]:` for spoken lines and `[VISUAL]:` for b-roll or
 graphics cues. Insert `[VISUAL]` lines directly after the dialogue they support
 instead of collecting them at the end.
+- Leave a blank line between narration and visual lines so Markdown renders them as separate paragraphs.
 
 ## Testing & CI
 
@@ -40,6 +43,12 @@ make test
 If `make setup` fails on your platform, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
 
 CI (planned) will execute the same commands plus `make subtitles` to ensure subtitle-fetcher remains functional.
+
+## Vision & Workflow
+
+The long-term goal is to make video creation as repeatable as writing code. Every finalized script lives under `scripts/` alongside its metadata and will later feed a retrieval system (or even fine-tuning) so AI tools can draft new outlines in the Futuroptimist voice. Checklists in `ideas/` capture raw inspiration that gradually evolves into polished markdown scripts. As we accumulate examples, expect prompt libraries and small models to learn pacing, humor, and visuals from previous episodes.
+
+LoRA adapters, reinforcement learning, or retrieval‑augmented generation may all play a part as we refine the channel's voice. Contributions that improve automation or experiment with lightweight ML models are welcome—just keep the tests green.
 
 ## Render & Publish (Future-Phase)
 
