@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual env
+venv/
+
+# Downloaded subtitles
+subtitles/*.vtt
+subtitles/*.srt
+
+# local idea caches
+.idea/
+
+# virtual envs
+.venv/
+
+# build / artefacts
+dist/
+build/
+
+# test cache
+.pytest_cache/
+
+# rendered media outputs (keep source scripts in git)
+videos/*/rendered*/
+
+# IDE noise (duplicate entry kept for clarity)

@@ -1,0 +1,21 @@
+# Futuroptimist llms.txt
+
+> A solarpunk-flavoured YouTube / GitHub project combining IRL maker builds (aquariums, solar, gardening) with forward-looking tech essays on space, AI, climate & sustainability. This file gives LLMs concise guidance and jump-off links for deeper context.
+
+Futuroptimist is maintained in public; code is Python-centric with heavy automation planned (see Roadmap in README). Videos scripts reside under `scripts/YYYYMMDD_slug/` and ideas as checklists in `ideas/`.
+
+## Core Docs
+- [README](README.md): high-level overview & roadmap
+- [Agents guide](AGENTS.md): repository structure, coding conventions, test commands
+- [Runbook](RUNBOOK.md): production workflow checklist
+- [Contributors](CONTRIBUTORS.md): PR guidelines & Code of Conduct
+
+## Data & Schemas
+- [Video metadata schema](schemas/video_metadata.schema.json)
+
+## Optional
+- [Ideas directory](ideas/README.md): format for idea files
+- Example idea – solar aquaponics checklist: [solar_aquaponics.md](ideas/solar_aquaponics.md)
+
+---
+LLM usage policy: No private data; operate within repo; see LICENSE (MIT). 
