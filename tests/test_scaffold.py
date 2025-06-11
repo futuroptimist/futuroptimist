@@ -25,6 +25,8 @@ def test_scaffold_creates_files(monkeypatch):
         meta = json.loads((vid_dir / "metadata.json").read_text())
         assert meta["youtube_id"] == "ABC"
         assert meta["publish_date"] == "2024-01-02"
+        assert meta["slug"] == "test-title"
+        assert meta["transcript_file"] == "subtitles/ABC.srt"
 
 
 def test_slugify():

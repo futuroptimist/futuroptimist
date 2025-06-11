@@ -31,6 +31,8 @@ def test_e2e_pipeline(monkeypatch):
         meta_data = json.loads((vdir / "metadata.json").read_text())
         assert meta_data["youtube_id"] == vid
         assert meta_data["publish_date"] == "2024-02-02"
+        assert meta_data["slug"] == "video"
+        assert meta_data["transcript_file"] == "subtitles/XYZ123.srt"
 
         # 2. Fetch subtitles mocked
         calls = []
