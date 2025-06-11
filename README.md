@@ -9,6 +9,8 @@ Use the Makefile to set up a virtual environment and run the tests:
 ```bash
 make setup  # install dependencies into .venv
 make test   # run unit tests
+make subtitles  # download YouTube captions listed in video_ids.txt
+make clean      # remove the virtual environment and caches
 ```
 
 Formatting is enforced with `black` and `ruff` – run `black .` and `ruff check --fix .` before committing.
