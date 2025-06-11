@@ -28,6 +28,7 @@ Key directories:
 - `/schemas/` JSON schemas
 - `/tests/` pytest suites
 - `/subtitles/` caption files from `fetch_subtitles.py`
+- `/sources/` reference files downloaded by `collect_sources.py`
 - `video_ids.txt` canonical YouTube ID list
 
 ## Core Docs

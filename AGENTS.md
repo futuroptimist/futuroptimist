@@ -16,6 +16,7 @@ Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 | `/Makefile` & `setup.ps1` | Developer automation (venv, tests, subtitles, render). |
 | `/llms.txt` | Complementary file containing creative context & tone. |
 | `/subtitles/` | Downloaded `.srt` caption files populated by `fetch_subtitles.py`. |
+| `/sources/` | Reference files fetched via `collect_sources.py`. |
 | `video_ids.txt` | Canonical list of YouTube IDs referenced by helper scripts. |
 | `INSTRUCTIONS.md` | Extended setup steps and roadmap. |
 
