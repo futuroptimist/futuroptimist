@@ -26,4 +26,6 @@ build/
 videos/*/rendered*/
 
 # reference files fetched via collect_sources
+# per-video sources directories
+scripts/*/sources/
 # IDE noise (duplicate entry kept for clarity)
