@@ -20,6 +20,7 @@ make setup
 make test
 ```
 If that fails, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
+If `make test` complains about `.venv/Scripts/python`, run `PATH=.venv/bin:$PATH pytest -q`.
 If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$PATH`.
 
 Key directories:

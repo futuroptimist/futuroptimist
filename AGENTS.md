@@ -44,6 +44,7 @@ make setup   # venv + deps (or ./setup.ps1)
 make test
 ```
 If `make setup` fails on your platform, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
+If `make test` errors about `.venv/Scripts/python`, use `PATH=.venv/bin:$PATH pytest -q` instead.
 If `yt-dlp` cannot be located during tests, prefix your command with `PATH=.venv/bin:$PATH` so the venv's executables are discoverable.
 
 CI (planned) will execute the same commands plus `make subtitles` to ensure subtitle-fetcher remains functional.
