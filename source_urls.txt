@@ -1,0 +1,2 @@
+# Source URLs
+https://example.com/resource.txt
