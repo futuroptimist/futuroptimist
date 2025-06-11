@@ -23,7 +23,7 @@ python scripts/fetch_subtitles.py
 # 3. Run the full test suite (schema, naming, e2e)
 make test
 ```
-The script pulls **manual** subtitles when present, falling back to **auto-generated** captions as needed. Files are saved as `subtitles/<videoid>.srt`.
+The script fetches **manual** subtitles only. Videos without manual captions are skipped. Files are saved as `subtitles/<videoid>.srt`.
 
 ## Development Workflow
 

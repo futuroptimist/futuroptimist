@@ -26,7 +26,7 @@ def read_video_ids():
 
 def download_subtitles(video_id: str):
     url = f"https://www.youtube.com/watch?v={video_id}"
-    # --skip-download avoids video download; --write-auto-sub tries auto subs; --write-sub gets manual subs.
+    # --skip-download avoids video download; --write-sub fetches manual captions only.
     cmd = [
         "yt-dlp",
         "--skip-download",
