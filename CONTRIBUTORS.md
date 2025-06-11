@@ -34,4 +34,4 @@ All contributions are licensed under the repository's MIT license (see LICENSE).
 Be kind & constructive; no harassment, hate speech, or spam. This content is intended for a global, eco-positive audience.
 
 ---
-**Core maintainer:** Daniel (@Futuroptimist). Feel free to @-mention for reviews or questions! 
+**Core maintainer:** Daniel (@Futuroptimist). Feel free to @-mention for reviews or questions!
