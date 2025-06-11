@@ -9,7 +9,7 @@ Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 
 | Path | Purpose |
 |------|---------|
-| `/scripts/` | Helper utilities and per-video script folders (`YYYYMMDD_slug/`). Each folder may include `script.md`, `metadata.json`, and optional `sources.txt` for citation URLs. Run `scaffold_videos.py` to fetch titles/dates and create folders from `video_ids.txt`. |
+| `/scripts/` | Helper utilities and per-video script folders (`YYYYMMDD_slug/`). Each folder may include `script.md`, `metadata.json`, and optional `sources.txt` or `footage.md`. Run `scaffold_videos.py` to fetch titles/dates and create folders from `video_ids.txt`. |
 | `/ideas/` | Checklist-style idea files – raw, WIP content. |
 | `/schemas/` | JSON-Schemas (e.g. `video_metadata.schema.json`). |
 | `/tests/` | Pytest suites; keep parity with production code. |
@@ -43,6 +43,7 @@ instead of collecting them at the end.
   followed by a blockquote referencing the YouTube ID and a `## Script` section header.
 - Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`.
 - Each script folder may include a `sources.txt` file with one URL per line. Any downloaded articles or clips are for reference only—check usage rights and cite sources in **APA style** rather than redistributing content.
+- Each script folder may also contain a `footage.md` checklist to track B-roll or CGI shots to gather. Note existing archive vs new footage, and flag generative AI segments so they don't look like "AI slop".
 
 ## Testing & CI
 

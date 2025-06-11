@@ -1,5 +1,9 @@
 # Indoor Aquarium Tour (2025-07-01)
 
+> Draft script for video `<youtube_id>`
+
+## Script
+
 [NARRATOR]: Well, it's time for another video—I haven't uploaded in four years. A lot has happened since then.
 
 [VISUAL]: Supercut of news clips, trending memes, and an old shot of me promising "regular uploads soon" timed to the line "A lot has happened since then."

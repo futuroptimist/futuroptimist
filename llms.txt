@@ -14,6 +14,7 @@ Script format:
 - Leave a blank line between narration and visuals.
 - Each script folder includes a `metadata.json` validated against `schemas/video_metadata.schema.json`.
 - Each script folder may also contain a `sources.txt` file with one URL per line. Downloaded articles or clips are for citation/reference only—check usage rights and cite in **APA style** rather than redistributing.
+- Each script folder may also have a `footage.md` file listing required shots (archive vs new, CGI or generative). Mark generative items to avoid obvious "AI slop".
 
 Run tests with:
 ```bash

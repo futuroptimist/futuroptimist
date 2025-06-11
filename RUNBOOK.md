@@ -31,6 +31,7 @@ This document is a living checklist covering the **Futuroptimist** long-form vid
 
 - [ ] Prepare A-roll shot list.
 - [ ] Collect B-roll references / stock.
+- [ ] Create footage checklist from script cues (archive photos, new clips, CGI/AI). Flag generative assets so they don't feel like "AI slop".
 - [ ] Finalise visual assets (charts, slides, props).
 - [ ] Book location & gear.
 
