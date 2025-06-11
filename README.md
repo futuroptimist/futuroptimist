@@ -19,3 +19,5 @@ Formatting is enforced with `black` and `ruff` – run `black .` and `ruff check
 - **sigma** – open-source AI pin device ([repo](https://github.com/futuroptimist/sigma))
 - **gabriel** – guardian angel LLM ([repo](https://github.com/futuroptimist/gabriel))
 - **f2clipboard** – quickly copy multiple files from nested directories for LLM conversations ([repo](https://github.com/futuroptimist/f2clipboard))
+
+For repository structure and AI guidelines see [AGENTS.md](AGENTS.md). Brainstorm files live in the [ideas/](ideas) directory.

@@ -10,13 +10,16 @@ VIDEO_ROOT = BASE_DIR / "scripts"
 
 
 def download_url(url: str, dest: pathlib.Path) -> bool:
-    """Download a single URL to ``dest``. Returns True if successful."""
+    """Download a single URL to ``dest``.
+
+    Returns ``True`` on success and ``False`` if the request fails.
+    """
     try:
         with urllib.request.urlopen(url) as resp:
             dest.write_bytes(resp.read())
         return True
     except urllib.error.URLError as exc:
-        sys.stderr.write(f"Failed to fetch {url}: {exc}\n")
+        print(f"Failed to download {url}: {exc}", file=sys.stderr)
         return False
 
 
