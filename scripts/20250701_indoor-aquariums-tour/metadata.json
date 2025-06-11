@@ -3,7 +3,18 @@
   "title": "Indoor Aquarium Tour",
   "publish_date": "2025-07-01",
   "duration_seconds": 240,
-  "keywords": ["aquarium", "guppies", "walstad", "betta", "microfauna", "aquaponics"],
+  "keywords": [
+    "aquarium",
+    "guppies",
+    "walstad",
+    "betta",
+    "microfauna",
+    "aquaponics"
+  ],
   "status": "draft",
-  "description": "After four years away, Daniel tours four indoor aquariums: a Walstad guppy tank, a fry-filled 10 gallon, a cycling betta setup on a flimsy shelf, and a tiny shrimp tank. He shares maintenance tricks, microfauna struggles, and hints at automation and outdoor projects."
+  "description": "After four years away, Daniel tours four indoor aquariums: a Walstad guppy tank, a fry-filled 10 gallon, a cycling betta setup on a flimsy shelf, and a tiny shrimp tank. He shares maintenance tricks, microfauna struggles, and hints at automation and outdoor projects.",
+  "slug": "indoor-aquariums-tour",
+  "thumbnail": "thumbnails/20250701.jpg",
+  "transcript_file": "",
+  "summary": "Daniel showcases four indoor tanks and lessons learned."
 }

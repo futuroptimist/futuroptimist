@@ -28,6 +28,10 @@ TEMPLATE_META = {
     "keywords": [],
     "status": "draft",
     "description": "",
+    "slug": "",
+    "thumbnail": "",
+    "transcript_file": "",
+    "summary": "",
 }
 
 
@@ -73,6 +77,8 @@ def main():
             data["publish_date"] = datetime.datetime.strptime(
                 date_str, "%Y%m%d"
             ).strftime("%Y-%m-%d")
+            data["slug"] = slug
+            data["transcript_file"] = f"subtitles/{vid}.srt"
             meta_path.write_text(json.dumps(data, indent=2))
             print(f"Created {meta_path}")
 

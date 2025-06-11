@@ -16,6 +16,10 @@
       "type": "string",
       "enum": ["draft", "live", "private"]
     },
-    "description": {"type": "string"}
+    "description": {"type": "string"},
+    "slug": {"type": "string"},
+    "thumbnail": {"type": "string"},
+    "transcript_file": {"type": "string"},
+    "summary": {"type": "string"}
   }
 }
