@@ -11,6 +11,14 @@ make setup  # install dependencies into .venv
 make test   # run unit tests
 ```
 
+Create new script folders from the YouTube IDs listed in `video_ids.txt`:
+
+```bash
+python scripts/scaffold_videos.py
+```
+
+This fetches titles and dates and generates `scripts/YYYYMMDD_slug` directories for drafting.
+
 Formatting is enforced with `black` and `ruff` – run `black .` and `ruff check --fix .` before committing.
 
 ## Other Projects
