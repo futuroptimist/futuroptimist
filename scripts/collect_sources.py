@@ -1,7 +1,7 @@
 import pathlib
 import urllib.request
-import urllib.parse
-import json
+import urllib.error
+import sys
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "scripts"
@@ -22,7 +22,7 @@ def process_video_dir(video_dir: pathlib.Path) -> None:
     sources_dir.mkdir(exist_ok=True)
     mapping = {}
 
-    lines = [l.strip() for l in sources_file.read_text().splitlines()]
+    lines = [line.strip() for line in sources_file.read_text().splitlines()]
     for idx, url in enumerate(
         [u for u in lines if u and not u.startswith("#")], start=1
     ):
