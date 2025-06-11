@@ -26,6 +26,7 @@ Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 * One logical change per PR; always include/extend tests.
 * Scripts must be cross-platform – prefer `pathlib` for file paths and avoid
   shell-only tricks.
+* Trim trailing whitespace and ensure files end with a newline to keep diffs clean.
 
 ## Script Format
 
@@ -86,4 +87,4 @@ Tests under `tests/` cover folder naming (`test_folder_names.py`), schema valida
 - [Contributors guide](CONTRIBUTORS.md): PR etiquette and code style details.
 
 ---
-*For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).* 
+*For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).*

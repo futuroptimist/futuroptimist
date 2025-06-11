@@ -13,8 +13,8 @@ Each idea file should roughly follow:
 
 ## Checklist
 
-- [ ] Planned item 1  
-- [ ] Planned item 2  
+- [ ] Planned item 1
+- [ ] Planned item 2
 
 ## Context / Why Now?
 
@@ -27,4 +27,4 @@ Insert relevance & timeliness notes.
 
 ## Links / Inspiration
 - …
-``` 
+```

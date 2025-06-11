@@ -29,4 +29,4 @@ if ($Subtitles) {
     & $python scripts/fetch_subtitles.py
 }
 
-Write-Host "Setup complete. Activate with: `n .\.venv\Scripts\Activate.ps1" 
+Write-Host "Setup complete. Activate with: `n .\.venv\Scripts\Activate.ps1"

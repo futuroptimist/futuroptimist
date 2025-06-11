@@ -30,4 +30,4 @@ def test_download_subtitles_constructs_command(monkeypatch):
     cmd = " ".join(captured['cmd'])
     assert "https://www.youtube.com/watch?v=XYZ123" in cmd
     assert "--skip-download" in cmd
-    assert "--write-sub" in cmd 
+    assert "--write-sub" in cmd
