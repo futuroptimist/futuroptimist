@@ -12,13 +12,14 @@ else
 endif
 PIP := $(PY) -m pip
 
-.PHONY: help setup test subtitles clean
+.PHONY: help setup test subtitles clean fmt
 
 help:
 	@echo "Targets:"
 	@echo "  setup       Create venv & install deps"
 	@echo "  test        Run pytest inside venv"
 	@echo "  subtitles   Download captions for all video IDs"
+	@echo "  fmt         Format code with black & ruff"
 	@echo "  clean       Remove venv & __pycache__"
 
 setup:
@@ -31,6 +32,10 @@ test:
 
 subtitles:
 	$(PY) scripts/fetch_subtitles.py
+
+fmt:
+	$(PY) -m black .
+	$(PY) -m ruff check --fix .
 
 clean:
 	@$(REMOVE) $(VENV) 2>/dev/null || true
