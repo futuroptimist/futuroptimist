@@ -18,6 +18,7 @@ Run tests with:
 make setup
 make test
 ```
+The Makefile picks the correct Python path for Windows or Unix automatically.
 If that fails, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
 
 Key directories:
@@ -26,6 +27,7 @@ Key directories:
 - `/schemas/` JSON schemas
 - `/tests/` pytest suites
 - `/subtitles/` caption files from `fetch_subtitles.py`
+- `/scripts/<id>/sources/` archived references downloaded via `collect_sources.py`
 - `video_ids.txt` canonical YouTube ID list
 
 ## Core Docs
