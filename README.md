@@ -8,3 +8,5 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 - **sigma** – open-source AI pin device ([repo](https://github.com/futuroptimist/sigma))
 - **gabriel** – guardian angel LLM ([repo](https://github.com/futuroptimist/gabriel))
 - **f2clipboard** – quickly copy multiple files from nested directories for LLM conversations ([repo](https://github.com/futuroptimist/f2clipboard))
+
+For repository structure and AI guidelines see [AGENTS.md](AGENTS.md). Brainstorm files live in the [ideas/](ideas) directory.
