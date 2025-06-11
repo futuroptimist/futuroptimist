@@ -83,4 +83,4 @@ This document is a living checklist covering the **Futuroptimist** long-form vid
 
 ---
 
-_Last updated: 2025-06-09_ 
+_Last updated: 2025-06-09_

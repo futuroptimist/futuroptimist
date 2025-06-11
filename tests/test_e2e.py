@@ -46,6 +46,7 @@ def test_e2e_pipeline(monkeypatch):
         monkeypatch.setattr(fs, "BASE_DIR", base)
         monkeypatch.setattr(fs, "IDS_FILE", base / "video_ids.txt")
         monkeypatch.setattr(fs, "OUTPUT_DIR", base / "subtitles")
+        monkeypatch.setattr(fs, "ensure_requirements", lambda: None)
 
         fs.main()  # will iterate & call download_subtitles once
 
