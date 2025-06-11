@@ -21,6 +21,7 @@ def test_scaffold_creates_files(monkeypatch):
         vid_dir = base / "20240102_test-title"
         assert vid_dir.is_dir()
         assert (vid_dir / "script.md").exists()
+        assert (vid_dir / "footage.md").exists()
         meta = json.loads((vid_dir / "metadata.json").read_text())
         assert meta["youtube_id"] == "ABC"
         assert meta["publish_date"] == "2024-01-02"

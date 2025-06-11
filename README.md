@@ -21,6 +21,8 @@ python scripts/scaffold_videos.py
 
 This fetches titles and dates and generates `scripts/YYYYMMDD_slug` directories for drafting.
 
+Each script folder may also include a `footage.md` file with a shot checklist drawn from the final script (archive images, new footage, CGI or generative assets).
+
 Formatting is enforced with `black` and `ruff` – run `black .` and `ruff check --fix .` before committing.
 
 ## Other Projects

@@ -81,6 +81,11 @@ def main():
             script_path.write_text(TEMPLATE_MD.format(title=title, youtube_id=vid))
             print(f"Created {script_path}")
 
+        footage_path = vdir / "footage.md"
+        if not footage_path.exists():
+            footage_path.write_text("# Footage Checklist\n\n- [ ] \n")
+            print(f"Created {footage_path}")
+
 
 if __name__ == "__main__":
     main()
