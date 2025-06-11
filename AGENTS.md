@@ -37,6 +37,9 @@ graphics cues. Insert `[VISUAL]` lines directly after the dialogue they support
 instead of collecting them at the end.
 - Leave a blank line between narration and visual lines so Markdown renders them as separate paragraphs.
 - When importing transcripts from `.srt` files, strip prefix markers like `- [Narrator]` and split sentences into individual `[NARRATOR]` lines for clarity.
+- Break long transcript sentences at punctuation boundaries so each `[NARRATOR]` line contains a single, complete thought.
+- Start each script with a level-one heading containing the video title,
+  followed by a blockquote referencing the YouTube ID and a `## Script` section header.
 - Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`.
 - Each script folder may include a `sources.txt` file with one URL per line. Any downloaded articles or clips are for reference only—check usage rights and cite sources in **APA style** rather than redistributing content.
 
