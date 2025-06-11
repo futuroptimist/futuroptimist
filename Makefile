@@ -26,4 +26,4 @@ subtitles:
 
 clean:
 	rmdir /s /q $(VENV) 2>nul || true
-	del /s /q **\__pycache__ 2>nul || true 
+	del /s /q **\__pycache__ 2>nul || true

@@ -4,13 +4,13 @@
 
 ## Checklist
 
-- [ ] Record B-roll of each tank (macro shots, feeding)  
+- [ ] Record B-roll of each tank (macro shots, feeding)
 - [ ] Narrated A-roll tour of each tank
-- [ ] Export water-quality telemetry graphs  
-- [ ] Create overlay explaining light-cycle timers  
-- [ ] Mention future off-grid solar upgrade  
-- [ ] Cross-promo to outdoor aquaponic build video  
-- [ ] Ask audience for low-energy filtration tips  
+- [ ] Export water-quality telemetry graphs
+- [ ] Create overlay explaining light-cycle timers
+- [ ] Mention future off-grid solar upgrade
+- [ ] Cross-promo to outdoor aquaponic build video
+- [ ] Ask audience for low-energy filtration tips
 
 ## Context / Why Now?
-Sets context before the outdoor series—demonstrates existing husbandry and livestock that will seed future tubs. 
+Sets context before the outdoor series—demonstrates existing husbandry and livestock that will seed future tubs.
