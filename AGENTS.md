@@ -50,10 +50,16 @@ instead of collecting them at the end.
 4. Optionally run `make subtitles` and `python scripts/collect_sources.py` to
    download captions and reference files.
 
+The repository includes a simple GitHub Actions workflow (`.github/workflows/ci.yml`)
+that installs dependencies and runs the full test suite with coverage on every
+push or pull request.
+
 ### Data & Schemas
 - [source_urls.txt](source_urls.txt): URLs consumed by `collect_sources.py`.
 make setup   # venv + deps (or ./setup.ps1)
-make test
+make test  # runs `pytest -q`
+# To check coverage locally:
+pytest --cov=./scripts --cov=./tests
 ```
 The Makefile auto-detects Windows vs Unix paths so these commands should work cross-platform.
 If `make setup` fails on your platform, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
