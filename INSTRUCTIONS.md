@@ -34,6 +34,7 @@ make setup      # create .venv and install deps
 make test       # run unit tests
 make subtitles  # download captions listed in video_ids.txt
 make clean      # remove the virtualenv and caches
+make fmt       # format code with black & ruff
 ```
 
 Create new script folders from the IDs in `video_ids.txt`:

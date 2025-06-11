@@ -2,19 +2,6 @@
 
 Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTube channel](https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ). If you're looking for the full project details, see [INSTRUCTIONS.md](INSTRUCTIONS.md). Guidelines for AI tools live in [AGENTS.md](AGENTS.md).
 
-```bash
-make setup  # create .venv and install deps
-make test   # run the unit tests
-# optional formatting helper
-make fmt
-```
-
-## Local Footage
-
-Large photos and videos for editing should live in a `footage/` folder
-(ignored by git). Run `python scripts/index_local_media.py` to generate
-`footage_index.json` for quick reference when editing.
-
 ## Other Projects
 - **[token.place](https://token.place)** – p2p generative AI platform ([repo](https://github.com/futuroptimist/token.place))
 - **[DSPACE](https://democratized.space)** – open-source space exploration idle game ([repo](https://github.com/democratizedspace/dspace))

@@ -5,6 +5,9 @@
 Every commit here doubles as both version control and long-term training data. Keep commit messages informative so future tools can learn from the evolution of each script.
 Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 
+The main `README.md` is intentionally minimal to maintain a clean GitHub profile.
+Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
+
 ## Project Top-Level Layout
 
 | Path | Purpose |
@@ -96,7 +99,7 @@ When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make rende
 ## Additional Resources (File List)
 
 ### Documentation
-- [README](README.md): concise because it doubles as the GitHub profile; keep development details in INSTRUCTIONS instead.
+- [README](README.md): concise because it doubles as the GitHub profile. Do **not** include Makefile commands, footage instructions, or other setup details here—they belong in INSTRUCTIONS or RUNBOOK.
 - Avoid detailed how-tos like subtitle downloading; store them in other docs.
 - [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap.
 - [RUNBOOK](RUNBOOK.md): production checklist.
