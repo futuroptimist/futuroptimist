@@ -58,8 +58,10 @@ push or pull request.
 
 ### Data & Schemas
 - [source_urls.txt](source_urls.txt): URLs consumed by `collect_sources.py`.
+
+```bash
 make setup   # venv + deps (or ./setup.ps1)
-make test  # runs `pytest -q`
+make test    # runs `pytest -q`
 # To check coverage locally:
 pytest --cov=./scripts --cov=./tests
 ```

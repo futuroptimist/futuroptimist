@@ -18,8 +18,8 @@ Script format:
 
 Run tests with:
 ```bash
-make setup
-make test
+make setup   # venv + deps (or ./setup.ps1)
+make test    # runs `pytest -q`
 ```
 - For coverage:
 ```bash
