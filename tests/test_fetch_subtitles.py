@@ -28,7 +28,7 @@ def test_download_subtitles_constructs_command(monkeypatch):
     assert "https://www.youtube.com/watch?v=XYZ123" in cmd
     assert "--skip-download" in cmd
     assert "--write-sub" in cmd
-
+    assert "--write-auto-sub" not in cmd
 
 def test_ensure_requirements_missing(monkeypatch):
     monkeypatch.setattr(fs.shutil, "which", lambda _: None)
