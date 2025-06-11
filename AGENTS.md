@@ -85,7 +85,7 @@ When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make rende
 ## Additional Resources (File List)
 
 ### Documentation
-- [README](README.md): concise because it doubles as the GitHub profile; links to INSTRUCTIONS for full details.
+- [README](README.md): concise because it doubles as the GitHub profile; keep development details in INSTRUCTIONS instead.
 - [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap.
 - [RUNBOOK](RUNBOOK.md): production checklist.
 - [Ideas guide](ideas/README.md): idea-file schema.

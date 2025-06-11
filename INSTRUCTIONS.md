@@ -25,6 +25,25 @@ make test
 ```
 The script pulls **manual** subtitles when present, falling back to **auto-generated** captions as needed. Files are saved as `subtitles/<videoid>.srt`.
 
+## Development Workflow
+
+Use the Makefile for common tasks:
+
+```bash
+make setup      # create .venv and install deps
+make test       # run unit tests
+make subtitles  # download captions listed in video_ids.txt
+make clean      # remove the virtualenv and caches
+```
+
+Create new script folders from the IDs in `video_ids.txt`:
+
+```bash
+python scripts/scaffold_videos.py
+```
+
+This fetches titles and dates to generate `scripts/YYYYMMDD_slug` directories for drafting. Format code with `black .` and `ruff check --fix .` before committing.
+
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).
 * Convert `.srt` caption timing into fully-fledged markdown scripts.

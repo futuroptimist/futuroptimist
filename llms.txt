@@ -37,7 +37,7 @@ Key directories:
 - `video_ids.txt` canonical YouTube ID list
 
 ## Core Docs
-- [README](README.md): high-level overview & roadmap
+- [README](README.md): intentionally brief because it appears on my GitHub profile; development notes live in INSTRUCTIONS.
 - [Agents guide](AGENTS.md): repository structure, coding conventions, test commands
 - [Runbook](RUNBOOK.md): production workflow checklist
 - [Contributors](CONTRIBUTORS.md): PR guidelines & Code of Conduct
