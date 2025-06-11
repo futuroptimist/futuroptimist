@@ -25,4 +25,5 @@ build/
 # rendered media outputs (keep source scripts in git)
 videos/*/rendered*/
 
+# reference files fetched via collect_sources
 # IDE noise (duplicate entry kept for clarity)
