@@ -1,16 +1,23 @@
 import pathlib
 import urllib.request
 import urllib.error
+import urllib.parse
+import json
 import sys
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "scripts"
 
 
-def download_url(url: str, dest: pathlib.Path) -> None:
-    """Download a single URL to dest."""
-    with urllib.request.urlopen(url) as resp:
-        dest.write_bytes(resp.read())
+def download_url(url: str, dest: pathlib.Path) -> bool:
+    """Download a single URL to ``dest``. Returns True if successful."""
+    try:
+        with urllib.request.urlopen(url) as resp:
+            dest.write_bytes(resp.read())
+        return True
+    except urllib.error.URLError as exc:
+        sys.stderr.write(f"Failed to fetch {url}: {exc}\n")
+        return False
 
 
 def process_video_dir(video_dir: pathlib.Path) -> None:
@@ -30,9 +37,8 @@ def process_video_dir(video_dir: pathlib.Path) -> None:
         ext = pathlib.Path(parsed.path).suffix
         filename = f"{idx}{ext}"
         dest = sources_dir / filename
-        if not dest.exists():
-            download_url(url, dest)
-        mapping[url] = dest.name
+        if dest.exists() or download_url(url, dest):
+            mapping[url] = dest.name
 
     (video_dir / "sources.json").write_text(json.dumps(mapping, indent=2))
 

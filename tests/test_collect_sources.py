@@ -1,4 +1,3 @@
-import json
 import urllib.request
 import scripts.collect_sources as cs
 
