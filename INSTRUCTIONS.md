@@ -54,7 +54,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 
 | Phase | Feature | Impact |
 |-------|---------|--------|
-| 1️⃣  Plumbing | • CI action that runs tests + subtitle fetcher on every push.<br>• Pre-commit hooks (black, ruff) | Confidence & code quality |
+| 1️⃣  Plumbing | • **CI action now runs tests with coverage** on every push.<br>• Pre-commit hooks (black, ruff) | Confidence & code quality |
 | 2️⃣  Metadata Automation | • YouTube Data API sync to enrich markdown front-matter (title, publish date, views, tags).<br>• Slug auto-generation + filename rename helper. | Less manual bookkeeping |
 | 3️⃣  Script Intelligence | • SRT → Markdown converter that preserves timing blocks.<br>• Semantic chunker + embeddings (OpenAI / local) into `data/index` for RAG. | Opens door to AI-assisted new scripts |
 | 4️⃣  Creative Toolkit | • Prompt library for hook/headline generation trained on past hits.<br>• Thumbnail text predictor (CTR estimation) using small vision model. | Higher audience retention |

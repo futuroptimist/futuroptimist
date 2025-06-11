@@ -29,3 +29,8 @@ videos/*/rendered*/
 # per-video sources directories
 scripts/*/sources/
 # IDE noise (duplicate entry kept for clarity)
+
+# coverage reports
+htmlcov/
+cov.json
+

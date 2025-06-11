@@ -25,3 +25,26 @@ def test_scaffold_creates_files(monkeypatch):
         meta = json.loads((vid_dir / "metadata.json").read_text())
         assert meta["youtube_id"] == "ABC"
         assert meta["publish_date"] == "2024-01-02"
+
+
+def test_slugify():
+    assert sv.slugify("Hello World!") == "hello-world"
+
+
+def test_fetch_video_info_parses(monkeypatch):
+    html = "Title: Example Video\nJan 2, 2024"
+
+    class Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+        def read(self):
+            return html.encode()
+
+    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: Resp())
+    title, date = sv.fetch_video_info("abc")
+    assert title == "Example Video"
+    assert date == "20240102"

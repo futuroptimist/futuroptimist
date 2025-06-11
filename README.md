@@ -4,6 +4,8 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 
 English subtitles are pulled directly from each upload using [scripts/fetch_subtitles.py](scripts/fetch_subtitles.py). Only **manual** captions are downloaded so transcripts stay accurate.
 
+Test coverage is exercised automatically via GitHub Actions.
+
 ## Other Projects
 - **[token.place](https://token.place)** – p2p generative AI platform ([repo](https://github.com/futuroptimist/token.place))
 - **[DSPACE](https://democratized.space)** – open-source space exploration idle game ([repo](https://github.com/democratizedspace/dspace))
