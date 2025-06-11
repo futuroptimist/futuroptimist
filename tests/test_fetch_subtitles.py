@@ -30,6 +30,7 @@ def test_download_subtitles_constructs_command(monkeypatch):
     assert "--write-sub" in cmd
     assert "--write-auto-sub" not in cmd
 
+
 def test_ensure_requirements_missing(monkeypatch):
     monkeypatch.setattr(fs.shutil, "which", lambda _: None)
     with pytest.raises(SystemExit):
@@ -72,11 +73,6 @@ def test_main_handles_failure(monkeypatch, tmp_path):
 
     monkeypatch.setattr(fs, "download_subtitles", fail_download)
     fs.main()
-
-
-def test_entrypoint(monkeypatch, tmp_path):
-    monkeypatch.setattr(shutil, "which", lambda _: "yt-dlp")
-    monkeypatch.setattr(fs, "IDS_FILE", tmp_path / "ids.txt")
 
 
 def test_entrypoint(monkeypatch, tmp_path):

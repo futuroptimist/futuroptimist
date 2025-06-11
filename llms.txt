@@ -42,6 +42,7 @@ Key directories:
 
 ## Core Docs
 - [README](README.md): intentionally brief because it appears on my GitHub profile; development notes live in INSTRUCTIONS.
+- Skip detailed steps like subtitle fetching; keep README short.
 - [Agents guide](AGENTS.md): repository structure, coding conventions, test commands
 - [Runbook](RUNBOOK.md): production workflow checklist
 - [Contributors](CONTRIBUTORS.md): PR guidelines & Code of Conduct
