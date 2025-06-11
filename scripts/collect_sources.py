@@ -40,9 +40,8 @@ def process_video_dir(video_dir: pathlib.Path) -> None:
         ext = pathlib.Path(parsed.path).suffix
         filename = f"{idx}{ext}"
         dest = sources_dir / filename
-        if not dest.exists():
-            download_url(url, dest)
-        mapping[url] = dest.name
+        if dest.exists() or download_url(url, dest):
+            mapping[url] = dest.name
 
     (video_dir / "sources.json").write_text(json.dumps(mapping, indent=2))
 
