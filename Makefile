@@ -1,7 +1,15 @@
 # Makefile – developer helpers
 
 VENV := .venv
-PY := $(VENV)/Scripts/python
+ifeq ($(OS),Windows_NT)
+    PY := $(VENV)/Scripts/python
+    REMOVE := rmdir /s /q
+    CLEANCACHE := del /s /q **\__pycache__
+else
+    PY := $(VENV)/bin/python
+    REMOVE := rm -rf
+    CLEANCACHE := find . -name '__pycache__' -type d -exec rm -rf {} +
+endif
 PIP := $(PY) -m pip
 
 .PHONY: help setup test subtitles clean
@@ -25,5 +33,5 @@ subtitles:
 	$(PY) scripts/fetch_subtitles.py
 
 clean:
-	rmdir /s /q $(VENV) 2>nul || true
-	del /s /q **\__pycache__ 2>nul || true
+	@$(REMOVE) $(VENV) 2>/dev/null || true
+	@$(CLEANCACHE) 2>/dev/null || true
