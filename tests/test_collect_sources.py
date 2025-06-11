@@ -1,6 +1,4 @@
 import json
-import pathlib
-import types
 import urllib.request
 
 import scripts.collect_sources as cs
