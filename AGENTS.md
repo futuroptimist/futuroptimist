@@ -33,6 +33,7 @@ directions. Use `[NARRATOR]:` for spoken lines and `[VISUAL]:` for b-roll or
 graphics cues. Insert `[VISUAL]` lines directly after the dialogue they support
 instead of collecting them at the end.
 - Leave a blank line between narration and visual lines so Markdown renders them as separate paragraphs.
+- Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`.
 
 ## Testing & CI
 
@@ -43,6 +44,7 @@ make setup   # venv + deps (or ./setup.ps1)
 make test
 ```
 If `make setup` fails on your platform, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
+If `yt-dlp` cannot be located during tests, prefix your command with `PATH=.venv/bin:$PATH` so the venv's executables are discoverable.
 
 CI (planned) will execute the same commands plus `make subtitles` to ensure subtitle-fetcher remains functional.
 

@@ -12,6 +12,7 @@ Script format:
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.
+- Each script folder includes a `metadata.json` validated against `schemas/video_metadata.schema.json`.
 
 Run tests with:
 ```bash
@@ -19,6 +20,7 @@ make setup
 make test
 ```
 If that fails, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
+If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$PATH`.
 
 Key directories:
 - `/scripts/` helper utilities and per-video folders (`YYYYMMDD_slug/`)
