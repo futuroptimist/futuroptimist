@@ -34,3 +34,7 @@ scripts/*/sources/
 htmlcov/
 cov.json
 
+
+# local footage
+footage/
+footage_index.json

@@ -44,6 +44,8 @@ python scripts/scaffold_videos.py
 
 This fetches titles and dates to generate `scripts/YYYYMMDD_slug` directories for drafting. Format code with `black .` and `ruff check --fix .` before committing.
 
+Large media assets should live in a local `footage/` directory. Use `python scripts/index_local_media.py` to build `footage_index.json` so you can quickly locate clips while editing.
+
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).
 * Convert `.srt` caption timing into fully-fledged markdown scripts.
