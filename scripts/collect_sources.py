@@ -1,7 +1,7 @@
 import pathlib
 import urllib.request
-import urllib.parse
-import json
+import urllib.error
+import sys
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "scripts"
