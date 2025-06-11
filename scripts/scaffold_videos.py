@@ -32,7 +32,7 @@ TEMPLATE_META = {
 
 
 def read_video_ids():
-    return [l.strip() for l in IDS_FILE.read_text().splitlines() if l.strip()]
+    return [line.strip() for line in IDS_FILE.read_text().splitlines() if line.strip()]
 
 
 def slugify(text: str) -> str:

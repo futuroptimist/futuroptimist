@@ -1,4 +1,5 @@
-import json, pathlib, re
+import json
+import pathlib
 from jsonschema import validate, ValidationError
 
 SCHEMA_PATH = pathlib.Path("schemas/video_metadata.schema.json")

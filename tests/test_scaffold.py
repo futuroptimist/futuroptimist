@@ -1,4 +1,6 @@
-import shutil, tempfile, pathlib, json
+import tempfile
+import pathlib
+import json
 import scripts.scaffold_videos as sv
 
 

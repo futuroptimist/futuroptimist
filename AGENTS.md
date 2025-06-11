@@ -23,6 +23,7 @@ Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 ## Coding Conventions
 
 * Python 3.11+, black formatting & ruff lint (pre-commit soon).
+* Run `black .` and `ruff --fix` before committing to keep style consistent. Both tools are listed in `requirements.txt`.
 * One logical change per PR; always include/extend tests.
 * Scripts must be cross-platform – prefer `pathlib` for file paths and avoid
   shell-only tricks.
@@ -60,7 +61,7 @@ LoRA adapters, reinforcement learning, or retrieval‑augmented generation may a
 
 ## Render & Publish (Future-Phase)
 
-When Phase 7 hits (see README roadmap) an additional `make render VIDEO=YYYYMMDD_slug` target will generate `dist/<slug>.mp4`. Subsequent automation will call YouTube Data API for upload.
+When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make render VIDEO=YYYYMMDD_slug` target will generate `dist/<slug>.mp4`. Subsequent automation will call YouTube Data API for upload.
 
 ## Contribution Quick-Start
 

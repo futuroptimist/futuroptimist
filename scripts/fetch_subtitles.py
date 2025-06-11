@@ -36,13 +36,15 @@ def download_subtitles(video_id: str):
         "--convert-subs",
         "srt",
         "-o",
-        str(OUTPUT_DIR / f"%(id)s.%(ext)s"),
+        str(OUTPUT_DIR / "%(id)s.%(ext)s"),
         url,
     ]
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError:
-        print("Primary download failed – retrying without SRT conversion (raw .vtt will be kept)")
+        print(
+            "Primary download failed – retrying without SRT conversion (raw .vtt will be kept)"
+        )
         cmd_fallback = [
             "yt-dlp",
             "--skip-download",
@@ -50,7 +52,7 @@ def download_subtitles(video_id: str):
             "--sub-lang",
             "en.*",
             "-o",
-            str(OUTPUT_DIR / f"%(id)s.%(ext)s"),
+            str(OUTPUT_DIR / "%(id)s.%(ext)s"),
             url,
         ]
         subprocess.run(cmd_fallback, check=True)
