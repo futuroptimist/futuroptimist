@@ -1,4 +1,3 @@
-import builtins
 import types
 import scripts.fetch_subtitles as fs
 import subprocess
@@ -18,7 +17,7 @@ def test_download_subtitles_constructs_command(monkeypatch):
     captured = {}
 
     def fake_run(cmd, check):
-        captured['cmd'] = cmd
+        captured["cmd"] = cmd
         return types.SimpleNamespace(returncode=0)
 
     monkeypatch.setattr(subprocess, "run", fake_run)
@@ -27,7 +26,7 @@ def test_download_subtitles_constructs_command(monkeypatch):
     fs.download_subtitles("XYZ123")
 
     # Validate that the command includes the video ID and key flags
-    cmd = " ".join(captured['cmd'])
+    cmd = " ".join(captured["cmd"])
     assert "https://www.youtube.com/watch?v=XYZ123" in cmd
     assert "--skip-download" in cmd
-    assert "--write-sub" in cmd 
+    assert "--write-sub" in cmd
