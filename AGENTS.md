@@ -36,6 +36,7 @@ directions. Use `[NARRATOR]:` for spoken lines and `[VISUAL]:` for b-roll or
 graphics cues. Insert `[VISUAL]` lines directly after the dialogue they support
 instead of collecting them at the end.
 - Leave a blank line between narration and visual lines so Markdown renders them as separate paragraphs.
+- When importing transcripts from `.srt` files, strip prefix markers like `- [Narrator]` and split sentences into individual `[NARRATOR]` lines for clarity.
 - Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`.
 - Each script folder may include a `sources.txt` file with one URL per line. Any downloaded articles or clips are for reference only—check usage rights and cite sources in **APA style** rather than redistributing content.
 
