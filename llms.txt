@@ -13,6 +13,7 @@ Script format:
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.
 - Each script folder includes a `metadata.json` validated against `schemas/video_metadata.schema.json`.
+- Each script folder may also contain a `sources.txt` file with one URL per line. Downloaded articles or clips are for citation/reference only—check usage rights and cite in **APA style** rather than redistributing.
 
 Run tests with:
 ```bash
