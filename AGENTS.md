@@ -40,9 +40,11 @@ instead of collecting them at the end.
 
 ## Testing & CI
 
-Run all tests:
+4. Optionally run `make subtitles` and `python scripts/collect_sources.py` to
+   download captions and reference files.
 
-```bash
+### Data & Schemas
+- [source_urls.txt](source_urls.txt): URLs consumed by `collect_sources.py`.
 make setup   # venv + deps (or ./setup.ps1)
 make test
 ```

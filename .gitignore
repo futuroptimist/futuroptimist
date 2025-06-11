@@ -26,4 +26,4 @@ build/
 videos/*/rendered*/
 
 # reference files fetched via collect_sources
-sources/
+# IDE noise (duplicate entry kept for clarity)
