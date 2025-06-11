@@ -2,7 +2,7 @@
 
 [NARRATOR]: Well, it's time for another video—I haven't uploaded in four years. A lot has happened since then.
 
-[VISUAL]: Supercut of recent world events timed to the line "A lot has happened since then."
+[VISUAL]: Supercut of news clips, trending memes, and an old shot of me promising "regular uploads soon" timed to the line "A lot has happened since then."
 
 
 [NARRATOR]: but I'm back! Hi, I'm Daniel and you're watching Futuroptimist.
@@ -22,7 +22,7 @@
 
 [VISUAL]: Quick shot of the mulm entry on Wikipedia.
 
-[VISUAL]: Close-ups of guppies, shrimp, and microfauna.
+[VISUAL]: Macro lens close-ups of guppies, shrimp, scuds, Daphnia, and moina.
 
 
 [NARRATOR]: Early on the water turned cloudy and even took on a strong green hue—likely a mix of algae and bacteria. After a lot of digging through forums, I learned that adding a deep sand bed could give anaerobic bacteria room to work, and it cleared up almost overnight.
@@ -67,6 +67,9 @@
 [NARRATOR]: Long term I'd love to automate water changes and feeding with peristaltic pumps and microcontrollers, maybe even run everything off solar. The grow lights already follow a custom schedule through smart plugs, and my indoor tanks use PLA 3D‑printed baskets for hydroponic plants—they'll slowly degrade but that's fine. I'm also starting to work on some outdoor aquarium setups with similar aquaponic techniques, and work is well underway!
 
 [VISUAL]: Photos of the aluminum extrusion frame for solar panels, the panels themselves, tubs of aquatic sand with plants, plus the charge controller and battery.
+
+[NARRATOR]: Quick takeaways before we wrap up.
+[VISUAL]: On-screen list: "Deep sand beds clear cloudy water", "Macro lens B-roll shows the microfauna", "Automation coming soon".
 
 
 [NARRATOR]: What do you think of my setup? I'm just an amateur trying random things, so let me know if you spot mistakes or things I could do less stupidly. This is the roughest version you'll see, of course. Stick around as I level things up and make this the most reliable and robust aquarium setup I can imagine, and don't forget to subscribe!
