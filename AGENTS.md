@@ -9,7 +9,7 @@ Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 
 | Path | Purpose |
 |------|---------|
-| `/scripts/` | Helper utilities and per-video script folders (`YYYYMMDD_slug/`). Run `scaffold_videos.py` to fetch titles/dates and create them from `video_ids.txt`. |
+| `/scripts/` | Helper utilities and per-video script folders (`YYYYMMDD_slug/`). Each folder may include `script.md`, `metadata.json`, and optional `sources.txt` for citation URLs. Run `scaffold_videos.py` to fetch titles/dates and create folders from `video_ids.txt`. |
 | `/ideas/` | Checklist-style idea files – raw, WIP content. |
 | `/schemas/` | JSON-Schemas (e.g. `video_metadata.schema.json`). |
 | `/tests/` | Pytest suites; keep parity with production code. |
@@ -34,6 +34,7 @@ graphics cues. Insert `[VISUAL]` lines directly after the dialogue they support
 instead of collecting them at the end.
 - Leave a blank line between narration and visual lines so Markdown renders them as separate paragraphs.
 - Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`.
+- Each script folder may include a `sources.txt` file with one URL per line. Any downloaded articles or clips are for reference only—check usage rights and cite sources in **APA style** rather than redistributing content.
 
 ## Testing & CI
 
