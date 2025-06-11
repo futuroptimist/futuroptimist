@@ -4,34 +4,43 @@ import urllib.error
 import sys
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
-URLS_FILE = BASE_DIR / "source_urls.txt"
-OUTPUT_DIR = BASE_DIR / "sources"
+VIDEO_ROOT = BASE_DIR / "scripts"
 
 
-def read_urls():
-    if not URLS_FILE.exists():
-        sys.stderr.write(f"URLs file {URLS_FILE} not found.\n")
-        return []
-    return [u.strip() for u in URLS_FILE.read_text().splitlines() if u.strip()]
+def download_url(url: str, dest: pathlib.Path) -> None:
+    """Download a single URL to dest."""
+    with urllib.request.urlopen(url) as resp:
+        dest.write_bytes(resp.read())
 
 
-def download_url(url: str, dest: pathlib.Path) -> bool:
-    try:
-        with urllib.request.urlopen(url) as resp, open(dest, "wb") as fh:
-            fh.write(resp.read())
-        return True
-    except urllib.error.URLError as e:
-        print(f"Failed to download {url}: {e}")
-        return False
+def process_video_dir(video_dir: pathlib.Path) -> None:
+    sources_file = video_dir / "sources.txt"
+    if not sources_file.exists():
+        return
+
+    sources_dir = video_dir / "sources"
+    sources_dir.mkdir(exist_ok=True)
+    mapping = {}
+
+    lines = [line.strip() for line in sources_file.read_text().splitlines()]
+    for idx, url in enumerate(
+        [u for u in lines if u and not u.startswith("#")], start=1
+    ):
+        parsed = urllib.parse.urlparse(url)
+        ext = pathlib.Path(parsed.path).suffix
+        filename = f"{idx}{ext}"
+        dest = sources_dir / filename
+        if not dest.exists():
+            download_url(url, dest)
+        mapping[url] = dest.name
+
+    (video_dir / "sources.json").write_text(json.dumps(mapping, indent=2))
 
 
-def main():
-    OUTPUT_DIR.mkdir(exist_ok=True)
-    for url in read_urls():
-        filename = url.split("/")[-1] or "index.html"
-        dest = OUTPUT_DIR / filename
-        if download_url(url, dest):
-            print(f"Saved {dest}")
+def main() -> None:
+    for path in VIDEO_ROOT.iterdir():
+        if path.is_dir() and path.name != "__pycache__":
+            process_video_dir(path)
 
 
 if __name__ == "__main__":
