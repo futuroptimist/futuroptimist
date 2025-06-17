@@ -10,7 +10,8 @@ def scan_directory(base: pathlib.Path):
     for path in base.rglob("*"):
         if path.is_file():
             mtime = datetime.fromtimestamp(path.stat().st_mtime).isoformat()
-            records.append({"path": str(path.relative_to(base)), "mtime": mtime})
+            rel_path = str(path.relative_to(base)).replace("\\", "/")
+            records.append({"path": rel_path, "mtime": mtime})
     return sorted(records, key=lambda r: r["mtime"])
 
 

@@ -31,7 +31,7 @@ def test_unicode_and_italics(tmp_path):
 <i>Hello 😊 &amp; welcome</i>
 """
     path = tmp_path / "unicode.srt"
-    path.write_text(srt)
+    path.write_text(srt, encoding='utf-8')
 
     entries = stm.parse_srt(path)
     assert entries == [("00:00:00,000", "00:00:02,000", "*Hello 😊 & welcome*")]
