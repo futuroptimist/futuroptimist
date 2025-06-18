@@ -74,7 +74,7 @@ If `make setup` fails on your platform, run `python3 -m venv .venv && .venv/bin/
 If `make test` errors about `.venv/Scripts/python`, use `PATH=.venv/bin:$PATH pytest -q` instead.
 If `yt-dlp` cannot be located during tests, prefix your command with `PATH=.venv/bin:$PATH` so the venv's executables are discoverable.
 
-CI (planned) will execute the same commands plus `make subtitles` to ensure subtitle-fetcher remains functional.
+CI runs `pytest --cov=./scripts --cov=./tests` on every push and pull request targeting `main`. In a future phase it may also run `make subtitles` to verify caption downloads.
 
 ## Vision & Workflow
 
