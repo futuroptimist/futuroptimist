@@ -1,5 +1,8 @@
 # Futuroptimist
 
+[![CI](https://github.com/futuroptimist/futuroptimist/actions/workflows/ci.yml/badge.svg)](https://github.com/futuroptimist/futuroptimist/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/futuroptimist/futuroptimist/branch/main/graph/badge.svg)](https://codecov.io/gh/futuroptimist/futuroptimist)
+
 Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTube channel](https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ). If you're looking for the full project details, see [INSTRUCTIONS.md](INSTRUCTIONS.md). Guidelines for AI tools live in [AGENTS.md](AGENTS.md).
 
 ## Other Projects

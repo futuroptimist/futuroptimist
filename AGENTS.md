@@ -112,6 +112,7 @@ Tests under `tests/` cover folder naming (`test_folder_names.py`), schema valida
 
 ### Optional
 - [Contributors guide](CONTRIBUTORS.md): PR etiquette and code style details.
+- For cross-project synergy, see the README's **Other Projects** links.
 
 ---
-*For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).*
+*For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).* 
