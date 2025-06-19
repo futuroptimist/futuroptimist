@@ -85,6 +85,18 @@ def test_main_exits_without_ids(monkeypatch, tmp_path):
         sv.main()
 
 
+def test_main_handles_fetch_error(monkeypatch, tmp_path):
+    (tmp_path / "video_ids.txt").write_text("BAD\n")
+    monkeypatch.setattr(sv, "BASE_DIR", tmp_path)
+    monkeypatch.setattr(sv, "IDS_FILE", tmp_path / "video_ids.txt")
+    monkeypatch.setattr(sv, "VIDEO_SCRIPT_ROOT", tmp_path)
+    monkeypatch.setattr(
+        sv, "fetch_video_info", lambda _vid: (_ for _ in ()).throw(RuntimeError("oops"))
+    )
+    # should not raise despite fetch error
+    sv.main()
+
+
 def test_entrypoint(monkeypatch, tmp_path):
     (tmp_path / "video_ids.txt").write_text("")
     monkeypatch.setattr(sys, "argv", ["scaffold_videos.py"])
@@ -92,4 +104,18 @@ def test_entrypoint(monkeypatch, tmp_path):
     monkeypatch.setattr(sv, "BASE_DIR", tmp_path)
     monkeypatch.setattr(sv, "VIDEO_SCRIPT_ROOT", tmp_path)
 
+    class Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+        def read(self):
+            return b"Title: Dummy\nJan 1, 2024"
+
+    r = Resp()
+    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: r)
     runpy.run_module("scripts.scaffold_videos", run_name="__main__")
+    r.__enter__()
+    r.__exit__(None, None, None)

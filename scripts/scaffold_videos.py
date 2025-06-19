@@ -63,7 +63,11 @@ def main():
         sys.exit("video_ids.txt not found")
 
     for vid in read_video_ids():
-        title, date_str = fetch_video_info(vid)
+        try:
+            title, date_str = fetch_video_info(vid)
+        except Exception as e:  # network or parse failure
+            print(f"Failed to fetch info for {vid}: {e}")
+            continue
         slug = slugify(title)
         folder_name = f"{date_str}_{slug}"
         vdir = VIDEO_SCRIPT_ROOT / folder_name

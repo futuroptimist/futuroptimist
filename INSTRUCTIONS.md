@@ -44,6 +44,8 @@ python scripts/scaffold_videos.py
 ```
 
 This fetches titles and dates to generate `scripts/YYYYMMDD_slug` directories for drafting. Format code with `black .` and `ruff check --fix .` before committing.
+If metadata can't be fetched (network issues or parsing errors) the script
+logs the failure and continues so scaffolding never blocks your workflow.
 
 Large media assets should live in a local `footage/` directory. Use `python scripts/index_local_media.py` to build `footage_index.json` so you can quickly locate clips while editing.
 
