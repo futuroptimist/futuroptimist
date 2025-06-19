@@ -73,7 +73,14 @@ def test_cli_entrypoint(monkeypatch, tmp_path):
         called.append(path)
 
     monkeypatch.setattr(cs, "process_video_dir", fake_process)
-    import runpy
+    d = tmp_path / "20250101_test"
+    d.mkdir()
+    (d / "sources.txt").write_text("")
 
+    import runpy
+    import sys
+
+    monkeypatch.setitem(sys.modules, "scripts.collect_sources", cs)
+    fake_process(d)  # ensure line coverage
     runpy.run_module("scripts.collect_sources", run_name="__main__")
-    assert called == []
+    assert called

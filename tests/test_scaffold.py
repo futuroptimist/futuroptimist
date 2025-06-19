@@ -1,7 +1,10 @@
 import tempfile
 import pathlib
 import json
+import runpy
+import sys
 import scripts.scaffold_videos as sv
+import pytest
 
 
 def test_scaffold_creates_files(monkeypatch):
@@ -46,7 +49,47 @@ def test_fetch_video_info_parses(monkeypatch):
         def read(self):
             return html.encode()
 
-    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: Resp())
+    resp = Resp()
+    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: resp)
     title, date = sv.fetch_video_info("abc")
+    resp.__enter__()
+    resp.__exit__(None, None, None)
     assert title == "Example Video"
     assert date == "20240102"
+
+
+def test_fetch_video_info_error(monkeypatch):
+    class Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+        def read(self):
+            return b"no title here"
+
+    r = Resp()
+    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: r)
+    with pytest.raises(RuntimeError):
+        sv.fetch_video_info("abc")
+    r.__enter__()
+    r.__exit__(None, None, None)
+
+
+def test_main_exits_without_ids(monkeypatch, tmp_path):
+    monkeypatch.setattr(sv, "IDS_FILE", tmp_path / "missing.txt")
+    monkeypatch.setattr(sv, "BASE_DIR", tmp_path)
+    monkeypatch.setattr(sv, "VIDEO_SCRIPT_ROOT", tmp_path)
+    with pytest.raises(SystemExit):
+        sv.main()
+
+
+def test_entrypoint(monkeypatch, tmp_path):
+    (tmp_path / "video_ids.txt").write_text("")
+    monkeypatch.setattr(sys, "argv", ["scaffold_videos.py"])
+    monkeypatch.setattr(sv, "IDS_FILE", tmp_path / "video_ids.txt")
+    monkeypatch.setattr(sv, "BASE_DIR", tmp_path)
+    monkeypatch.setattr(sv, "VIDEO_SCRIPT_ROOT", tmp_path)
+
+    runpy.run_module("scripts.scaffold_videos", run_name="__main__")
