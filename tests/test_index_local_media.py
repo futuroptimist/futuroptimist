@@ -1,4 +1,7 @@
 import json
+import pytest
+import sys
+import runpy
 import scripts.index_local_media as ilm
 
 
@@ -23,3 +26,16 @@ def test_main(tmp_path, capsys):
     data = json.loads(out_file.read_text())
     assert data[0]["path"] == "x.txt"
     assert "Wrote" in captured.out
+
+
+def test_main_invalid_dir(tmp_path):
+    missing = tmp_path / "nope"
+    with pytest.raises(SystemExit):
+        ilm.main([str(missing)])
+
+
+def test_entrypoint(tmp_path, monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["index_local_media.py", str(tmp_path)])
+    (tmp_path).mkdir(exist_ok=True)
+
+    runpy.run_module("scripts.index_local_media", run_name="__main__")

@@ -1,3 +1,5 @@
+import sys
+import runpy
 import scripts.srt_to_markdown as stm
 
 
@@ -35,3 +37,37 @@ def test_unicode_and_italics(tmp_path):
 
     entries = stm.parse_srt(path)
     assert entries == [("00:00:00,000", "00:00:02,000", "*Hello 😊 & welcome*")]
+
+
+def test_parse_srt_edge_cases(tmp_path):
+    content = """foo
+1
+badtime
+skip
+
+2
+00:00:01,000 --> 00:00:02,000
+bar
+
+3"""
+    p = tmp_path / "edge.srt"
+    p.write_text(content)
+    entries = stm.parse_srt(p)
+    assert entries == [("00:00:01,000", "00:00:02,000", "bar")]
+
+
+def test_entrypoint(tmp_path, monkeypatch, capsys):
+    srt_path = tmp_path / "in.srt"
+    srt_path.write_text("1\n00:00:00,000 --> 00:00:01,000\nHi\n")
+    out = tmp_path / "out.md"
+    monkeypatch.setattr(
+        sys, "argv", ["srt_to_markdown.py", str(srt_path), "-o", str(out)]
+    )
+    runpy.run_module("scripts.srt_to_markdown", run_name="__main__")
+    assert out.exists()
+
+    sys.modules.pop("__main__", None)
+    monkeypatch.setattr(sys, "argv", ["srt_to_markdown.py", str(srt_path)])
+    runpy.run_module("scripts.srt_to_markdown", run_name="__main__")
+    captured = capsys.readouterr()
+    assert "[NARRATOR]: Hi" in captured.out

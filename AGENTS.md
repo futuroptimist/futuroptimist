@@ -75,6 +75,7 @@ If `make test` errors about `.venv/Scripts/python`, use `PATH=.venv/bin:$PATH py
 If `yt-dlp` cannot be located during tests, prefix your command with `PATH=.venv/bin:$PATH` so the venv's executables are discoverable.
 
 CI runs `pytest --cov=./scripts --cov=./tests` on every push and pull request targeting `main`. In a future phase it may also run `make subtitles` to verify caption downloads.
+Aim to keep coverage at **100%** so the Codecov badge stays green.
 
 ## Vision & Workflow
 

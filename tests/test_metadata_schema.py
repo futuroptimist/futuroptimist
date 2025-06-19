@@ -22,3 +22,12 @@ def test_invalid_metadata_fails():
     bad = {"youtube_id": "123", "title": "t", "duration_seconds": -5}
     with pytest.raises(ValidationError):
         validate(instance=bad, schema=SCHEMA)
+
+
+def test_metadata_validation_error(monkeypatch, tmp_path):
+    bad = tmp_path / "20250101_bad" / "metadata.json"
+    bad.parent.mkdir()
+    bad.write_text("{}")
+    monkeypatch.setattr("tests.test_metadata_schema.VIDEO_DIR", tmp_path)
+    with pytest.raises(AssertionError):
+        test_metadata_files_validate()
