@@ -77,6 +77,10 @@ If `yt-dlp` cannot be located during tests, prefix your command with `PATH=.venv
 CI runs `pytest --cov=./scripts --cov=./tests` on every push and pull request targeting `main`. In a future phase it may also run `make subtitles` to verify caption downloads.
 Aim to keep coverage at **100%** so the Codecov badge stays green.
 
+When adding CLI entrypoint tests, stub out any network requests (e.g. patch
+`urllib.request.urlopen`) so tests remain deterministic even if external sites
+are unreachable.
+
 ## Vision & Workflow
 
 The long-term goal is to make video creation as repeatable as writing code. Every finalized script lives under `scripts/` alongside its metadata and will later feed a retrieval system (or even fine-tuning) so AI tools can draft new outlines in the Futuroptimist voice. Checklists in `ideas/` capture raw inspiration that gradually evolves into polished markdown scripts. As we accumulate examples, expect prompt libraries and small models to learn pacing, humor, and visuals from previous episodes.
