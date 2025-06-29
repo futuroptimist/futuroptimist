@@ -12,4 +12,5 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 - **sigma** – open-source AI pin device ([repo](https://github.com/futuroptimist/sigma))
 - **gabriel** – guardian angel LLM ([repo](https://github.com/futuroptimist/gabriel))
 - **f2clipboard** – quickly copy multiple files from nested directories for LLM conversations ([repo](https://github.com/futuroptimist/f2clipboard))
+- **axel** – LLM-driven repo organizer and quest manager ([repo](https://github.com/futuroptimist/axel))
 

@@ -56,6 +56,7 @@ Key directories:
 ## Optional
 - [Ideas directory](ideas/README.md): format for idea files
 - Example idea – solar aquaponics checklist: [solar_aquaponics.md](ideas/solar_aquaponics.md)
+- For cross-repo quests, see [axel](https://github.com/futuroptimist/axel)
 
 ---
 LLM usage policy: No private data; operate within repo; see LICENSE (MIT).
