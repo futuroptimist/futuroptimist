@@ -19,10 +19,11 @@ jobs:
           pip install -r requirements.txt
       - name: Generate heat-map
         env:
-          GH_TOKEN: ${{ secrets.PAT_READ_ORG }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_contrib_heatmap.py
       - name: Commit and push
         uses: EndBug/add-and-commit@v9
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           add: 'assets/pr_heatmap.svg'
           message: 'docs: update PR contribution heat-map [skip ci]'
