@@ -25,5 +25,6 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 ## Contributions (PRs I authored in my own repos)
 
 <p align="center">
+  <!-- generated nightly via GitHub Actions -->
   <img src="assets/pr_heatmap.svg" alt="Annual PR heat-map" />
 </p>
