@@ -5,4 +5,9 @@ jsonschema>=4.22.0
 black>=24.2.0
 ruff>=0.4.1
 
+requests>=2.32.4
+pandas>=2.3.0
+matplotlib>=3.10.3
+calplot>=0.1.7
+
 pytest-cov>=6.1.0
