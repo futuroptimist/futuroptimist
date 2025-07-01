@@ -21,3 +21,9 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 - **sigma** – open-source AI pin device ([repo](https://github.com/futuroptimist/sigma))
 
 </details>
+
+## Contributions (PRs I authored in my own repos)
+
+<p align="center">
+  <img src="assets/pr_heatmap.svg" alt="Annual PR heat-map" />
+</p>
