@@ -38,3 +38,5 @@ cov.json
 # local footage
 footage/
 footage_index.json
+assets/heatmap_data.json
+scripts/20240101_dummy/

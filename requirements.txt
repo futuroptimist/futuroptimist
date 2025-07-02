@@ -11,3 +11,4 @@ matplotlib>=3.10.3
 calplot>=0.1.7
 
 pytest-cov>=6.1.0
+svgwrite>=1.4.3

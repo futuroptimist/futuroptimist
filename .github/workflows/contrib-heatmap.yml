@@ -1,9 +1,13 @@
-name: Update PR heat-map
+name: Rebuild 3-D heat-map
 
 on:
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   heatmap:
@@ -20,10 +24,11 @@ jobs:
       - name: Generate heat-map
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/generate_contrib_heatmap.py
+        run: python scripts/generate_heatmap.py
       - name: Commit and push
         uses: EndBug/add-and-commit@v9
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          add: 'assets/pr_heatmap.svg'
-          message: 'docs: update PR contribution heat-map [skip ci]'
+          add: 'assets/heatmap_*.svg'
+          message: 'docs: auto-update 3-D LOC heat-map [skip ci]'
+
