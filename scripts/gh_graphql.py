@@ -1,61 +1,43 @@
-"""Lightweight GitHub GraphQL helper."""
+"""Lightweight GitHub API helper."""
 
 from __future__ import annotations
 
 import os
-import requests
 from typing import Any, Dict, List
 
-API_URL = "https://api.github.com/graphql"
+import requests
+
+GRAPHQL_URL = "https://api.github.com/graphql"
+SEARCH_URL = "https://api.github.com/search/commits"
 
 
 def fetch_contributions(login: str, start: str, end: str) -> List[Dict[str, Any]]:
     """Return commits authored by *login* in the given date range."""
     token = os.environ["GH_TOKEN"]
-    headers = {"Authorization": f"Bearer {token}"}
-    query = """
-    query($login:String!, $from:DateTime!, $to:DateTime!) {
-      user(login:$login) {
-        contributionsCollection(from:$from, to:$to) {
-          commitContributionsByRepository(maxRepositories:100) {
-            repository { nameWithOwner }
-            contributions(first:100) {
-              nodes {
-                occurredAt
-                commit { oid url }
-              }
-            }
-          }
-        }
-      }
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.cloak-preview+json",
     }
-    """
-    variables = {"login": login, "from": start, "to": end}
-    resp = requests.post(
-        API_URL,
-        json={"query": query, "variables": variables},
-        headers=headers,
-        timeout=10,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    if "errors" in data:
-        raise RuntimeError(f"GitHub GraphQL errors: {data['errors']}")
-    if "data" not in data or not data["data"].get("user"):
-        raise RuntimeError(f"Unexpected GraphQL response: {data}")
-    coll = data["data"]["user"]["contributionsCollection"][
-        "commitContributionsByRepository"
-    ]
+    q = f"author:{login}+committer-date:{start}..{end}"
+    page = 1
     contributions: List[Dict[str, Any]] = []
-    for node in coll.get("nodes", []):
-        repo = node["repository"]["nameWithOwner"]
-        for c in node["contributions"]["nodes"]:
+    while True:
+        url = f"{SEARCH_URL}?q={q}&per_page=100&page={page}"
+        resp = requests.get(url, headers=headers, timeout=10)
+        if resp.status_code >= 400:
+            raise RuntimeError(f"GitHub API error: {resp.text}")
+        data = resp.json()
+        for item in data.get("items", []):
+            repo = item["repository"]["full_name"]
             contributions.append(
                 {
                     "repo": repo,
-                    "occurredAt": c["occurredAt"],
-                    "sha": c["commit"]["oid"],
-                    "url": c["commit"]["url"],
+                    "occurredAt": item["commit"]["author"]["date"],
+                    "sha": item["sha"],
+                    "url": item["html_url"],
                 }
             )
+        if "next" not in resp.links:
+            break
+        page += 1
     return contributions

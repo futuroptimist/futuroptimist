@@ -3,9 +3,11 @@ from scripts import gh_graphql, generate_heatmap
 
 
 class Resp:
-    def __init__(self, payload):
+    def __init__(self, payload, links=None, status=200):
         self._payload = payload
-        self.status_code = 200
+        self.status_code = status
+        self.links = links or {}
+        self.text = str(payload)
 
     def raise_for_status(self):
         pass
@@ -15,44 +17,31 @@ class Resp:
 
 
 def test_fetch_contributions(monkeypatch):
-    def fake_post(url, json, headers, timeout):
+    def fake_get(url, headers, timeout):
         data = {
-            "data": {
-                "user": {
-                    "contributionsCollection": {
-                        "commitContributionsByRepository": {
-                            "nodes": [
-                                {
-                                    "repository": {"nameWithOwner": "o/r"},
-                                    "contributions": {
-                                        "nodes": [
-                                            {
-                                                "occurredAt": "2024-01-01T00:00:00Z",
-                                                "commit": {"oid": "a", "url": "u"},
-                                            }
-                                        ]
-                                    },
-                                }
-                            ]
-                        }
-                    }
+            "items": [
+                {
+                    "repository": {"full_name": "o/r"},
+                    "commit": {"author": {"date": "2024-01-01T00:00:00Z"}},
+                    "sha": "a",
+                    "html_url": "u",
                 }
-            }
+            ]
         }
         return Resp(data)
 
     monkeypatch.setenv("GH_TOKEN", "x")
-    monkeypatch.setattr(gh_graphql.requests, "post", fake_post)
+    monkeypatch.setattr(gh_graphql.requests, "get", fake_get)
     out = gh_graphql.fetch_contributions("me", "2024-01-01", "2024-12-31")
     assert out[0]["sha"] == "a"
 
 
 def test_fetch_contributions_errors(monkeypatch):
-    def fake_post(url, json, headers, timeout):
-        return Resp({"message": "Bad credentials"})
+    def fake_get(url, headers, timeout):
+        return Resp({"message": "Bad credentials"}, status=401)
 
     monkeypatch.setenv("GH_TOKEN", "x")
-    monkeypatch.setattr(gh_graphql.requests, "post", fake_post)
+    monkeypatch.setattr(gh_graphql.requests, "get", fake_get)
     with pytest.raises(RuntimeError):
         gh_graphql.fetch_contributions("me", "2024-01-01", "2024-12-31")
 
