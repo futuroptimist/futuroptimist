@@ -9,9 +9,17 @@ from collections import defaultdict
 
 import svgwrite as sw
 
-from .gh_graphql import fetch_contributions
-from .gh_rest import fetch_commit_stats
-from .svg3d import CELL, draw_bar
+import sys
+
+try:  # imports succeed when run as package
+    from .gh_graphql import fetch_contributions
+    from .gh_rest import fetch_commit_stats
+    from .svg3d import CELL, draw_bar
+except ImportError:  # allow execution as a standalone script
+    sys.path.append(str(Path(__file__).resolve().parent))
+    from gh_graphql import fetch_contributions
+    from gh_rest import fetch_commit_stats
+    from svg3d import CELL, draw_bar
 
 MAX_H = 40
 
