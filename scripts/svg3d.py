@@ -9,14 +9,20 @@ CELL = 12
 DEPTH = 4
 
 
+def _clamp(val: int) -> int:
+    """Clamp RGB component to the valid 0-255 range."""
+
+    return max(0, min(255, val))
+
+
 def _shade(color: str, factor: float) -> str:
     c = int(color.lstrip("#"), 16)
     r = (c >> 16) & 0xFF
     g = (c >> 8) & 0xFF
     b = c & 0xFF
-    r = int(r * factor)
-    g = int(g * factor)
-    b = int(b * factor)
+    r = _clamp(int(r * factor))
+    g = _clamp(int(g * factor))
+    b = _clamp(int(b * factor))
     return f"#{r:02x}{g:02x}{b:02x}"
 
 

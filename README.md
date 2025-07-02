@@ -26,8 +26,5 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 
 <p align="center">
   <!-- generated nightly via GitHub Actions -->
-  <picture>
-    <source srcset="assets/heatmap_dark.svg" media="(prefers-color-scheme: dark)">
-    <img src="assets/heatmap_light.svg" alt="Lines-of-code contributions past year" />
-  </picture>
+  <img src="assets/pr_heatmap.svg" alt="Pull-request activity across Futuroptimist repos" />
 </p>
