@@ -1,3 +1,4 @@
+import pytest
 from scripts import gh_graphql, generate_heatmap
 
 
@@ -63,6 +64,16 @@ def test_fetch_contributions(monkeypatch):
     out = gh_graphql.fetch_contributions("me", "2024-01-01", "2024-12-31")
     assert out[0]["sha"] == "a"
     assert calls == [None, "C1"]
+
+
+def test_fetch_contributions_errors(monkeypatch):
+    def fake_post(url, json, headers, timeout):
+        return Resp({"message": "Bad credentials"})
+
+    monkeypatch.setenv("GH_TOKEN", "x")
+    monkeypatch.setattr(gh_graphql.requests, "post", fake_post)
+    with pytest.raises(RuntimeError):
+        gh_graphql.fetch_contributions("me", "2024-01-01", "2024-12-31")
 
 
 def test_generate_heatmap_writes_files(monkeypatch, tmp_path):

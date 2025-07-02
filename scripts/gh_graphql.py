@@ -50,6 +50,10 @@ def fetch_contributions(login: str, start: str, end: str) -> List[Dict[str, Any]
         )
         resp.raise_for_status()
         data = resp.json()
+        if "errors" in data:
+            raise RuntimeError(f"GitHub GraphQL errors: {data['errors']}")
+        if "data" not in data or not data["data"].get("user"):
+            raise RuntimeError(f"Unexpected GraphQL response: {data}")
         coll = data["data"]["user"]["contributionsCollection"][
             "commitContributionsByRepository"
         ]
