@@ -35,6 +35,7 @@ make test       # run unit tests
 make subtitles  # download captions listed in video_ids.txt
 make clean      # remove the virtualenv and caches
 make fmt       # format code with black & ruff
+pre-commit install  # optional: run hooks (formatters + heatmap check) on commit
 ```
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export

@@ -1,0 +1,16 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.0
+    hooks:
+      - id: ruff
+  - repo: local
+    hooks:
+      - id: heatmap
+        name: generate 3-D LOC heatmap
+        entry: python scripts/generate_heatmap.py
+        language: system
+        pass_filenames: false

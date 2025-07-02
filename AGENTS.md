@@ -29,8 +29,8 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 
 ## Coding Conventions
 
-* Python 3.11+, black formatting & ruff lint (pre-commit soon).
-* Run `black .` and `ruff check --fix .` (or simply `make fmt`) before committing to keep style consistent. Both tools are listed in `requirements.txt`.
+* Python 3.11+, black formatting & ruff lint. A `.pre-commit-config.yaml` runs these along with `generate_heatmap.py`.
+* Run `black .` and `ruff check --fix .` (or `make fmt`) before committing. Hooks fire automatically if you run `pre-commit install`.
 * One logical change per PR; always include/extend tests.
 * Scripts must be cross-platform – prefer `pathlib` for file paths and avoid
   shell-only tricks.
