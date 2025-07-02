@@ -37,6 +37,10 @@ make clean      # remove the virtualenv and caches
 make fmt       # format code with black & ruff
 ```
 
+Some helper scripts require a GitHub token to access the GraphQL API. Export
+`GH_TOKEN` with a personal access token that has `repo` scope when generating
+heatmaps or fetching commit stats.
+
 Create new script folders from the IDs in `video_ids.txt`:
 
 ```bash
