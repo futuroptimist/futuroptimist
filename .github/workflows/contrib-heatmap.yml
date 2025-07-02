@@ -23,7 +23,7 @@ jobs:
           pip install -r requirements.txt
       - name: Generate heat-map
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: python scripts/generate_heatmap.py
       - name: Commit and push
         uses: EndBug/add-and-commit@v9
