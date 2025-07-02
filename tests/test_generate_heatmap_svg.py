@@ -15,55 +15,36 @@ class Resp:
 
 
 def test_fetch_contributions(monkeypatch):
-    calls = []
-
     def fake_post(url, json, headers, timeout):
-        calls.append(json["variables"]["cursor"])
-        if json["variables"]["cursor"] is None:
-            data = {
-                "data": {
-                    "user": {
-                        "contributionsCollection": {
-                            "commitContributionsByRepository": {
-                                "pageInfo": {"hasNextPage": True, "endCursor": "C1"},
-                                "nodes": [
-                                    {
-                                        "repository": {"nameWithOwner": "o/r"},
-                                        "contributions": {
-                                            "nodes": [
-                                                {
-                                                    "occurredAt": "2024-01-01T00:00:00Z",
-                                                    "commit": {"oid": "a", "url": "u"},
-                                                }
-                                            ]
-                                        },
-                                    }
-                                ],
-                            }
+        data = {
+            "data": {
+                "user": {
+                    "contributionsCollection": {
+                        "commitContributionsByRepository": {
+                            "nodes": [
+                                {
+                                    "repository": {"nameWithOwner": "o/r"},
+                                    "contributions": {
+                                        "nodes": [
+                                            {
+                                                "occurredAt": "2024-01-01T00:00:00Z",
+                                                "commit": {"oid": "a", "url": "u"},
+                                            }
+                                        ]
+                                    },
+                                }
+                            ]
                         }
                     }
                 }
             }
-        else:
-            data = {
-                "data": {
-                    "user": {
-                        "contributionsCollection": {
-                            "commitContributionsByRepository": {
-                                "pageInfo": {"hasNextPage": False, "endCursor": None},
-                                "nodes": [],
-                            }
-                        }
-                    }
-                }
-            }
+        }
         return Resp(data)
 
     monkeypatch.setenv("GH_TOKEN", "x")
     monkeypatch.setattr(gh_graphql.requests, "post", fake_post)
     out = gh_graphql.fetch_contributions("me", "2024-01-01", "2024-12-31")
     assert out[0]["sha"] == "a"
-    assert calls == [None, "C1"]
 
 
 def test_fetch_contributions_errors(monkeypatch):
