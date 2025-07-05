@@ -32,7 +32,7 @@ def fetch_transcript(video_id: str) -> pathlib.Path | None:
         dest = SUBS_DIR / f"{video_id}.srt"
         dest.write_text(data)
         return dest
-    except Exception as exc:  # pragma: no cover - network failure
+    except Exception as exc:
         print(f"failed to fetch transcript for {video_id}: {exc}")
         return None
 

@@ -117,3 +117,16 @@ def test_entrypoint(monkeypatch, tmp_path):
     (tmp_path / "scripts").mkdir()
 
     runpy.run_module("scripts.update_transcript_links", run_name="__main__")
+
+
+def test_fetch_transcript_failure(monkeypatch, capsys):
+    monkeypatch.setattr(utl, "API_KEY", "X")
+
+    def boom(url):
+        raise ValueError("boom")
+
+    monkeypatch.setattr(utl.urllib.request, "urlopen", boom)
+
+    assert utl.fetch_transcript("XYZ") is None
+    captured = capsys.readouterr()
+    assert "failed to fetch transcript" in captured.out
