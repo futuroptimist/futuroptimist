@@ -16,6 +16,10 @@ class Resp:
         return self._payload
 
 
+def test_resp_raise_for_status():
+    Resp({}).raise_for_status()
+
+
 def test_fetch_contributions(monkeypatch):
     def fake_get(url, headers, timeout):
         data = {
