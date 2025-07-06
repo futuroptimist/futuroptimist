@@ -72,7 +72,7 @@ make test    # runs `pytest -q`
 pytest --cov=./scripts --cov=./tests
 ```
 The Makefile auto-detects Windows vs Unix paths so these commands should work cross-platform.
-If `make setup` fails on your platform, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
+If `make setup` fails on your platform, run `python3 -m venv .venv && uv pip install -r requirements.txt` then `pytest -q`.
 If `make test` errors about `.venv/Scripts/python`, use `PATH=.venv/bin:$PATH pytest -q` instead.
 If `yt-dlp` cannot be located during tests, prefix your command with `PATH=.venv/bin:$PATH` so the venv's executables are discoverable.
 
@@ -117,8 +117,8 @@ When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make rende
 
 Tests under `tests/` cover folder naming (`test_folder_names.py`), schema validation (`test_metadata_schema.py`) and the helper scripts. Extend them when adding new features.
 
-### Optional
-- [Contributors guide](CONTRIBUTORS.md): PR etiquette and code style details.
+-### Optional
+- [Contributing guide](CONTRIBUTING.md): PR etiquette and code style details.
 - For cross-project synergy, see the README's **Other Projects** links or explore
   the [axel](https://github.com/futuroptimist/axel) repo for quest management.
 

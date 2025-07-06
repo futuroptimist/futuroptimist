@@ -15,7 +15,7 @@ This document collects the full workflow for managing video scripts and metadata
 ## Quick Start
 ```bash
 # 1. Install dependencies (yt-dlp only for now)
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 
 # 2. Download available English subtitles into ./subtitles
 python scripts/fetch_subtitles.py

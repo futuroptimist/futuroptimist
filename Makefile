@@ -10,7 +10,7 @@ else
     REMOVE := rm -rf
     CLEANCACHE := find . -name '__pycache__' -type d -exec rm -rf {} +
 endif
-PIP := $(PY) -m pip
+PIP := uv pip
 
 .PHONY: help setup test subtitles clean fmt
 
@@ -24,7 +24,6 @@ help:
 
 setup:
 	python -m venv $(VENV)
-	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
 
 test:
