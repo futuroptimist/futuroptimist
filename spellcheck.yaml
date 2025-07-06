@@ -1,0 +1,11 @@
+matrix:
+  default:
+    dictionaries:
+      - en_US
+    pipeline:
+      - pyspelling.filters.code
+    sources:
+      - README.md
+      - CONTRIBUTING.md
+      - AGENTS.md
+      - INSTRUCTIONS.md

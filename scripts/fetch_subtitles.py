@@ -12,7 +12,7 @@ def ensure_requirements():
     """Check that yt-dlp is installed."""
     if shutil.which("yt-dlp") is None:
         sys.stderr.write(
-            "yt-dlp executable not found in PATH. Install via pip: pip install yt-dlp\n"
+            "yt-dlp executable not found in PATH. Install via uv: uv pip install yt-dlp\n"
         )
         sys.exit(1)
 
