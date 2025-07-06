@@ -27,7 +27,7 @@ pytest --cov=./scripts --cov=./tests
 ```
 - [source_urls.txt](source_urls.txt) consumed by `collect_sources.py`
 The Makefile picks the correct Python path for Windows or Unix automatically.
-If that fails, run `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` then `pytest -q`.
+If that fails, run `python3 -m venv .venv && uv pip install -r requirements.txt` then `pytest -q`.
 If `make test` complains about `.venv/Scripts/python`, run `PATH=.venv/bin:$PATH pytest -q`.
 If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$PATH`.
 
@@ -45,7 +45,7 @@ Key directories:
 - Skip detailed steps like subtitle fetching; keep README short.
 - [Agents guide](AGENTS.md): repository structure, coding conventions, test commands
 - [Runbook](RUNBOOK.md): production workflow checklist
-- [Contributors](CONTRIBUTORS.md): PR guidelines & Code of Conduct
+- [Contributing](CONTRIBUTING.md): PR guidelines & Code of Conduct
 - [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap
 - Tests live in `tests/` and cover schema validation and helper scripts
 - A GitHub Actions workflow runs the test suite with coverage on each push.

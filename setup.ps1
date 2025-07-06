@@ -15,9 +15,8 @@ if (-not (Test-Path $venv)) {
 }
 
 $python = Join-Path $venv "Scripts/python.exe"
-Write-Host "Upgrading pip & installing requirements..."
-& $python -m pip install --upgrade pip | Out-Null
-& $python -m pip install -r requirements.txt | Out-Null
+Write-Host "Installing requirements with uv..."
+uv pip install -r requirements.txt | Out-Null
 
 if ($Test) {
     Write-Host "Running tests..."
