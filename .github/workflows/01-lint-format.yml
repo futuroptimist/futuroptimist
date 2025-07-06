@@ -20,12 +20,11 @@ jobs:
           python-version: '3.x'
       - name: Install Py Lint Tools
         if: matrix.language == 'python'
-        run: uv pip install --system flake8 black isort
+        run: uv pip install --system ruff black
       - name: Run Python Linters
         if: matrix.language == 'python'
         run: |
-          flake8 .
-          isort --check-only .
+          ruff check .
           black --check .
 
       - name: Setup Node

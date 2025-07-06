@@ -58,7 +58,7 @@ instead of collecting them at the end.
 4. Optionally run `make subtitles` and `python scripts/collect_sources.py` to
    download captions and reference files.
 
-The repository includes a simple GitHub Actions workflow (`.github/workflows/ci.yml`)
+The repository includes a simple GitHub Actions workflow (`.github/workflows/02-tests.yml`)
 that installs dependencies and runs the full test suite with coverage on every
 push or pull request.
 
