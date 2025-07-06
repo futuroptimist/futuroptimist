@@ -1,11 +1,13 @@
 matrix:
-  default:
-    dictionaries:
-      - en_US
+  - name: docs
+    aspell:
+      lang: en_US
     pipeline:
-      - pyspelling.filters.code
+      - pyspelling.filters.markdown
     sources:
       - README.md
       - CONTRIBUTING.md
       - AGENTS.md
       - INSTRUCTIONS.md
+      - RUNBOOK.md
+    default_encoding: utf-8
