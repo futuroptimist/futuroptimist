@@ -11,8 +11,10 @@ codecov
 colour
 config
 contrib
+contribs
 cov
 crowdsourced
+csv
 democratizedspace
 deps
 dirs
