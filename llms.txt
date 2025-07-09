@@ -49,6 +49,7 @@ Key directories:
 - [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap
 - Tests live in `tests/` and cover schema validation and helper scripts
 - A GitHub Actions workflow runs the test suite with coverage on each push.
+- Nightly workflows update `assets/pr_heatmap.svg`, `assets/annual_contribs.svg` and `assets/annual_contribs.csv` using helper scripts.
 
 ## Data & Schemas
 - [Video metadata schema](schemas/video_metadata.schema.json)
