@@ -50,9 +50,7 @@ def test_main_entrypoint(monkeypatch, tmp_path):
 
 def test_entrypoint_exec(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    path = (
-        Path(__file__).resolve().parents[1] / "src" / "generate_contrib_heatmap.py"
-    )
+    path = Path(__file__).resolve().parents[1] / "src" / "generate_contrib_heatmap.py"
     monkeypatch.setenv("GH_TOKEN", "x")
     req = types.SimpleNamespace(
         post=lambda *a, **k: types.SimpleNamespace(
