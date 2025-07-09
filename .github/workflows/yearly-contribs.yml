@@ -1,0 +1,31 @@
+name: Update yearly PR counts
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  contribs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install deps
+        run: |
+          uv pip install --system -r requirements.txt
+      - name: Generate yearly chart
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: python scripts/generate_annual_contributions.py
+      - name: Commit and push
+        uses: EndBug/add-and-commit@v9
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          add: 'assets/annual_contribs.svg assets/annual_contribs.csv'
+          message: 'docs: auto-update yearly PR chart [skip ci]'
