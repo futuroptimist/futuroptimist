@@ -2,7 +2,7 @@ import json
 import pytest
 import sys
 import runpy
-import scripts.index_local_media as ilm
+import src.index_local_media as ilm
 
 
 def test_scan_directory(tmp_path):
@@ -38,4 +38,4 @@ def test_entrypoint(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, "argv", ["index_local_media.py", str(tmp_path)])
     (tmp_path).mkdir(exist_ok=True)
 
-    runpy.run_module("scripts.index_local_media", run_name="__main__")
+    runpy.run_module("src.index_local_media", run_name="__main__")

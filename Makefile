@@ -30,7 +30,7 @@ test:
 	$(PY) -m pytest -q
 
 subtitles:
-	$(PY) scripts/fetch_subtitles.py
+	$(PY) src/fetch_subtitles.py
 
 fmt:
 	$(PY) -m black .

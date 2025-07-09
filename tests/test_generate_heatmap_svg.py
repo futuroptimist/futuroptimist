@@ -1,5 +1,5 @@
 import pytest
-from scripts import gh_graphql, generate_heatmap
+from src import gh_graphql, generate_heatmap
 
 
 class Resp:

@@ -1,7 +1,7 @@
 import json
 import runpy
 import pytest
-import scripts.update_transcript_links as utl
+import src.update_transcript_links as utl
 
 
 def test_update_transcript_links(tmp_path, monkeypatch):
@@ -116,7 +116,7 @@ def test_entrypoint(monkeypatch, tmp_path):
     monkeypatch.setattr(utl, "API_KEY", "")
     (tmp_path / "scripts").mkdir()
 
-    runpy.run_module("scripts.update_transcript_links", run_name="__main__")
+    runpy.run_module("src.update_transcript_links", run_name="__main__")
 
 
 def test_fetch_transcript_failure(monkeypatch, capsys):

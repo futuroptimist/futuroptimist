@@ -13,7 +13,7 @@
 - [ ] Share regular water test logs or spreadsheets.
 
 ## Context / Why Now?
-Viewers will see glimpses of automation and DIY gear in `scripts/20250701_indoor-aquariums-tour`. Capturing their questions early helps prioritize which small upgrades or explainer videos to publish next.
+Viewers will see glimpses of automation and DIY gear in `video_scripts/20250701_indoor-aquariums-tour`. Capturing their questions early helps prioritize which small upgrades or explainer videos to publish next.
 
 ## Key beats & assets
 - Short B-roll showing sensor readouts.

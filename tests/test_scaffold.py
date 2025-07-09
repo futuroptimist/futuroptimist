@@ -3,7 +3,7 @@ import pathlib
 import json
 import runpy
 import sys
-import scripts.scaffold_videos as sv
+import src.scaffold_videos as sv
 import pytest
 
 
@@ -116,6 +116,6 @@ def test_entrypoint(monkeypatch, tmp_path):
 
     r = Resp()
     monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: r)
-    runpy.run_module("scripts.scaffold_videos", run_name="__main__")
+    runpy.run_module("src.scaffold_videos", run_name="__main__")
     r.__enter__()
     r.__exit__(None, None, None)

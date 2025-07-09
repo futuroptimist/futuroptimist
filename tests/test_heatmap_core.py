@@ -5,7 +5,7 @@ import types
 from pathlib import Path
 
 import svgwrite
-from scripts import generate_heatmap as gh
+from src import generate_heatmap as gh
 
 
 def test_aggregate_loc(monkeypatch):
@@ -32,7 +32,7 @@ def test_draw_bars_calls_draw_bar(monkeypatch):
 
 
 def test_run_as_script_fallback(monkeypatch, tmp_path):
-    path = Path(__file__).resolve().parents[1] / "scripts" / "generate_heatmap.py"
+    path = Path(__file__).resolve().parents[1] / "src" / "generate_heatmap.py"
     monkeypatch.chdir(tmp_path)
     monkeypatch.setitem(
         sys.modules,

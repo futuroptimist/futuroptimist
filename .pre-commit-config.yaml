@@ -11,6 +11,6 @@ repos:
     hooks:
       - id: heatmap
         name: generate 3-D LOC heatmap
-        entry: python scripts/generate_heatmap.py
+        entry: python src/generate_heatmap.py
         language: system
         pass_filenames: false

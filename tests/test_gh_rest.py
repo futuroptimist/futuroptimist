@@ -1,7 +1,7 @@
 import json
 
 
-import scripts.gh_rest as gh
+import src.gh_rest as gh
 
 
 class Resp:

@@ -25,7 +25,7 @@ if ($Test) {
 
 if ($Subtitles) {
     Write-Host "Fetching subtitles..."
-    & $python scripts/fetch_subtitles.py
+    & $python src/fetch_subtitles.py
 }
 
 Write-Host "Setup complete. Activate with: `n .\.venv\Scripts\Activate.ps1"

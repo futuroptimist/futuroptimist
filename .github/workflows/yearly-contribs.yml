@@ -22,7 +22,7 @@ jobs:
       - name: Generate yearly chart
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: python scripts/generate_annual_contributions.py
+        run: python src/generate_annual_contributions.py
       - name: Commit and push
         uses: EndBug/add-and-commit@v9
         with:

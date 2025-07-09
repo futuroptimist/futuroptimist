@@ -6,11 +6,11 @@ This document collects the full workflow for managing video scripts and metadata
 
 1. **video_ids.txt** – list of the canonical YouTube IDs for each long-form video (no Shorts).
 2. **subtitles/** – English subtitle files (`.srt`) downloaded directly from YouTube. Use the helper script below to populate this folder.
-3. **scripts/** – helper utilities such as subtitle fetchers.
+3. **src/** – helper utilities and CLI tools.
 4. **RUNBOOK.md** – living production checklist covering the end-to-end video workflow.
 5. **llms.txt** and **AGENTS.md** – guidance files that help AI assistants understand the codebase structure, conventions and workflows.
 
-> Video scripts live in `scripts/YYYYMMDD_slug/script.md` (auto-scaffolded). Idea files are collected in `ideas/` as checklists without date prefixes.
+> Video scripts live in `video_scripts/YYYYMMDD_slug/script.md` (auto-scaffolded). Idea files are collected in `ideas/` as checklists without date prefixes.
 
 ## Quick Start
 ```bash
@@ -18,7 +18,7 @@ This document collects the full workflow for managing video scripts and metadata
 uv pip install -r requirements.txt
 
 # 2. Download available English subtitles into ./subtitles
-python scripts/fetch_subtitles.py
+python src/fetch_subtitles.py
 
 # 3. Run the full test suite (schema, naming, e2e)
 make test
@@ -45,14 +45,14 @@ heatmaps or fetching commit stats.
 Create new script folders from the IDs in `video_ids.txt`:
 
 ```bash
-python scripts/scaffold_videos.py
+python src/scaffold_videos.py
 ```
 
-This fetches titles and dates to generate `scripts/YYYYMMDD_slug` directories for drafting. Format code with `black .` and `ruff check --fix .` before committing.
+This fetches titles and dates to generate `video_scripts/YYYYMMDD_slug` directories for drafting. Format code with `black .` and `ruff check --fix .` before committing.
 If metadata can't be fetched (network issues or parsing errors) the script
 logs the failure and continues so scaffolding never blocks your workflow.
 
-Large media assets should live in a local `footage/` directory. Use `python scripts/index_local_media.py` to build `footage_index.json` so you can quickly locate clips while editing.
+Large media assets should live in a local `footage/` directory. Use `python src/index_local_media.py` to build `footage_index.json` so you can quickly locate clips while editing.
 
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).

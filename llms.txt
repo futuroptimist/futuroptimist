@@ -31,8 +31,9 @@ If that fails, run `python3 -m venv .venv && uv pip install -r requirements.txt`
 If `make test` complains about `.venv/Scripts/python`, run `PATH=.venv/bin:$PATH pytest -q`.
 If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$PATH`.
 
-Key directories:
-- `/scripts/` helper utilities and per-video folders (`YYYYMMDD_slug/`)
+- Key directories:
+- `/src/` CLI utilities
+- `/video_scripts/` per-video folders (`YYYYMMDD_slug/`)
 - `/ideas/` checklist-style idea files
 - `/schemas/` JSON schemas
 - `/tests/` pytest suites
