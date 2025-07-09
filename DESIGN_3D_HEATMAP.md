@@ -23,10 +23,10 @@ shared in chat and explains how the feature slots into this repository.
 Files introduced by this feature:
 ```
 .github/workflows/contrib-heatmap.yml   # updated with write permissions
-scripts/generate_heatmap.py             # main entrypoint
-scripts/gh_graphql.py                   # GraphQL helper with retries
-scripts/gh_rest.py                      # commit → LOC cache
-scripts/svg3d.py                        # draw isometric bars
+src/generate_heatmap.py                 # main entrypoint
+src/gh_graphql.py                       # GraphQL helper with retries
+src/gh_rest.py                          # commit → LOC cache
+src/svg3d.py                            # draw isometric bars
 assets/heatmap_light.svg                # auto-generated
 assets/heatmap_dark.svg                 # auto-generated
 ```

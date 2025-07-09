@@ -1,4 +1,4 @@
-import scripts.gh_graphql as gh
+import src.gh_graphql as gh
 
 
 class Resp:

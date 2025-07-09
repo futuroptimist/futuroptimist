@@ -1,5 +1,5 @@
 import pathlib
-from scripts import generate_contrib_heatmap as gh
+from src import generate_contrib_heatmap as gh
 
 
 class Resp:

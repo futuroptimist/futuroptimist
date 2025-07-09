@@ -1,6 +1,6 @@
 import sys
 import runpy
-import scripts.srt_to_markdown as stm
+import src.srt_to_markdown as stm
 
 
 def test_parse_and_convert(tmp_path):
@@ -63,11 +63,11 @@ def test_entrypoint(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(
         sys, "argv", ["srt_to_markdown.py", str(srt_path), "-o", str(out)]
     )
-    runpy.run_module("scripts.srt_to_markdown", run_name="__main__")
+    runpy.run_module("src.srt_to_markdown", run_name="__main__")
     assert out.exists()
 
     sys.modules.pop("__main__", None)
     monkeypatch.setattr(sys, "argv", ["srt_to_markdown.py", str(srt_path)])
-    runpy.run_module("scripts.srt_to_markdown", run_name="__main__")
+    runpy.run_module("src.srt_to_markdown", run_name="__main__")
     captured = capsys.readouterr()
     assert "[NARRATOR]: Hi" in captured.out

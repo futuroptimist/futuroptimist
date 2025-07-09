@@ -6,7 +6,7 @@ import json
 import sys
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
-VIDEO_ROOT = BASE_DIR / "scripts"
+VIDEO_ROOT = BASE_DIR / "video_scripts"
 
 
 def download_url(url: str, dest: pathlib.Path) -> bool:

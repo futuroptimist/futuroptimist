@@ -1,5 +1,5 @@
 import svgwrite
-from scripts import svg3d
+from src import svg3d
 
 
 def test_clamp_and_shade():

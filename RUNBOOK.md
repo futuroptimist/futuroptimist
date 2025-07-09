@@ -14,7 +14,7 @@ This document is a living checklist covering the **Futuroptimist** long-form vid
 
 ## 2. Script Writing
 
-- [ ] Create `<DATE>_<N>_<slug>.md` in `scripts/` with front-matter:
+- [ ] Create `<DATE>_<N>_<slug>.md` in `video_scripts/` with front-matter:
   ```yaml
   ---
   youtube_id:

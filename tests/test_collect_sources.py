@@ -1,6 +1,6 @@
 import json
 import urllib.request
-import scripts.collect_sources as cs
+import src.collect_sources as cs
 
 
 def test_download_url_handles_error(monkeypatch, tmp_path):
@@ -80,7 +80,7 @@ def test_cli_entrypoint(monkeypatch, tmp_path):
     import runpy
     import sys
 
-    monkeypatch.setitem(sys.modules, "scripts.collect_sources", cs)
+    monkeypatch.setitem(sys.modules, "src.collect_sources", cs)
     fake_process(d)  # ensure line coverage
-    runpy.run_module("scripts.collect_sources", run_name="__main__")
+    runpy.run_module("src.collect_sources", run_name="__main__")
     assert called

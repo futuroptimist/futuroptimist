@@ -1,5 +1,5 @@
 from pathlib import Path
-import scripts.generate_annual_contributions as mod
+import src.generate_annual_contributions as mod
 
 
 def test_fetch_counts(monkeypatch):

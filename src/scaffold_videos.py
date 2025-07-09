@@ -7,7 +7,7 @@ import datetime
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 IDS_FILE = BASE_DIR / "video_ids.txt"
-VIDEO_SCRIPT_ROOT = BASE_DIR / "scripts"
+VIDEO_SCRIPT_ROOT = BASE_DIR / "video_scripts"
 SCHEMA_PATH = BASE_DIR / "schemas" / "video_metadata.schema.json"
 
 TEMPLATE_MD = """# {title}

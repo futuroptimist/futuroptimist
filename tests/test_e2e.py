@@ -2,8 +2,8 @@ import json
 import pathlib
 import tempfile
 import types
-import scripts.scaffold_videos as scaffold
-import scripts.fetch_subtitles as fs
+import src.scaffold_videos as scaffold
+import src.fetch_subtitles as fs
 import subprocess
 
 

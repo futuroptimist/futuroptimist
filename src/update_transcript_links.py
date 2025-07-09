@@ -4,7 +4,7 @@ import pathlib
 import urllib.request
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
-SCRIPT_ROOT = BASE_DIR / "scripts"
+SCRIPT_ROOT = BASE_DIR / "video_scripts"
 SUBS_DIR = BASE_DIR / "subtitles"
 API_KEY = os.environ.get("YOUTUBE_API_KEY", "")
 

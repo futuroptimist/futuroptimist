@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 import types
 
-import scripts.generate_contrib_heatmap as gh
+import src.generate_contrib_heatmap as gh
 
 
 def test_generate_heatmap_no_dates(monkeypatch, tmp_path):
@@ -51,7 +51,7 @@ def test_main_entrypoint(monkeypatch, tmp_path):
 def test_entrypoint_exec(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     path = (
-        Path(__file__).resolve().parents[1] / "scripts" / "generate_contrib_heatmap.py"
+        Path(__file__).resolve().parents[1] / "src" / "generate_contrib_heatmap.py"
     )
     monkeypatch.setenv("GH_TOKEN", "x")
     req = types.SimpleNamespace(

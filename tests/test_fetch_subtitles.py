@@ -1,5 +1,5 @@
 import types
-import scripts.fetch_subtitles as fs
+import src.fetch_subtitles as fs
 import subprocess
 import pytest
 import shutil
@@ -83,4 +83,4 @@ def test_entrypoint(monkeypatch, tmp_path):
     monkeypatch.setattr(subprocess, "run", lambda *a, **k: None)
     import runpy
 
-    runpy.run_module("scripts.fetch_subtitles", run_name="__main__")
+    runpy.run_module("src.fetch_subtitles", run_name="__main__")

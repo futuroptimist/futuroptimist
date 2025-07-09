@@ -23,11 +23,11 @@ build/
 .pytest_cache/
 
 # rendered media outputs (keep source scripts in git)
-videos/*/rendered*/
+video_scripts/*/rendered*/
 
 # reference files fetched via collect_sources
 # per-video sources directories
-scripts/*/sources/
+video_scripts/*/sources/
 # IDE noise (duplicate entry kept for clarity)
 
 # coverage reports
@@ -39,4 +39,4 @@ cov.json
 footage/
 footage_index.json
 assets/heatmap_data.json
-scripts/20240101_dummy/
+video_scripts/20240101_dummy/
