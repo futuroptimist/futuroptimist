@@ -33,13 +33,28 @@ def generate_chart(counts: dict[int, int], output: Path = SVG_OUTPUT) -> None:
     """Write an SVG bar chart to ``output`` summarizing ``counts``."""
     years = sorted(counts)
     values = [counts[y] for y in years]
-    plt.figure(figsize=(4, 2))
-    plt.bar(years, values, color="#4c9aff")
-    plt.xticks(years)
-    plt.ylabel("PRs")
+
+    plt.rcParams.update(
+        {
+            "text.color": "white",
+            "axes.labelcolor": "white",
+            "axes.edgecolor": "white",
+            "xtick.color": "white",
+            "ytick.color": "white",
+            "grid.color": "white",
+        }
+    )
+
+    fig, ax = plt.subplots(figsize=(4, 2))
+    ax.bar(years, values, color="#2ecc71")
+    ax.set_xticks(years)
+    ax.set_ylabel("PRs")
+    ax.grid(axis="y", linewidth=0.25, alpha=0.3)
+    for spine in ax.spines.values():
+        spine.set_color("white")
     output.parent.mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
-    plt.savefig(output, transparent=True)
+    fig.savefig(output, transparent=True)
 
 
 def write_csv(counts: dict[int, int], output: Path = CSV_OUTPUT) -> None:
