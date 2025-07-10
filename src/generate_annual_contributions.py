@@ -1,18 +1,18 @@
 """Generate yearly contribution stats and chart.
 
-Counts issues, pull requests and commits authored across all repositories so
-totals more closely mirror the public GitHub profile contributions graph.
+Fetches contribution totals via GitHub's GraphQL ``contributionsCollection`` so
+the values match the public profile graph. Requires ``GH_TOKEN`` (or
+``GITHUB_TOKEN``) with ``repo`` and ``read:org`` scopes if private or
+organization work should be included.
 """
 
 from __future__ import annotations
 
 import datetime as _dt
 from pathlib import Path
-import sys
 import os
 import csv
 import collections
-import urllib.parse
 import requests
 
 import matplotlib.pyplot as plt
@@ -20,79 +20,63 @@ import matplotlib.pyplot as plt
 SVG_OUTPUT = Path("assets/annual_contribs.svg")
 CSV_OUTPUT = Path("assets/annual_contribs.csv")
 
-_GH = "https://api.github.com/search/issues"
-_HDR = {"Accept": "application/vnd.github+json"}
-_COMMITS = "https://api.github.com/search/commits"
-_HDR_COMMITS = {"Accept": "application/vnd.github.cloak-preview+json"}
-if tok := os.getenv("GITHUB_TOKEN"):
-    _HDR["Authorization"] = f"Bearer {tok}"
-    _HDR_COMMITS["Authorization"] = f"Bearer {tok}"
+API_URL = "https://api.github.com/graphql"
 
-
-def _search_total(
-    q: str,
-    request_fn: callable = requests.get,
-    headers: dict[str, str] | None = None,
-) -> int:
-    """Return GitHub Search API ``total_count`` for *q*."""
-    url = f"{_GH}?q={urllib.parse.quote_plus(q)}&per_page=1"
-    resp = request_fn(url, headers=headers or _HDR, timeout=30)
-    resp.raise_for_status()
-    return resp.json()["total_count"]
-
-
-def _search_commit_total(q: str, request_fn=requests.get) -> int:
-    """Return commit search ``total_count`` for *q*."""
-    url = f"{_COMMITS}?q={urllib.parse.quote_plus(q)}&per_page=1"
-    resp = request_fn(url, headers=_HDR_COMMITS, timeout=30)
-    resp.raise_for_status()
-    return resp.json()["total_count"]
+QUERY = """
+query($login:String!, $from:DateTime!, $to:DateTime!){
+  user(login:$login){
+    contributionsCollection(from:$from, to:$to){
+      totalContributions
+    }
+  }
+}
+"""
 
 
 def fetch_counts(
     user: str | None = None,
     start_year: int = 2021,
-    request_fn=requests.get,
+    request_fn=requests.post,
 ) -> "collections.OrderedDict[int, int]":
     """Return ``{year: contributions}`` authored by *user*.
 
-    Contributions include issues, pull requests, and commits created by the user
-    across all repositories. This approximates GitHub's public contributions
-    graph.
+    Uses the GraphQL ``contributionsCollection`` query so totals match what
+    GitHub displays on profile pages.
     """
 
     user = user or os.getenv("GITHUB_USER") or os.getenv("GITHUB_USERNAME")
     if not user:
         raise RuntimeError("Set GITHUB_USER or pass `user=` explicitly.")
 
+    token = os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN")
+    if not token:
+        raise RuntimeError("Set GH_TOKEN or GITHUB_TOKEN for authentication.")
+
+    headers = {"Authorization": f"Bearer {token}"}
+
     now = _dt.datetime.utcnow().year
     counts: dict[int, int] = {}
     for year in range(start_year, now + 1):
-        q_pr = f"author:{user} is:pr created:{year}-01-01..{year}-12-31"
-        pr_n = _search_total(q_pr, request_fn)
-        if pr_n == 1000:
-            print(
-                f"[warn] PR query for {year} hit Search API cap (1000).",
-                file=sys.stderr,
-            )
-
-        q_issue = f"author:{user} is:issue created:{year}-01-01..{year}-12-31"
-        issue_n = _search_total(q_issue, request_fn)
-        if issue_n == 1000:
-            print(
-                f"[warn] Issue query for {year} hit Search API cap (1000).",
-                file=sys.stderr,
-            )
-
-        q_commit = f"author:{user} committer-date:{year}-01-01..{year}-12-31"
-        commit_n = _search_total(q_commit, request_fn, headers=_HDR_COMMITS)
-        if commit_n == 1000:
-            print(
-                f"[warn] Commit query for {year} hit Search API cap (1000).",
-                file=sys.stderr,
-            )
-
-        counts[year] = pr_n + issue_n + commit_n
+        variables = {
+            "login": user,
+            "from": f"{year}-01-01T00:00:00Z",
+            "to": f"{year}-12-31T23:59:59Z",
+        }
+        resp = request_fn(
+            API_URL,
+            json={"query": QUERY, "variables": variables},
+            headers=headers,
+            timeout=30,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        count = (
+            data.get("data", {})
+            .get("user", {})
+            .get("contributionsCollection", {})
+            .get("totalContributions", 0)
+        )
+        counts[year] = count
 
     return collections.OrderedDict(sorted(counts.items()))
 
