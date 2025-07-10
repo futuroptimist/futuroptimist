@@ -15,6 +15,8 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 - **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – bulk-copy files from nested dirs straight to your clipboard
 - **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker for repos and next steps
 - **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin device
+- **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turn GitHub contributions into 3D-printable block models
+- **[wove](https://github.com/futuroptimist/wove)** – open-source toolkit for knitting and robotic looms
 
 ## Contributions (issues & PRs I've opened)
 

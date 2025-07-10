@@ -36,6 +36,7 @@ gfx
 gh
 github
 gitignored
+gitshelves
 graphql
 heatmap
 heatmaps
@@ -99,6 +100,7 @@ virtualenv
 visualise
 whitespace
 wip
+wove
 www
 xyz
 yaml
