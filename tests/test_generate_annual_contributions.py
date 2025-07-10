@@ -1,18 +1,37 @@
 from pathlib import Path
+import urllib.parse
 import src.generate_annual_contributions as mod
 
 
 def test_fetch_counts(monkeypatch):
-    called = []
+    recorded = []
 
-    def fake_fetch(year):
-        called.append(year)
-        return ["d"] * year
+    class Resp:
+        def __init__(self, count):
+            self._count = count
 
-    monkeypatch.setattr(mod, "fetch_pr_dates", fake_fetch)
-    out = mod.fetch_counts(2021, 2023)
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"total_count": self._count}
+
+    def fake_get(url, headers, timeout):
+        query = urllib.parse.unquote_plus(url.split("?q=")[1].split("&")[0])
+        year = int(query.split("created:")[1][:4])
+        recorded.append(year)
+        return Resp(year)
+
+    class FakeDateTime:
+        @staticmethod
+        def utcnow():
+            return type("D", (), {"year": 2023})()
+
+    monkeypatch.setattr(mod._dt, "datetime", FakeDateTime)
+
+    out = mod.fetch_counts(user="me", start_year=2021, request_fn=fake_get)
     assert out == {2021: 2021, 2022: 2022, 2023: 2023}
-    assert called == [2021, 2022, 2023]
+    assert recorded == [2021, 2022, 2023]
 
 
 def test_generate_chart(tmp_path, monkeypatch):

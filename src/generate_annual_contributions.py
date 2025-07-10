@@ -2,31 +2,61 @@
 
 from __future__ import annotations
 
-import datetime as dt
+import datetime as _dt
 from pathlib import Path
 import sys
+import os
+import collections
+import requests
+import urllib.parse
 
 import csv
 
 import matplotlib.pyplot as plt
 
-try:  # allow package or standalone execution
-    from .generate_contrib_heatmap import fetch_pr_dates
-except ImportError:  # pragma: no cover - direct script execution
-    sys.path.append(str(Path(__file__).resolve().parent))
-    from generate_contrib_heatmap import fetch_pr_dates  # type: ignore
+_GH = "https://api.github.com/search/issues"
+_HDR = {"Accept": "application/vnd.github+json"}
+if tok := os.getenv("GITHUB_TOKEN"):
+    _HDR["Authorization"] = f"Bearer {tok}"
 
 SVG_OUTPUT = Path("assets/annual_contribs.svg")
 CSV_OUTPUT = Path("assets/annual_contribs.csv")
 
 
-def fetch_counts(start_year: int = 2021, end_year: int | None = None) -> dict[int, int]:
-    """Return yearly PR counts from ``start_year`` to ``end_year`` inclusive."""
-    end_year = end_year or dt.date.today().year
+def _search_total(q: str, request_fn=requests.get) -> int:
+    """Return GitHub Search API ``total_count`` for *q*."""
+    url = f"{_GH}?q={urllib.parse.quote_plus(q)}&per_page=1"
+    resp = request_fn(url, headers=_HDR, timeout=30)
+    resp.raise_for_status()
+    return resp.json()["total_count"]
+
+
+def fetch_counts(
+    user: str | None = None,
+    start_year: int = 2021,
+    request_fn=requests.get,
+) -> collections.OrderedDict[int, int]:
+    """Return yearly merged PR counts authored by ``user`` in their repos."""
+    user = user or os.getenv("GITHUB_USER") or os.getenv("GITHUB_USERNAME")
+    if not user:
+        raise RuntimeError("Set GITHUB_USER or pass `user=` explicitly.")
+
+    now = _dt.datetime.utcnow().year
     counts: dict[int, int] = {}
-    for year in range(start_year, end_year + 1):
-        counts[year] = len(fetch_pr_dates(year))
-    return counts
+    for yr in range(start_year, now + 1):
+        q = (
+            f"author:{user} user:{user} is:pr is:merged "
+            f"created:{yr}-01-01..{yr}-12-31"
+        )
+        n = _search_total(q, request_fn)
+        if n == 1000:
+            print(
+                f"[warn] {yr} hit Search API cap (1000). Counts may be truncated.",
+                file=sys.stderr,
+            )
+        counts[yr] = n
+
+    return collections.OrderedDict(sorted(counts.items()))
 
 
 def generate_chart(counts: dict[int, int], output: Path = SVG_OUTPUT) -> None:
