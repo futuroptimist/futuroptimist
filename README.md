@@ -16,7 +16,7 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 - **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker for repos and next steps
 - **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin device
 
-## Contributions (PRs I authored in my own repos)
+## Contributions (issues & PRs I've opened)
 
 <p align="center">
   <!-- generated nightly via GitHub Actions -->
@@ -24,5 +24,5 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 </p>
 <p align="center">
   <!-- yearly counts updated nightly -->
-  <img src="assets/annual_contribs.svg" alt="Yearly pull-request totals" />
+  <img src="assets/annual_contribs.svg" alt="Yearly contribution totals" />
 </p>

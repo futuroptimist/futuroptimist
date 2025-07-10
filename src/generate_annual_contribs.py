@@ -12,7 +12,7 @@ except ImportError:  # pragma: no cover - package not installed
 
 
 def main(argv: list[str] | None = None) -> None:
-    """Generate yearly PR charts."""
+    """Generate yearly contribution chart."""
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, default=base.SVG_OUTPUT)
