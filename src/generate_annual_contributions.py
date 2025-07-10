@@ -1,7 +1,7 @@
 """Generate yearly contribution stats and chart.
 
-Counts issue and pull-request creations across all repositories so totals
-mirror the public GitHub profile contributions graph.
+Counts issues, pull requests and commits authored across all repositories so
+totals more closely mirror the public GitHub profile contributions graph.
 """
 
 from __future__ import annotations
@@ -22,14 +22,25 @@ CSV_OUTPUT = Path("assets/annual_contribs.csv")
 
 _GH = "https://api.github.com/search/issues"
 _HDR = {"Accept": "application/vnd.github+json"}
+_COMMITS = "https://api.github.com/search/commits"
+_HDR_COMMITS = {"Accept": "application/vnd.github.cloak-preview+json"}
 if tok := os.getenv("GITHUB_TOKEN"):
     _HDR["Authorization"] = f"Bearer {tok}"
+    _HDR_COMMITS["Authorization"] = f"Bearer {tok}"
 
 
 def _search_total(q: str, request_fn=requests.get) -> int:
     """Return GitHub Search API ``total_count`` for *q*."""
     url = f"{_GH}?q={urllib.parse.quote_plus(q)}&per_page=1"
     resp = request_fn(url, headers=_HDR, timeout=30)
+    resp.raise_for_status()
+    return resp.json()["total_count"]
+
+
+def _search_commit_total(q: str, request_fn=requests.get) -> int:
+    """Return commit search ``total_count`` for *q*."""
+    url = f"{_COMMITS}?q={urllib.parse.quote_plus(q)}&per_page=1"
+    resp = request_fn(url, headers=_HDR_COMMITS, timeout=30)
     resp.raise_for_status()
     return resp.json()["total_count"]
 
@@ -41,8 +52,9 @@ def fetch_counts(
 ) -> "collections.OrderedDict[int, int]":
     """Return ``{year: contributions}`` authored by *user*.
 
-    Contributions include issues and pull requests created by the user across
-    all repositories. This approximates GitHub's public contributions graph.
+    Contributions include issues, pull requests and commits created by the user
+    across all repositories. This approximates GitHub's public contributions
+    graph.
     """
 
     user = user or os.getenv("GITHUB_USER") or os.getenv("GITHUB_USERNAME")
@@ -68,7 +80,15 @@ def fetch_counts(
                 file=sys.stderr,
             )
 
-        counts[year] = pr_n + issue_n
+        q_commit = f"author:{user} committer-date:{year}-01-01..{year}-12-31"
+        commit_n = _search_commit_total(q_commit, request_fn)
+        if commit_n == 1000:
+            print(
+                f"[warn] Commit query for {year} hit Search API cap (1000).",
+                file=sys.stderr,
+            )
+
+        counts[year] = pr_n + issue_n + commit_n
 
     return collections.OrderedDict(sorted(counts.items()))
 
