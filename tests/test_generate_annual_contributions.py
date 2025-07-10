@@ -27,6 +27,7 @@ def test_fetch_counts(monkeypatch):
             return dt.datetime(2023, 1, 1)
 
     monkeypatch.setattr(mod, "_search_total", fake_search)
+    monkeypatch.setattr(mod, "_search_commit_total", fake_search)
     monkeypatch.setattr(mod._dt, "datetime", FakeDateTime)
     out = mod.fetch_counts(user="me", start_year=2021)
     assert out == {
