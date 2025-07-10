@@ -22,7 +22,7 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 | `/subtitles/` | Downloaded `.srt` caption files populated by `fetch_subtitles.py`. |
 | `/src/srt_to_markdown.py` | Convert `.srt` captions into Futuroptimist script format (handles italics and emoji) |
 | `/src/generate_contrib_heatmap.py` | Build an SVG calendar heatmap of PRs authored in Futuroptimist-owned repos |
-| `/src/generate_annual_contributions.py` | Bar chart and CSV of yearly contribution totals (issues, PRs & commits) |
+| `/src/generate_annual_contributions.py` | Bar chart and CSV of yearly contribution totals via GraphQL `contributionsCollection` |
 | `/src/generate_heatmap.py` | Create a 3‑D lines-of-code heatmap with light/dark SVGs |
 | `/sources/` | Reference files fetched via `collect_sources.py`. |
 | `video_ids.txt` | Canonical list of YouTube IDs referenced by helper scripts. |

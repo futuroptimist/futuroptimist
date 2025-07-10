@@ -7,45 +7,44 @@ import src.generate_annual_contributions as mod
 def test_fetch_counts(monkeypatch):
     called = []
 
-    def fake_search(q: str, request_fn=None, headers=None):
-        if "is:pr" in q:
-            year = int(q.split("created:")[1].split("-")[0])
-            called.append(f"{year}-pr")
-            return year
-        if "is:issue" in q:
-            year = int(q.split("created:")[1].split("-")[0])
-            called.append(f"{year}-issue")
-            return year * 10
-        # commit query
-        year = int(q.split("committer-date:")[1].split("-")[0])
-        called.append(f"{year}-commit")
-        return year * 100
+    class Resp:
+        def __init__(self, payload):
+            self.payload = payload
+            self.status_code = 200
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return self.payload
+
+    def fake_post(url, json, headers, timeout):
+        year = int(json["variables"]["from"].split("-")[0])
+        called.append(year)
+        return Resp(
+            {
+                "data": {
+                    "user": {
+                        "contributionsCollection": {"totalContributions": year * 111}
+                    }
+                }
+            }
+        )
 
     class FakeDateTime(dt.datetime):
         @classmethod
         def utcnow(cls):
             return dt.datetime(2023, 1, 1)
 
-    monkeypatch.setattr(mod, "_search_total", fake_search)
-    monkeypatch.setattr(mod, "_search_commit_total", fake_search)
     monkeypatch.setattr(mod._dt, "datetime", FakeDateTime)
-    out = mod.fetch_counts(user="me", start_year=2021)
+    monkeypatch.setenv("GH_TOKEN", "x")
+    out = mod.fetch_counts(user="me", start_year=2021, request_fn=fake_post)
     assert out == {
         2021: 111 * 2021,
         2022: 111 * 2022,
         2023: 111 * 2023,
     }
-    assert called == [
-        "2021-pr",
-        "2021-issue",
-        "2021-commit",
-        "2022-pr",
-        "2022-issue",
-        "2022-commit",
-        "2023-pr",
-        "2023-issue",
-        "2023-commit",
-    ]
+    assert called == [2021, 2022, 2023]
 
 
 def test_generate_chart(tmp_path, monkeypatch):
