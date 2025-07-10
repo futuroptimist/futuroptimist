@@ -22,14 +22,20 @@ CSV_OUTPUT = Path("assets/annual_contribs.csv")
 
 _GH = "https://api.github.com/search/issues"
 _HDR = {"Accept": "application/vnd.github+json"}
+_HDR_COMMITS = {"Accept": "application/vnd.github.cloak-preview+json"}
 if tok := os.getenv("GITHUB_TOKEN"):
     _HDR["Authorization"] = f"Bearer {tok}"
+    _HDR_COMMITS["Authorization"] = f"Bearer {tok}"
 
 
-def _search_total(q: str, request_fn=requests.get) -> int:
+def _search_total(
+    q: str,
+    request_fn: callable = requests.get,
+    headers: dict[str, str] | None = None,
+) -> int:
     """Return GitHub Search API ``total_count`` for *q*."""
     url = f"{_GH}?q={urllib.parse.quote_plus(q)}&per_page=1"
-    resp = request_fn(url, headers=_HDR, timeout=30)
+    resp = request_fn(url, headers=headers or _HDR, timeout=30)
     resp.raise_for_status()
     return resp.json()["total_count"]
 
@@ -68,7 +74,15 @@ def fetch_counts(
                 file=sys.stderr,
             )
 
-        counts[year] = pr_n + issue_n
+        q_commit = f"author:{user} committer-date:{year}-01-01..{year}-12-31"
+        commit_n = _search_total(q_commit, request_fn, headers=_HDR_COMMITS)
+        if commit_n == 1000:
+            print(
+                f"[warn] Commit query for {year} hit Search API cap (1000).",
+                file=sys.stderr,
+            )
+
+        counts[year] = pr_n + issue_n + commit_n
 
     return collections.OrderedDict(sorted(counts.items()))
 
