@@ -18,27 +18,56 @@ def test_fetch_counts(monkeypatch):
 def test_generate_chart(tmp_path, monkeypatch):
     recorded = {}
 
-    class FakePlt:
-        def figure(self, figsize=None):
-            recorded["figsize"] = figsize
-            return None
+    class FakeAx:
+        def __init__(self):
+            self.spines = {
+                "left": Dummy(),
+                "right": Dummy(),
+                "top": Dummy(),
+                "bottom": Dummy(),
+            }
 
         def bar(self, years, values, color=None):
             recorded["years"] = list(years)
             recorded["values"] = list(values)
 
-        def xticks(self, years):
+        def set_xticks(self, years):
             recorded["xticks"] = list(years)
 
-        def ylabel(self, label):
+        def set_ylabel(self, label):
             recorded["ylabel"] = label
+
+        def grid(self, **kwargs):
+            recorded["grid"] = True
+
+    class Dummy:
+        def set_color(self, c):
+            pass
+
+    class FakeFig:
+        def savefig(self, path, transparent=None):
+            Path(path).write_text("svg")
+            recorded["saved"] = Path(path)
+
+    class FakePlt:
+        def __init__(self):
+            self._rcParams = {}
+
+        def subplots(self, figsize=None):
+            recorded["figsize"] = figsize
+            return FakeFig(), FakeAx()
 
         def tight_layout(self):
             recorded["tight"] = True
 
-        def savefig(self, path, transparent=None):
-            Path(path).write_text("svg")
-            recorded["saved"] = Path(path)
+        # mimic attribute-style access to rcParams.update
+        @property
+        def rcParams(self):
+            return self._rcParams
+
+        @rcParams.setter
+        def rcParams(self, value):
+            self._rcParams = value
 
     monkeypatch.setattr(mod, "plt", FakePlt())
     out = tmp_path / "c.svg"
