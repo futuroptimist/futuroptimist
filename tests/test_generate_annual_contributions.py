@@ -7,14 +7,16 @@ import src.generate_annual_contributions as mod
 def test_fetch_counts(monkeypatch):
     called = []
 
-    def fake_search(q: str, request_fn=None):
-        if "created:" in q:
+    def fake_search(q: str, request_fn=None, headers=None):
+        if "is:pr" in q:
             year = int(q.split("created:")[1].split("-")[0])
-            if "is:issue" in q:
-                called.append(f"{year}-issue")
-                return year * 10
             called.append(f"{year}-pr")
             return year
+        if "is:issue" in q:
+            year = int(q.split("created:")[1].split("-")[0])
+            called.append(f"{year}-issue")
+            return year * 10
+        # commit query
         year = int(q.split("committer-date:")[1].split("-")[0])
         called.append(f"{year}-commit")
         return year * 100
