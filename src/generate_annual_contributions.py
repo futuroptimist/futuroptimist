@@ -1,32 +1,76 @@
-"""Generate yearly contribution stats and chart."""
+"""Generate yearly contribution stats and chart.
+
+Counts issue and pull-request creations across all repositories so totals
+mirror the public GitHub profile contributions graph.
+"""
 
 from __future__ import annotations
 
-import datetime as dt
+import datetime as _dt
 from pathlib import Path
 import sys
-
+import os
 import csv
+import collections
+import urllib.parse
+import requests
 
 import matplotlib.pyplot as plt
-
-try:  # allow package or standalone execution
-    from .generate_contrib_heatmap import fetch_pr_dates
-except ImportError:  # pragma: no cover - direct script execution
-    sys.path.append(str(Path(__file__).resolve().parent))
-    from generate_contrib_heatmap import fetch_pr_dates  # type: ignore
 
 SVG_OUTPUT = Path("assets/annual_contribs.svg")
 CSV_OUTPUT = Path("assets/annual_contribs.csv")
 
+_GH = "https://api.github.com/search/issues"
+_HDR = {"Accept": "application/vnd.github+json"}
+if tok := os.getenv("GITHUB_TOKEN"):
+    _HDR["Authorization"] = f"Bearer {tok}"
 
-def fetch_counts(start_year: int = 2021, end_year: int | None = None) -> dict[int, int]:
-    """Return yearly PR counts from ``start_year`` to ``end_year`` inclusive."""
-    end_year = end_year or dt.date.today().year
+
+def _search_total(q: str, request_fn=requests.get) -> int:
+    """Return GitHub Search API ``total_count`` for *q*."""
+    url = f"{_GH}?q={urllib.parse.quote_plus(q)}&per_page=1"
+    resp = request_fn(url, headers=_HDR, timeout=30)
+    resp.raise_for_status()
+    return resp.json()["total_count"]
+
+
+def fetch_counts(
+    user: str | None = None,
+    start_year: int = 2021,
+    request_fn=requests.get,
+) -> "collections.OrderedDict[int, int]":
+    """Return ``{year: contributions}`` authored by *user*.
+
+    Contributions include issues and pull requests created by the user across
+    all repositories. This approximates GitHub's public contributions graph.
+    """
+
+    user = user or os.getenv("GITHUB_USER") or os.getenv("GITHUB_USERNAME")
+    if not user:
+        raise RuntimeError("Set GITHUB_USER or pass `user=` explicitly.")
+
+    now = _dt.datetime.utcnow().year
     counts: dict[int, int] = {}
-    for year in range(start_year, end_year + 1):
-        counts[year] = len(fetch_pr_dates(year))
-    return counts
+    for year in range(start_year, now + 1):
+        q_pr = f"author:{user} is:pr created:{year}-01-01..{year}-12-31"
+        pr_n = _search_total(q_pr, request_fn)
+        if pr_n == 1000:
+            print(
+                f"[warn] PR query for {year} hit Search API cap (1000).",
+                file=sys.stderr,
+            )
+
+        q_issue = f"author:{user} is:issue created:{year}-01-01..{year}-12-31"
+        issue_n = _search_total(q_issue, request_fn)
+        if issue_n == 1000:
+            print(
+                f"[warn] Issue query for {year} hit Search API cap (1000).",
+                file=sys.stderr,
+            )
+
+        counts[year] = pr_n + issue_n
+
+    return collections.OrderedDict(sorted(counts.items()))
 
 
 def generate_chart(counts: dict[int, int], output: Path = SVG_OUTPUT) -> None:
@@ -48,7 +92,7 @@ def generate_chart(counts: dict[int, int], output: Path = SVG_OUTPUT) -> None:
     fig, ax = plt.subplots(figsize=(4, 2))
     ax.bar(years, values, color="#2ecc71")
     ax.set_xticks(years)
-    ax.set_ylabel("PRs")
+    ax.set_ylabel("Contributions")
     ax.grid(axis="y", linewidth=0.25, alpha=0.3)
     for spine in ax.spines.values():
         spine.set_color("white")

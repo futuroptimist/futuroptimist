@@ -1,18 +1,41 @@
 from pathlib import Path
+import datetime as dt
+
 import src.generate_annual_contributions as mod
 
 
 def test_fetch_counts(monkeypatch):
     called = []
 
-    def fake_fetch(year):
-        called.append(year)
-        return ["d"] * year
+    def fake_search(q: str, request_fn=None):
+        year = int(q.split("created:")[1].split("-")[0])
+        if "is:issue" in q:
+            called.append(f"{year}-issue")
+            return year * 10
+        called.append(f"{year}-pr")
+        return year
 
-    monkeypatch.setattr(mod, "fetch_pr_dates", fake_fetch)
-    out = mod.fetch_counts(2021, 2023)
-    assert out == {2021: 2021, 2022: 2022, 2023: 2023}
-    assert called == [2021, 2022, 2023]
+    class FakeDateTime(dt.datetime):
+        @classmethod
+        def utcnow(cls):
+            return dt.datetime(2023, 1, 1)
+
+    monkeypatch.setattr(mod, "_search_total", fake_search)
+    monkeypatch.setattr(mod._dt, "datetime", FakeDateTime)
+    out = mod.fetch_counts(user="me", start_year=2021)
+    assert out == {
+        2021: 11 * 2021,
+        2022: 11 * 2022,
+        2023: 11 * 2023,
+    }
+    assert called == [
+        "2021-pr",
+        "2021-issue",
+        "2022-pr",
+        "2022-issue",
+        "2023-pr",
+        "2023-issue",
+    ]
 
 
 def test_generate_chart(tmp_path, monkeypatch):
