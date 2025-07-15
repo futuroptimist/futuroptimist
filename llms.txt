@@ -59,8 +59,7 @@ If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$P
 - [Ideas directory](ideas/README.md): format for idea files
 - Example idea – solar aquaponics checklist: [solar_aquaponics.md](ideas/solar_aquaponics.md)
 - For cross-repo quests, see [axel](https://github.com/futuroptimist/axel),
-  [gitshelves](https://github.com/futuroptimist/gitshelves) and
-  [wove](https://github.com/futuroptimist/wove)
+  [gitshelves](https://github.com/futuroptimist/gitshelves), [wove](https://github.com/futuroptimist/wove) and [sugarkube](https://github.com/futuroptimist/sugarkube)
 
 ---
 LLM usage policy: No private data; operate within repo; see LICENSE (MIT).

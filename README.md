@@ -17,6 +17,7 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 - **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin device
 - **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turn GitHub contributions into 3D-printable block models
 - **[wove](https://github.com/futuroptimist/wove)** – open-source toolkit for knitting and robotic looms
+- **[sugarkube](https://github.com/futuroptimist/sugarkube)** – accessible k3s platform for off-grid Raspberry Pi clusters
 
 ## Contributions (issues & PRs I've opened)
 
