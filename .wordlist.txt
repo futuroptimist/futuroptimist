@@ -81,6 +81,7 @@ src
 srt
 streamlit
 subfolders
+sugarkube
 svg
 svgs
 tiktok

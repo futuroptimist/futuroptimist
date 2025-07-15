@@ -123,7 +123,7 @@ Tests under `tests/` cover folder naming (`test_folder_names.py`), schema valida
 - [Contributing guide](CONTRIBUTING.md): PR etiquette and code style details.
 - For cross-project synergy, see the README's **Other Projects** links or explore
   the [axel](https://github.com/futuroptimist/axel), [gitshelves](https://github.com/futuroptimist/gitshelves),
-  and [wove](https://github.com/futuroptimist/wove) repos.
+  [sugarkube](https://github.com/futuroptimist/sugarkube), and [wove](https://github.com/futuroptimist/wove) repos.
 
 ---
 *For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).* 
