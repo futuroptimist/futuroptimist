@@ -2,12 +2,15 @@
 
 *Building open-source tools so anyone can invent, automate & explore.*
 
-[![CI](https://github.com/futuroptimist/futuroptimist/actions/workflows/02-tests.yml/badge.svg)](https://github.com/futuroptimist/futuroptimist/actions/workflows/02-tests.yml)
-[![codecov](https://codecov.io/gh/futuroptimist/futuroptimist/branch/main/graph/badge.svg)](https://codecov.io/gh/futuroptimist/futuroptimist)
+[![Lint & Format](https://img.shields.io/github/actions/workflow/status/futuroptimist/futuroptimist/.github/workflows/01-lint-format.yml?label=lint%20%26%20format)](https://github.com/futuroptimist/futuroptimist/actions/workflows/01-lint-format.yml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/futuroptimist/futuroptimist/.github/workflows/02-tests.yml?label=tests)](https://github.com/futuroptimist/futuroptimist/actions/workflows/02-tests.yml)
+[![Coverage](https://codecov.io/gh/futuroptimist/futuroptimist/branch/main/graph/badge.svg)](https://codecov.io/gh/futuroptimist/futuroptimist)
+[![Docs](https://img.shields.io/github/actions/workflow/status/futuroptimist/futuroptimist/.github/workflows/03-docs.yml?label=docs)](https://github.com/futuroptimist/futuroptimist/actions/workflows/03-docs.yml)
+[![License](https://img.shields.io/github/license/futuroptimist/futuroptimist)](LICENSE)
 
 Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTube channel](https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ). If you're looking for the full project details, see [INSTRUCTIONS.md](INSTRUCTIONS.md). Guidelines for AI tools live in [AGENTS.md](AGENTS.md). The automated tests run via GitHub Actions on each push and pull request and currently reach **100%** coverage.
 
-## Highlight Projects
+## Related Projects
 - **[token.place](https://token.place)** – stateless faucet for LLM inference with zero auth friction ([repo](https://github.com/futuroptimist/token.place))
 - **[DSPACE](https://democratized.space)** – offline-first idle-sim where aquariums meet maker quests ([repo](https://github.com/democratizedspace/dspace))
 - **[flywheel](https://github.com/futuroptimist/flywheel)** – opinionated boilerplate for reproducible CI and releases
@@ -29,3 +32,11 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
   <!-- yearly counts updated nightly -->
   <img src="assets/annual_contribs.svg" alt="Yearly contribution totals" />
 </p>
+
+## Values
+
+We aim for a positive-sum, empathetic community that shares knowledge openly.
+
+---
+
+Licensed under the [MIT License](LICENSE).
