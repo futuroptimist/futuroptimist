@@ -22,17 +22,6 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 - **[wove](https://github.com/futuroptimist/wove)** – open-source toolkit for knitting and robotic looms
 - **[sugarkube](https://github.com/futuroptimist/sugarkube)** – accessible k3s platform for off-grid Raspberry Pi clusters
 
-## Contributions (issues & PRs I've opened)
-
-<p align="center">
-  <!-- generated nightly via GitHub Actions -->
-  <img src="assets/pr_heatmap.svg" alt="Pull-request activity across Futuroptimist repos" />
-</p>
-<p align="center">
-  <!-- yearly counts updated nightly -->
-  <img src="assets/annual_contribs.svg" alt="Yearly contribution totals" />
-</p>
-
 ## Values
 
 We aim for a positive-sum, empathetic community that shares knowledge openly.
