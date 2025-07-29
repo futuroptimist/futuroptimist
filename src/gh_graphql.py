@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any, Dict, List
+
+from .github_auth import get_github_token
 
 import requests
 
@@ -13,7 +14,7 @@ SEARCH_URL = "https://api.github.com/search/commits"
 
 def fetch_contributions(login: str, start: str, end: str) -> List[Dict[str, Any]]:
     """Return commits authored by *login* in the given date range."""
-    token = os.environ["GH_TOKEN"]
+    token = get_github_token()
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.cloak-preview+json",

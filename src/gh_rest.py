@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any, Dict
 
 import requests
+from .github_auth import get_github_token
 
 CACHE_FILE = Path("assets/heatmap_data.json")
 
@@ -30,7 +30,7 @@ def fetch_commit_stats(owner: str, repo: str, sha: str) -> Dict[str, int]:
     if key in cache:
         return cache[key]
 
-    token = os.environ["GH_TOKEN"]
+    token = get_github_token()
     headers = {"Authorization": f"Bearer {token}"}
     url = f"https://api.github.com/repos/{owner}/{repo}/commits/{sha}"
     resp = requests.get(url, headers=headers, timeout=10)
