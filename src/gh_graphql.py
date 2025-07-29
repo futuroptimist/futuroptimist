@@ -13,7 +13,9 @@ SEARCH_URL = "https://api.github.com/search/commits"
 
 def fetch_contributions(login: str, start: str, end: str) -> List[Dict[str, Any]]:
     """Return commits authored by *login* in the given date range."""
-    token = os.environ["GH_TOKEN"]
+    token = os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN")
+    if token is None:
+        raise EnvironmentError("GH_TOKEN or GITHUB_TOKEN must be set")
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.cloak-preview+json",

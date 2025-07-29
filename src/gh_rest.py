@@ -30,7 +30,9 @@ def fetch_commit_stats(owner: str, repo: str, sha: str) -> Dict[str, int]:
     if key in cache:
         return cache[key]
 
-    token = os.environ["GH_TOKEN"]
+    token = os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN")
+    if token is None:
+        raise EnvironmentError("GH_TOKEN or GITHUB_TOKEN must be set")
     headers = {"Authorization": f"Bearer {token}"}
     url = f"https://api.github.com/repos/{owner}/{repo}/commits/{sha}"
     resp = requests.get(url, headers=headers, timeout=10)
