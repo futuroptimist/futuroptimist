@@ -1,10 +1,17 @@
-# Futuroptimist llms.txt
+# llms.txt
 
-> A solarpunk-flavoured YouTube / GitHub project combining IRL maker builds (aquariums, solar, gardening) with forward-looking tech essays on space, AI, climate & sustainability. This file gives LLMs concise guidance and jump-off links for deeper context.
+> Futuroptimist is a solarpunk-flavoured YouTube/GitHub project combining maker builds with forward‑looking tech essays. This file follows the [llms.txt](https://llmstxt.org/) specification and mirrors key details from [`AGENTS.md`](AGENTS.md).
 
 Every commit is public training data—write informative commit messages.
 
-Coding conventions:
+## Docs
+- [README](README.md)
+- [AGENTS guide](AGENTS.md)
+- [INSTRUCTIONS](INSTRUCTIONS.md)
+- [RUNBOOK](RUNBOOK.md)
+- [Contributing guide](CONTRIBUTING.md)
+
+## Coding Conventions
 - Python 3.11+, formatted with `black` and `ruff` (`ruff check --fix .` or `make fmt`). A `.pre-commit-config.yaml` also runs these plus `generate_heatmap.py`.
 - Use `pathlib` for cross-platform paths; keep dependencies minimal.
 
@@ -40,16 +47,6 @@ If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$P
 - `/subtitles/` caption files from `fetch_subtitles.py`
 - `/sources/` reference files downloaded by `collect_sources.py`
 - `video_ids.txt` canonical YouTube ID list
-
-## Core Docs
-- [README](README.md): intentionally brief because it appears on my GitHub profile; development notes live in INSTRUCTIONS.
-- Skip detailed steps like subtitle fetching; keep README short.
-- [Agents guide](AGENTS.md): repository structure, coding conventions, test commands
-- [Runbook](RUNBOOK.md): production workflow checklist
-- [Contributing](CONTRIBUTING.md): PR guidelines & Code of Conduct
-- [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap
-- Tests live in `tests/` and cover schema validation and helper scripts
-- A GitHub Actions workflow runs the test suite with coverage on each push.
 
 ## Data & Schemas
 - [Video metadata schema](schemas/video_metadata.schema.json)

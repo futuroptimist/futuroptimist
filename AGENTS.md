@@ -1,6 +1,6 @@
-# Futuroptimist – Agents.md Guide for AI Tools
+# AGENTS.md
 
-> Welcome! This file orients both AI assistants and human contributors. Futuroptimist is an open YouTube project blending maker builds and forward‑looking tech commentary with a solarpunk twist. Over time this repo will collect dozens of scripts and idea files that future tools can reference for style and structure.
+> Guidance for AI tools and contributors working in the Futuroptimist repository. The project blends maker builds with forward‑looking tech essays in a solarpunk style. This file implements the [AgentsMD](https://agentsmd.net/) specification and mirrors the repo details provided in [`llms.txt`](llms.txt).
 
 Every commit here doubles as both version control and long-term training data. Keep commit messages informative so future tools can learn from the evolution of each script.
 Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
@@ -8,7 +8,15 @@ Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 The main `README.md` is intentionally minimal to maintain a clean GitHub profile.
 Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 
-## Project Top-Level Layout
+## Key Information
+
+- **Primary Topic**: Open-source maker builds and tech storytelling
+- **Secondary Topics**: 3‑D printing, space exploration, sustainability and lightweight ML tools
+- **Audience**: Makers, educators and open-source enthusiasts
+- **Repository URL**: <https://github.com/futuroptimist/futuroptimist>
+- **Spec References**: [AgentsMD](https://agentsmd.net/) and [llms.txt](https://llmstxt.org/)
+
+## Repo Layout
 
 | Path | Purpose |
 |------|---------|
@@ -55,8 +63,7 @@ instead of collecting them at the end.
 
 ## Testing & CI
 
-4. Optionally run `make subtitles` and `python src/collect_sources.py` to
-   download captions and reference files.
+Run `make subtitles` and `python src/collect_sources.py` to download captions and reference files when needed.
 
 The repository includes a simple GitHub Actions workflow (`.github/workflows/02-tests.yml`)
 that installs dependencies and runs the full test suite with coverage on every
@@ -117,10 +124,9 @@ When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make rende
 
 Tests under `tests/` cover folder naming (`test_folder_names.py`), schema validation (`test_metadata_schema.py`) and the helper scripts. Extend them when adding new features.
 
--### Optional
+### Optional
 - [Contributing guide](CONTRIBUTING.md): PR etiquette and code style details.
-- For cross-project synergy, see the README's **Other Projects** links or explore
-  the [axel](https://github.com/futuroptimist/axel), [gitshelves](https://github.com/futuroptimist/gitshelves), [wove](https://github.com/futuroptimist/wove), and [sugarkube](https://github.com/futuroptimist/sugarkube) repos.
+- For cross-project synergy, see the README's **Other Projects** links or explore the [axel](https://github.com/futuroptimist/axel), [gitshelves](https://github.com/futuroptimist/gitshelves), [wove](https://github.com/futuroptimist/wove), and [sugarkube](https://github.com/futuroptimist/sugarkube) repos.
 
 ---
 *For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).* 
