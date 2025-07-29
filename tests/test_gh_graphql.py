@@ -1,3 +1,4 @@
+import pytest
 import src.gh_graphql as gh
 
 
@@ -47,3 +48,21 @@ def test_fetch_contributions_pagination(monkeypatch):
     monkeypatch.setattr(gh.requests, "get", fake_get)
     out = gh.fetch_contributions("me", "2024-01-01", "2024-12-31")
     assert [c["sha"] for c in out] == ["a", "b"]
+
+
+def test_fetch_contributions_falls_back_to_github_token(monkeypatch):
+    def fake_get(url, headers, timeout):
+        assert headers["Authorization"] == "Bearer y"
+        return Resp({"items": []})
+
+    monkeypatch.setenv("GITHUB_TOKEN", "y")
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.setattr(gh.requests, "get", fake_get)
+    assert gh.fetch_contributions("me", "2024-01-01", "2024-12-31") == []
+
+
+def test_fetch_contributions_missing_token(monkeypatch):
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    with pytest.raises(EnvironmentError):
+        gh.fetch_contributions("me", "2024-01-01", "2024-12-31")
