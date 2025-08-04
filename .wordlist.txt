@@ -55,6 +55,10 @@ lt
 makefile
 md
 nas
+agentsmd
+llmstxt
+pyspelling
+wordlist
 ol
 opdpgirohymoaxgqsq
 openai

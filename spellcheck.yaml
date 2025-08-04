@@ -15,4 +15,5 @@ matrix:
       - AGENTS.md
       - INSTRUCTIONS.md
       - RUNBOOK.md
+      - docs/*.md
     default_encoding: utf-8
