@@ -70,3 +70,15 @@ def test_generate_heatmap_writes_files(monkeypatch, tmp_path):
     generate_heatmap.main()
     assert (tmp_path / "assets/heatmap_light.svg").exists()
     assert (tmp_path / "assets/heatmap_dark.svg").exists()
+
+
+def test_generate_heatmap_skips_without_token(monkeypatch, tmp_path, capsys):
+    def fake_fetch(login, start, end):
+        raise EnvironmentError("missing token")
+
+    monkeypatch.setattr(generate_heatmap, "fetch_contributions", fake_fetch)
+    monkeypatch.chdir(tmp_path)
+    generate_heatmap.main()
+    out = capsys.readouterr().out
+    assert "GH_TOKEN" in out
+    assert not (tmp_path / "assets").exists()

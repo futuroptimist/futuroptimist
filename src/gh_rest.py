@@ -7,7 +7,14 @@ from pathlib import Path
 from typing import Any, Dict
 
 import requests
-from .github_auth import get_github_token
+
+try:  # allow imports when running as package or script
+    from .github_auth import get_github_token
+except ImportError:  # pragma: no cover - fallback for script execution
+    import sys
+
+    sys.path.append(str(Path(__file__).resolve().parent))
+    from github_auth import get_github_token
 
 CACHE_FILE = Path("assets/heatmap_data.json")
 
