@@ -50,7 +50,7 @@ def test_fetch_video_info_parses(monkeypatch):
             return html.encode()
 
     resp = Resp()
-    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: resp)
+    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req, timeout=10: resp)
     title, date = sv.fetch_video_info("abc")
     resp.__enter__()
     resp.__exit__(None, None, None)
@@ -70,11 +70,32 @@ def test_fetch_video_info_error(monkeypatch):
             return b"no title here"
 
     r = Resp()
-    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: r)
+    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req, timeout=10: r)
     with pytest.raises(RuntimeError):
         sv.fetch_video_info("abc")
     r.__enter__()
     r.__exit__(None, None, None)
+
+
+def test_fetch_video_info_timeout(monkeypatch):
+    html = "Title: Example\nJan 1, 2024"
+
+    class Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+        def read(self):
+            return html.encode()
+
+    def fake_urlopen(req, *, timeout):
+        assert timeout == 10
+        return Resp()
+
+    monkeypatch.setattr(sv.urllib.request, "urlopen", fake_urlopen)
+    sv.fetch_video_info("abc")
 
 
 def test_main_exits_without_ids(monkeypatch, tmp_path):
@@ -115,7 +136,7 @@ def test_entrypoint(monkeypatch, tmp_path):
             return b"Title: Dummy\nJan 1, 2024"
 
     r = Resp()
-    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: r)
+    monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req, timeout=10: r)
     runpy.run_module("src.scaffold_videos", run_name="__main__")
     r.__enter__()
     r.__exit__(None, None, None)
