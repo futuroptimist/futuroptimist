@@ -1,3 +1,9 @@
+"""Index local media files and write a JSON inventory.
+
+The generated index lists file paths and modification times.
+The output file's parent directories are created automatically.
+"""
+
 import argparse
 import json
 import pathlib
@@ -37,7 +43,9 @@ def main(argv=None):
     if not base.is_dir():
         parser.error(f"{base} is not a directory")
     index = scan_directory(base)
-    pathlib.Path(args.output).write_text(json.dumps(index, indent=2))
+    output_path = pathlib.Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(index, indent=2))
     print(f"Wrote {args.output}")
 
 
