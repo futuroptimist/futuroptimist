@@ -34,6 +34,14 @@ def test_main_invalid_dir(tmp_path):
         ilm.main([str(missing)])
 
 
+def test_creates_output_parent_dirs(tmp_path):
+    f = tmp_path / "clip.mov"
+    f.write_text("x")
+    nested = tmp_path / "out" / "dir" / "index.json"
+    ilm.main([str(tmp_path), "-o", str(nested)])
+    assert nested.exists()
+
+
 def test_entrypoint(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, "argv", ["index_local_media.py", str(tmp_path)])
     (tmp_path).mkdir(exist_ok=True)

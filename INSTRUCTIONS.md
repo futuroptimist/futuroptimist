@@ -52,7 +52,10 @@ This fetches titles and dates to generate `video_scripts/YYYYMMDD_slug` director
 If metadata can't be fetched (network issues or parsing errors) the script
 logs the failure and continues so scaffolding never blocks your workflow.
 
-Large media assets should live in a local `footage/` directory. Use `python src/index_local_media.py` to build `footage_index.json` so you can quickly locate clips while editing.
+Large media assets should live in a local `footage/` directory.
+Use `python src/index_local_media.py` to build `footage_index.json`
+so you can quickly locate clips while editing. The script creates
+the output directory if needed.
 
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).
