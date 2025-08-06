@@ -20,3 +20,14 @@ def test_get_token_missing(monkeypatch):
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     with pytest.raises(EnvironmentError):
         get_github_token()
+
+
+def test_get_token_strips_whitespace(monkeypatch):
+    monkeypatch.setenv("GH_TOKEN", " a\n")
+    assert get_github_token() == "a"
+
+
+def test_get_token_rejects_blank(monkeypatch):
+    monkeypatch.setenv("GH_TOKEN", "  \n\t")
+    with pytest.raises(EnvironmentError):
+        get_github_token()
