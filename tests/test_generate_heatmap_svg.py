@@ -70,3 +70,12 @@ def test_generate_heatmap_writes_files(monkeypatch, tmp_path):
     generate_heatmap.main()
     assert (tmp_path / "assets/heatmap_light.svg").exists()
     assert (tmp_path / "assets/heatmap_dark.svg").exists()
+
+
+def test_generate_heatmap_skips_without_token(monkeypatch, capsys, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    generate_heatmap.main()
+    captured = capsys.readouterr()
+    assert "Skipping heatmap generation" in captured.err

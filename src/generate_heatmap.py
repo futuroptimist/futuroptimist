@@ -53,7 +53,11 @@ def draw_bars(dwg, loc_by_day, start):
 def main() -> None:
     today = dt.date.today()
     start = today - dt.timedelta(days=370)
-    contribs = fetch_contributions("futuroptimist", str(start), str(today))
+    try:
+        contribs = fetch_contributions("futuroptimist", str(start), str(today))
+    except Exception as exc:  # skip if token missing or API fails
+        print(f"Skipping heatmap generation: {exc}", file=sys.stderr)
+        return
     loc_by_day = aggregate_loc(contribs)
     for theme in ("light", "dark"):
         path = Path(f"assets/heatmap_{theme}.svg")
