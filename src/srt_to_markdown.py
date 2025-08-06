@@ -10,6 +10,7 @@ def clean_srt_text(text: str) -> str:
 
     text = html.unescape(text)
     text = text.replace("<i>", "*").replace("</i>", "*")
+    text = text.replace("<b>", "**").replace("</b>", "**")
     return text
 
 

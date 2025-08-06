@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from .github_auth import get_github_token
+try:
+    from .github_auth import get_github_token
+except ImportError:  # pragma: no cover - allow module execution without package context
+    from github_auth import get_github_token  # pragma: no cover
 
 import requests
 

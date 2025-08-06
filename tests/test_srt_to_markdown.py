@@ -39,6 +39,18 @@ def test_unicode_and_italics(tmp_path):
     assert entries == [("00:00:00,000", "00:00:02,000", "*Hello 😊 & welcome*")]
 
 
+def test_bold_tags(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+<b>Bold</b> text
+"""
+    path = tmp_path / "bold.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "**Bold** text")]
+
+
 def test_parse_srt_edge_cases(tmp_path):
     content = """foo
 1
