@@ -51,6 +51,18 @@ def test_bold_tags(tmp_path):
     assert entries == [("00:00:00,000", "00:00:01,000", "**Bold** text")]
 
 
+def test_line_break_tags(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+Hello<br>world<br />again
+"""
+    path = tmp_path / "breaks.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "Hello world again")]
+
+
 def test_parse_srt_edge_cases(tmp_path):
     content = """foo
 1
