@@ -16,7 +16,17 @@ def _clamp(val: int) -> int:
 
 
 def _shade(color: str, factor: float) -> str:
-    c = int(color.lstrip("#"), 16)
+    """Return ``color`` shaded by ``factor``.
+
+    ``color`` must be a hex string in ``#RRGGBB`` format. A ``ValueError`` is raised
+    if the input does not match this pattern or contains invalid hex digits.
+    """
+    if not isinstance(color, str) or not color.startswith("#") or len(color) != 7:
+        raise ValueError("color must be in format '#RRGGBB'")
+    try:
+        c = int(color[1:], 16)
+    except ValueError as exc:  # pragma: no cover - defensive
+        raise ValueError("color must be in format '#RRGGBB'") from exc
     r = (c >> 16) & 0xFF
     g = (c >> 8) & 0xFF
     b = c & 0xFF
