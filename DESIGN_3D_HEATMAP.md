@@ -27,7 +27,7 @@ Files introduced by this feature:
 src/generate_heatmap.py                 # main entrypoint
 src/gh_graphql.py                       # GraphQL helper with retries
 src/gh_rest.py                          # commit → LOC cache
-src/svg3d.py                            # draw isometric bars
+src/svg3d.py                            # draw isometric bars (expects #RRGGBB colors)
 assets/heatmap_light.svg                # auto-generated
 assets/heatmap_dark.svg                 # auto-generated
 ```

@@ -1,3 +1,4 @@
+import pytest
 import svgwrite
 from src import svg3d
 
@@ -19,3 +20,10 @@ def test_draw_bar_adds_polygons():
     polys = [e for e in dwg.elements if isinstance(e, svgwrite.shapes.Polygon)]
     assert len(polys) == 3
     assert polys[0].points == [(0, 5), (12, 5), (16, 1), (4, 1)]
+
+
+def test_shade_invalid_color():
+    with pytest.raises(ValueError):
+        svg3d._shade("123456", 1)
+    with pytest.raises(ValueError):
+        svg3d._shade("#zzzzzz", 1)
