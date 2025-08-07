@@ -8,7 +8,7 @@ def test_update_transcript_links(tmp_path, monkeypatch):
     base = tmp_path
     subs = base / "subtitles"
     subs.mkdir()
-    scripts_dir = base / "scripts"
+    scripts_dir = base / "video_scripts"
     scripts_dir.mkdir()
     meta = scripts_dir / "20240101_test" / "metadata.json"
     meta.parent.mkdir()
@@ -27,7 +27,7 @@ def test_update_transcript_links(tmp_path, monkeypatch):
 
 def test_fetch_from_api_when_missing(tmp_path, monkeypatch):
     base = tmp_path
-    scripts_dir = base / "scripts"
+    scripts_dir = base / "video_scripts"
     scripts_dir.mkdir()
     meta = scripts_dir / "20240101_test" / "metadata.json"
     meta.parent.mkdir()
@@ -93,7 +93,7 @@ def test_fetch_transcript_no_key(monkeypatch):
 
 def test_main_skips_without_video_id(tmp_path, monkeypatch):
     base = tmp_path
-    scripts_dir = base / "scripts"
+    scripts_dir = base / "video_scripts"
     scripts_dir.mkdir()
     meta = scripts_dir / "20250101_test" / "metadata.json"
     meta.parent.mkdir()
@@ -111,10 +111,10 @@ def test_main_skips_without_video_id(tmp_path, monkeypatch):
 
 def test_entrypoint(monkeypatch, tmp_path):
     monkeypatch.setattr(utl, "BASE_DIR", tmp_path)
-    monkeypatch.setattr(utl, "SCRIPT_ROOT", tmp_path / "scripts")
+    monkeypatch.setattr(utl, "SCRIPT_ROOT", tmp_path / "video_scripts")
     monkeypatch.setattr(utl, "SUBS_DIR", tmp_path / "subtitles")
     monkeypatch.setattr(utl, "API_KEY", "")
-    (tmp_path / "scripts").mkdir()
+    (tmp_path / "video_scripts").mkdir()
 
     runpy.run_module("src.update_transcript_links", run_name="__main__")
 

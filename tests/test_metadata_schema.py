@@ -6,7 +6,7 @@ import pytest
 SCHEMA_PATH = pathlib.Path("schemas/video_metadata.schema.json")
 SCHEMA = json.loads(SCHEMA_PATH.read_text())
 
-VIDEO_DIR = pathlib.Path("scripts")
+VIDEO_DIR = pathlib.Path("video_scripts")
 
 
 def test_metadata_files_validate():
