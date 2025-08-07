@@ -8,13 +8,14 @@ from typing import List, Tuple
 def clean_srt_text(text: str) -> str:
     """Normalize SRT caption text for Markdown.
 
-    Converts HTML tags like ``<i>``, ``<b>`` and ``<br>`` to Markdown equivalents.
+    Converts HTML tags like ``<i>``, ``<b>``, and ``<br>`` to Markdown equivalents.
+    Tag matching is case-insensitive.
     """
 
     text = html.unescape(text)
     text = re.sub(r"<br\s*/?>", " ", text, flags=re.IGNORECASE)
-    text = text.replace("<i>", "*").replace("</i>", "*")
-    text = text.replace("<b>", "**").replace("</b>", "**")
+    text = re.sub(r"</?i>", "*", text, flags=re.IGNORECASE)
+    text = re.sub(r"</?b>", "**", text, flags=re.IGNORECASE)
     return text
 
 
