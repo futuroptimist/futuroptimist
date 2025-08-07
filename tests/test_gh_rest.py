@@ -45,6 +45,23 @@ def test_fetch_commit_stats_fetches_and_saves(tmp_path, monkeypatch):
     assert data["o/r@sha2"] == stats
 
 
+def test_fetch_commit_stats_handles_corrupt_cache(tmp_path, monkeypatch):
+    cache = tmp_path / "cache.json"
+    cache.write_text("{broken")
+    monkeypatch.setattr(gh, "CACHE_FILE", cache)
+    monkeypatch.setenv("GH_TOKEN", "x")
+
+    def fake_get(url, headers, timeout):
+        return Resp({"stats": {"additions": 5, "deletions": 6}})
+
+    monkeypatch.setattr(gh.requests, "get", fake_get)
+
+    stats = gh.fetch_commit_stats("o", "r", "sha4")
+    assert stats == {"additions": 5, "deletions": 6}
+    data = json.loads(cache.read_text())
+    assert data["o/r@sha4"] == stats
+
+
 def test_fetch_commit_stats_falls_back_to_github_token(tmp_path, monkeypatch):
     cache = tmp_path / "cache.json"
     monkeypatch.setattr(gh, "CACHE_FILE", cache)

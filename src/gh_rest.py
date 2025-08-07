@@ -18,7 +18,10 @@ CACHE_FILE = Path("assets/heatmap_data.json")
 
 def _load_cache() -> Dict[str, Any]:
     if CACHE_FILE.exists():
-        return json.loads(CACHE_FILE.read_text())
+        try:
+            return json.loads(CACHE_FILE.read_text())
+        except json.JSONDecodeError:
+            return {}
     return {}
 
 

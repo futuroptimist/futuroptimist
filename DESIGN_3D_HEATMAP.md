@@ -16,7 +16,8 @@ shared in chat and explains how the feature slots into this repository.
    API (`contributionsCollection`).
 2. For every commit, retrieve the `additions` and `deletions` via the REST API
    and sum them per day.
-3. Cache commit stats in `assets/heatmap_data.json` to stay inside rate limits.
+3. Cache commit stats in `assets/heatmap_data.json` to stay inside rate limits. If the file
+   becomes corrupted, it's ignored and rebuilt on the next run.
 4. Render the SVGs with `svgwrite` and commit them via the workflow.
 
 ## Implementation outline
