@@ -1,7 +1,10 @@
 import json
-import pytest
-import sys
 import runpy
+import sys
+from datetime import datetime, timezone
+
+import pytest
+
 import src.index_local_media as ilm
 
 
@@ -14,6 +17,15 @@ def test_scan_directory(tmp_path):
     result = ilm.scan_directory(tmp_path)
     names = {r["path"] for r in result}
     assert names == {"dir/a.jpg", "b.mp4"}
+
+
+def test_scan_directory_utc_mtime(tmp_path):
+    file_path = tmp_path / "clip.mp4"
+    file_path.write_text("data")
+    result = ilm.scan_directory(tmp_path)
+    ts = result[0]["mtime"].replace("Z", "+00:00")
+    mtime = datetime.fromisoformat(ts)
+    assert mtime.tzinfo == timezone.utc
 
 
 def test_main(tmp_path, capsys):
