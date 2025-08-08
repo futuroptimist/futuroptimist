@@ -25,6 +25,9 @@ class DummyResp:
 
 def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed"
+        )
         assert "Authorization" in headers
         return DummyResp({"workflow_runs": [{"conclusion": "success"}]})
 
@@ -34,6 +37,9 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed"
+        )
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
@@ -41,12 +47,20 @@ def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+
     def fake_get(url: str, headers: dict, timeout: int):
-        assert url.endswith("&branch=dev")
+        calls.append(url)
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&branch=dev"
+        )
         return DummyResp({"workflow_runs": [{"conclusion": "success"}]})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
+    assert calls == [
+        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&branch=dev"
+    ]
 
 
 def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

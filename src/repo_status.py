@@ -36,9 +36,13 @@ def fetch_repo_status(
     headers = {"Accept": "application/vnd.github+json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=1"
+
+    url = "https://api.github.com/repos/{repo}/actions/runs?per_page=1&status=completed".format(
+        repo=repo
+    )
     if branch:
         url += f"&branch={branch}"
+
     resp = requests.get(url, headers=headers, timeout=10)
     resp.raise_for_status()
     runs = resp.json().get("workflow_runs", [])
