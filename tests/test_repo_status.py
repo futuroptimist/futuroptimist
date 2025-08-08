@@ -40,6 +40,15 @@ def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     assert repo_status.fetch_repo_status("user/repo") == "❌"
 
 
+def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        assert url.endswith("&branch=dev")
+        return DummyResp({"workflow_runs": [{"conclusion": "success"}]})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
+
+
 def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     content = (
         "intro\n\n## Related Projects\n"
