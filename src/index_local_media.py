@@ -1,7 +1,8 @@
 """Index local media files and write a JSON inventory.
 
-The generated index lists file paths and modification times in UTC.
-The output file's parent directories are created automatically.
+The generated index lists file paths, modification times in UTC,
+and file sizes in bytes. The output file's parent directories are
+created automatically.
 """
 
 import argparse
@@ -11,17 +12,28 @@ from datetime import datetime, timezone
 
 
 def scan_directory(base: pathlib.Path):
-    """Return a list of dictionaries describing files under ``base``."""
+    """Return a list of dictionaries describing files under ``base``.
+
+    Each record contains ``path``, ``mtime`` (ISO timestamp in UTC), and
+    file ``size`` in bytes.
+    """
     records = []
     for path in base.rglob("*"):
         if path.is_file():
+            stat = path.stat()
             mtime = (
-                datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+                datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
                 .isoformat()
                 .replace("+00:00", "Z")
             )
             rel_path = str(path.relative_to(base)).replace("\\", "/")
-            records.append({"path": rel_path, "mtime": mtime})
+            records.append(
+                {
+                    "path": rel_path,
+                    "mtime": mtime,
+                    "size": stat.st_size,
+                }
+            )
     return sorted(records, key=lambda r: r["mtime"])
 
 

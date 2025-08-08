@@ -58,7 +58,10 @@ instead of collecting them at the end.
 - Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`. Optional fields like `slug`, `thumbnail`, `transcript_file`, and `summary` enrich automation but aren't required.
 - Each script folder may include a `sources.txt` file with one URL per line. Any downloaded articles or clips are for reference only—check usage rights and cite sources in **APA style** rather than redistributing content.
 - Each script folder may also contain a `footage.md` checklist to track B-roll or CGI shots to gather. Note existing archive vs new footage, and flag generative AI segments so they don't look like "AI slop".
-- Large photos or video files belong in a local `footage/` folder (ignored by git). Run `python src/index_local_media.py` whenever assets change to rebuild `footage_index.json` for quick lookup during editing.
+- Large photos or video files belong in a local `footage/` folder (ignored by git).
+  Run `python src/index_local_media.py` whenever assets change to rebuild
+  `footage_index.json` for quick lookup during editing. Each entry records the
+  file path, modification time, and size in bytes.
 - Run `python src/update_transcript_links.py` to sync `transcript_file` paths; with `YOUTUBE_API_KEY` set it also fetches missing captions via YouTube Data API.
 
 ## Testing & CI

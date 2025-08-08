@@ -17,6 +17,8 @@ def test_scan_directory(tmp_path):
     result = ilm.scan_directory(tmp_path)
     names = {r["path"] for r in result}
     assert names == {"dir/a.jpg", "b.mp4"}
+    sizes = {r["size"] for r in result}
+    assert sizes == {1}
 
 
 def test_scan_directory_utc_mtime(tmp_path):
@@ -37,6 +39,7 @@ def test_main(tmp_path, capsys):
     assert out_file.exists()
     data = json.loads(out_file.read_text())
     assert data[0]["path"] == "x.txt"
+    assert data[0]["size"] == 2
     assert "Wrote" in captured.out
 
 
