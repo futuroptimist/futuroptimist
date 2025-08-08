@@ -75,6 +75,18 @@ Hello<br>world<br />again
     assert entries == [("00:00:00,000", "00:00:01,000", "Hello world again")]
 
 
+def test_strip_unknown_html_tags(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+<u>Under</u> <font color='red'>color</font>
+"""
+    path = tmp_path / "unknown.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "Under color")]
+
+
 def test_parse_srt_edge_cases(tmp_path):
     content = """foo
 1
