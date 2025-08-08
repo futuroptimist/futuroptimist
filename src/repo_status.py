@@ -13,7 +13,7 @@ from pathlib import Path
 
 import requests
 
-GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)")
+GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -29,12 +29,16 @@ def status_to_emoji(conclusion: str | None) -> str:
     return "✅" if conclusion == "success" else "❌"
 
 
-def fetch_repo_status(repo: str, token: str | None = None) -> str:
+def fetch_repo_status(
+    repo: str, token: str | None = None, branch: str | None = None
+) -> str:
     """Fetch the latest workflow run conclusion for ``repo`` and return an emoji."""
     headers = {"Accept": "application/vnd.github+json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
     url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=1"
+    if branch:
+        url += f"&branch={branch}"
     resp = requests.get(url, headers=headers, timeout=10)
     resp.raise_for_status()
     runs = resp.json().get("workflow_runs", [])
@@ -56,7 +60,8 @@ def update_readme(readme_path: Path, token: str | None = None) -> None:
             match = GITHUB_RE.search(line)
             if match:
                 repo = f"{match.group(1)}/{match.group(2)}"
-                emoji = fetch_repo_status(repo, token)
+                branch = match.group(3)
+                emoji = fetch_repo_status(repo, token, branch)
                 # remove existing emoji
                 lines[i] = re.sub(r"^(-\s*)(?:✅|❌)?\s*", r"\1", line)
                 lines[i] = f"- {emoji} {lines[i][2:].lstrip()}"

@@ -40,16 +40,30 @@ def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     assert repo_status.fetch_repo_status("user/repo") == "❌"
 
 
+def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        assert url.endswith("&branch=dev")
+        return DummyResp({"workflow_runs": [{"conclusion": "success"}]})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
+
+
 def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     content = (
         "intro\n\n## Related Projects\n"
         "- https://github.com/user/repo\n"
-        "- ❌ https://github.com/other/repo\n\n## Footer\n"
+        "- ❌ https://github.com/other/repo/tree/dev\n\n## Footer\n"
     )
     readme = tmp_path / "README.md"
     readme.write_text(content)
 
-    def fake_status(repo: str, token: str | None = None) -> str:
+    calls: list[tuple[str, str | None]] = []
+
+    def fake_status(
+        repo: str, token: str | None = None, branch: str | None = None
+    ) -> str:
+        calls.append((repo, branch))
         return {"user/repo": "✅", "other/repo": "❌"}[repo]
 
     monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
@@ -57,5 +71,6 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     lines = readme.read_text().splitlines()
     assert lines[3] == "- ✅ https://github.com/user/repo"
-    assert lines[4] == "- ❌ https://github.com/other/repo"
+    assert lines[4] == "- ❌ https://github.com/other/repo/tree/dev"
     assert lines[6] == "## Footer"
+    assert calls == [("user/repo", None), ("other/repo", "dev")]
