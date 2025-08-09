@@ -32,7 +32,7 @@
 
 [NARRATOR]: MR, or mixed reality, is a hybrid of AR and VR.
 
-[NARRATOR]: MR is a pretty broad spectrum and covers a lot of different blends of AR and VR, but one of the more relevant versions for today's discussion is one where a realtime camera feed is overlayed with virtual objects and presented to the user.
+[NARRATOR]: MR is a pretty broad spectrum and covers a lot of different blends of AR and VR, but one of the more relevant versions for today's discussion is one where a realtime camera feed is overlaid with virtual objects and presented to the user.
 
 [NARRATOR]: A potentially familiar example is Pokémon GO, where you can overlay virtual Pokémon on your phone's camera.
 
@@ -48,7 +48,7 @@
 
 [NARRATOR]: MR, or mixed reality, is a hybrid of AR and VR.
 
-[NARRATOR]: MR is a pretty broad spectrum and covers a lot of different blends of AR and VR, but one of the more relevant versions for today's discussion is one where a realtime camera feed is overlayed with virtual objects and presented to the user.
+[NARRATOR]: MR is a pretty broad spectrum and covers a lot of different blends of AR and VR, but one of the more relevant versions for today's discussion is one where a realtime camera feed is overlaid with virtual objects and presented to the user.
 
 [NARRATOR]: A potentially familiar example is Pokémon GO, where you can overlay virtual Pokémon on your phone's camera.
 
