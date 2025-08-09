@@ -9,7 +9,7 @@ from src.repo_status import status_to_emoji
 def test_status_to_emoji() -> None:
     assert status_to_emoji("success") == "✅"
     assert status_to_emoji("failure") == "❌"
-    assert status_to_emoji(None) == "❌"
+    assert status_to_emoji(None) == "❓"
 
 
 class DummyResp:
@@ -43,7 +43,7 @@ def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
-    assert repo_status.fetch_repo_status("user/repo") == "❌"
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
 
 
 def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
