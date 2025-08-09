@@ -2,6 +2,8 @@ import json
 import runpy
 import sys
 from datetime import datetime, timezone
+import os
+import pathlib
 
 import pytest
 
@@ -55,6 +57,22 @@ def test_creates_output_parent_dirs(tmp_path):
     nested = tmp_path / "out" / "dir" / "index.json"
     ilm.main([str(tmp_path), "-o", str(nested)])
     assert nested.exists()
+
+
+def test_scan_directory_deterministic_order(tmp_path, monkeypatch):
+    f1 = tmp_path / "b.txt"
+    f2 = tmp_path / "a.txt"
+    for f in (f1, f2):
+        f.write_text("x")
+        os.utime(f, (1234567890, 1234567890))
+
+    def fake_rglob(self, pattern):
+        assert self == tmp_path
+        return [f1, f2]
+
+    monkeypatch.setattr(pathlib.Path, "rglob", fake_rglob)
+    result = ilm.scan_directory(tmp_path)
+    assert [r["path"] for r in result] == ["a.txt", "b.txt"]
 
 
 def test_entrypoint(tmp_path, monkeypatch):
