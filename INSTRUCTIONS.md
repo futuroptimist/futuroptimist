@@ -40,7 +40,9 @@ pre-commit install  # optional: run hooks (formatters + heatmap check) on commit
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
-and `read:org` scopes when generating heatmaps or fetching commit stats.
+and `read:org` scopes when generating heatmaps or fetching commit stats. You may
+also set `GH_TOKEN_FILE` or `GITHUB_TOKEN_FILE` to point at a file containing
+the token.
 
 Create new script folders from the IDs in `video_ids.txt`:
 
