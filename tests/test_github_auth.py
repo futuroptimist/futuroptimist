@@ -65,3 +65,11 @@ def test_github_token_file_fallback(monkeypatch, tmp_path):
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     monkeypatch.setenv("GITHUB_TOKEN_FILE", str(token_file))
     assert get_github_token() == "filetoken"
+
+
+def test_missing_token_file_uses_env(monkeypatch, tmp_path):
+    missing = tmp_path / "missing.txt"
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.setenv("GH_TOKEN_FILE", str(missing))
+    monkeypatch.setenv("GITHUB_TOKEN", "b")
+    assert get_github_token() == "b"
