@@ -75,6 +75,18 @@ Hello<br>world<br />again
     assert entries == [("00:00:00,000", "00:00:01,000", "Hello world again")]
 
 
+def test_nbsp_entities(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+Hello&nbsp;world
+"""
+    path = tmp_path / "nbsp.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "Hello world")]
+
+
 def test_strip_unknown_html_tags(tmp_path):
     srt = """1
 00:00:00,000 --> 00:00:01,000
