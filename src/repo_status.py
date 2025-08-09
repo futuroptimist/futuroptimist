@@ -1,8 +1,9 @@
 """Update README with repo status emojis.
 
 Fetches the latest GitHub Actions run for each repo listed in the README's
-"Related Projects" section and prepends a green check or red cross depending on
-whether the most recent workflow run on the default branch succeeded.
+"Related Projects" section and prepends a green check, red cross, or question
+mark depending on whether the most recent workflow run on the default branch
+completed successfully, failed, or hasn't completed.
 """
 
 from __future__ import annotations
@@ -23,10 +24,13 @@ def status_to_emoji(conclusion: str | None) -> str:
     ----------
     conclusion:
         The `conclusion` field from a workflow run, e.g. ``"success"`` or
-        ``"failure"``. ``None`` indicates no runs or an in-progress run.
+        ``"failure"``. ``None`` indicates no completed runs.
     """
-
-    return "✅" if conclusion == "success" else "❌"
+    if conclusion == "success":
+        return "✅"
+    if conclusion is None:
+        return "❓"
+    return "❌"
 
 
 def fetch_repo_status(
