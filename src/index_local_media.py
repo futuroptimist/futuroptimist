@@ -15,7 +15,8 @@ def scan_directory(base: pathlib.Path):
     """Return a list of dictionaries describing files under ``base``.
 
     Each record contains ``path``, ``mtime`` (ISO timestamp in UTC), and
-    file ``size`` in bytes.
+    file ``size`` in bytes. The list is sorted by modification time and
+    then by path to produce deterministic output.
     """
     records = []
     for path in base.rglob("*"):
@@ -34,7 +35,7 @@ def scan_directory(base: pathlib.Path):
                     "size": stat.st_size,
                 }
             )
-    return sorted(records, key=lambda r: r["mtime"])
+    return sorted(records, key=lambda r: (r["mtime"], r["path"]))
 
 
 def main(argv=None):
