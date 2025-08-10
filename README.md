@@ -13,7 +13,7 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTub
 ## Related Projects
 Status icons: ✅ latest run succeeded, ❌ failed, ❓ no completed runs.
 - ❌ **[token.place](https://token.place)** – stateless faucet for LLM inference with zero auth friction ([repo](https://github.com/futuroptimist/token.place))
-- ❌ **[DSPACE](https://democratized.space)** @v3 – offline-first idle-sim where aquariums meet maker quests ([repo](https://github.com/democratizedspace/dspace/tree/v3))
+- ✅ **[DSPACE](https://democratized.space)** @v3 – offline-first idle-sim where aquariums meet maker quests ([repo](https://github.com/democratizedspace/dspace/tree/v3))
 - ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – opinionated boilerplate for reproducible CI and releases
 - ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – guardian-angel LLM that nudges safer digital hygiene
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – bulk-copy files from nested dirs straight to your clipboard
@@ -21,7 +21,7 @@ Status icons: ✅ latest run succeeded, ❌ failed, ❓ no completed runs.
 - ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin device
 - ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turn GitHub contributions into 3D-printable block models
 - ✅ **[wove](https://github.com/futuroptimist/wove)** – open-source toolkit for knitting and robotic looms
-- ❌ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – accessible k3s platform for off-grid Raspberry Pi clusters
+- ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – accessible k3s platform for off-grid Raspberry Pi clusters
 
 ## Values
 
