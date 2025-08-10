@@ -34,9 +34,18 @@ def status_to_emoji(conclusion: str | None) -> str:
 
 
 def fetch_repo_status(
-    repo: str, token: str | None = None, branch: str | None = None
+    repo: str,
+    token: str | None = None,
+    branch: str | None = None,
+    attempts: int = 2,
 ) -> str:
-    """Fetch the latest workflow run conclusion for ``repo`` and return an emoji."""
+    """Fetch the latest workflow run conclusion for ``repo`` and return an emoji.
+
+    The GitHub API occasionally returns inconsistent data if a workflow is
+    updating while we query it. To catch this non-determinism we fetch the
+    status multiple times and ensure all results match. If they differ we raise
+    ``RuntimeError`` so the calling workflow fails loudly.
+    """
     headers = {"Accept": "application/vnd.github+json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -47,11 +56,18 @@ def fetch_repo_status(
     if branch:
         url += f"&branch={branch}"
 
-    resp = requests.get(url, headers=headers, timeout=10)
-    resp.raise_for_status()
-    runs = resp.json().get("workflow_runs", [])
-    conclusion = runs[0].get("conclusion") if runs else None
-    return status_to_emoji(conclusion)
+    def _fetch() -> str | None:
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        runs = resp.json().get("workflow_runs", [])
+        return runs[0].get("conclusion") if runs else None
+
+    conclusions = [_fetch() for _ in range(attempts)]
+    if len(set(conclusions)) > 1:
+        raise RuntimeError(
+            f"Non-deterministic workflow conclusion for {repo}: {conclusions}"
+        )
+    return status_to_emoji(conclusions[0])
 
 
 def update_readme(readme_path: Path, token: str | None = None) -> None:
@@ -71,7 +87,7 @@ def update_readme(readme_path: Path, token: str | None = None) -> None:
                 branch = match.group(3)
                 emoji = fetch_repo_status(repo, token, branch)
                 # remove existing emoji
-                lines[i] = re.sub(r"^(-\s*)(?:✅|❌)?\s*", r"\1", line)
+                lines[i] = re.sub(r"^(-\s*)(?:[✅❌❓]\s*)*", r"\1", line)
                 lines[i] = f"- {emoji} {lines[i][2:].lstrip()}"
     readme_path.write_text("\n".join(lines) + "\n")
 
