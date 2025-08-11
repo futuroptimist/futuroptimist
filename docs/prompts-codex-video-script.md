@@ -15,7 +15,8 @@ PURPOSE:
 Turn transcripts or ideas into properly formatted video scripts.
 
 CONTEXT:
-- Each script lives under `video_scripts/YYYYMMDD_slug/`.
+- Early drafts live under `video_scripts/drafts/slug/` to avoid implying a release date.
+- Finalized scripts move to `video_scripts/YYYYMMDD_slug/`.
 - `script.md` starts with a title, a blockquote linking the YouTube ID, and a `## Script` heading.
 - Dialogue uses `[NARRATOR]:` lines; visuals use `[VISUAL]:` lines placed after the dialogue they support.
 - Leave a blank line between narration and visual lines.
@@ -24,7 +25,7 @@ CONTEXT:
 - Run `pre-commit run --all-files` and `pytest -q` before committing.
 
 REQUEST:
-1. Create a new `video_scripts/{date}_{slug}/` folder.
+1. Create a new `video_scripts/drafts/{slug}/` folder for the draft.
 2. Write `script.md` and `metadata.json` following the format above.
 3. Include `sources.txt` when helpful.
 4. Ensure all required commands pass.
