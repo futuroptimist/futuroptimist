@@ -28,7 +28,7 @@ Status icons: ✅ latest run succeeded, ❌ failed, ❓ no completed runs.
 - ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker for repos and next steps
 - ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin device
 - ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turn GitHub contributions into 3D-printable block models
-- ✅ **[wove](https://github.com/futuroptimist/wove)** – open-source toolkit for knitting and robotic looms
+- ❌ **[wove](https://github.com/futuroptimist/wove)** – open-source toolkit for knitting and robotic looms
 - ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – accessible k3s platform for off-grid Raspberry Pi clusters
 
 ## Values
