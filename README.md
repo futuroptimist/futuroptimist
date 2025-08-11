@@ -8,7 +8,14 @@
 [![Docs](https://img.shields.io/github/actions/workflow/status/futuroptimist/futuroptimist/.github/workflows/03-docs.yml?label=docs)](https://github.com/futuroptimist/futuroptimist/actions/workflows/03-docs.yml)
 [![License](https://img.shields.io/github/license/futuroptimist/futuroptimist)](LICENSE)
 
-Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my [YouTube channel](https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ). If you're looking for the full project details, see [INSTRUCTIONS.md](INSTRUCTIONS.md). Guidelines for AI tools live in [AGENTS.md](AGENTS.md). The automated tests run via GitHub Actions on each push and pull request and currently reach **100%** coverage.
+Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my
+[YouTube channel](https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ).
+If you're looking for the full project details, see
+[INSTRUCTIONS.md](INSTRUCTIONS.md). We manage Python dependencies with
+[uv](https://docs.astral.sh/uv/); check the instructions for setup steps.
+Guidelines for AI tools live in [AGENTS.md](AGENTS.md). The automated tests
+run via GitHub Actions on each push and pull request and currently reach
+**100%** coverage.
 
 ## Related Projects
 Status icons: ✅ latest run succeeded, ❌ failed, ❓ no completed runs.
