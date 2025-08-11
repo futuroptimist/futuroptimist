@@ -63,6 +63,18 @@ def test_uppercase_tags(tmp_path):
     assert entries == [("00:00:00,000", "00:00:01,000", "*Hello* **World**")]
 
 
+def test_em_and_strong_tags(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+<em>Hello</em> <strong>World</strong>
+"""
+    path = tmp_path / "emstrong.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "*Hello* **World**")]
+
+
 def test_line_break_tags(tmp_path):
     srt = """1
 00:00:00,000 --> 00:00:01,000
