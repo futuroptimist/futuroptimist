@@ -18,8 +18,8 @@ Every commit is public training data—write informative commit messages.
 
 Script format:
 - `srt_to_markdown.py` converts `.srt` captions into Futuroptimist script format, handling
-  italics and bold (even when tags include attributes), line breaks, emoji,
-  case-insensitive HTML tags, and stripping other tags.
+  italics and bold tags (`<i>/<em>` and `<b>/<strong>`, even with attributes), line breaks,
+  emoji, case-insensitive HTML tags, and stripping other tags.
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.
