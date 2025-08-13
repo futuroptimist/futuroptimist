@@ -7,6 +7,7 @@ import sys
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "video_scripts"
+USER_AGENT = "futuroptimist-bot/1.0"
 
 
 def download_url(url: str, dest: pathlib.Path) -> bool:
@@ -15,7 +16,8 @@ def download_url(url: str, dest: pathlib.Path) -> bool:
     Returns ``True`` on success and ``False`` if the request fails.
     """
     try:
-        with urllib.request.urlopen(url) as resp:
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req) as resp:
             dest.write_bytes(resp.read())
         return True
     except urllib.error.URLError as exc:
