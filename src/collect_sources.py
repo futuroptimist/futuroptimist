@@ -3,7 +3,7 @@ import urllib.request  # noqa: F401
 import urllib.error
 import urllib.parse
 
-from .http import urlopen_http
+from .http_utils import urlopen_http
 import json
 import sys
 

@@ -3,7 +3,7 @@ import os
 import pathlib
 import urllib.request  # noqa: F401
 
-from .http import urlopen_http
+from .http_utils import urlopen_http
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 SCRIPT_ROOT = BASE_DIR / "video_scripts"

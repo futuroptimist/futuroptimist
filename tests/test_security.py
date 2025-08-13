@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from src.http import urlopen_http
+from src.http_utils import urlopen_http
 
 
 def test_security_badges_present() -> None:

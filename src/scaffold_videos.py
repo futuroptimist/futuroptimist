@@ -3,7 +3,7 @@ import pathlib
 import sys
 import urllib.request  # noqa: F401
 
-from .http import urlopen_http
+from .http_utils import urlopen_http
 import re
 import datetime
 
