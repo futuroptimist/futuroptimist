@@ -9,6 +9,7 @@ import sys
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "video_scripts"
+USER_AGENT = "futuroptimist-bot/1.0"
 
 
 def download_url(url: str, dest: pathlib.Path) -> bool:
@@ -17,7 +18,8 @@ def download_url(url: str, dest: pathlib.Path) -> bool:
     Returns ``True`` on success and ``False`` if the request fails.
     """
     try:
-        with urlopen_http(url) as resp:
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req) as resp:
             dest.write_bytes(resp.read())
         return True
     except urllib.error.URLError as exc:
@@ -45,7 +47,7 @@ def process_video_dir(video_dir: pathlib.Path) -> None:
         if dest.exists() or download_url(url, dest):
             mapping[url] = dest.name
 
-    (video_dir / "sources.json").write_text(json.dumps(mapping, indent=2))
+    (video_dir / "sources.json").write_text(json.dumps(mapping, indent=2) + "\n")
 
 
 def main() -> None:

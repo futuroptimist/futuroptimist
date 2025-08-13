@@ -21,7 +21,12 @@ def read_video_ids():
     if not IDS_FILE.exists():
         sys.stderr.write(f"IDs file {IDS_FILE} not found.\n")
         sys.exit(1)
-    return [line.strip() for line in IDS_FILE.read_text().splitlines() if line.strip()]
+    ids = []
+    for line in IDS_FILE.read_text().splitlines():
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#"):
+            ids.append(stripped)
+    return ids
 
 
 def download_subtitles(video_id: str):
