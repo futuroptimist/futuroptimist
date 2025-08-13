@@ -85,6 +85,13 @@ def test_main_exits_without_ids(monkeypatch, tmp_path):
         sv.main()
 
 
+def test_read_video_ids_ignores_comments(tmp_path, monkeypatch):
+    ids = tmp_path / "video_ids.txt"
+    ids.write_text("A\n# skip\nB\n")
+    monkeypatch.setattr(sv, "IDS_FILE", ids)
+    assert sv.read_video_ids() == ["A", "B"]
+
+
 def test_main_handles_fetch_error(monkeypatch, tmp_path):
     (tmp_path / "video_ids.txt").write_text("BAD\n")
     monkeypatch.setattr(sv, "BASE_DIR", tmp_path)

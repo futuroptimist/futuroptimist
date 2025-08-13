@@ -4,7 +4,10 @@ import src.collect_sources as cs
 
 
 def test_download_url_handles_error(monkeypatch, tmp_path):
-    def fake_urlopen(url):
+    seen = {}
+
+    def fake_urlopen(req):
+        seen["ua"] = req.get_header("User-agent")
         raise urllib.error.URLError("boom")
 
     monkeypatch.setattr(cs.urllib.request, "urlopen", fake_urlopen)
@@ -12,6 +15,7 @@ def test_download_url_handles_error(monkeypatch, tmp_path):
     result = cs.download_url("http://example.com/file.txt", dest)
     assert result is False
     assert not dest.exists()
+    assert seen["ua"] == cs.USER_AGENT
 
 
 def test_download_url_success(monkeypatch, tmp_path):
@@ -28,7 +32,11 @@ def test_download_url_success(monkeypatch, tmp_path):
         def read(self):
             return self.data
 
-    monkeypatch.setattr(cs.urllib.request, "urlopen", lambda url: DummyResponse())
+    def fake_urlopen(req):
+        assert req.get_header("User-agent") == cs.USER_AGENT
+        return DummyResponse()
+
+    monkeypatch.setattr(cs.urllib.request, "urlopen", fake_urlopen)
     dest = tmp_path / "out.txt"
     result = cs.download_url("http://example.com/out.txt", dest)
     assert result is True
@@ -84,3 +92,19 @@ def test_cli_entrypoint(monkeypatch, tmp_path):
     fake_process(d)  # ensure line coverage
     runpy.run_module("src.collect_sources", run_name="__main__")
     assert called
+
+
+def test_sources_json_has_trailing_newline(monkeypatch, tmp_path):
+    vid_dir = tmp_path / "20250101_newline"
+    vid_dir.mkdir()
+    (vid_dir / "sources.txt").write_text("http://example.com/a.txt\n")
+
+    def fake_download(url, dest):
+        dest.write_text("data")
+        return True
+
+    monkeypatch.setattr(cs, "download_url", fake_download)
+    cs.process_video_dir(vid_dir)
+
+    content = (vid_dir / "sources.json").read_text()
+    assert content.endswith("\n")

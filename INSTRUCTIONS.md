@@ -4,7 +4,7 @@ This document collects the full workflow for managing video scripts and metadata
 
 ## Current State
 
-1. **video_ids.txt** – list of the canonical YouTube IDs for each long-form video (no Shorts).
+1. **video_ids.txt** – list of the canonical YouTube IDs for each long-form video (no Shorts); lines starting with `#` are treated as comments.
 2. **subtitles/** – English subtitle files (`.srt`) downloaded directly from YouTube. Use the helper script below to populate this folder.
 3. **src/** – helper utilities and CLI tools.
 4. **RUNBOOK.md** – living production checklist covering the end-to-end video workflow.
@@ -79,7 +79,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | 6️⃣  Community | • GitHub Discussions integration for crowdsourced fact-checks.<br>• Scheduled newsletter builder that stitches new scripts + links. | Audience feedback loop |
 | 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders.<br>• FFmpeg rendering scripts for rough-cut assembly and caption burn-in.<br>• CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
 | 8️⃣  Publish Orchestration | • YouTube Data API V3 upload endpoint (draft/private).<br>• Automatic thumbnail + metadata attach from repo files.<br>• Post-publish annotation back into metadata.json (video url, processing times). | One-command release |
-| 9️⃣  Source Archival | • `collect_sources.py` downloads HTML/mp4 references from `sources.txt` into `sources/` subfolders.<br>• `sources.json` maps URLs to filenames for easy citation. | Reliable citation & reproducibility |
+| 9️⃣  Source Archival | • `collect_sources.py` downloads HTML/mp4 references from `sources.txt` into `sources/` subfolders with a friendly `User-Agent`.<br>• `sources.json` maps URLs to filenames for easy citation. | Reliable citation & reproducibility |
 
 *(Tick items as we progress!)*
 
