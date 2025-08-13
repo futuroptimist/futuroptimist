@@ -7,7 +7,7 @@ import shutil
 
 def test_read_video_ids(tmp_path, monkeypatch):
     ids_file = tmp_path / "video_ids.txt"
-    ids_file.write_text("A\nB\n  \nC\n")
+    ids_file.write_text("A\n# comment\nB\n  \nC\n")
     monkeypatch.setattr(fs, "IDS_FILE", ids_file)
     result = fs.read_video_ids()
     assert result == ["A", "B", "C"]

@@ -53,7 +53,7 @@ If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$P
 - `/tests/` pytest suites
 - `/subtitles/` caption files from `fetch_subtitles.py`
 - `/sources/` reference files downloaded by `collect_sources.py`
-- `video_ids.txt` canonical YouTube ID list
+- `video_ids.txt` canonical YouTube ID list (`#` lines are comments)
 
 ## Data & Schemas
 - [Video metadata schema](schemas/video_metadata.schema.json)
