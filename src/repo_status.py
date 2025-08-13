@@ -20,17 +20,15 @@ GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+
 def status_to_emoji(conclusion: str | None) -> str:
     """Return an emoji representing the run conclusion.
 
-    Parameters
-    ----------
-    conclusion:
-        The `conclusion` field from a workflow run, e.g. ``"success"`` or
-        ``"failure"``. ``None`` indicates no completed runs.
+    - ``"success"`` → ✅
+    - ``"failure"`` → ❌
+    - anything else (including ``None``) → ❓
     """
     if conclusion == "success":
         return "✅"
-    if conclusion is None:
-        return "❓"
-    return "❌"
+    if conclusion == "failure":
+        return "❌"
+    return "❓"
 
 
 def fetch_repo_status(
