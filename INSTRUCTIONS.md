@@ -4,7 +4,7 @@ This document collects the full workflow for managing video scripts and metadata
 
 ## Current State
 
-1. **video_ids.txt** – list of the canonical YouTube IDs for each long-form video (no Shorts).
+1. **video_ids.txt** – list of the canonical YouTube IDs for each long-form video (no Shorts); lines starting with `#` are treated as comments.
 2. **subtitles/** – English subtitle files (`.srt`) downloaded directly from YouTube. Use the helper script below to populate this folder.
 3. **src/** – helper utilities and CLI tools.
 4. **RUNBOOK.md** – living production checklist covering the end-to-end video workflow.
