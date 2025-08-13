@@ -1,7 +1,9 @@
 import json
 import os
 import pathlib
-import urllib.request
+import urllib.request  # noqa: F401
+
+from .http import urlopen_http
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 SCRIPT_ROOT = BASE_DIR / "video_scripts"
@@ -16,7 +18,7 @@ def fetch_transcript(video_id: str) -> pathlib.Path | None:
     if not API_KEY:
         return None
     try:
-        with urllib.request.urlopen(LIST_URL.format(vid=video_id, key=API_KEY)) as resp:
+        with urlopen_http(LIST_URL.format(vid=video_id, key=API_KEY)) as resp:
             listing = json.loads(resp.read().decode())
         cid = None
         for item in listing.get("items", []):
@@ -26,7 +28,7 @@ def fetch_transcript(video_id: str) -> pathlib.Path | None:
                 break
         if not cid:
             return None
-        with urllib.request.urlopen(DOWNLOAD_URL.format(cid=cid, key=API_KEY)) as resp:
+        with urlopen_http(DOWNLOAD_URL.format(cid=cid, key=API_KEY)) as resp:
             data = resp.read().decode()
         SUBS_DIR.mkdir(exist_ok=True)
         dest = SUBS_DIR / f"{video_id}.srt"
