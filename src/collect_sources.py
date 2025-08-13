@@ -1,7 +1,8 @@
 import pathlib
-import urllib.request
 import urllib.error
 import urllib.parse
+
+from .http_utils import urlopen_http
 import json
 import sys
 
@@ -15,7 +16,7 @@ def download_url(url: str, dest: pathlib.Path) -> bool:
     Returns ``True`` on success and ``False`` if the request fails.
     """
     try:
-        with urllib.request.urlopen(url) as resp:
+        with urlopen_http(url) as resp:
             dest.write_bytes(resp.read())
         return True
     except urllib.error.URLError as exc:

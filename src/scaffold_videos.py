@@ -2,6 +2,8 @@ import json
 import pathlib
 import sys
 import urllib.request
+
+from .http_utils import urlopen_http
 import re
 import datetime
 
@@ -48,7 +50,7 @@ def slugify(text: str) -> str:
 def fetch_video_info(video_id: str):
     url = f"https://r.jina.ai/https://www.youtube.com/watch?v={video_id}"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    html = urllib.request.urlopen(req).read().decode("utf-8", "ignore")
+    html = urlopen_http(req).read().decode("utf-8", "ignore")
     title_match = re.search(r"^Title: (.+)", html, re.MULTILINE)
     date_match = re.search(r"([A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})", html)
     if not (title_match and date_match):

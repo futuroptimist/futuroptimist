@@ -4,10 +4,12 @@ axel
 blockquote
 bluesky
 br
+brightgreen
 chunker
 cli
 codebase
 codecov
+codeql
 colour
 config
 contrib
@@ -16,6 +18,7 @@ cov
 crowdsourced
 csv
 democratizedspace
+dependabot
 deps
 dirs
 discoverable

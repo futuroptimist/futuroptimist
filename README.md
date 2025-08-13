@@ -7,6 +7,9 @@
 [![Coverage](https://codecov.io/gh/futuroptimist/futuroptimist/branch/main/graph/badge.svg)](https://app.codecov.io/gh/futuroptimist/futuroptimist/branch/main)
 [![Docs](https://img.shields.io/github/actions/workflow/status/futuroptimist/futuroptimist/.github/workflows/03-docs.yml?label=docs)](https://github.com/futuroptimist/futuroptimist/actions/workflows/03-docs.yml)
 [![License](https://img.shields.io/github/license/futuroptimist/futuroptimist)](LICENSE)
+[![Dependabot](https://img.shields.io/github/dependabot/status/futuroptimist/futuroptimist?logo=dependabot)](https://github.com/futuroptimist/futuroptimist/security/dependabot)
+[![CodeQL](https://github.com/futuroptimist/futuroptimist/actions/workflows/codeql.yml/badge.svg)](https://github.com/futuroptimist/futuroptimist/actions/workflows/codeql.yml)
+[![Secret Scanning](https://img.shields.io/badge/secret%20scanning-enabled-brightgreen?logo=github)](https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning)
 
 Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my
 [YouTube channel](https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ).
