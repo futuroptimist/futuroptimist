@@ -15,7 +15,10 @@ def download_url(url: str, dest: pathlib.Path) -> bool:
     Returns ``True`` on success and ``False`` if the request fails.
     """
     try:
-        with urllib.request.urlopen(url) as resp:
+        parsed = urllib.parse.urlparse(url)
+        if parsed.scheme not in {"http", "https"}:
+            raise ValueError(f"unsupported URL scheme: {parsed.scheme}")
+        with urllib.request.urlopen(url) as resp:  # noqa: S310  # nosec B310
             dest.write_bytes(resp.read())
         return True
     except urllib.error.URLError as exc:

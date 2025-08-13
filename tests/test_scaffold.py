@@ -58,6 +58,17 @@ def test_fetch_video_info_parses(monkeypatch):
     assert date == "20240102"
 
 
+def test_fetch_video_info_rejects_bad_scheme(monkeypatch):
+    class DummyReq:
+        full_url = "file://bad"
+
+    monkeypatch.setattr(
+        sv.urllib.request, "Request", lambda url, headers=None: DummyReq
+    )
+    with pytest.raises(ValueError):
+        sv.fetch_video_info("abc")
+
+
 def test_fetch_video_info_error(monkeypatch):
     class Resp:
         def __enter__(self):

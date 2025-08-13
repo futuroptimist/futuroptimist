@@ -130,3 +130,11 @@ def test_fetch_transcript_failure(monkeypatch, capsys):
     assert utl.fetch_transcript("XYZ") is None
     captured = capsys.readouterr()
     assert "failed to fetch transcript" in captured.out
+
+
+def test_fetch_transcript_rejects_bad_scheme(monkeypatch, capsys):
+    monkeypatch.setattr(utl, "API_KEY", "X")
+    monkeypatch.setattr(utl, "LIST_URL", "file://{vid}?key={key}")
+    assert utl.fetch_transcript("XYZ") is None
+    captured = capsys.readouterr()
+    assert "unsupported URL scheme" in captured.out

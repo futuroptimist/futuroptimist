@@ -1,5 +1,6 @@
 import json
 import urllib.request
+import pytest
 import src.collect_sources as cs
 
 
@@ -33,6 +34,11 @@ def test_download_url_success(monkeypatch, tmp_path):
     result = cs.download_url("http://example.com/out.txt", dest)
     assert result is True
     assert dest.read_bytes() == b"hi"
+
+
+def test_download_url_rejects_bad_scheme(tmp_path):
+    with pytest.raises(ValueError):
+        cs.download_url("file:///etc/passwd", tmp_path / "out.txt")
 
 
 def test_process_video_dir_and_main(monkeypatch, tmp_path):

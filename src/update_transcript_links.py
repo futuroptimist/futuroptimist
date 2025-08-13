@@ -2,6 +2,7 @@ import json
 import os
 import pathlib
 import urllib.request
+import urllib.parse
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 SCRIPT_ROOT = BASE_DIR / "video_scripts"
@@ -16,7 +17,11 @@ def fetch_transcript(video_id: str) -> pathlib.Path | None:
     if not API_KEY:
         return None
     try:
-        with urllib.request.urlopen(LIST_URL.format(vid=video_id, key=API_KEY)) as resp:
+        list_url = LIST_URL.format(vid=video_id, key=API_KEY)
+        parsed = urllib.parse.urlparse(list_url)
+        if parsed.scheme not in {"http", "https"}:
+            raise ValueError("unsupported URL scheme")
+        with urllib.request.urlopen(list_url) as resp:  # noqa: S310  # nosec B310
             listing = json.loads(resp.read().decode())
         cid = None
         for item in listing.get("items", []):
@@ -26,7 +31,11 @@ def fetch_transcript(video_id: str) -> pathlib.Path | None:
                 break
         if not cid:
             return None
-        with urllib.request.urlopen(DOWNLOAD_URL.format(cid=cid, key=API_KEY)) as resp:
+        dl_url = DOWNLOAD_URL.format(cid=cid, key=API_KEY)
+        parsed = urllib.parse.urlparse(dl_url)
+        if parsed.scheme not in {"http", "https"}:
+            raise ValueError("unsupported URL scheme")
+        with urllib.request.urlopen(dl_url) as resp:  # noqa: S310  # nosec B310
             data = resp.read().decode()
         SUBS_DIR.mkdir(exist_ok=True)
         dest = SUBS_DIR / f"{video_id}.srt"

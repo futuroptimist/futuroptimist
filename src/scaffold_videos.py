@@ -2,6 +2,7 @@ import json
 import pathlib
 import sys
 import urllib.request
+import urllib.parse
 import re
 import datetime
 
@@ -48,7 +49,11 @@ def slugify(text: str) -> str:
 def fetch_video_info(video_id: str):
     url = f"https://r.jina.ai/https://www.youtube.com/watch?v={video_id}"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    html = urllib.request.urlopen(req).read().decode("utf-8", "ignore")
+    parsed = urllib.parse.urlparse(req.full_url)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError("unsupported URL scheme")
+    response = urllib.request.urlopen(req)  # noqa: S310  # nosec B310
+    html = response.read().decode("utf-8", "ignore")
     title_match = re.search(r"^Title: (.+)", html, re.MULTILINE)
     date_match = re.search(r"([A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})", html)
     if not (title_match and date_match):
