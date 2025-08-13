@@ -43,7 +43,7 @@ def process_video_dir(video_dir: pathlib.Path) -> None:
         if dest.exists() or download_url(url, dest):
             mapping[url] = dest.name
 
-    (video_dir / "sources.json").write_text(json.dumps(mapping, indent=2))
+    (video_dir / "sources.json").write_text(json.dumps(mapping, indent=2) + "\n")
 
 
 def main() -> None:
