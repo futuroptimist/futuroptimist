@@ -50,9 +50,16 @@ def fetch_repo_status(
     if token:
         headers["Authorization"] = f"Bearer {token}"
 
-    url = "https://api.github.com/repos/{repo}/actions/runs?per_page=1&status=completed".format(
-        repo=repo
-    )
+    if branch is None:
+        repo_resp = requests.get(
+            f"https://api.github.com/repos/{repo}", headers=headers, timeout=10
+        )
+        repo_resp.raise_for_status()
+        branch = repo_resp.json().get("default_branch")
+
+    url = (
+        "https://api.github.com/repos/{repo}/actions/runs?per_page=1&status=completed&event=push"
+    ).format(repo=repo)
     if branch:
         url += f"&branch={branch}"
     if event:
