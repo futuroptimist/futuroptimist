@@ -35,10 +35,12 @@ def fetch_repo_status(
     repo: str,
     token: str | None = None,
     branch: str | None = None,
+    event: str | None = "push",
     attempts: int = 2,
 ) -> str:
     """Fetch the latest workflow run conclusion for ``repo`` and return an emoji.
 
+    Only considers runs triggered by the given ``event`` (default ``"push"``).
     The GitHub API occasionally returns inconsistent data if a workflow is
     updating while we query it. To catch this non-determinism we fetch the
     status multiple times and ensure all results match. If they differ we raise
@@ -53,6 +55,8 @@ def fetch_repo_status(
     )
     if branch:
         url += f"&branch={branch}"
+    if event:
+        url += f"&event={event}"
 
     def _fetch() -> str | None:
         resp = requests.get(url, headers=headers, timeout=10)
