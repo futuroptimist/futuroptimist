@@ -37,18 +37,19 @@ def fetch_repo_status(
     branch: str | None = None,
     attempts: int = 2,
 ) -> str:
-    """Fetch the latest workflow run conclusion for ``repo`` and return an emoji.
+    """Fetch the latest CI run conclusion for ``repo`` and return an emoji.
 
     The GitHub API occasionally returns inconsistent data if a workflow is
     updating while we query it. To catch this non-determinism we fetch the
     status multiple times and ensure all results match. If they differ we raise
-    ``RuntimeError`` so the calling workflow fails loudly.
+    ``RuntimeError`` so the calling workflow fails loudly. Non-CI runs (e.g.
+    bots commenting on issues) are ignored.
     """
     headers = {"Accept": "application/vnd.github+json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
 
-    url = "https://api.github.com/repos/{repo}/actions/runs?per_page=1&status=completed".format(
+    url = "https://api.github.com/repos/{repo}/actions/runs?per_page=10&status=completed".format(
         repo=repo
     )
     if branch:
@@ -58,6 +59,9 @@ def fetch_repo_status(
         resp = requests.get(url, headers=headers, timeout=10)
         resp.raise_for_status()
         runs = resp.json().get("workflow_runs", [])
+        for run in runs:
+            if run.get("event") in {"push", "pull_request"}:
+                return run.get("conclusion")
         return runs[0].get("conclusion") if runs else None
 
     conclusions = [_fetch() for _ in range(attempts)]
