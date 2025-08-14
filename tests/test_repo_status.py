@@ -27,10 +27,14 @@ class DummyResp:
 def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
 
-    def fake_get(url: str, headers: dict, timeout: int):
-        calls.append(url)
-        assert url == (
-            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed"
+    def fake_get(url: str, headers: dict, timeout: int, params: dict | None = None):
+        query = "?" + "&".join(f"{k}={v}" for k, v in params.items()) if params else ""
+        full_url = url + query
+        calls.append(full_url)
+        if url.endswith("/user/repo"):
+            return DummyResp({"default_branch": "main"})
+        assert full_url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=main"
         )
         assert "Authorization" in headers
         return DummyResp({"workflow_runs": [{"conclusion": "success"}]})
@@ -38,44 +42,52 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", token="abc") == "✅"
     assert calls == [
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed",
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed",
+        "https://api.github.com/repos/user/repo",
+        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=main",
+        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=main",
     ]
 
 
 def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
 
-    def fake_get(url: str, headers: dict, timeout: int):
-        calls.append(url)
-        assert url == (
-            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed"
+    def fake_get(url: str, headers: dict, timeout: int, params: dict | None = None):
+        query = "?" + "&".join(f"{k}={v}" for k, v in params.items()) if params else ""
+        full_url = url + query
+        calls.append(full_url)
+        if url.endswith("/user/repo"):
+            return DummyResp({"default_branch": "main"})
+        assert full_url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=main"
         )
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "❓"
     assert calls == [
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed",
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed",
+        "https://api.github.com/repos/user/repo",
+        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=main",
+        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=main",
     ]
 
 
 def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
 
-    def fake_get(url: str, headers: dict, timeout: int):
-        calls.append(url)
-        assert url == (
-            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&branch=dev"
+    def fake_get(url: str, headers: dict, timeout: int, params: dict | None = None):
+        query = "?" + "&".join(f"{k}={v}" for k, v in params.items()) if params else ""
+        full_url = url + query
+        calls.append(full_url)
+        assert full_url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=dev"
         )
         return DummyResp({"workflow_runs": [{"conclusion": "success"}]})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
     assert calls == [
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&branch=dev",
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&branch=dev",
+        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=dev",
+        "https://api.github.com/repos/user/repo/actions/runs?per_page=1&status=completed&event=push&branch=dev",
     ]
 
 
@@ -85,7 +97,9 @@ def test_fetch_repo_status_nondeterministic(monkeypatch: pytest.MonkeyPatch) -> 
         {"workflow_runs": [{"conclusion": "failure"}]},
     ]
 
-    def fake_get(url: str, headers: dict, timeout: int):
+    def fake_get(url: str, headers: dict, timeout: int, params: dict | None = None):
+        if url.endswith("/user/repo"):
+            return DummyResp({"default_branch": "main"})
         return DummyResp(responses.pop(0))
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
