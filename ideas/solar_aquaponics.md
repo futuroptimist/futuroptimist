@@ -5,7 +5,7 @@
 ## Checklist
 
 - [x] Purchase/verify 4 × 100 W solar panels
-- [x] Purchase charge controller, LifePo4 battery
+- [x] Purchase charge controller, LiFePO₄ battery
 - [ ] Install charge controller & LiFePO₄ battery bank
 - [ ] Wire DC air pump + test flow rate
 - [ ] Capture build timelapse (panel mounting, wiring, tub fill)
