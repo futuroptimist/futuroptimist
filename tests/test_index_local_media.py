@@ -4,6 +4,7 @@ import sys
 from datetime import datetime, timezone
 import os
 import pathlib
+import warnings
 
 import pytest
 
@@ -78,5 +79,10 @@ def test_scan_directory_deterministic_order(tmp_path, monkeypatch):
 def test_entrypoint(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, "argv", ["index_local_media.py", str(tmp_path)])
     (tmp_path).mkdir(exist_ok=True)
-
-    runpy.run_module("src.index_local_media", run_name="__main__")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=".*found in sys.modules.*",
+            category=RuntimeWarning,
+        )
+        runpy.run_module("src.index_local_media", run_name="__main__")

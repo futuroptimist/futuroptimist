@@ -82,5 +82,12 @@ def test_entrypoint(monkeypatch, tmp_path):
     monkeypatch.setattr(fs, "read_video_ids", lambda: [])
     monkeypatch.setattr(subprocess, "run", lambda *a, **k: None)
     import runpy
+    import warnings
 
-    runpy.run_module("src.fetch_subtitles", run_name="__main__")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=".*found in sys.modules.*",
+            category=RuntimeWarning,
+        )
+        runpy.run_module("src.fetch_subtitles", run_name="__main__")

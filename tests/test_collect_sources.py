@@ -90,10 +90,17 @@ def test_cli_entrypoint(monkeypatch, tmp_path):
 
     import runpy
     import sys
+    import warnings
 
     monkeypatch.setitem(sys.modules, "src.collect_sources", cs)
     fake_process(d)  # ensure line coverage
-    runpy.run_module("src.collect_sources", run_name="__main__")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=".*found in sys.modules.*",
+            category=RuntimeWarning,
+        )
+        runpy.run_module("src.collect_sources", run_name="__main__")
     assert called
 
 
