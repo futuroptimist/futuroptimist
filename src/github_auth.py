@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import os.path
 
 
 def _read_token_file(var: str) -> str | None:
@@ -11,7 +12,8 @@ def _read_token_file(var: str) -> str | None:
     if not path:
         return None
     try:
-        return pathlib.Path(path).read_text()
+        expanded = os.path.expanduser(os.path.expandvars(path))
+        return pathlib.Path(expanded).read_text()
     except OSError:
         return None
 

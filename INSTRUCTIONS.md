@@ -42,7 +42,8 @@ Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
 and `read:org` scopes when generating heatmaps or fetching commit stats. You may
 also set `GH_TOKEN_FILE` or `GITHUB_TOKEN_FILE` to point at a file containing
-the token.
+the token. Paths in these variables may include `~` or environment variables and
+will be expanded.
 
 Create new script folders from the IDs in `video_ids.txt`:
 
