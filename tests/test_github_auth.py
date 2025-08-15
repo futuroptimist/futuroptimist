@@ -73,3 +73,27 @@ def test_missing_token_file_uses_env(monkeypatch, tmp_path):
     monkeypatch.setenv("GH_TOKEN_FILE", str(missing))
     monkeypatch.setenv("GITHUB_TOKEN", "b")
     assert get_github_token() == "b"
+
+
+def test_token_file_path_expands_user(monkeypatch, tmp_path):
+    home = tmp_path / "home"
+    home.mkdir()
+    token_file = home / "token.txt"
+    token_file.write_text("filetoken")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.setenv("GH_TOKEN_FILE", "~/token.txt")
+    assert get_github_token() == "filetoken"
+
+
+def test_token_file_path_expands_env_var(monkeypatch, tmp_path):
+    token_dir = tmp_path / "dir"
+    token_dir.mkdir()
+    token_file = token_dir / "token.txt"
+    token_file.write_text("filetoken")
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.setenv("TOKEN_DIR", str(token_dir))
+    monkeypatch.setenv("GH_TOKEN_FILE", "$TOKEN_DIR/token.txt")
+    assert get_github_token() == "filetoken"
