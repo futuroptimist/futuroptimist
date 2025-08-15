@@ -124,6 +124,18 @@ def test_tags_with_attributes(tmp_path):
     assert entries == [("00:00:00,000", "00:00:01,000", "*Hi* **there**")]
 
 
+def test_strip_speaker_prefix(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+- [Narrator] Hello world
+"""
+    path = tmp_path / "speaker.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "Hello world")]
+
+
 def test_parse_srt_edge_cases(tmp_path):
     content = """foo
 1
