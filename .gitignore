@@ -34,6 +34,8 @@ video_scripts/*/sources/
 htmlcov/
 cov.json
 
+# spellcheck artifacts
+dictionary.dic
 
 # local footage
 footage/
