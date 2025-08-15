@@ -8,16 +8,18 @@ import sys
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "video_scripts"
 USER_AGENT = "futuroptimist-bot/1.0"
+URL_TIMEOUT = 10
 
 
 def download_url(url: str, dest: pathlib.Path) -> bool:
     """Download a single URL to ``dest``.
 
-    Returns ``True`` on success and ``False`` if the request fails.
+    Uses a ``10s`` timeout and returns ``True`` on success, ``False`` on any
+    ``URLError``.
     """
     try:
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=URL_TIMEOUT) as resp:
             dest.write_bytes(resp.read())
         return True
     except urllib.error.URLError as exc:
