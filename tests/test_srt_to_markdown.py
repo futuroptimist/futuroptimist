@@ -1,5 +1,6 @@
 import sys
 import runpy
+import warnings
 import src.srt_to_markdown as stm
 
 
@@ -147,11 +148,23 @@ def test_entrypoint(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(
         sys, "argv", ["srt_to_markdown.py", str(srt_path), "-o", str(out)]
     )
-    runpy.run_module("src.srt_to_markdown", run_name="__main__")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=".*found in sys.modules.*",
+            category=RuntimeWarning,
+        )
+        runpy.run_module("src.srt_to_markdown", run_name="__main__")
     assert out.exists()
 
     sys.modules.pop("__main__", None)
     monkeypatch.setattr(sys, "argv", ["srt_to_markdown.py", str(srt_path)])
-    runpy.run_module("src.srt_to_markdown", run_name="__main__")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=".*found in sys.modules.*",
+            category=RuntimeWarning,
+        )
+        runpy.run_module("src.srt_to_markdown", run_name="__main__")
     captured = capsys.readouterr()
     assert "[NARRATOR]: Hi" in captured.out

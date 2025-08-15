@@ -1,6 +1,7 @@
 import json
 import runpy
 import pytest
+import warnings
 import src.update_transcript_links as utl
 
 
@@ -116,7 +117,13 @@ def test_entrypoint(monkeypatch, tmp_path):
     monkeypatch.setattr(utl, "API_KEY", "")
     (tmp_path / "scripts").mkdir()
 
-    runpy.run_module("src.update_transcript_links", run_name="__main__")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=".*found in sys.modules.*",
+            category=RuntimeWarning,
+        )
+        runpy.run_module("src.update_transcript_links", run_name="__main__")
 
 
 def test_fetch_transcript_failure(monkeypatch, capsys):

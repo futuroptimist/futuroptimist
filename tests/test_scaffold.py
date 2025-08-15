@@ -3,6 +3,7 @@ import pathlib
 import json
 import runpy
 import sys
+import warnings
 import src.scaffold_videos as sv
 import pytest
 
@@ -123,6 +124,12 @@ def test_entrypoint(monkeypatch, tmp_path):
 
     r = Resp()
     monkeypatch.setattr(sv.urllib.request, "urlopen", lambda req: r)
-    runpy.run_module("src.scaffold_videos", run_name="__main__")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=".*found in sys.modules.*",
+            category=RuntimeWarning,
+        )
+        runpy.run_module("src.scaffold_videos", run_name="__main__")
     r.__enter__()
     r.__exit__(None, None, None)
