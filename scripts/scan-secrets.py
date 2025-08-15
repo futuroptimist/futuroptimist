@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Detect potential secrets in staged diffs.
 
-Reads diff content from ``stdin`` and exits with status ``1`` if any
-secret-like patterns are found. The scan is intentionally lightweight and
-should be supplemented with dedicated tools for thorough auditing.
+Reads unified diff content from ``stdin`` and scans only the **added** lines
+for secret-like patterns. The scan is intentionally lightweight and should be
+supplemented with dedicated tools for thorough auditing.
 """
 from __future__ import annotations
 
@@ -19,13 +19,14 @@ PATTERNS = [
 
 def main() -> int:
     raw = sys.stdin.read()
-    lines = []
+    lines: list[str] = []
     for line in raw.splitlines():
         if "allowlist secret" in line:
             continue
-        if line.startswith("+"):
-            line = line[1:]
-        lines.append(line)
+        if not line.startswith("+") or line.startswith("+++"):
+            # Skip context and removed lines; ignore diff headers like '+++ b/file'.
+            continue
+        lines.append(line[1:])
     content = "\n".join(lines)
 
     matches: list[str] = []

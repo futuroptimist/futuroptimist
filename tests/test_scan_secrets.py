@@ -13,12 +13,18 @@ def run_scan(content: str) -> subprocess.CompletedProcess:
 
 
 def test_no_secrets(tmp_path):
-    proc = run_scan("hello world")
+    proc = run_scan("+hello world\n")
     assert proc.returncode == 0
     assert proc.stderr == b""
 
 
 def test_detects_secret(tmp_path):
-    proc = run_scan("api_key=12345")  # pragma: allowlist secret
+    proc = run_scan("+api_key=12345\n")  # pragma: allowlist secret
     assert proc.returncode == 1
     assert b"api_key" in proc.stderr
+
+
+def test_ignores_removed_secret():
+    proc = run_scan("-api_key=12345\n")  # pragma: allowlist secret
+    assert proc.returncode == 0
+    assert proc.stderr == b""
