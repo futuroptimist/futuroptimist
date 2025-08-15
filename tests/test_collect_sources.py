@@ -6,8 +6,9 @@ import src.collect_sources as cs
 def test_download_url_handles_error(monkeypatch, tmp_path):
     seen = {}
 
-    def fake_urlopen(req):
+    def fake_urlopen(req, *, timeout=None):
         seen["ua"] = req.get_header("User-agent")
+        seen["timeout"] = timeout
         raise urllib.error.URLError("boom")
 
     monkeypatch.setattr(cs.urllib.request, "urlopen", fake_urlopen)
@@ -16,6 +17,7 @@ def test_download_url_handles_error(monkeypatch, tmp_path):
     assert result is False
     assert not dest.exists()
     assert seen["ua"] == cs.USER_AGENT
+    assert seen["timeout"] == cs.URL_TIMEOUT
 
 
 def test_download_url_success(monkeypatch, tmp_path):
@@ -32,7 +34,8 @@ def test_download_url_success(monkeypatch, tmp_path):
         def read(self):
             return self.data
 
-    def fake_urlopen(req):
+    def fake_urlopen(req, *, timeout=None):
+        assert timeout == cs.URL_TIMEOUT
         assert req.get_header("User-agent") == cs.USER_AGENT
         return DummyResponse()
 
