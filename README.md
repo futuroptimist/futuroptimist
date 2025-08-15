@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/github/license/futuroptimist/futuroptimist)](LICENSE)
 
 Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my
-[YouTube channel](https://www.youtube.com/channel/UCA-J-opDpgiRoHYmOAxGQSQ).
+[YouTube channel](https://www.youtube.com/@futuroptimist).
 If you're looking for the full project details, see
 [INSTRUCTIONS.md](INSTRUCTIONS.md). We manage Python dependencies with
 [uv](https://docs.astral.sh/uv/); check the instructions for setup steps.
