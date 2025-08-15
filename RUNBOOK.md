@@ -61,7 +61,7 @@ This document is a living checklist covering the **Futuroptimist** long-form vid
 
 ## 7. Promotion
 
-- [ ] Share on BlueSky / Threads / Mastodon.
+- [ ] Share on Bluesky / Threads / Mastodon.
 - [ ] Post vertical clip on Shorts / Reels / TikTok.
 - [ ] Add to newsletter.
 
