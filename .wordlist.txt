@@ -60,7 +60,6 @@ llmstxt
 pyspelling
 wordlist
 ol
-opdpgirohymoaxgqsq
 openai
 opentimelineio
 optimised
