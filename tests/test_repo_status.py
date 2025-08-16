@@ -16,6 +16,11 @@ def test_status_to_emoji() -> None:
     assert status_to_emoji("neutral") == "❓"
 
 
+def test_status_to_emoji_strips_whitespace() -> None:
+    assert status_to_emoji(" success ") == "✅"
+    assert status_to_emoji("\nFAILURE\t") == "❌"
+
+
 class DummyResp:
     def __init__(self, data: dict):
         self._data = data

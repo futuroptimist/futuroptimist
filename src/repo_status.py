@@ -20,16 +20,17 @@ GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+
 def status_to_emoji(conclusion: str | None) -> str:
     """Return an emoji representing the run conclusion.
 
-    Comparison is case-insensitive so callers may pass ``"SUCCESS"`` or
-    ``"Failure"`` and receive the same result.
+    Comparison is case-insensitive and ignores surrounding whitespace so
+    callers may pass values like ``"SUCCESS"`` or ``" failure \n"`` and
+    receive the same result.
 
     - ``"success"`` → ✅
     - ``"failure"`` → ❌
     - anything else (including ``None``) → ❓
     """
-    if conclusion and conclusion.lower() == "success":
+    if conclusion and conclusion.strip().lower() == "success":
         return "✅"
-    if conclusion and conclusion.lower() == "failure":
+    if conclusion and conclusion.strip().lower() == "failure":
         return "❌"
     return "❓"
 
