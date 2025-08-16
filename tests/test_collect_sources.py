@@ -1,4 +1,5 @@
 import json
+import pathlib
 import urllib.request
 import src.collect_sources as cs
 
@@ -44,6 +45,32 @@ def test_download_url_success(monkeypatch, tmp_path):
     result = cs.download_url("http://example.com/out.txt", dest)
     assert result is True
     assert dest.read_bytes() == b"hi"
+
+
+def test_download_url_write_error(monkeypatch, tmp_path):
+    class DummyResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+        def read(self):
+            return b"data"
+
+    def fake_urlopen(req, *, timeout=None):
+        return DummyResponse()
+
+    dest = tmp_path / "out.txt"
+
+    def fail_write(self, _data):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(cs.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(pathlib.Path, "write_bytes", fail_write)
+    result = cs.download_url("http://example.com/out.txt", dest)
+    assert result is False
+    assert not dest.exists()
 
 
 def test_process_video_dir_and_main(monkeypatch, tmp_path):

@@ -15,14 +15,14 @@ def download_url(url: str, dest: pathlib.Path) -> bool:
     """Download a single URL to ``dest``.
 
     Uses a ``10s`` timeout and returns ``True`` on success, ``False`` on any
-    ``URLError``.
+    network ``URLError`` or local ``OSError`` such as a write failure.
     """
     try:
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=URL_TIMEOUT) as resp:
             dest.write_bytes(resp.read())
         return True
-    except urllib.error.URLError as exc:
+    except (urllib.error.URLError, OSError) as exc:
         print(f"Failed to download {url}: {exc}", file=sys.stderr)
         return False
 
