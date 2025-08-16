@@ -33,6 +33,16 @@ def test_scan_directory_utc_mtime(tmp_path):
     assert mtime.tzinfo == timezone.utc
 
 
+def test_scan_directory_truncates_microseconds(tmp_path):
+    file_path = tmp_path / "clip.mp4"
+    file_path.write_text("data")
+    os.utime(file_path, (1234567890.654321, 1234567890.654321))
+    result = ilm.scan_directory(tmp_path)
+    ts = result[0]["mtime"].replace("Z", "+00:00")
+    mtime = datetime.fromisoformat(ts)
+    assert mtime.microsecond == 0
+
+
 def test_main(tmp_path, capsys):
     f = tmp_path / "x.txt"
     f.write_text("hi")
