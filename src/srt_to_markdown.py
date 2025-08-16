@@ -12,7 +12,8 @@ def clean_srt_text(text: str) -> str:
     attributes), and ``<br>`` to Markdown equivalents while stripping any other HTML
     tags. Tag matching is case-insensitive.
     Non-breaking spaces (``&nbsp;``) are converted to regular spaces.
-    Speaker prefixes such as ``- [Narrator]`` are removed.
+    Speaker prefixes such as ``- [Narrator]`` are removed. Runs of whitespace are
+    collapsed to a single space so downstream scripts see clean, predictable text.
     """
 
     text = html.unescape(text).replace("\xa0", " ")
@@ -22,6 +23,7 @@ def clean_srt_text(text: str) -> str:
     text = re.sub(r"</?(b|strong)\b[^>]*>", "**", text, flags=re.IGNORECASE)
     text = re.sub(r"</?u\b[^>]*>", "", text, flags=re.IGNORECASE)
     text = re.sub(r"<[a-zA-Z/][^>]*>", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
     return text
 
 

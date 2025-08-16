@@ -124,6 +124,18 @@ def test_tags_with_attributes(tmp_path):
     assert entries == [("00:00:00,000", "00:00:01,000", "*Hi* **there**")]
 
 
+def test_collapse_whitespace(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+Hello<br>  <b>world</b>
+"""
+    path = tmp_path / "spaces.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "Hello **world**")]
+
+
 def test_strip_speaker_prefix(tmp_path):
     srt = """1
 00:00:00,000 --> 00:00:01,000
