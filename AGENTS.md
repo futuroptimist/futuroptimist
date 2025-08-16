@@ -28,7 +28,7 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 | `/Makefile` & `setup.ps1` | Developer automation (venv, tests, subtitles, render). |
 | `/llms.txt` | Complementary file containing creative context & tone. |
 | `/subtitles/` | Downloaded `.srt` caption files populated by `fetch_subtitles.py`. |
-| `/src/srt_to_markdown.py` | Convert `.srt` captions; handles italics/bold, emoji; strips HTML and speaker prefixes. |
+| `/src/srt_to_markdown.py` | Convert `.srt` captions; handles italics/bold, emoji; strips HTML, speaker prefixes, and collapses whitespace. |
 | `/src/generate_heatmap.py` | Create a 3‑D lines-of-code heatmap with light/dark SVGs |
 | `/sources/` | Reference files fetched via `collect_sources.py`. |
 | `video_ids.txt` | Canonical list of YouTube IDs referenced by helper scripts; lines starting with `#` are comments. |
