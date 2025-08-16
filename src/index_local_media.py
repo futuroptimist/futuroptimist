@@ -1,8 +1,9 @@
 """Index local media files and write a JSON inventory.
 
 The generated index lists file paths, modification times in UTC,
-and file sizes in bytes. The output file's parent directories are
-created automatically.
+and file sizes in bytes. Modification timestamps are truncated to
+whole seconds for stable output. The output file's parent directories
+are created automatically.
 """
 
 import argparse
@@ -14,8 +15,9 @@ from datetime import datetime, timezone
 def scan_directory(base: pathlib.Path):
     """Return a list of dictionaries describing files under ``base``.
 
-    Each record contains ``path``, ``mtime`` (ISO timestamp in UTC), and
-    file ``size`` in bytes. The list is sorted by modification time and
+    Each record contains ``path``, ``mtime`` (ISO timestamp in UTC without
+    sub-second precision), and file ``size`` in bytes. The list is sorted by
+    modification time and
     then by path to produce deterministic output.
     """
     records = []
@@ -24,6 +26,7 @@ def scan_directory(base: pathlib.Path):
             stat = path.stat()
             mtime = (
                 datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
+                .replace(microsecond=0)
                 .isoformat()
                 .replace("+00:00", "Z")
             )
