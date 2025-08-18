@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
+from datetime import datetime, timezone
 
 import requests
 
@@ -79,13 +80,25 @@ def fetch_repo_status(
     return status_to_emoji(conclusions[0])
 
 
-def update_readme(readme_path: Path, token: str | None = None) -> None:
-    """Update README with status emojis for related project repos."""
+def update_readme(
+    readme_path: Path,
+    token: str | None = None,
+    now: datetime | None = None,
+) -> None:
+    """Update README with status emojis and a timestamp."""
     lines = readme_path.read_text().splitlines()
     in_section = False
+    if now is None:
+        now = datetime.now(timezone.utc)
+    timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
     for i, line in enumerate(lines):
         if line.strip() == "## Related Projects":
             in_section = True
+            ts_line = f"_Last updated: {timestamp}; checks hourly_"
+            if i + 1 < len(lines) and lines[i + 1].startswith("_Last updated:"):
+                lines[i + 1] = ts_line
+            else:
+                lines.insert(i + 1, ts_line)
             continue
         if in_section and line.startswith("## "):
             break

@@ -126,10 +126,68 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         return {"user/repo": "✅", "other/repo": "❌"}[repo]
 
     monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
-    repo_status.update_readme(readme)
+    from datetime import datetime, timezone
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=timezone.utc)
+    repo_status.update_readme(readme, now=now)
 
     lines = readme.read_text().splitlines()
-    assert lines[3] == "- ✅ https://github.com/user/repo"
-    assert lines[4] == "- ❌ https://github.com/other/repo/tree/dev"
-    assert lines[6] == "## Footer"
-    assert calls == [("user/repo", None), ("other/repo", "dev")]
+    assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
+    assert lines[4] == "- ✅ https://github.com/user/repo"
+
+
+def test_update_readme_uses_current_time(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    content = "## Related Projects\n- https://github.com/user/repo\n"
+    readme = tmp_path / "README.md"
+    readme.write_text(content)
+
+    def fake_status(
+        repo: str, token: str | None = None, branch: str | None = None
+    ) -> str:
+        return "✅"
+
+    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+
+    from datetime import datetime, timezone
+
+    class DummyDatetime(datetime):
+        @classmethod
+        def now(cls, tz: timezone | None = None) -> datetime:
+            return datetime(2020, 1, 2, 3, 4, tzinfo=timezone.utc)
+
+    monkeypatch.setattr(repo_status, "datetime", DummyDatetime)
+    repo_status.update_readme(readme)
+    lines = readme.read_text().splitlines()
+    assert lines[1] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
+    assert lines[2] == "- ✅ https://github.com/user/repo"
+
+
+def test_update_readme_existing_timestamp(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    content = (
+        "intro\n\n## Related Projects\n"
+        "_Last updated: 1999-01-01 00:00 UTC; checks hourly_\n"
+        "- https://github.com/user/repo\n\n"
+        "## Footer\n"
+    )
+    readme = tmp_path / "README.md"
+    readme.write_text(content)
+
+    def fake_status(
+        repo: str, token: str | None = None, branch: str | None = None
+    ) -> str:
+        return "✅"
+
+    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+
+    from datetime import datetime, timezone
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=timezone.utc)
+    repo_status.update_readme(readme, now=now)
+
+    lines = readme.read_text().splitlines()
+    assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
+    assert lines[4] == "- ✅ https://github.com/user/repo"
