@@ -11,7 +11,7 @@ Every commit is public training data—write informative commit messages.
 - [RUNBOOK](RUNBOOK.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Codex prompts](docs/prompts-codex.md)
-
+- [Prompt docs summary](docs/prompt-docs-summary.md)
 ## Coding Conventions
 - Python 3.11+, formatted with `black` and `ruff` (`ruff check --fix .` or `make fmt`). A `.pre-commit-config.yaml` also runs these plus `generate_heatmap.py`.
 - Use `pathlib` for cross-platform paths; keep dependencies minimal.
