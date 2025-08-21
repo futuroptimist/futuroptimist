@@ -5,7 +5,10 @@ slug: 'prompts-codex'
 
 # Codex Automation Prompt
 
-This document stores the baseline prompt used when instructing OpenAI Codex (or compatible agents) to contribute to the Futuroptimist repository. Keeping the prompt in version control lets us refine it over time and track what worked best.
+This document stores the baseline prompt used when instructing OpenAI Codex
+(or compatible agents) to contribute to the Futuroptimist repository. Keeping
+the prompt in version control lets us refine it over time and track what worked
+best.
 
 ```
 SYSTEM:
@@ -30,4 +33,9 @@ OUTPUT:
 A pull request describing the change and summarizing test results.
 ```
 
-Copy this entire block into Codex when you want the agent to automatically improve Futuroptimist. Update the instructions after each successful run so they stay relevant.
+Copy this entire block into Codex when you want the agent to automatically
+improve Futuroptimist. Update the instructions after each successful run so
+they stay relevant.
+
+See [prompt-docs-summary.md](prompt-docs-summary.md) for the full list
+of Futuroptimist prompts.

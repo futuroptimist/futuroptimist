@@ -7,6 +7,9 @@ slug: 'prompts-codex-video-script'
 
 Use this prompt to convert a raw transcript or idea into a Futuroptimist video script folder.
 
+For brainstorming topics,
+see [prompts-codex-video-script-ideas.md](prompts-codex-video-script-ideas.md).
+
 ```
 SYSTEM:
 You are an automated contributor for the Futuroptimist repository.
@@ -18,7 +21,8 @@ CONTEXT:
 - Early drafts live under `video_scripts/drafts/slug/` to avoid implying a release date.
 - Finalized scripts move to `video_scripts/YYYYMMDD_slug/`.
 - `script.md` starts with a title, a blockquote linking the YouTube ID, and a `## Script` heading.
-- Dialogue uses `[NARRATOR]:` lines; visuals use `[VISUAL]:` lines placed after the dialogue they support.
+- Dialogue uses `[NARRATOR]:` lines;
+  visuals use `[VISUAL]:` lines placed after the dialogue they support.
 - Leave a blank line between narration and visual lines.
 - `metadata.json` must validate against `schemas/video_metadata.schema.json`.
 - Optional `sources.txt` contains one URL per line.

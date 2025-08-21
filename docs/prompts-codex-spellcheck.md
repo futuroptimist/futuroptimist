@@ -5,7 +5,8 @@ slug: 'prompts-codex-spellcheck'
 
 # Codex Spellcheck Prompt
 
-Use this prompt to automatically find and fix spelling mistakes in Markdown documentation before opening a pull request.
+Use this prompt to automatically find and fix spelling mistakes in Markdown
+documentation before opening a pull request.
 
 ```
 SYSTEM:
