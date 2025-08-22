@@ -12,8 +12,11 @@ permissions:
 jobs:
   heatmap:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
@@ -21,13 +24,16 @@ jobs:
         run: |
           uv pip install --system -r requirements.txt
       - name: Generate heat-map
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        if: env.GH_TOKEN != ''
         run: python src/generate_heatmap.py
       - name: Commit and push
+        if: env.GH_TOKEN != ''
         uses: EndBug/add-and-commit@v9
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           add: 'assets/heatmap_*.svg'
           message: 'docs: auto-update 3-D LOC heat-map [skip ci]'
+      - name: Skip heat-map build
+        if: env.GH_TOKEN == ''
+        run: echo 'GH_TOKEN not set, skipping heat-map'
 

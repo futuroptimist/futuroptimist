@@ -79,3 +79,5 @@ def test_generate_heatmap_skips_without_token(monkeypatch, capsys, tmp_path):
     generate_heatmap.main()
     captured = capsys.readouterr()
     assert "Skipping heatmap generation" in captured.err
+    assert not (tmp_path / "assets/heatmap_light.svg").exists()
+    assert not (tmp_path / "assets/heatmap_dark.svg").exists()
