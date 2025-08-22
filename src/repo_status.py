@@ -26,12 +26,16 @@ def status_to_emoji(conclusion: str | None) -> str:
     receive the same result.
 
     - ``"success"`` → ✅
-    - ``"failure"`` → ❌
+    - ``"failure"``, ``"cancelled"``, ``"timed_out"`` → ❌
     - anything else (including ``None``) → ❓
     """
-    if conclusion and conclusion.strip().lower() == "success":
+    if conclusion:
+        normalized = conclusion.strip().lower()
+    else:
+        normalized = ""
+    if normalized == "success":
         return "✅"
-    if conclusion and conclusion.strip().lower() == "failure":
+    if normalized in {"failure", "cancelled", "timed_out"}:
         return "❌"
     return "❓"
 
