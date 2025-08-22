@@ -141,3 +141,4 @@ loc
 rrggbb
 srcset
 svgwrite
+changelog
