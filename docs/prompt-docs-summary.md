@@ -12,5 +12,5 @@
 | [prompts/codex/cleanup.md](prompts/codex/cleanup.md) | Code cleanup workflow |
 | [prompts/codex/fuzzing.md](prompts/codex/fuzzing.md) | Fuzzing experiment prompt |
 | [prompts/codex/physics.md](prompts/codex/physics.md) | Physics simulation prompt |
-| [prompts/codex/propagate.md](prompts/codex/propagate.md) | Propagation script prompt |
+| [prompts/codex/propagate.md](prompts/codex/propagate.md) | Propagate baseline prompt docs |
 | [prompts/codex/spellcheck.md](prompts/codex/spellcheck.md) | Spellcheck helper prompt |
