@@ -60,7 +60,7 @@ Use `python src/index_local_media.py` to build `footage_index.json`
 so you can quickly locate clips while editing. Each entry includes
 the file path, modification time in UTC, and size in bytes, sorted
 deterministically by timestamp then path. The script creates the
-output directory if needed.
+output directory if needed. Hidden files and directories are skipped.
 
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).

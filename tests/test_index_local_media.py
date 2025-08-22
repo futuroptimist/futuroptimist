@@ -43,6 +43,17 @@ def test_scan_directory_truncates_microseconds(tmp_path):
     assert mtime.microsecond == 0
 
 
+def test_scan_directory_ignores_hidden_files(tmp_path):
+    (tmp_path / ".DS_Store").write_text("x")
+    hidden = tmp_path / ".hidden"
+    hidden.mkdir()
+    (hidden / "a.mp4").write_text("x")
+    visible = tmp_path / "clip.mp4"
+    visible.write_text("x")
+    result = ilm.scan_directory(tmp_path)
+    assert [r["path"] for r in result] == ["clip.mp4"]
+
+
 def test_main(tmp_path, capsys):
     f = tmp_path / "x.txt"
     f.write_text("hi")

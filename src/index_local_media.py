@@ -15,29 +15,27 @@ from datetime import datetime, timezone
 def scan_directory(base: pathlib.Path):
     """Return a list of dictionaries describing files under ``base``.
 
-    Each record contains ``path``, ``mtime`` (ISO timestamp in UTC without
-    sub-second precision), and file ``size`` in bytes. The list is sorted by
-    modification time and
-    then by path to produce deterministic output.
+    Hidden files and directories (those starting with a dot) are skipped. Each
+    record contains ``path``, ``mtime`` (ISO timestamp in UTC without sub-second
+    precision), and file ``size`` in bytes. The list is sorted by modification
+    time and then by path to produce deterministic output.
     """
     records = []
     for path in base.rglob("*"):
-        if path.is_file():
-            stat = path.stat()
-            mtime = (
-                datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
-                .replace(microsecond=0)
-                .isoformat()
-                .replace("+00:00", "Z")
-            )
-            rel_path = str(path.relative_to(base)).replace("\\", "/")
-            records.append(
-                {
-                    "path": rel_path,
-                    "mtime": mtime,
-                    "size": stat.st_size,
-                }
-            )
+        if not path.is_file():
+            continue
+        rel_parts = path.relative_to(base).parts
+        if any(part.startswith(".") for part in rel_parts):
+            continue
+        stat = path.stat()
+        mtime = (
+            datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
+            .replace(microsecond=0)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
+        rel_path = "/".join(rel_parts)
+        records.append({"path": rel_path, "mtime": mtime, "size": stat.st_size})
     return sorted(records, key=lambda r: (r["mtime"], r["path"]))
 
 
