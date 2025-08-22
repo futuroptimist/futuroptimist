@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-22",
+  "workflow": "Test Suite",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/16929750748",
+  "root_cause": "Codecov upload step failed when CODECOV_TOKEN secret was unavailable on forks.",
+  "resolution": "Run coverage upload only when CODECOV_TOKEN is set and ignore upload errors."
+}
