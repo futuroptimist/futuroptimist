@@ -16,10 +16,8 @@ PURPOSE:
 Keep Markdown documentation free of spelling errors.
 
 CONTEXT:
-- Run `pre-commit run codespell --files $(git ls-files '*.md')` to spell-check
-  Markdown documentation.
-- Add unknown but legitimate words to
-  [`dict/allow.txt`](../../../dict/allow.txt).
+- Run `python -m pyspelling -c spellcheck.yaml` to spell-check Markdown documentation.
+- Add unknown but legitimate words to [`.wordlist.txt`](../../../.wordlist.txt).
 - Follow [`AGENTS.md`](../../../AGENTS.md) and [`README.md`](../../../README.md).
   Ensure these commands succeed:
 
@@ -35,9 +33,9 @@ CONTEXT:
   prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
-1. Run the spellcheck command and inspect the results.
-2. Correct misspellings or update `dict/allow.txt` as needed.
-3. Re-run the spellcheck until it reports no errors.
+1. Run `python -m pyspelling -c spellcheck.yaml` and inspect the results.
+2. Correct misspellings or update `.wordlist.txt` as needed.
+3. Re-run `python -m pyspelling -c spellcheck.yaml` until it reports no errors.
 4. Run all checks listed above.
 5. Commit the changes with a concise message and open a pull request.
 
@@ -64,8 +62,7 @@ CONTEXT:
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
   `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
-  `python scripts/update_prompt_docs_summary.py --repos-from \
-  dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Review this file for outdated commands or paths.
