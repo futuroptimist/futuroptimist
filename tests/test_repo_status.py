@@ -21,6 +21,11 @@ def test_status_to_emoji_strips_whitespace() -> None:
     assert status_to_emoji("\nFAILURE\t") == "❌"
 
 
+def test_status_to_emoji_failure_variants() -> None:
+    assert status_to_emoji("cancelled") == "❌"
+    assert status_to_emoji("TIMED_OUT") == "❌"
+
+
 class DummyResp:
     def __init__(self, data: dict):
         self._data = data
