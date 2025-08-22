@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OutageEntry",
+  "type": "object",
+  "required": ["date", "run_url", "root_cause", "resolution"],
+  "properties": {
+    "date": {"type": "string", "format": "date"},
+    "run_url": {"type": "string", "format": "uri"},
+    "root_cause": {"type": "string"},
+    "resolution": {"type": "string"}
+  }
+}
