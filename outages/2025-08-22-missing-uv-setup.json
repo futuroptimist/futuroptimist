@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema.json",
   "date": "2025-08-22",
   "workflow": "Rebuild 3-D heat-map",
   "job": "heatmap",

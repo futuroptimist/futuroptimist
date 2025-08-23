@@ -16,3 +16,11 @@ def test_outages_conform_to_schema() -> None:
         # Use both methods to ensure schema compliance
         validator.validate(data)
         validate(data, schema)
+
+
+def test_outages_reference_schema() -> None:
+    for path in Path("outages").glob("*.json"):
+        if path.name == "schema.json":
+            continue
+        data = json.loads(path.read_text())
+        assert data.get("$schema") == "./schema.json"
