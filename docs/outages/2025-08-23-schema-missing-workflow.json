@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-23",
+  "workflow": "Test Suite",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17168285281",
+  "root_cause": "Schema validation failed because an outage record lacked the required 'workflow' field.",
+  "resolution": "Add the missing field to the outage record and document the incident."
+}
