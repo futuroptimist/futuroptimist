@@ -30,7 +30,7 @@ def status_to_emoji(conclusion: str | None) -> str:
     - anything else (including ``None``) → ❓
     """
     if conclusion:
-        normalized = conclusion.strip().lower()
+        normalized = conclusion.strip().lower().replace("-", "_").replace(" ", "_")
     else:
         normalized = ""
     if normalized == "success":
