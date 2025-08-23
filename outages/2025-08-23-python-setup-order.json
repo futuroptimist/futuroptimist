@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-23",
+  "workflow": "Test Suite",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17171955249",
+  "root_cause": "Dependencies installed before Python setup so packages were absent for Python 3.12.",
+  "resolution": "Set up Python before running uv pip so dependencies target the active interpreter."
+}
