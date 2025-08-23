@@ -1,6 +1,7 @@
 {
+  "$schema": "./schema.json",
   "date": "2025-08-22",
-  "workflow": "Rebuild 3-D heat-map",
+  "workflow": "contrib-heatmap",
   "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17145073802",
   "root_cause": "Heatmap workflow attempted to commit files when GH_TOKEN was absent, leaving no generated SVGs and failing the commit step.",
   "resolution": "Conditionally run heatmap generation and commit steps only when GH_TOKEN is present."
