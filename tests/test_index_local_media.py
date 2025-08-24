@@ -70,6 +70,23 @@ def test_creates_output_parent_dirs(tmp_path):
     assert nested.exists()
 
 
+def test_main_writes_trailing_newline(tmp_path):
+    (tmp_path / "clip.mov").write_text("x")
+    out_file = tmp_path / "index.json"
+    ilm.main([str(tmp_path), "-o", str(out_file)])
+    assert out_file.read_text().endswith("\n")
+
+
+def test_main_excludes_existing_output(tmp_path):
+    f = tmp_path / "clip.mov"
+    f.write_text("x")
+    out_file = tmp_path / "index.json"
+    out_file.write_text("old")
+    ilm.main([str(tmp_path), "-o", str(out_file)])
+    data = json.loads(out_file.read_text())
+    assert all(entry["path"] != "index.json" for entry in data)
+
+
 def test_scan_directory_deterministic_order(tmp_path, monkeypatch):
     f1 = tmp_path / "b.txt"
     f2 = tmp_path / "a.txt"
