@@ -4,7 +4,8 @@
 
 ## Quick Start
 
-Run `make setup` (or `./setup.ps1` on Windows) then `make test`. If the Makefile fails on your platform, create a virtual env manually:
+Run `make setup` (or `./setup.ps1` on Windows) then `make test`.
+If the Makefile fails on your platform, create a virtual environment manually:
 
 ```bash
 python3 -m venv .venv && uv pip install -r requirements.txt
@@ -16,7 +17,7 @@ python3 -m venv .venv && uv pip install -r requirements.txt
 3. **Documentation** – Improve README, runbook, or docstrings.
 4. **Creative Assets** – Solarpunk graphics, music cues, timeline templates.
 
-## Pull Request workflow
+## Pull Request Workflow
 1. **Fork** the repo and create a feature branch.
 2. **Run locally**:
    ```bash
@@ -30,7 +31,7 @@ python3 -m venv .venv && uv pip install -r requirements.txt
 ## Coding standards
 - Python 3.11+, formatted with `black` and checked with `ruff`.
 - Prefer pure-python and cross-platform solutions.
-- No large binaries committed to git – link via releases or a separate repo.
+- No large binaries committed to Git – link via releases or a separate repo.
 
 ## License
 
