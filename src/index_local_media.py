@@ -77,7 +77,7 @@ def main(argv=None):
     output_path = pathlib.Path(args.output)
     index = scan_directory(base, exclude=[output_path])
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(index, indent=2))
+    output_path.write_text(json.dumps(index, indent=2) + "\n")
     print(f"Wrote {args.output}")
 
 
