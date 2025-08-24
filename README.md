@@ -18,10 +18,10 @@ run via GitHub Actions on each push and pull request and currently reach
 **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-24 04:05 UTC; checks hourly_
+_Last updated: 2025-08-24 07:01 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
-- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – scripts and metadata for the channel
+- ❌ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – scripts and metadata for the channel
 - ✅ **[token.place](https://token.place)** – stateless faucet for LLM inference with zero auth friction ([repo](https://github.com/futuroptimist/token.place))
 - ✅ **[DSPACE](https://democratized.space)** @v3 – offline-first idle-sim where aquariums meet maker quests ([repo](https://github.com/democratizedspace/dspace/tree/v3))
 - ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – opinionated boilerplate for reproducible CI and releases
