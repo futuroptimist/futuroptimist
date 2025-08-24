@@ -15,12 +15,12 @@ jobs:
           python-version: '3.12'
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
+      - name: Create virtualenv
+        run: uv venv
       - name: Install dependencies
-        run: |
-          uv pip install --system -r requirements.txt
+        run: uv pip install -r requirements.txt
       - name: Run tests
-        run: |
-          pytest --cov=./src --cov=./tests --cov-report=xml
+        run: uv run pytest --cov=./src --cov=./tests --cov-report=xml
       - name: Upload coverage reports to Codecov
         if: ${{ secrets.CODECOV_TOKEN }}
         uses: codecov/codecov-action@v5
@@ -28,3 +28,4 @@ jobs:
           files: ./coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+          
