@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-23",
+  "workflow": "Test Suite",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17172935908",
+  "root_cause": "uv pip install --system attempted to write to system site-packages without permission.",
+  "resolution": "Create a uv-managed virtualenv and install dependencies there."
+}
