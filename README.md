@@ -21,17 +21,37 @@ run via GitHub Actions on each push and pull request and currently reach
 _Last updated: 2025-08-24 03:24 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
-- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – scripts and metadata for the channel
-- ✅ **[token.place](https://token.place)** – stateless faucet for LLM inference with zero auth friction ([repo](https://github.com/futuroptimist/token.place))
-- ❌ **[DSPACE](https://democratized.space)** @v3 – offline-first idle-sim where aquariums meet maker quests ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – opinionated boilerplate for reproducible CI and releases
-- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – guardian-angel LLM that nudges safer digital hygiene
-- ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – bulk-copy files from nested dirs straight to your clipboard
-- ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker for repos and next steps
-- ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin device
-- ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turn GitHub contributions into 3D-printable block models
-- ✅ **[wove](https://github.com/futuroptimist/wove)** – open-source toolkit for knitting and robotic looms
-- ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – accessible k3s platform for off-grid Raspberry Pi clusters
+- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
+  reproducible scripts, data pipelines, and tests that turn maker experiments into
+  polished YouTube episodes
+- ✅ **[token.place](https://token.place)** – stateless web gateway that dispenses ephemeral
+  API tokens so anyone can sample cutting-edge LLMs without sign-ups; a gentle rate
+  limit wards off abuse ([repo](https://github.com/futuroptimist/token.place))
+- ❌ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where detailed
+  quests teach real-world hobbies, from aquaria to rocketry, with NPC guides;
+  offline-first so your space-base thrives without signal
+  ([repo](https://github.com/democratizedspace/dspace/tree/v3))
+- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – batteries-included template
+  that wires lint, tests, docs, and releases into one reproducible CI pipeline so
+  solo builders ship like a team
+- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first guardian-angel bot
+  that watches digital habits and gently coaches safer, healthier device use
+- ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that hoists files from
+  nested directories straight to your clipboard, perfect for bulk code snippets
+  or asset grabs
+- ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that reads
+  your repo and curates next-step checklists, keeping side projects moving forward
+- ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin that pairs
+  micro-LLMs with wearable hardware so voice commands stay local and hackable
+- ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – renders your GitHub
+  contribution graph as stackable 3D-printable blocks that fit standard 42 mm
+  Gridfinity baseplates, turning commit history into shelf art
+- ✅ **[wove](https://github.com/futuroptimist/wove)** – open toolkit for driving knitting
+  machines or robotic looms from code, bridging CAD-style workflows with
+  textiles
+- ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – lean k3s platform tuned for
+  Raspberry Pi clusters on solar or spotty networks, making edge Kubernetes
+  plug-and-play
 
 ## Values
 
