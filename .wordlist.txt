@@ -173,6 +173,12 @@ rrggbb
 srcset
 svgwrite
 changelog
+backend
+frontend
+npc
+npcs
+upgrader
+vitest
 aquaria
 baseplates
 gridfinity
