@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2025-08-24
+- fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
 - test: verify all workflow files parse as valid YAML.
 - docs: record tests workflow outage and postmortem.
