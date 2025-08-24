@@ -23,6 +23,7 @@ def test_status_to_emoji_strips_whitespace() -> None:
 
 def test_status_to_emoji_failure_variants() -> None:
     assert status_to_emoji("cancelled") == "❌"
+    assert status_to_emoji("canceled") == "❌"
     assert status_to_emoji("TIMED_OUT") == "❌"
     assert status_to_emoji("timed-out") == "❌"
     assert status_to_emoji("timed out") == "❌"

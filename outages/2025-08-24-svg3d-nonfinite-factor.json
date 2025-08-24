@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-24",
+  "workflow": "Fuzz Testing",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/0",
+  "root_cause": "svg3d._shade attempted to convert non-finite factor to int, raising ValueError.",
+  "resolution": "Validate factor with math.isfinite and reject non-finite inputs."
+}
