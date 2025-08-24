@@ -2,6 +2,7 @@
 
 ## 2025-08-24
 - fix: treat 'canceled' status as failure in repo_status.
+- feat: detect GitHub tokens in scan-secrets script.
 
 ## 2025-08-23
 - fix: add missing workflow field to outage record to restore CI.
