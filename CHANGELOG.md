@@ -2,6 +2,7 @@
 
 ## 2025-08-24
 - fix: ensure index_local_media writes newline at end of file.
+- feat: detect GitHub tokens in scan-secrets script.
 
 ## 2025-08-23
 - fix: add missing workflow field to outage record to restore CI.
