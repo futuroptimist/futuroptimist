@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-08-24
+- fix: validate svg3d shading factor to reject NaN and infinity.
+
 ## 2025-08-23
 - fix: add missing workflow field to outage record to restore CI.
 - fix: treat 'timed out' variants as failures in status_to_emoji.

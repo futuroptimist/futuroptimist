@@ -27,3 +27,10 @@ def test_shade_invalid_color():
         svg3d._shade("123456", 1)
     with pytest.raises(ValueError):
         svg3d._shade("#zzzzzz", 1)
+
+
+def test_shade_rejects_non_finite_factor():
+    with pytest.raises(ValueError, match="factor must be finite"):
+        svg3d._shade("#123456", float("nan"))
+    with pytest.raises(ValueError, match="factor must be finite"):
+        svg3d._shade("#123456", float("inf"))

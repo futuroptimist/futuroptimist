@@ -55,6 +55,7 @@ lt
 makefile
 md
 nas
+nonfinite
 agentsmd
 llmstxt
 pyspelling
