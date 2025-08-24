@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-08-24
+- feat: detect GitHub tokens in scan-secrets script.
+
 ## 2025-08-23
 - fix: add missing workflow field to outage record to restore CI.
 - fix: treat 'timed out' variants as failures in status_to_emoji.
