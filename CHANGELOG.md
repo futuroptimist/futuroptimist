@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2025-08-24
+- fix: remove stray prompt text from tests workflow to restore CI.
+- test: verify all workflow files parse as valid YAML.
+- docs: record tests workflow outage and postmortem.
 - fix: treat 'canceled' status as failure in repo_status.
 - fix: ensure index_local_media writes newline at end of file.
 - feat: detect GitHub tokens in scan-secrets script.
