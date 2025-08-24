@@ -77,6 +77,11 @@ meta's
 metaverse
 microcontroller
 nas
+nonfinite
+agentsmd
+llmstxt
+pyspelling
+wordlist
 ol
 openai
 opentimelineio

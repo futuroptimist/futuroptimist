@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-
+import math
 import svgwrite as sw
 
 CELL = 12
@@ -18,11 +18,13 @@ def _clamp(val: int) -> int:
 def _shade(color: str, factor: float) -> str:
     """Return ``color`` shaded by ``factor``.
 
-    ``color`` must be a hex string in ``#RRGGBB`` format. A ``ValueError`` is raised
-    if the input does not match this pattern or contains invalid hex digits.
+    ``color`` must be a hex string in ``#RRGGBB`` format. ``factor`` must be a finite
+    number. A ``ValueError`` is raised if inputs are invalid.
     """
     if not isinstance(color, str) or not color.startswith("#") or len(color) != 7:
         raise ValueError("color must be in format '#RRGGBB'")
+    if not math.isfinite(factor):
+        raise ValueError("factor must be finite")
     try:
         c = int(color[1:], 16)
     except ValueError as exc:  # pragma: no cover - defensive
