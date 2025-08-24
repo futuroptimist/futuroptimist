@@ -2,6 +2,7 @@
 
 ## 2025-08-24
 - fix: treat 'canceled' status as failure in repo_status.
+- fix: ensure index_local_media writes newline at end of file.
 - feat: detect GitHub tokens in scan-secrets script.
 
 ## 2025-08-23
