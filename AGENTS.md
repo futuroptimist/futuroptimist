@@ -43,7 +43,8 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 * Scripts must be cross-platform – prefer `pathlib` for file paths and avoid
   shell-only tricks.
 * Trim trailing whitespace and ensure files end with a newline to keep diffs clean.
-* Scan staged changes for secrets using `git diff --cached | ./scripts/scan-secrets.py` before committing.
+* Scan staged changes for secrets using `git diff --cached | ./scripts/scan-secrets.py`
+  before committing. Add `# allowlist secret` (any case) to suppress false positives.
 
 ## Script Format
 
