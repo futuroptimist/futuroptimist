@@ -3,9 +3,10 @@
 
 Reads unified diff content from ``stdin`` and scans only the **added** lines
 for secret-like patterns such as AWS keys, private keys, generic API key
-assignments, and GitHub tokens (``ghp_…`` etc.). The scan is intentionally
-lightweight and should be supplemented with dedicated tools for thorough
-auditing.
+assignments, and GitHub tokens (``ghp_…`` etc.). Lines containing
+``allowlist secret`` (case-insensitive) are ignored so contributors can suppress
+false positives. The scan is intentionally lightweight and should be
+supplemented with dedicated tools for thorough auditing.
 """
 from __future__ import annotations
 
@@ -24,7 +25,7 @@ def main() -> int:
     raw = sys.stdin.read()
     lines: list[str] = []
     for line in raw.splitlines():
-        if "allowlist secret" in line:
+        if "allowlist secret" in line.lower():
             continue
         if not line.startswith("+") or line.startswith("+++"):
             # Skip context and removed lines; ignore diff headers like '+++ b/file'.
