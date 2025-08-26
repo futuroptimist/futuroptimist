@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2025-08-25
+- fix: treat 'startup_failure' status as failure in repo_status.
 - fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.
 - test: cover invalid UTF-8 SRT input.
 - chore: alphabetize `.wordlist.txt`.
