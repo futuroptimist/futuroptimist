@@ -28,7 +28,8 @@ CONTEXT:
 - If browser dependencies are missing, run `npx playwright install chromium`
   or prefix tests with `SKIP_E2E=1`.
 - Cross-reference CAD dimensions where helpful.
-- Verify units and cite sources for any physical constants.
+- Verify core equations like rotational energy `E = 1/2 I ω^2` and torque `τ = I α`,
+  noting SI units, and verify units and cite sources for any physical constants.
 
 REQUEST:
 1. Inspect physics-related docs under `docs/` for gaps, TODOs, or outdated formulas.
@@ -61,6 +62,7 @@ CONTEXT:
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+- Confirm any referenced equations (e.g., `E = 1/2 I ω^2`) match standard physics texts.
 
 REQUEST:
 1. Review this file for outdated equations or guidance.
