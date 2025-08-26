@@ -61,8 +61,9 @@ instead of collecting them at the end.
 - Each script folder may also contain a `footage.md` checklist to track B-roll or CGI shots to gather. Note existing archive vs new footage, and flag generative AI segments so they don't look like "AI slop".
 - Large photos or video files belong in a local `footage/` folder (ignored by git).
   Run `python src/index_local_media.py` whenever assets change to rebuild
-  `footage_index.json` for quick lookup during editing. Each entry records the
-  file path, modification time, and size in bytes.
+  `footage_index.json` for quick lookup during editing. Use `--exclude PATH`
+  (repeatable) to skip files or folders. Each entry records the file path,
+  modification time, and size in bytes.
 - Run `python src/update_transcript_links.py` to sync `transcript_file` paths; with `YOUTUBE_API_KEY` set it also fetches missing captions via YouTube Data API.
 
 ## Testing & CI

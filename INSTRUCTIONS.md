@@ -61,7 +61,8 @@ so you can quickly locate clips while editing. Each entry includes
 the file path, modification time in UTC, and size in bytes, sorted
 deterministically by timestamp then path. The script creates the
 output directory if needed and skips the index file itself when rerun
-inside the footage directory.
+inside the footage directory. Pass `--exclude PATH` (repeatable) to
+omit specific files or folders from the index.
 
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).

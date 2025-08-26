@@ -21,9 +21,10 @@ GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+
 def status_to_emoji(conclusion: str | None) -> str:
     """Return an emoji representing the run conclusion.
 
-    Comparison is case-insensitive and ignores surrounding whitespace so
-    callers may pass values like ``"SUCCESS"`` or ``" failure \n"`` and
-    receive the same result.
+    Comparison is case-insensitive, normalizes internal whitespace and
+    hyphens to underscores, and ignores surrounding whitespace so callers
+    may pass values like ``"SUCCESS"``, ``" failure \n"``, or
+    ``"TIMED\tOUT"`` and receive the same result.
 
     - ``"success"`` → ✅
     - ``"failure"``, ``"cancelled"``, ``"canceled"``, ``"timed_out"``,
@@ -31,7 +32,7 @@ def status_to_emoji(conclusion: str | None) -> str:
     - anything else (including ``None``) → ❓
     """
     if conclusion:
-        normalized = conclusion.strip().lower().replace("-", "_").replace(" ", "_")
+        normalized = re.sub(r"[\s-]+", "_", conclusion.strip().lower())
     else:
         normalized = ""
     if normalized == "success":
