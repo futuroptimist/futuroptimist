@@ -18,6 +18,7 @@ Keep Markdown documentation free of spelling errors.
 CONTEXT:
 - Check all Markdown files using `pyspelling -c spellcheck.yaml`.
 - Add unknown but legitimate words to `.wordlist.txt`.
+- Keep `.wordlist.txt` entries alphabetically sorted.
 - Follow AGENTS.md and ensure `pre-commit run --all-files` and `pytest -q` both pass.
 
 REQUEST:

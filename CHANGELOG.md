@@ -5,6 +5,9 @@
 - test: cover invalid UTF-8 SRT input.
 - chore: alphabetize `.wordlist.txt`.
 - docs: record SRT decoding incident and postmortem.
+- fix: alphabetize and deduplicate .wordlist.txt to keep tests green.
+- docs: add wordlist postmortem and outage record.
+- fix: normalize whitespace in status_to_emoji.
 
 ## 2025-08-24
 - fix: validate svg3d shading factor to reject NaN and infinity.
