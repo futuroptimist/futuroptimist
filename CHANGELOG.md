@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-08-25
+- fix: normalize whitespace in status_to_emoji.
+
 ## 2025-08-24
 - fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
