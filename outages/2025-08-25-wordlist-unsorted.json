@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-25",
+  "workflow": "pytest",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/0",
+  "root_cause": ".wordlist.txt contained unsorted and duplicate entries causing test_wordlist_is_alphabetized to fail.",
+  "resolution": "Alphabetized and deduplicated .wordlist.txt to keep the spellcheck word list stable."
+}
