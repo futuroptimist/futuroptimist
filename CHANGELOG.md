@@ -1,6 +1,10 @@
 # Changelog
 
 ## 2025-08-25
+- fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.
+- test: cover invalid UTF-8 SRT input.
+- chore: alphabetize `.wordlist.txt`.
+- docs: record SRT decoding incident and postmortem.
 - fix: alphabetize and deduplicate .wordlist.txt to keep tests green.
 - docs: add wordlist postmortem and outage record.
 - fix: normalize whitespace in status_to_emoji.

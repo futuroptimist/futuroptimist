@@ -29,7 +29,7 @@ def clean_srt_text(text: str) -> str:
 
 def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
     entries = []
-    lines = path.read_text(encoding="utf-8-sig").splitlines()
+    lines = path.read_text(encoding="utf-8-sig", errors="replace").splitlines()
     i = 0
     while i < len(lines):
         line = lines[i].strip()
