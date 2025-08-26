@@ -66,32 +66,22 @@ Log each incident in `docs/outages` so future fixes can reference past outages.
 
 ---
 
-## 2 – Add a column to `docs/repo-feature-summary.md`
+## 2 – Committing & propagating
+Ensure this file lives at `docs/prompts/codex/ci-fix.md`.
 
-### a) Patch
+Regenerate the prompt summary:
 
-```diff
--| Docs | Changelog | Codex Prompts |
-+| Docs | Changelog | Codex Prompts | **CI-Fix Prompt** |
-@@
--| ✅  | ✅ | prompts/codex/automation.md |
-+| ✅  | ✅ | prompts/codex/automation.md | prompts/codex/ci-fix.md |
+```bash
+python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md
 ```
-### b) Why a separate column?
-Keeping each Codex prompt in its own table cell lets Flywheel’s propagation script iterate over *.md prompt files programmatically (e.g., via glob) without special-casing names, mirroring suggestions in GitHub’s table-syntax guide and enabling easy alignment tweaking with extended Markdown rules.
 
-## 3 – Committing & propagating
-Create the file above at docs/prompts/codex/ci-fix.md.
-
-Apply the table patch (or edit manually; don’t forget the pipe alignment).
-
-Run `npm --prefix docs-site run build` (or your docs generator) to ensure no broken links.
+Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repositories stay connected.
 
 Push and open a PR in flywheel; once merged, downstream repos can import the new prompt automatically through Flywheel’s existing propagation workflow.
 
 If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will generate /docs/prompts/codex/ci-fix at build time.
 
-## 4 – Further reading & references
+## 3 – Further reading & references
 OpenAI Codex overview and prompt design basics
 Medium
 
@@ -136,16 +126,15 @@ You are an automated contributor for the Flywheel repository.
 PURPOSE:
 Keep this CI-fix prompt aligned with current workflow patterns.
 
-CONTEXT:
-- Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
-  `npm run test:ci`, `python -m flywheel.fit`, and
-  `bash scripts/checks.sh` pass.
-- Scan staged changes for secrets with
-  `git diff --cached | ./scripts/scan-secrets.py`.
-- Regenerate `docs/prompt-docs-summary.md` with
-  `python scripts/update_prompt_docs_summary.py --repos-from \
-  dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  CONTEXT:
+  - Follow `AGENTS.md` and `README.md`.
+  - Ensure `pre-commit run --all-files`, `pytest -q`, and
+    `bash scripts/checks.sh` pass.
+  - Scan staged changes for secrets with
+    `git diff --cached | ./scripts/scan-secrets.py`.
+  - Regenerate `docs/prompt-docs-summary.md` with
+    `python scripts/update_prompt_docs_summary.py --repos-from \
+    dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 - Keep `dict/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
   repositories are "small flywheels" belted to this codebase—if the summary
   script drops any, fix the repo or integration instead of removing it.
