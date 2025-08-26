@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-08-25
+- fix: alphabetize and deduplicate .wordlist.txt to keep tests green.
+- docs: add wordlist postmortem and outage record.
+
 ## 2025-08-24
 - fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
