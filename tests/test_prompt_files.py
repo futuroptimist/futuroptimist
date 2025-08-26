@@ -12,7 +12,6 @@ def test_prompt_files_exist():
         Path("docs/prompts/codex/propagate.md"),
         Path("docs/prompts/codex/spellcheck.md"),
         Path("docs/prompts-codex.md"),
-        Path("docs/prompts-codex-spellcheck.md"),
         Path("docs/prompts-codex-video-script.md"),
         Path("docs/prompts-codex-video-script-ideas.md"),
         Path("docs/prompt-docs-summary.md"),
