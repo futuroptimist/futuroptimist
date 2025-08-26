@@ -148,6 +148,22 @@ def test_strip_speaker_prefix(tmp_path):
     assert entries == [("00:00:00,000", "00:00:01,000", "Hello world")]
 
 
+def test_skip_non_dialog_entries(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+[Music]
+
+2
+00:00:01,500 --> 00:00:02,000
+Real line
+"""
+    path = tmp_path / "non_dialog.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:01,500", "00:00:02,000", "Real line")]
+
+
 def test_parse_srt_edge_cases(tmp_path):
     content = """foo
 1

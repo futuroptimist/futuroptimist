@@ -28,6 +28,13 @@ def clean_srt_text(text: str) -> str:
 
 
 def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
+    """Parse ``path`` into a list of ``(start, end, text)`` tuples.
+
+    Lines that resolve to an empty string after :func:`clean_srt_text` are
+    skipped. This filters out non-dialog captions such as ``[Music]`` or
+    ``[Applause]`` so downstream scripts see only spoken narration.
+    """
+
     entries = []
     lines = path.read_text(encoding="utf-8-sig").splitlines()
     i = 0
@@ -54,7 +61,8 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
                 text_lines.append(lines[i].strip())
                 i += 1
             text = clean_srt_text(" ".join(text_lines))
-            entries.append((start, end, text))
+            if text:
+                entries.append((start, end, text))
         else:
             i += 1
     return entries
