@@ -27,6 +27,8 @@ CONTEXT:
 - Follow the conventions in AGENTS.md and README.md.
 - Ensure `pre-commit run --all-files` and `pytest -q` succeed.
 - Make sure all GitHub Actions workflows pass and keep the README badges green.
+- If browser dependencies are missing, run `npm run playwright:install` or
+  prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
 1. Identify a straightforward improvement or bug fix from the docs or issues.
@@ -72,9 +74,10 @@ Use this prompt to refine Futuroptimist's own prompt documentation.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Futuroptimist repository.
-Follow `AGENTS.md` and `README.md`. Ensure `pre-commit run --all-files`
-and `pytest -q` pass before committing.
+You are an automated contributor for the Futuroptimist and Flywheel repositories.  
+Follow `AGENTS.md` and `README.md`. Ensure `pre-commit run --all-files`, `pytest -q`,  
+`npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` all pass before committing.  
+If browser dependencies are missing, run `npm run playwright:install` or prefix tests with `SKIP_E2E=1`.
 
 USER:
 1. Pick one prompt doc under `docs/prompts/codex/` (for example,

@@ -148,6 +148,22 @@ def test_strip_speaker_prefix(tmp_path):
     assert entries == [("00:00:00,000", "00:00:01,000", "Hello world")]
 
 
+def test_skip_non_dialog_entries(tmp_path):
+    srt = """1
+00:00:00,000 --> 00:00:01,000
+[Music]
+
+2
+00:00:01,500 --> 00:00:02,000
+Real line
+"""
+    path = tmp_path / "non_dialog.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:01,500", "00:00:02,000", "Real line")]
+
+
 def test_parse_srt_edge_cases(tmp_path):
     content = """foo
 1
@@ -192,3 +208,11 @@ def test_entrypoint(tmp_path, monkeypatch, capsys):
         runpy.run_module("src.srt_to_markdown", run_name="__main__")
     captured = capsys.readouterr()
     assert "[NARRATOR]: Hi" in captured.out
+
+
+def test_parse_srt_invalid_utf8(tmp_path):
+    data = b"1\n00:00:00,000 --> 00:00:01,000\nHi\x80\n"
+    p = tmp_path / "bad.srt"
+    p.write_bytes(data)
+    entries = stm.parse_srt(p)
+    assert entries == [("00:00:00,000", "00:00:01,000", "Hi�")]
