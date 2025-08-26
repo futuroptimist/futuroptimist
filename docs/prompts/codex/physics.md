@@ -28,10 +28,10 @@ CONTEXT:
 - If browser dependencies are missing, run `npx playwright install chromium`
   or prefix tests with `SKIP_E2E=1`.
 - Cross-reference CAD dimensions where helpful.
+- Verify units and cite sources for any physical constants.
 
 REQUEST:
-1. Inspect physics-related docs for gaps or TODO notes, such as
-   [docs/flywheel-construction.md](../../flywheel-construction.md).
+1. Inspect physics-related docs under `docs/` for gaps, TODOs, or outdated formulas.
 2. Add clear explanations or equations where needed.
 3. Run the checks listed above.
 4. Commit the changes with a concise message and open a pull request.
