@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-08-25
+- fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.
+- test: cover invalid UTF-8 SRT input.
+- chore: alphabetize `.wordlist.txt`.
+- docs: record SRT decoding incident and postmortem.
+
 ## 2025-08-24
 - fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
