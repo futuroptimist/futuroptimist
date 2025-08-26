@@ -13,15 +13,15 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my
 If you're looking for the full project details, see
 [INSTRUCTIONS.md](INSTRUCTIONS.md). We manage Python dependencies with
 [uv](https://docs.astral.sh/uv/); check the instructions for setup steps.
-Guidelines for AI tools live in [AGENTS.md](AGENTS.md). The automated tests
-run via GitHub Actions on each push and pull request and currently reach
-**100%** coverage.
+Guidelines for AI tools live in [AGENTS.md](AGENTS.md); automation prompts are in
+[docs/prompts/codex/automation.md](docs/prompts/codex/automation.md). The automated tests
+run via GitHub Actions on each push and pull request and currently reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-25 00:08 UTC; checks hourly_
+_Last updated: 2025-08-26 23:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
-- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
+- ❌ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
   reproducible scripts, data pipelines, and tests that turn maker experiments into
   polished YouTube episodes
 - ✅ **[token.place](https://token.place)** – stateless web gateway that dispenses ephemeral

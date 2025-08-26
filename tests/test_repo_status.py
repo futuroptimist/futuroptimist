@@ -21,12 +21,18 @@ def test_status_to_emoji_strips_whitespace() -> None:
     assert status_to_emoji("\nFAILURE\t") == "❌"
 
 
+def test_status_to_emoji_internal_whitespace() -> None:
+    assert status_to_emoji("TIMED\tOUT") == "❌"
+
+
 def test_status_to_emoji_failure_variants() -> None:
     assert status_to_emoji("cancelled") == "❌"
     assert status_to_emoji("canceled") == "❌"
     assert status_to_emoji("TIMED_OUT") == "❌"
     assert status_to_emoji("timed-out") == "❌"
     assert status_to_emoji("timed out") == "❌"
+    assert status_to_emoji("startup_failure") == "❌"
+    assert status_to_emoji("STARTUP FAILURE") == "❌"
 
 
 class DummyResp:
