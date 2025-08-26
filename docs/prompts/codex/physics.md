@@ -30,8 +30,8 @@ CONTEXT:
 - Cross-reference CAD dimensions where helpful.
 
 REQUEST:
-1. Inspect physics-related docs for gaps or TODO notes, such as
-   [docs/flywheel-construction.md](../../flywheel-construction.md).
+1. Inspect physics-related docs for gaps or TODO notes and verify core formulas
+   (e.g. rotational energy `E = 0.5 * I * ω^2`) are accurate.
 2. Add clear explanations or equations where needed.
 3. Run the checks listed above.
 4. Commit the changes with a concise message and open a pull request.
