@@ -8,6 +8,7 @@
 - fix: treat 'canceled' status as failure in repo_status.
 - fix: ensure index_local_media writes newline at end of file.
 - feat: detect GitHub tokens in scan-secrets script.
+- fix: ensure scaffold_videos writes metadata.json with trailing newline.
 
 ## 2025-08-23
 - fix: add missing workflow field to outage record to restore CI.
