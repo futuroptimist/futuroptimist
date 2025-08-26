@@ -113,3 +113,14 @@ def test_entrypoint(tmp_path, monkeypatch):
             category=RuntimeWarning,
         )
         runpy.run_module("src.index_local_media", run_name="__main__")
+
+
+def test_scan_directory_skips_symlink_files(tmp_path):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    target = outside / "target.txt"
+    target.write_text("shh")
+    link = tmp_path / "link.txt"
+    link.symlink_to(target)
+    result = ilm.scan_directory(tmp_path)
+    assert all(entry["path"] != "link.txt" for entry in result)

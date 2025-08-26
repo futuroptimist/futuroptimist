@@ -32,24 +32,25 @@ def scan_directory(base: pathlib.Path, exclude: Iterable[pathlib.Path] | None = 
                 continue
             exclude_set.add(rel)
     for path in base.rglob("*"):
-        if path.is_file():
-            rel_path = path.relative_to(base).as_posix()
-            if rel_path in exclude_set:
-                continue
-            stat = path.stat()
-            mtime = (
-                datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
-                .replace(microsecond=0)
-                .isoformat()
-                .replace("+00:00", "Z")
-            )
-            records.append(
-                {
-                    "path": rel_path,
-                    "mtime": mtime,
-                    "size": stat.st_size,
-                }
-            )
+        if path.is_symlink() or not path.is_file():
+            continue
+        rel_path = path.relative_to(base).as_posix()
+        if rel_path in exclude_set:
+            continue
+        stat = path.stat()
+        mtime = (
+            datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
+            .replace(microsecond=0)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
+        records.append(
+            {
+                "path": rel_path,
+                "mtime": mtime,
+                "size": stat.st_size,
+            }
+        )
     return sorted(records, key=lambda r: (r["mtime"], r["path"]))
 
 

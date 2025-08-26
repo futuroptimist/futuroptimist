@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-25",
+  "workflow": "Fuzz Testing",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/0",
+  "root_cause": "index_local_media followed symlinked files, exposing files outside base directory.",
+  "resolution": "Skip symlink paths during scanning and add regression test."
+}

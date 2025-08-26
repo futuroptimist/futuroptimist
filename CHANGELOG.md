@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-08-25
+- fix: ignore symlinked files when indexing media to avoid path traversal.
+- docs: add postmortem for symlink index leak.
+
 ## 2025-08-24
 - fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
