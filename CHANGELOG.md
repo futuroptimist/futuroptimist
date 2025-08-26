@@ -3,6 +3,9 @@
 ## 2025-08-25
 - fix: ignore symlinked files when indexing media to avoid path traversal.
 - docs: add postmortem for symlink index leak.
+- fix: alphabetize and deduplicate .wordlist.txt to keep tests green.
+- docs: add wordlist postmortem and outage record.
+- fix: normalize whitespace in status_to_emoji.
 
 ## 2025-08-24
 - fix: validate svg3d shading factor to reject NaN and infinity.
