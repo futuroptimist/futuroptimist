@@ -128,6 +128,7 @@ Keep this CI-fix prompt aligned with current workflow patterns.
 
   CONTEXT:
   - Follow `AGENTS.md` and `README.md`.
+  - Inspect `.github/workflows/` and mirror CI steps locally.
   - Ensure `pre-commit run --all-files`, `pytest -q`, and
     `bash scripts/checks.sh` pass.
   - Scan staged changes for secrets with
