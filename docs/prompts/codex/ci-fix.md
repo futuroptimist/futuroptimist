@@ -24,11 +24,12 @@ Diagnose a failed GitHub Actions run and produce a fix.
 CONTEXT:
 - Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
 - Consult existing outage entries in `docs/outages` for similar symptoms.
+- Review `AGENTS.md` and `README.md` for repository-specific guidance.
 - Constraints:
   * Do **not** break existing functionality.
   * Follow the repository’s style guidelines and commit-lint rules.
   * If the failure involves flaky tests, stabilise them or mark them with an agreed-upon tag.
-  * Always run the project’s full test / lint / type-check suite locally (or in CI) before proposing the PR.
+  * Always run the project’s full test / lint / type-check suite locally (or in CI) before proposing the PR (for Flywheel: `pre-commit run --all-files`, `pytest -q`, and `bash scripts/checks.sh`).
   * Scan staged changes for secrets with repository tooling (e.g., `git diff --cached | ./scripts/scan-secrets.py`).
   * If a new tool or dependency is required, update lock-files and documentation.
   * Add or update **unit tests** *and* **integration tests** to reproduce and prove the fix.
@@ -69,10 +70,14 @@ Log each incident in `docs/outages` so future fixes can reference past outages.
 ## 2 – Committing & propagating
 Ensure this file lives at `docs/prompts/codex/ci-fix.md`.
 
-Regenerate the prompt summary:
+Run repository checks, regenerate the prompt summary, and scan for secrets:
 
 ```bash
+pre-commit run --all-files
+pytest -q
+bash scripts/checks.sh
 python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md
+git diff --cached | ./scripts/scan-secrets.py
 ```
 
 Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repositories stay connected.
