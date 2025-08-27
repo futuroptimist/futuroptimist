@@ -8,7 +8,7 @@
 - [x] Purchase charge controller, LiFePO₄ battery
 - [ ] Install charge controller & LiFePO₄ battery bank
 - [ ] Wire DC air pump + test flow rate
-- [ ] Capture build timelapse (panel mounting, wiring, tub fill)
+- [ ] Capture build time-lapse (panel mounting, wiring, tub fill)
 - [ ] Record macro B-roll of mosquito fish eating larvae
 - [ ] Create power-flow diagram overlay
 - [ ] Design solarpunk lower-third template
@@ -20,7 +20,7 @@ Mosquito control remains an ongoing challenge in Bay Area neighborhoods; showcas
 
 ## Key beats & assets
 - A-roll vlog style walkthrough of each aquarium.
-- Outdoor build timelapse (mounting panels, wiring pump, setting up tubs).
+- Outdoor build time-lapse (mounting panels, wiring pump, setting up tubs).
 - B-roll close-ups of fish eating larvae (macro).
 - Diagram overlay of power flow (panel → charge controller → battery → pump).
 

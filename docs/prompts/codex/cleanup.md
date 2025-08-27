@@ -18,11 +18,19 @@ Maintain prompt hygiene by deleting fulfilled one-off prompts and clearing compl
 CONTEXT:
 - Scan `docs/` for prompts marked `Type: one-off` whose features exist in the codebase.
 - Delete those prompt sections or files.
-- Remove matching rows from `docs/prompt-docs-todos.md`.
+- Remove matching entries from `docs/prompt-docs-todos.md`.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
   --out docs/prompt-docs-summary.md`.
-- Follow `AGENTS.md` for testing requirements.
+- Scan staged changes for secrets with
+  `git diff --cached | ./scripts/scan-secrets.py`.
+- Run checks:
+  `pre-commit run --all-files`,
+  `pytest -q`,
+  `npm run lint` (if `package.json` exists),
+  `npm run test:ci` (if `package.json` exists),
+  `python -m flywheel.fit` (if installed), and
+  `bash scripts/checks.sh`.
 
 REQUEST:
 1. Identify an obsolete prompt or external TODO entry.
@@ -47,8 +55,11 @@ Keep this cleanup prompt effective for removing obsolete items.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
+- Ensure `pre-commit run --all-files`, `pytest -q`,
+  `npm run lint` (if `package.json` exists),
+  `npm run test:ci` (if `package.json` exists),
+  `python -m flywheel.fit` (if installed), and
+  `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.

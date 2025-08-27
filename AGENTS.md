@@ -28,7 +28,7 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 | `/Makefile` & `setup.ps1` | Developer automation (venv, tests, subtitles, render). |
 | `/llms.txt` | Complementary file containing creative context & tone. |
 | `/subtitles/` | Downloaded `.srt` caption files populated by `fetch_subtitles.py`. |
-| `/src/srt_to_markdown.py` | Convert `.srt` captions; handles italics/bold, emoji; strips HTML, speaker prefixes, and collapses whitespace. |
+| `/src/srt_to_markdown.py` | Convert `.srt` captions; handles italics/bold, emoji; strips HTML, speaker prefixes, collapses whitespace, and skips non-dialog lines like `[Music]`. |
 | `/src/generate_heatmap.py` | Create a 3‑D lines-of-code heatmap with light/dark SVGs |
 | `/sources/` | Reference files fetched via `collect_sources.py`. |
 | `video_ids.txt` | Canonical list of YouTube IDs referenced by helper scripts; lines starting with `#` are comments. |
@@ -61,8 +61,9 @@ instead of collecting them at the end.
 - Each script folder may also contain a `footage.md` checklist to track B-roll or CGI shots to gather. Note existing archive vs new footage, and flag generative AI segments so they don't look like "AI slop".
 - Large photos or video files belong in a local `footage/` folder (ignored by git).
   Run `python src/index_local_media.py` whenever assets change to rebuild
-  `footage_index.json` for quick lookup during editing. Each entry records the
-  file path, modification time, and size in bytes.
+  `footage_index.json` for quick lookup during editing. Use `--exclude PATH`
+  (repeatable) to skip files or folders. Each entry records the file path,
+  modification time, and size in bytes.
 - Run `python src/update_transcript_links.py` to sync `transcript_file` paths; with `YOUTUBE_API_KEY` set it also fetches missing captions via YouTube Data API.
 
 ## Testing & CI
