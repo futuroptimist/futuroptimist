@@ -25,7 +25,8 @@ Keep the project healthy by making small, well-tested improvements.
 
 CONTEXT:
 - Follow the conventions in AGENTS.md and README.md.
-- Ensure `pre-commit run --all-files` and `pytest -q` succeed.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
+  `python -m flywheel.fit`, and `bash scripts/checks.sh` all succeed.
 - Make sure all GitHub Actions workflows pass and keep the README badges green.
 - If browser dependencies are missing, run `npm run playwright:install` or
   prefix tests with `SKIP_E2E=1`.
@@ -43,14 +44,10 @@ OUTPUT_FORMAT:
 The DEV assistant must output the JSON object first, then the diff in a fenced diff block.
 ```
 
-Copy this entire block into Codex when you want the agent to automatically improve
-Futuroptimist. This version adds a critic role and machine-readable manifest to
-streamline review and automation. Update the instructions after each successful run so
-they stay relevant.
+Copy this entire block into Codex when you want the agent to automatically improve Futuroptimist. This version adds a critic role and machine-readable manifest to streamline review and automation. Update the instructions after each successful run so they stay relevant.
 
 ## Implementation prompts
-Copy **one** of the prompts below into Codex when you want the agent to improve
-`docs/prompt-docs-summary.md`.
+Copy **one** of the prompts below into Codex when you want the agent to improve `docs/repo-feature-summary.md`.
 Each prompt is file-scoped, single-purpose and immediately actionable.
 
 ### How to choose a prompt
@@ -62,10 +59,9 @@ Each prompt is file-scoped, single-purpose and immediately actionable.
 ### Notes for human contributors
 
 - One-table-per-PR keeps reviews short and rollbacks easy.
-- Use the CI matrix to test on Python 3.11 and the latest Python 3.12.
-- Rerun `pre-commit run --all-files` after any markdown change to preserve formatting.
-- Tip – Codex can install dependencies, run tests and open PRs autonomously;
-  keep your goal sentence tight and your acceptance check explicit.
+- Use the CI matrix to test on Node 18 LTS and the latest Node 20.
+- Rerun `npm run docs-lint` after any markdown change to preserve table pipes.
+- Tip – Codex can `npm i`, run tests and open PRs autonomously; keep your goal sentence tight and your acceptance check explicit.
 
 ## Upgrade Prompt
 Type: evergreen
@@ -74,10 +70,7 @@ Use this prompt to refine Futuroptimist's own prompt documentation.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Futuroptimist and Flywheel repositories.  
-Follow `AGENTS.md` and `README.md`. Ensure `pre-commit run --all-files`, `pytest -q`,  
-`npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` all pass before committing.  
-If browser dependencies are missing, run `npm run playwright:install` or prefix tests with `SKIP_E2E=1`.
+You are an automated contributor for the Futuroptimist repository. Follow `AGENTS.md` and `README.md`. Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` pass before committing. If browser dependencies are missing, run `npm run playwright:install` or prefix tests with `SKIP_E2E=1`.
 
 USER:
 1. Pick one prompt doc under `docs/prompts/codex/` (for example,
