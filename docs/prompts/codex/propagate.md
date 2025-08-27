@@ -11,10 +11,13 @@ Use this prompt to ask Codex to seed missing `prompts-*.md` files across reposit
 
 **Human set-up steps:**
 
-1. Review [`docs/prompt-docs-summary.md`](../../prompt-docs-summary.md) and compile a list of repos
-   that lack a `docs/prompts/codex/automation.md` baseline.
-2. Paste that list (one repo per line) at the top of your ChatGPT message.
-3. Add two blank lines, then copy the block below and send it.
+1. Ensure `dict/prompt-doc-repos.txt` lists the target repositories and regenerate
+   [`docs/prompt-docs-summary.md`](../../prompt-docs-summary.md) with
+   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+2. Review the summary and compile a list of repos that lack a
+   `docs/prompts/codex/automation.md` baseline.
+3. Paste that list (one repo per line) at the top of your ChatGPT message.
+4. Add two blank lines, then copy the block below and send it.
 
 ```text
 SYSTEM:
@@ -30,8 +33,8 @@ CONTEXT:
   `futuroptimist/flywheel`.
 - Follow the repository's `AGENTS.md`, style guides, and commit conventions.
 - Run the repository's lint and test suite (e.g., `pre-commit run --all-files`,
-  `pytest -q`, `npm run test:ci`, `python -m flywheel.fit`, `bash scripts/checks.sh`)
-  before committing.
+  `pytest -q`, `npm run lint`, `npm run test:ci`, `python -m flywheel.fit`,
+  `bash scripts/checks.sh`) before committing.
 
 REQUEST:
 1. Clone the repository and add the prompt doc.
@@ -59,8 +62,8 @@ Keep this propagation prompt accurate for seeding prompt docs.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
+  `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
