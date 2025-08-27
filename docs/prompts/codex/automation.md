@@ -25,7 +25,8 @@ Keep the project healthy by making small, well-tested improvements.
 
 CONTEXT:
 - Follow the conventions in AGENTS.md and README.md.
-- Ensure `pre-commit run --all-files` and `pytest -q` succeed.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
+  `python -m flywheel.fit`, and `bash scripts/checks.sh` all succeed.
 - Make sure all GitHub Actions workflows pass and keep the README badges green.
 - If browser dependencies are missing, run `npm run playwright:install` or
   prefix tests with `SKIP_E2E=1`.
