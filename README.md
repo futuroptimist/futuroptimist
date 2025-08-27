@@ -18,7 +18,7 @@ Guidelines for AI tools live in [AGENTS.md](AGENTS.md); automation prompts are i
 run via GitHub Actions on each push and pull request and currently reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-27 03:16 UTC; checks hourly_
+_Last updated: 2025-08-27 04:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
