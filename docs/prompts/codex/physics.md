@@ -28,8 +28,10 @@ CONTEXT:
 - If browser dependencies are missing, run `npx playwright install chromium`
   or prefix tests with `SKIP_E2E=1`.
 - Cross-reference CAD dimensions where helpful.
-- Verify core equations like rotational energy `E = 1/2 I ω^2` and torque `τ = I α`,
-  noting SI units, and verify units and cite sources for any physical constants.
+- Verify core equations such as rotational energy `E = 1/2 I ω^2`, torque `τ = I α`,
+  and moment of inertia for a disk with a bore `I = 1/2 m (r_o^2 + r_i^2)`.
+  For stress limits use `σ_max = ((3 + ν)/8) ρ ω^2 r_o^2`.
+  Keep SI units and cite sources for constants.
 
 REQUEST:
 1. Inspect physics-related docs under `docs/` for gaps, TODOs, or outdated formulas.
