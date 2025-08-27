@@ -6,39 +6,37 @@ slug: 'codex-cleanup'
 # Obsolete Prompt Cleanup
 Type: evergreen
 
-Use this prompt to delete one-off prompts already implemented and prune TODO entries targeting other
-repositories.
+Use this prompt to delete one-off prompts already implemented and remove any lingering references.
 
 ```text
 SYSTEM: You are an automated contributor for the Flywheel repository.
 
 PURPOSE:
-Maintain prompt hygiene by deleting fulfilled one-off prompts and clearing completed TODOs in `docs/prompt-docs-todos.md`.
+Maintain prompt hygiene by deleting fulfilled one-off prompts and clearing outdated references.
 
 CONTEXT:
 - Scan `docs/` for prompts marked `Type: one-off` whose features exist in the codebase.
 - Delete those prompt sections or files.
-- Remove matching entries from `docs/prompt-docs-todos.md`.
 - Regenerate `docs/prompt-docs-summary.md` with
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
-  --out docs/prompt-docs-summary.md`.
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 - Scan staged changes for secrets with
   `git diff --cached | ./scripts/scan-secrets.py`.
 - Run checks:
   `pre-commit run --all-files`,
   `pytest -q`,
+  `npm ci` (if `package.json` exists),
   `npm run lint` (if `package.json` exists),
   `npm run test:ci` (if `package.json` exists),
   `python -m flywheel.fit` (if installed), and
   `bash scripts/checks.sh`.
 
 REQUEST:
-1. Identify an obsolete prompt or external TODO entry.
+1. Identify an obsolete prompt.
 2. Remove it and update references.
 3. Run all required checks before committing.
 
 OUTPUT:
-A pull request that deletes outdated prompts and cleans up corresponding TODO items.
+A pull request that deletes outdated prompts and cleans up related references.
 ```
 
 ## Upgrade Prompt
@@ -55,14 +53,12 @@ Keep this cleanup prompt effective for removing obsolete items.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`,
-  `npm run lint` (if `package.json` exists),
-  `npm run test:ci` (if `package.json` exists),
-  `python -m flywheel.fit` (if installed), and
-  `bash scripts/checks.sh` pass.
+- Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm ci` (if `package.json` exists),
+  `npm run lint` (if `package.json` exists), `npm run test:ci` (if `package.json` exists),
+  `python -m flywheel.fit` (if installed), and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
-  `python scripts/update_prompt_docs_summary.py --repos-from \
-  dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Review this file for outdated steps or unclear language.

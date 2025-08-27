@@ -61,7 +61,7 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
                 text_lines.append(lines[i].strip())
                 i += 1
             text = clean_srt_text(" ".join(text_lines))
-            if text:
+            if text and start < end:
                 entries.append((start, end, text))
         else:
             i += 1

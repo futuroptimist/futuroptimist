@@ -72,14 +72,28 @@ Ensure this file lives at `docs/prompts/codex/ci-fix.md`.
 Regenerate the prompt summary:
 
 ```bash
-python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md
+python scripts/update_prompt_docs_summary.py \
+  --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md
 ```
 
-Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repositories stay connected.
+Run the repository checks before committing:
 
-Push and open a PR in flywheel; once merged, downstream repos can import the new prompt automatically through Flywheel’s existing propagation workflow.
+```bash
+pre-commit run --all-files
+pytest -q
+bash scripts/checks.sh
+git diff --cached | ./scripts/scan-secrets.py
+```
 
-If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will generate /docs/prompts/codex/ci-fix at build time.
+Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repos stay
+connected.
+
+Push and open a PR in flywheel. Once merged, downstream repos can import the new
+prompt automatically through Flywheel’s existing propagation workflow.
+
+If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will
+generate `/docs/prompts/codex/ci-fix` at build time.
 
 ## 3 – Further reading & references
 OpenAI Codex overview and prompt design basics
@@ -128,6 +142,7 @@ Keep this CI-fix prompt aligned with current workflow patterns.
 
   CONTEXT:
   - Follow `AGENTS.md` and `README.md`.
+  - Inspect `.github/workflows/` and mirror CI steps locally.
   - Ensure `pre-commit run --all-files`, `pytest -q`, and
     `bash scripts/checks.sh` pass.
   - Scan staged changes for secrets with

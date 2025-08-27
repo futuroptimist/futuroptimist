@@ -64,7 +64,8 @@ CONTEXT:
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
-- Confirm any referenced equations (e.g., `E = 1/2 I ω^2`) match standard physics texts.
+- Confirm any referenced equations (e.g., `E = 1/2 I ω^2` for rotational kinetic energy)
+  match standard physics texts.
 
 REQUEST:
 1. Review this file for outdated equations or guidance.
