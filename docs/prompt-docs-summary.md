@@ -10,7 +10,5 @@
 | [prompts/codex/physics.md](prompts/codex/physics.md) | Codex Physics Explainer Prompt |
 | [prompts/codex/propagate.md](prompts/codex/propagate.md) | Codex Prompt Propagation Prompt |
 | [prompts/codex/spellcheck.md](prompts/codex/spellcheck.md) | Codex Spellcheck Prompt |
-| [prompts-codex-spellcheck.md](prompts-codex-spellcheck.md) | Codex Spellcheck Prompt |
-| [prompts-codex-video-script-ideas.md](prompts-codex-video-script-ideas.md) | Video Script Ideas Prompt |
-| [prompts-codex-video-script.md](prompts-codex-video-script.md) | Codex Video Script Prompt |
-| [prompts-codex.md](prompts-codex.md) | Futuroptimist Codex Prompt |
+| [prompts/codex/video-script-ideas.md](prompts/codex/video-script-ideas.md) | Video Script Ideas Prompt |
+| [prompts/codex/video-script.md](prompts/codex/video-script.md) | Codex Video Script Prompt |

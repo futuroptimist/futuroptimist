@@ -24,48 +24,48 @@ def test_extract_related_links():
 
 
 def test_fetch_remote_titles(monkeypatch):
-    prompts_text = "## Related prompt guides\n\n- [Item](prompts-items.md#foo)\n"
+    prompts_text = "## Related prompt guides\n\n- [Item](items.md#foo)\n"
     item_text = "---\ntitle: Item\n---\n# Item"
 
     def fake_urlopen(url):
         if (
             url
-            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts-codex.md"
+            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/automation.md"
         ):
             return DummyResp(prompts_text.encode())
         if (
             url
-            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts-items.md"
+            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/items.md"
         ):
             return DummyResp(item_text.encode())
         raise AssertionError(f"unexpected URL {url}")
 
     monkeypatch.setattr(upd.urllib.request, "urlopen", fake_urlopen)
     rows = upd.fetch_remote_titles(
-        "https://github.com/foo/bar/blob/main/docs/prompts-codex.md"
+        "https://github.com/foo/bar/blob/main/docs/prompts/codex/automation.md"
     )
     assert rows == [
         (
-            "bar/prompts-items.md#foo",
-            "https://github.com/foo/bar/blob/main/docs/prompts-items.md#foo",
+            "bar/items.md#foo",
+            "https://github.com/foo/bar/blob/main/docs/prompts/codex/items.md#foo",
             "Item",
         )
     ]
 
 
 def test_main_generates_summary_with_remote(tmp_path, monkeypatch):
-    prompts_text = "## Related prompt guides\n\n- [Item](prompts-items.md#foo)\n"
+    prompts_text = "## Related prompt guides\n\n- [Item](items.md#foo)\n"
     item_text = "---\ntitle: Item\n---\n# Item"
 
     def fake_urlopen(url):
         if (
             url
-            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts-codex.md"
+            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/automation.md"
         ):
             return DummyResp(prompts_text.encode())
         if (
             url
-            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts-items.md"
+            == "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/items.md"
         ):
             return DummyResp(item_text.encode())
         raise AssertionError(f"unexpected URL {url}")
@@ -79,23 +79,23 @@ def test_main_generates_summary_with_remote(tmp_path, monkeypatch):
         "--out",
         str(out),
         "--external-prompts-codex",
-        "https://github.com/foo/bar/blob/main/docs/prompts-codex.md",
+        "https://github.com/foo/bar/blob/main/docs/prompts/codex/automation.md",
     ]
     monkeypatch.setattr(sys, "argv", argv)
     upd.main()
     text = out.read_text()
-    assert "bar/prompts-items.md#foo" in text
+    assert "bar/items.md#foo" in text
 
 
 def test_main_handles_multiple_external_codex(tmp_path, monkeypatch):
-    prompts_text = "## Related prompt guides\n\n- [Item](prompts-items.md)\n"
+    prompts_text = "## Related prompt guides\n\n- [Item](items.md)\n"
     item_text = "---\ntitle: Item\n---\n# Item"
 
     mapping = {
-        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts-codex.md": prompts_text,
-        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts-items.md": item_text,
-        "https://raw.githubusercontent.com/foo/baz/main/docs/prompts-codex.md": prompts_text,
-        "https://raw.githubusercontent.com/foo/baz/main/docs/prompts-items.md": item_text,
+        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/automation.md": prompts_text,
+        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/items.md": item_text,
+        "https://raw.githubusercontent.com/foo/baz/main/docs/prompts/codex/automation.md": prompts_text,
+        "https://raw.githubusercontent.com/foo/baz/main/docs/prompts/codex/items.md": item_text,
     }
 
     def fake_urlopen(url):
@@ -112,12 +112,12 @@ def test_main_handles_multiple_external_codex(tmp_path, monkeypatch):
         "--out",
         str(out),
         "--external-prompts-codex",
-        "https://github.com/foo/bar/blob/main/docs/prompts-codex.md",
+        "https://github.com/foo/bar/blob/main/docs/prompts/codex/automation.md",
         "--external-prompts-codex",
-        "https://github.com/foo/baz/blob/main/docs/prompts-codex.md",
+        "https://github.com/foo/baz/blob/main/docs/prompts/codex/automation.md",
     ]
     monkeypatch.setattr(sys, "argv", argv)
     upd.main()
     text = out.read_text()
-    assert "bar/prompts-items.md" in text
-    assert "baz/prompts-items.md" in text
+    assert "bar/items.md" in text
+    assert "baz/items.md" in text

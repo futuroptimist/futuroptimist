@@ -16,10 +16,10 @@ PURPOSE:
 Keep Markdown documentation free of spelling errors.
 
 CONTEXT:
-- Run `pre-commit run codespell --files $(git ls-files '*.md')` to spell-check
-  Markdown documentation.
+- Check all Markdown files using `pyspelling -c spellcheck.yaml`.
 - Add unknown but legitimate words to
-  [`dict/allow.txt`](../../../dict/allow.txt).
+  [`.wordlist.txt`](../../../.wordlist.txt) and keep the entries
+  alphabetically sorted.
 - Follow [`AGENTS.md`](../../../AGENTS.md) and [`README.md`](../../../README.md).
   Ensure these commands succeed:
 
@@ -34,8 +34,8 @@ CONTEXT:
 
 REQUEST:
 1. Run the spellcheck command and inspect the results.
-2. Correct misspellings or update `dict/allow.txt` as needed.
-3. Re-run the spellcheck until it reports no errors.
+2. Correct misspellings or update `.wordlist.txt` as needed.
+3. Re-run `pyspelling` until it reports no errors.
 4. Run all checks listed above.
 5. Commit the changes with a concise message and open a pull request.
 
