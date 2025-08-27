@@ -24,6 +24,7 @@ CONTEXT:
 
 REQUEST:
 1. Look for TODO comments in `cad/*.scad` or open issues tagged `cad`.
+   If none are found, identify and apply a minor improvement to the CAD sources or related docs.
 2. Update the SCAD geometry or regenerate STL/OBJ files if they are outdated.
 3. Run `python -m flywheel.fit` to confirm dimensions match.
 4. Commit updated models and documentation.
