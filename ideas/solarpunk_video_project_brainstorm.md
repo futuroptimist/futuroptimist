@@ -1,0 +1,5 @@
+- **Solar-Powered Window Farm** – A micro hydroponic tower fed by a thrift-store solar panel brings leafy greens to sunless apartments.
+- **Bioplastic Filament Forge** – Turn kitchen scraps into 3D-printer filament with a solar-heated extruder for zero-waste fabrication.
+- **Sun-Charged Mesh Router** – A palm-sized, PV-backed node keeps neighborhood Wi-Fi alive when the grid blinks.
+- **Rainlight Purifier** – A solar LED lantern that filters collected rainwater, illuminating and hydrating overnight.
+- **Upcycled E-Bike Generator** – Salvage e-bike parts to build a pedal-power station that tops off devices with every commute.
