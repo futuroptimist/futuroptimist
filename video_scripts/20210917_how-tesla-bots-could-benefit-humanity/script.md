@@ -21,11 +21,11 @@
 
 [NARRATOR]: I'll talk a little bit about these technical details later when addressing Tesla Bots feasibility.
 
-[NARRATOR]: But first, let's summarize the short segment about Tesla Bot and go over some of Elan's reasons for why this makes sense for the company.
+[NARRATOR]: But first, let's summarize the short segment about Tesla Bot and go over some of Elon's reasons for why this makes sense for the company.
 
 [NARRATOR]: Elon stated that Tesla is arguably the world's biggest robotics company, because Tesla cars are basically semi-synthetic robots on wheels.
 
-[NARRATOR]: Given Tesla's extensive prediction and planning algorithms as it relates to autonomous vehicles, it make sense to apply that set of resources to a humanoid form, which would have similar perception and prediction challenges.
+[NARRATOR]: Given Tesla's extensive prediction and planning algorithms as it relates to autonomous vehicles, it makes sense to apply that set of resources to a humanoid form, which would have similar perception and prediction challenges.
 
 [NARRATOR]: Quick disclaimer.
 
@@ -33,11 +33,11 @@
 
 [NARRATOR]: This is far from a solved problem, as people have gladly pointed out all across the internet.
 
-[NARRATOR]: If these technical hurdles are overcome, however, this can help humanity began to solve some of the pain points that capitalism and industrialization have introduced.
+[NARRATOR]: If these technical hurdles are overcome, however, this can help humanity begin to solve some of the pain points that capitalism and industrialization have introduced.
 
-[NARRATOR]: Elan's initial focus would be on eliminating dangerous, repetitive or boring tasks.
+[NARRATOR]: Elon's initial focus would be on eliminating dangerous, repetitive or boring tasks.
 
-[NARRATOR]: The ultimate goal here according to Elan is supporting the labor economy that is trending more and more towards some form of universal basic income.
+[NARRATOR]: The ultimate goal here according to Elon is supporting the labor economy that is trending more and more towards some form of universal basic income.
 
 [NARRATOR]: Plus, it would make sense to send humanoid robots on unscrewed missions to other planets and moons as we finally began to colonize the solar system.
 

@@ -2,6 +2,8 @@
 
 ## 2025-08-27
 - feat: detect fine-grained GitHub tokens in scan-secrets script.
+- chore: resort `.wordlist.txt` to fix failing wordlist test.
+- docs: add outage record and postmortem for wordlist sorting regression.
 
 ## 2025-08-25
 - fix: treat 'startup_failure' status as failure in repo_status.
