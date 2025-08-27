@@ -174,7 +174,7 @@
 
 [NARRATOR]: Optics basically refers to the display technology and screen, and that's way too complicated and lengthy of a topic for this video, so I'll just defer to this really detailed article published in Nature, which I've linked in the description.
 
-[NARRATOR]: The higher your field of view, the more screen real estate you have, and the more immersive the experience, but unfortunately, AR field of view in publicly available devices like the Hololens is extremely limited when compared to what we have now in budget VR headsets like the Quest 2.
+[NARRATOR]: The higher your field of view, the more screen real estate you have, and the more immersive the experience, but unfortunately, AR field of view in publicly available devices like the HoloLens is extremely limited when compared to what we have now in budget VR headsets like the Quest 2.
 
 [NARRATOR]: For this reason, mixed reality with a VR headset and passthrough cameras is an obvious stopgap until AR displays further improve.
 
@@ -294,7 +294,7 @@
 
 [NARRATOR]: Optics basically refers to the display technology and screen, and that's way too complicated and lengthy of a topic for this video, so I'll just defer to this really detailed article published in Nature, which I've linked in the description.
 
-[NARRATOR]: The higher your field of view, the more screen real estate you have, and the more immersive the experience, but unfortunately, AR field of view in publicly available devices like the Hololens is extremely limited when compared to what we have now in budget VR headsets like the Quest 2.
+[NARRATOR]: The higher your field of view, the more screen real estate you have, and the more immersive the experience, but unfortunately, AR field of view in publicly available devices like the HoloLens is extremely limited when compared to what we have now in budget VR headsets like the Quest 2.
 
 [NARRATOR]: For this reason, mixed reality with a VR headset and passthrough cameras is an obvious stopgap until AR displays further improve.
 

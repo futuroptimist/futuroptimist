@@ -27,6 +27,11 @@ CONTEXT:
 - Shake file paths and config: exercise path traversal, symlink loops, invalid encodings,
   and oversized files.
 - Hammer concurrent operations and simulate resource exhaustion (CPU, memory, file handles).
+- Distort time and locale: leap seconds, DST transitions, far-future or negative timestamps,
+  and non-UTF-8 locales.
+- Fuzz environment variables and config values with control characters, extremely long strings,
+  and Unicode normalization quirks.
+- Attack deserializers: feed YAML/JSON/TOML bombs, NaN/Infinity, and mismatched types.
 - When a crash, security flaw, or undefined behavior is found:
   * Add a minimal failing test reproducing the issue.
   * Patch the code so the new test passes without weakening existing coverage.
@@ -37,7 +42,8 @@ CONTEXT:
 - Mirror the postmortem to `democratizedspace/dspace@v3` to build the shared incident corpus.
 
 REQUEST:
-1. Run `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`, and `python -m flywheel.fit`.
+1. Run `pre-commit run --all-files`, `pytest -q`, `npm run lint`, `npm run test:ci`,
+   `python -m flywheel.fit`, and `bash scripts/checks.sh`.
 2. Commit the failing test, the fix, and documentation updates.
 3. Push to a branch named `codex/fuzzing/short-desc` and open a pull request.
 4. Link the postmortem and dspace entry in the PR description.
@@ -63,7 +69,7 @@ Keep this fuzzing prompt current with emerging edge cases.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`, `npm run test:ci`,
   `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
