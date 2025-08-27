@@ -25,6 +25,11 @@ def test_status_to_emoji_internal_whitespace() -> None:
     assert status_to_emoji("TIMED\tOUT") == "❌"
 
 
+def test_status_to_emoji_non_string() -> None:
+    """Non-string conclusions should return the unknown emoji."""
+    assert status_to_emoji(123) == "❓"
+
+
 def test_status_to_emoji_failure_variants() -> None:
     assert status_to_emoji("cancelled") == "❌"
     assert status_to_emoji("canceled") == "❌"

@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-27",
+  "workflow": "tests",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/1",
+  "root_cause": "status_to_emoji crashed on non-string input",
+  "resolution": "validated input type and return unknown emoji"
+}
