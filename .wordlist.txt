@@ -62,6 +62,7 @@ gridfinity
 hackable
 heatmap
 heatmaps
+hibbeler
 href
 https
 ideation
@@ -87,6 +88,7 @@ md
 meta's
 metaverse
 microcontroller
+mpa
 nas
 nonfinite
 npc
@@ -97,6 +99,7 @@ openai
 opentimelineio
 optimised
 pathlib
+poisson
 pre
 prs
 ps
@@ -116,6 +119,7 @@ runbook
 scaffolded
 schemas
 seo
+shigley
 slugify
 solarpunk
 spacex
@@ -130,6 +134,7 @@ sugarkube
 svg
 svgs
 svgwrite
+tfrac
 tiktok
 timelapse
 tos

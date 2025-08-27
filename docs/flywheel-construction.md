@@ -2,17 +2,28 @@
 
 Designing a flywheel means balancing energy storage against material limits.
 This note captures the basic physics behind the CAD model used in Futuroptimist
-prototypes.
+prototypes. The disk in our CAD has
+
+* outer radius $r_o = 75\,\text{mm}$
+* bore radius $r_i = 6\,\text{mm}$
+* thickness $t = 10\,\text{mm}$
+
+Aluminum 6061‑T6 has density $\rho \approx 2.70\,\text{g·cm}^{-3}$
+($2.70\times10^{3}\,\text{kg·m}^{-3}$) and yield strength about
+$276\,\text{MPa}$.
 
 ## Moment of inertia
 
-For a solid disk with mass $m$ and outer radius $r$ the moment of inertia is
+For a uniform disk with inner radius $r_i$ and outer radius $r_o$:
 
-$$I = 0.5\, m r^2.$$
+\begin{aligned}
+  m &= \rho\,\pi t (r_o^2 - r_i^2),\\
+  I &= \tfrac12 m (r_o^2 + r_i^2).
+\end{aligned}
 
-Our CAD shows a 150 mm diameter, 10 mm thick aluminum disk with an 12 mm bore for
-the shaft.  Assuming a mass of 0.9 kg, the moment of inertia is roughly
-$2.5\times10^{-3}\,\text{kg·m}^2$.
+The dimensions above yield a volume of $1.76\times10^{-4}\,\text{m}^3$ and a
+mass of $0.47\,\text{kg}$. The corresponding moment of inertia is
+$1.3\times10^{-3}\,\text{kg·m}^2$.
 
 ## Stored energy
 
@@ -21,7 +32,17 @@ angular velocity $\omega$:
 
 $$E = 0.5\, I \omega^2.$$
 
-At 3 000 rpm (314 rad/s) the example above holds about 120 J.
+At 3 000 rpm (314 rad/s) this flywheel stores about $66\,\text{J}$ of kinetic
+energy.
+
+## Torque and spin‑up
+
+Torque relates angular acceleration $\alpha$ to inertia:
+
+$$\tau = I\alpha.$$
+
+Spinning the disk from rest to 3 000 rpm in $5\,\text{s}$ requires roughly
+$0.08\,\text{N·m}$ of torque.
 
 ## Stress check
 
@@ -30,8 +51,9 @@ hoop stress for a solid disk is
 
 $$\sigma \approx (\rho \omega^2 r^2)/3,$$
 
-where $\rho$ is the material density.  Compare this value to the alloy's yield
-stress to set a safe operating speed.
+where $\rho$ is the material density. At 3 000 rpm the stress is about
+$0.5\,\text{MPa}$, well below the alloy's $276\,\text{MPa}$ yield strength.
+Compare the computed stress to the material limit to set a safe operating speed.
 
 ```
     outer radius r
