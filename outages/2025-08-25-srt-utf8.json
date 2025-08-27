@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-08-25",
+  "workflow": "tests",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/0",
+  "root_cause": "parse_srt used strict UTF-8 decoding and crashed on invalid bytes",
+  "resolution": "decode with errors=\"replace\" to sanitize invalid bytes"
+}

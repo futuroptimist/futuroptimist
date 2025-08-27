@@ -17,13 +17,17 @@ Keep Markdown documentation free of spelling errors.
 
 CONTEXT:
 - Check all Markdown files using `pyspelling -c spellcheck.yaml`.
-- Add unknown but legitimate words to `.wordlist.txt`.
+- Add unknown but legitimate words to `.wordlist.txt` and keep the entries alphabetically sorted.
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
-  `npm run test:ci`, `python -m flywheel.fit`, and
-  `bash scripts/checks.sh` pass.
-- Regenerate `docs/prompt-docs-summary.md` with
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+- Ensure these commands pass:
+  - `pre-commit run --all-files`
+  - `pytest -q`
+  - `npm run lint`
+  - `npm run test:ci`
+  - `python -m flywheel.fit`
+  - `bash scripts/checks.sh`
+- Regenerate `docs/prompt-docs-summary.md` with:
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`
 
 REQUEST:
 1. Run the spellcheck command and inspect the results.

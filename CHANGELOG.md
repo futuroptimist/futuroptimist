@@ -1,5 +1,15 @@
 # Changelog
 
+## 2025-08-25
+- fix: treat 'startup_failure' status as failure in repo_status.
+- fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.
+- test: cover invalid UTF-8 SRT input.
+- chore: alphabetize `.wordlist.txt`.
+- docs: record SRT decoding incident and postmortem.
+- fix: alphabetize and deduplicate .wordlist.txt to keep tests green.
+- docs: add wordlist postmortem and outage record.
+- fix: normalize whitespace in status_to_emoji.
+
 ## 2025-08-24
 - fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
@@ -8,6 +18,7 @@
 - fix: treat 'canceled' status as failure in repo_status.
 - fix: ensure index_local_media writes newline at end of file.
 - feat: detect GitHub tokens in scan-secrets script.
+- fix: ensure scaffold_videos writes metadata.json with trailing newline.
 
 ## 2025-08-23
 - fix: add missing workflow field to outage record to restore CI.

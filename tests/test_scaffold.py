@@ -33,6 +33,24 @@ def test_scaffold_creates_files(monkeypatch):
         assert meta["transcript_file"] == "subtitles/ABC.srt"
 
 
+def test_metadata_json_has_trailing_newline(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmp:
+        base = pathlib.Path(tmp)
+        (base / "video_ids.txt").write_text("ABC\n")
+        monkeypatch.setattr(sv, "BASE_DIR", base)
+        monkeypatch.setattr(sv, "IDS_FILE", base / "video_ids.txt")
+        monkeypatch.setattr(sv, "VIDEO_SCRIPT_ROOT", base)
+
+        monkeypatch.setattr(
+            sv, "fetch_video_info", lambda vid: ("Test Title", "20240102")
+        )
+
+        sv.main()
+
+        meta_path = base / "20240102_test-title" / "metadata.json"
+        assert meta_path.read_bytes().endswith(b"\n")
+
+
 def test_slugify():
     assert sv.slugify("Hello World!") == "hello-world"
 
