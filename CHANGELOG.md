@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-08-27
+- feat: detect fine-grained GitHub tokens in scan-secrets script.
+- chore: whitelist project jargon for spellcheck.
+
 ## 2025-08-25
 - fix: treat 'startup_failure' status as failure in repo_status.
 - fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.

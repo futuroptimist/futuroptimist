@@ -18,3 +18,12 @@ def test_flags_github_token() -> None:
     assert proc.returncode == 1
     assert "Possible secrets detected" in proc.stderr
     assert token in proc.stderr
+
+
+def test_flags_github_pat_token() -> None:
+    token = "github_pat_" + "A" * 22 + "_" + "B" * 59
+    diff = "diff --git a/x b/x\n" "--- a/x\n" "+++ b/x\n" "@@\n" f"+token={token}\n"
+    proc = run_scan(diff)
+    assert proc.returncode == 1
+    assert "Possible secrets detected" in proc.stderr
+    assert token in proc.stderr
