@@ -76,15 +76,31 @@ Run repository checks, regenerate the prompt summary, and scan for secrets:
 pre-commit run --all-files
 pytest -q
 bash scripts/checks.sh
-python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md
+npm run test:ci
+python -m flywheel.fit
+python scripts/update_prompt_docs_summary.py \
+  --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md
 git diff --cached | ./scripts/scan-secrets.py
 ```
 
-Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repositories stay connected.
+Run the repository checks before committing:
 
-Push and open a PR in flywheel; once merged, downstream repos can import the new prompt automatically through Flywheel’s existing propagation workflow.
+```bash
+pre-commit run --all-files
+pytest -q
+bash scripts/checks.sh
+git diff --cached | ./scripts/scan-secrets.py
+```
 
-If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will generate /docs/prompts/codex/ci-fix at build time.
+Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repos stay
+connected.
+
+Push and open a PR in flywheel. Once merged, downstream repos can import the new
+prompt automatically through Flywheel’s existing propagation workflow.
+
+If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will
+generate `/docs/prompts/codex/ci-fix` at build time.
 
 ## 3 – Further reading & references
 OpenAI Codex overview and prompt design basics

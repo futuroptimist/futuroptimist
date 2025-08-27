@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-08-27
+- chore: resort `.wordlist.txt` to fix failing wordlist test.
+- docs: add outage record and postmortem for wordlist sorting regression.
+
 ## 2025-08-25
 - fix: treat 'startup_failure' status as failure in repo_status.
 - fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.
