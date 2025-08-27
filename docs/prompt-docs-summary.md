@@ -2,7 +2,7 @@
 
 | Path | Description |
 |------|-------------|
-| [prompts/codex/automation.md](prompts/codex/automation.md) | Flywheel Codex Prompt |
+| [prompts/codex/automation.md](prompts/codex/automation.md) | Futuroptimist Codex Prompt |
 | [prompts/codex/cad.md](prompts/codex/cad.md) | Codex CAD Prompt |
 | [prompts/codex/ci-fix.md](prompts/codex/ci-fix.md) | Codex CI-Failure Fix Prompt |
 | [prompts/codex/cleanup.md](prompts/codex/cleanup.md) | Codex Prompt Cleanup |
