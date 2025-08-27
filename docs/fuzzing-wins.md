@@ -6,3 +6,5 @@ Incidents uncovered by fuzzing and their postmortems.
   reject non-finite shading factors to avoid crashes.
 - **2025-08-27** – [Reversed SRT times](pms/2025-08-27-reversed-srt-times.md):
   ignore captions where start ≥ end to avoid negative durations.
+- **2025-08-27** – [status_to_emoji type crash](pms/2025-08-27-status-emoji-type.md):
+  guard against non-string workflow conclusions.

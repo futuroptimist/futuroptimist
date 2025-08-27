@@ -31,7 +31,16 @@ CONTEXT:
   and non-UTF-8 locales.
 - Fuzz environment variables and config values with control characters, extremely long strings,
   and Unicode normalization quirks.
+- Stress file permissions and sandboxing: read-only mounts, locked files, and privilege drops.
+- Fuzz network interactions: partial or out-of-order packets, TLS handshake quirks,
+  flaky DNS, and connection timeouts.
 - Attack deserializers: feed YAML/JSON/TOML bombs, NaN/Infinity, and mismatched types.
+- Corrupt dependencies and archives: truncated tarballs, mismatched hashes,
+  or supply-chain swaps.
+- Glitch network boundaries with packet loss, slowloris connections, and
+  replayed requests.
+- Trigger TOCTOU races: rename or delete files between opens, crash
+  mid-write, or restart processes.
 - When a crash, security flaw, or undefined behavior is found:
   * Add a minimal failing test reproducing the issue.
   * Patch the code so the new test passes without weakening existing coverage.

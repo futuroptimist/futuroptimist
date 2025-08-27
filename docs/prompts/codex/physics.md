@@ -28,8 +28,14 @@ CONTEXT:
 - If browser dependencies are missing, run `npx playwright install chromium`
   or prefix tests with `SKIP_E2E=1`.
 - Cross-reference CAD dimensions where helpful.
-- Verify core equations like rotational energy `E = 1/2 I ω^2` and torque `τ = I α`,
-  noting SI units, and verify units and cite sources for any physical constants.
+- Verify core equations such as rotational energy `E = 1/2 I ω^2`, torque `τ = I α`,
+  moment of inertia for an annular disk `I = 1/2 m (r_o^2 + r_i^2)`, and maximum
+  hoop stress `σ_max = ((3 + ν)/8) ρ ω^2 r_o^2`.
+  Here `I` is moment of inertia, `ω` angular velocity, `τ` torque, `α` angular
+  acceleration, `m` mass, `r_o` outer radius, `r_i` inner radius, `ν` Poisson
+  ratio, and `ρ` density. Use SI units (I in kg·m², ω in rad/s, α in rad/s²,
+  τ in N·m, σ in Pa) and cite Hibbeler's *Engineering Mechanics: Dynamics* or
+  Budynas & Nisbett's *Shigley's Mechanical Engineering Design* for constants.
 
 REQUEST:
 1. Inspect physics-related docs under `docs/` for gaps, TODOs, or outdated formulas.
@@ -62,7 +68,8 @@ CONTEXT:
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
-- Confirm any referenced equations (e.g., `E = 1/2 I ω^2`) match standard physics texts.
+- Confirm any referenced equations (e.g., `E = 1/2 I ω^2` for rotational kinetic energy)
+  match standard physics texts.
 
 REQUEST:
 1. Review this file for outdated equations or guidance.

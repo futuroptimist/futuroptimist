@@ -22,9 +22,6 @@ CONTEXT:
 - Ensure these commands pass:
   - `pre-commit run --all-files`
   - `pytest -q`
-  - `npm run lint`
-  - `npm run test:ci`
-  - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
 - Regenerate `docs/prompt-docs-summary.md` with:
   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`
@@ -55,8 +52,7 @@ Keep this spellcheck prompt accurate as tooling evolves.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
-  `npm run test:ci`, `python -m flywheel.fit`, and
+- Ensure `pre-commit run --all-files`, `pytest -q`, and
   `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \

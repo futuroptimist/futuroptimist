@@ -61,6 +61,7 @@ gridfinity
 hackable
 heatmap
 heatmaps
+hibbeler
 href
 https
 ideation
@@ -96,6 +97,7 @@ openai
 opentimelineio
 optimised
 pathlib
+poisson
 pre
 prs
 ps
@@ -115,6 +117,7 @@ runbook
 scaffolded
 schemas
 seo
+shigley
 slugify
 solarpunk
 spacex
