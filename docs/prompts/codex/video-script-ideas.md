@@ -1,6 +1,6 @@
 ---
 title: 'Video Script Ideas Prompt'
-slug: 'prompts-codex-video-script-ideas'
+slug: 'codex-video-script-ideas'
 ---
 
 # Video Script Ideas Prompt

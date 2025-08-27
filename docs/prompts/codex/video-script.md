@@ -1,6 +1,6 @@
 ---
 title: 'Codex Video Script Prompt'
-slug: 'prompts-codex-video-script'
+slug: 'codex-video-script'
 ---
 
 # Codex Video Script Prompt
@@ -8,7 +8,7 @@ slug: 'prompts-codex-video-script'
 Use this prompt to convert a raw transcript or idea into a Futuroptimist video script folder.
 
 For brainstorming topics,
-see [prompts-codex-video-script-ideas.md](prompts-codex-video-script-ideas.md).
+see [video-script-ideas.md](video-script-ideas.md).
 
 ```
 SYSTEM:
