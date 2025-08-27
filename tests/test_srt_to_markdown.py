@@ -2,6 +2,7 @@ import sys
 import runpy
 import warnings
 import pytest
+import random
 import src.srt_to_markdown as stm
 
 
@@ -176,6 +177,17 @@ Real line
 
     entries = stm.parse_srt(path)
     assert entries == [("00:00:01,500", "00:00:02,000", "Real line")]
+
+
+def test_skip_reversed_times_fuzz(tmp_path):
+    random.seed(0)
+    path = tmp_path / "bad.srt"
+    for _ in range(10):
+        start_ms = random.randint(500, 999)
+        end_ms = random.randint(0, 499)
+        srt = f"1\n00:00:00,{start_ms:03d} --> 00:00:00,{end_ms:03d}\nBad timing\n"
+        path.write_text(srt)
+        assert stm.parse_srt(path) == []
 
 
 def test_parse_srt_edge_cases(tmp_path):

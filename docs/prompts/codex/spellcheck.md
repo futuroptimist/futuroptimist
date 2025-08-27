@@ -10,7 +10,7 @@ Use this prompt to find and fix spelling mistakes in Markdown docs before openin
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep Markdown documentation free of spelling errors.
@@ -26,12 +26,10 @@ CONTEXT:
   ```bash
   pre-commit run --all-files
   pytest -q
-  npm run test:ci
-  python -m flywheel.fit
   bash scripts/checks.sh
   ```
 - Run `git diff --cached | ./scripts/scan-secrets.py` before committing.
-- If browser dependencies are missing, run `npx playwright install chromium` or
+- If browser dependencies are missing, run `npm run playwright:install` or
   prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
@@ -54,15 +52,14 @@ Use this prompt to refine the spellcheck instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this spellcheck prompt accurate as tooling evolves.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
+- Ensure `pre-commit run --all-files`, `pytest -q`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
