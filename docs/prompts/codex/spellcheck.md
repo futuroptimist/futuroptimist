@@ -55,7 +55,7 @@ Use this prompt to refine the spellcheck instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this spellcheck prompt accurate as tooling evolves.
