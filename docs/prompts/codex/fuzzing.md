@@ -32,6 +32,12 @@ CONTEXT:
 - Fuzz environment variables and config values with control characters, extremely long strings,
   and Unicode normalization quirks.
 - Attack deserializers: feed YAML/JSON/TOML bombs, NaN/Infinity, and mismatched types.
+- Stress compression and archive handlers with zip/tar bombs, truncated archives,
+  and zip-slip paths.
+- Simulate flaky networks: packet loss, reordering, half-open sockets, and truncated responses.
+- Fuzz cross-platform file I/O: reserved device names, deep or Unicode paths,
+  and case-insensitive collisions.
+- Probe subprocess boundaries with unexpected signals (SIGINT/SIGPIPE) and slow or partial streams.
 - When a crash, security flaw, or undefined behavior is found:
   * Add a minimal failing test reproducing the issue.
   * Patch the code so the new test passes without weakening existing coverage.
