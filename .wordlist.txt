@@ -1,4 +1,3 @@
-
 agentsmd
 apa
 aquaponic
@@ -35,6 +34,7 @@ diy
 dlp
 docstrings
 dspace
+durations
 elon
 embeddings
 entrypoint
@@ -120,6 +120,7 @@ scaffolded
 schemas
 seo
 shigley
+slugify
 solarpunk
 spacex
 src
@@ -168,4 +169,3 @@ yml
 youtube
 yt
 yyyymmdd
-
