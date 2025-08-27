@@ -6,10 +6,12 @@ slug: 'codex-ci-fix'
 # OpenAI Codex CI-Failure Fix Prompt
 Type: evergreen
 
-Use this prompt whenever a GitHub Actions run in *any* repository fails and you want Codex to diagnose and repair the problem automatically.
+Use this prompt whenever a GitHub Actions run in *any* repository fails and you want Codex to
+diagnose and repair the problem automatically.
 **Human set-up steps (do these *before* switching ChatGPT into “Code” mode):**
 
-1. Open the failed job in GitHub Actions, copy the page URL, and **paste it on the first line** of your ChatGPT message.
+1. Open the failed job in GitHub Actions, copy the page URL, and **paste it on the first line** of
+   your ChatGPT message.
 2. Press <kbd>Enter</kbd> twice so that exactly **two blank lines** follow the URL.
 3. Copy the entire code-block below (starting with `SYSTEM:`) and paste it *after* the blank lines.
 4. Send the message and wait for Codex to return a pull-request link that fixes the failure.
@@ -22,14 +24,15 @@ PURPOSE:
 Diagnose a failed GitHub Actions run and produce a fix.
 
 CONTEXT:
-- Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
+- Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal,
+  well-tested pull request that makes the workflow green again.
 - Consult existing outage entries in `docs/outages` for similar symptoms.
 - Constraints:
   * Do **not** break existing functionality.
   * Follow the repository’s style guidelines and commit-lint rules.
   * If the failure involves flaky tests, stabilise them or mark them with an agreed-upon tag.
-  * Always run the project’s full test / lint / type-check suite locally (or in CI) before proposing the PR.
-  * Scan staged changes for secrets with repository tooling (e.g., `git diff --cached | ./scripts/scan-secrets.py`).
+  * Run `pre-commit run --all-files`, `pytest -q`, and `bash scripts/checks.sh` before committing.
+  * Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
   * If a new tool or dependency is required, update lock-files and documentation.
   * Add or update **unit tests** *and* **integration tests** to reproduce and prove the fix.
   * Provide a concise changelog entry.
@@ -48,8 +51,10 @@ A GitHub pull request URL. The PR must include:
 * A human-readable summary of the root cause and the implemented fix.
 * Evidence that **all** checks are now passing (`✔️`).
 * Links to any new or updated tests.
-Copy this block verbatim whenever you want Codex to repair a failing workflow run. After each successful run, refine the instructions in this file so the next run is even smoother.
-After opening the pull request, create a new postmortem file under `docs/pms/` (create it if missing) named `YYYY-MM-DD-short-title.md` capturing:
+ Copy this block verbatim whenever you want Codex to repair a failing workflow run. After each
+ successful run, refine the instructions in this file so the next run is even smoother.
+ After opening the pull request, create a new postmortem file under `docs/pms/` (create it if
+ missing) named `YYYY-MM-DD-short-title.md` capturing:
 - Date, author, and status
 - What went wrong
 - Root cause
@@ -60,26 +65,36 @@ Log each incident in `docs/outages` so future fixes can reference past outages.
 ```
 
 ### Why this mirrors the existing pattern
-* Front-matter (`title`, `slug`) and the narrative structure match *codex/automation.md* in **DSPACE** so that docs render consistently.
-* Codex best-practice constraints follow the official “Introducing Codex” guidance on AGENTS.md-driven projects.
-* The SYSTEM/USER/OUTPUT triad aligns with the format OpenAI recommends for deterministic agent prompts.
+* Front-matter (`title`, `slug`) and narrative structure match other Codex prompts so docs render
+  consistently.
+* Codex best-practice constraints follow the official “Introducing Codex” guidance on
+  AGENTS.md-driven projects.
+* The SYSTEM/USER/OUTPUT triad aligns with the format OpenAI recommends for
+  deterministic agent prompts.
 
 ---
 
 ## 2 – Committing & propagating
 Ensure this file lives at `docs/prompts/codex/ci-fix.md`.
 
+Before committing, run `pre-commit run --all-files`, `pytest -q`, and `bash scripts/checks.sh`. Scan
+staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
+
 Regenerate the prompt summary:
 
 ```bash
-python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md
+ python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+   --out docs/prompt-docs-summary.md
 ```
 
-Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repositories stay connected.
+Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repositories stay
+connected.
 
-Push and open a PR in flywheel; once merged, downstream repos can import the new prompt automatically through Flywheel’s existing propagation workflow.
+Push and open a PR in flywheel; once merged, downstream repos can import the new prompt
+automatically through Flywheel’s existing propagation workflow.
 
-If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will generate /docs/prompts/codex/ci-fix at build time.
+If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will generate
+/docs/prompts/codex/ci-fix at build time.
 
 ## 3 – Further reading & references
 OpenAI Codex overview and prompt design basics
@@ -112,7 +127,8 @@ Stack Overflow
 GitHub Copilot/Codex CLI repository (official prompt-handling conventions)
 GitHub
 
-Feel free to tweak wording or constraints as you see fit, but the file above is production-ready and follows the same conventions already used in your DSPACE documentation.
+Feel free to tweak wording or constraints as you see fit, but the file above is production-ready and
+follows the same conventions already used across Flywheel documentation.
 
 ## Upgrade Prompt
 Type: evergreen
