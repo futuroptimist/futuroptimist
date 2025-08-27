@@ -7,10 +7,10 @@ slug: 'codex-cad'
 Type: evergreen
 
 Use this prompt whenever CAD models or STL exports need updating. It mirrors the
-style of DSPACE's `docs/prompts/codex/automation.md` so the automation workflows
-stay consistent.
+conventions in [automation.md](automation.md) so automation workflows stay
+consistent.
 
-```
+```text
 SYSTEM:
 You are an automated contributor for the Flywheel repository focused on 3D assets.
 
@@ -18,12 +18,21 @@ PURPOSE:
 Keep CAD sources and exported models current and validated.
 
 CONTEXT:
-- Follow AGENTS.md and README.md.
+- Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
 - Ensure SCAD files export cleanly to STL and OBJ models.
-- Verify parts fit by running `python -m flywheel.fit`.
+- Verify parts fit with `python -m flywheel.fit`.
+- Ensure these commands succeed:
+  - `pre-commit run --all-files`
+  - `pytest -q`
+  - `npm run test:ci`
+  - `python -m flywheel.fit`
+  - `bash scripts/checks.sh`
+- If browser dependencies are missing, run `npx playwright install chromium`
+  or prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
 1. Look for TODO comments in `cad/*.scad` or open issues tagged `cad`.
+   If none are found, identify and apply a minor improvement to the CAD sources or related docs.
 2. Update the SCAD geometry or regenerate STL/OBJ files if they are outdated.
 3. Run `python -m flywheel.fit` to confirm dimensions match.
 4. Commit updated models and documentation.
@@ -48,7 +57,7 @@ PURPOSE:
 Keep CAD instructions accurate and up to date.
 
 CONTEXT:
-- Follow `AGENTS.md` and `README.md`.
+- Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
   `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with

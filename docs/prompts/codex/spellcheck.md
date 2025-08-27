@@ -10,7 +10,7 @@ Use this prompt to find and fix spelling mistakes in Markdown docs before openin
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep Markdown documentation free of spelling errors.
@@ -54,7 +54,7 @@ Use this prompt to refine the spellcheck instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this spellcheck prompt accurate as tooling evolves.
