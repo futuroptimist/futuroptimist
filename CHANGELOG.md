@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-08-27
+- fix: slugify normalizes Unicode and adds `untitled` fallback for empty slugs.
+- test: fuzz slugify across random Unicode strings.
+- docs: record slugify outage and postmortem.
+
 ## 2025-08-25
 - fix: treat 'startup_failure' status as failure in repo_status.
 - fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.

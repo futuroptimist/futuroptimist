@@ -6,6 +6,8 @@ import sys
 import warnings
 import src.scaffold_videos as sv
 import pytest
+import re
+from hypothesis import given, strategies as st
 
 
 def test_scaffold_creates_files(monkeypatch):
@@ -53,6 +55,18 @@ def test_metadata_json_has_trailing_newline(monkeypatch):
 
 def test_slugify():
     assert sv.slugify("Hello World!") == "hello-world"
+
+
+def test_slugify_unicode_and_punctuation():
+    assert sv.slugify("Žluťoučký kůň!") == "zlutoucky-kun"
+    assert sv.slugify("!!!") == "untitled"
+
+
+@given(st.text())
+def test_slugify_fuzz(text):
+    slug = sv.slugify(text)
+    assert slug
+    assert re.fullmatch(r"[a-z0-9-]+", slug)
 
 
 def test_fetch_video_info_parses(monkeypatch):

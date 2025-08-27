@@ -1,0 +1,8 @@
+{
+    "$schema": "./schema.json",
+    "date": "2025-08-27",
+    "workflow": "pytest",
+    "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/0",
+    "root_cause": "slugify returned empty strings for non-ASCII titles leading to misnamed folders",
+    "resolution": "normalize unicode to ASCII and provide an 'untitled' fallback to keep slugs stable"
+}

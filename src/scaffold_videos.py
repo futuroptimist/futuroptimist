@@ -45,9 +45,21 @@ def read_video_ids():
 
 
 def slugify(text: str) -> str:
-    text = text.lower()
-    text = re.sub(r"[^a-z0-9]+", "-", text)
-    return text.strip("-")
+    """Convert ``text`` into a filesystem-friendly slug.
+
+    Fuzzing revealed that titles containing only non-ASCII characters
+    generated an empty slug which later produced folders like
+    ``YYYYMMDD_``.  Normalize unicode to ASCII, strip unsupported
+    characters and fall back to ``untitled`` when nothing remains.
+    """
+
+    import unicodedata
+
+    normalized = unicodedata.normalize("NFKD", text)
+    ascii_text = normalized.encode("ascii", "ignore").decode("ascii")
+    ascii_text = ascii_text.lower()
+    slug = re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-")
+    return slug or "untitled"
 
 
 def fetch_video_info(video_id: str):
