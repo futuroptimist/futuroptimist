@@ -10,7 +10,7 @@ Use this prompt to find and fix spelling mistakes in Markdown docs before openin
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep Markdown documentation free of spelling errors.
@@ -29,7 +29,7 @@ CONTEXT:
   bash scripts/checks.sh
   ```
 - Run `git diff --cached | ./scripts/scan-secrets.py` before committing.
-- If browser dependencies are missing, run `npx playwright install chromium` or
+- If browser dependencies are missing, run `npm run playwright:install` or
   prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
@@ -52,7 +52,7 @@ Use this prompt to refine the spellcheck instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this spellcheck prompt accurate as tooling evolves.
