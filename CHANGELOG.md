@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-08-27
+- fix: restore alphabetical order in .wordlist.txt.
+- docs: add wordlist regression postmortem and outage records.
+
 ## 2025-08-25
 - fix: treat 'startup_failure' status as failure in repo_status.
 - fix: replace invalid UTF-8 bytes when parsing SRT files to prevent crashes.
