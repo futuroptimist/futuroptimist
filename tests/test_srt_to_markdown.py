@@ -1,6 +1,7 @@
 import sys
 import runpy
 import warnings
+import pytest
 import src.srt_to_markdown as stm
 
 
@@ -142,6 +143,19 @@ def test_strip_speaker_prefix(tmp_path):
 - [Narrator] Hello world
 """
     path = tmp_path / "speaker.srt"
+    path.write_text(srt)
+
+    entries = stm.parse_srt(path)
+    assert entries == [("00:00:00,000", "00:00:01,000", "Hello world")]
+
+
+@pytest.mark.parametrize("dash", ["-", "\u2013", "\u2014"])
+def test_strip_leading_dash(tmp_path, dash):
+    srt = f"""1
+00:00:00,000 --> 00:00:01,000
+{dash} Hello world
+"""
+    path = tmp_path / "dash.srt"
     path.write_text(srt)
 
     entries = stm.parse_srt(path)
