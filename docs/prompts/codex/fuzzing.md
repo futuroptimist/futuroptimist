@@ -32,6 +32,10 @@ CONTEXT:
 - Fuzz environment variables and config values with control characters, extremely long strings,
   and Unicode normalization quirks.
 - Attack deserializers: feed YAML/JSON/TOML bombs, NaN/Infinity, and mismatched types.
+- Stress archive handlers with deeply nested or oversized files (e.g. zip bombs).
+- Inject Unicode bidirectional overrides and homoglyphs into paths and identifiers to surface spoofing.
+- Simulate adversarial networks: truncated frames, out-of-order packets,
+  malformed TLS handshakes, and slow-loris streams.
 - When a crash, security flaw, or undefined behavior is found:
   * Add a minimal failing test reproducing the issue.
   * Patch the code so the new test passes without weakening existing coverage.
