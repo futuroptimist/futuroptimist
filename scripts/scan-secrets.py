@@ -3,7 +3,7 @@
 
 Reads unified diff content from ``stdin`` and scans only the **added** lines
 for secret-like patterns such as AWS keys, private keys, generic API key
-assignments, and GitHub tokens (``ghp_…`` etc.). The scan is intentionally
+assignments, and GitHub tokens (``ghp_…`` or ``github_pat_…``). The scan is intentionally
 lightweight and should be supplemented with dedicated tools for thorough
 auditing.
 """
@@ -17,6 +17,7 @@ PATTERNS = [
     re.compile(r"-----BEGIN [A-Z ]+PRIVATE KEY-----"),
     re.compile(r"(?i)(api_key|apikey|password|secret)[\s:=]+[^\n]+"),
     re.compile(r"gh[pousr]_[0-9A-Za-z]{36}"),
+    re.compile(r"github_pat_[0-9A-Za-z_]{22}_[0-9A-Za-z]{59}"),
 ]
 
 

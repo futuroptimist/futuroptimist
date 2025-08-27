@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2025-08-27
+- feat: detect fine-grained GitHub tokens in scan-secrets script.
+- chore: whitelist project jargon for spellcheck.
 - chore: resort `.wordlist.txt` to fix failing wordlist test.
 - docs: add outage record and postmortem for wordlist sorting regression.
 
