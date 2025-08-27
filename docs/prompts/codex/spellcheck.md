@@ -10,34 +10,35 @@ Use this prompt to find and fix spelling mistakes in Markdown docs before openin
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep Markdown documentation free of spelling errors.
 
 CONTEXT:
-- Run `pre-commit run codespell --files $(git ls-files '*.md')` to spell-check
-  Markdown documentation.
+- Check all Markdown files with `pyspelling -c spellcheck.yaml`.
 - Add unknown but legitimate words to
-  [`dict/allow.txt`](../../../dict/allow.txt).
+  [`.wordlist.txt`](../../../.wordlist.txt) and keep entries alphabetically
+  sorted.
 - Follow [`AGENTS.md`](../../../AGENTS.md) and [`README.md`](../../../README.md).
-  Ensure these commands succeed:
+  Ensure these commands pass:
 
   ```bash
   pre-commit run --all-files
   pytest -q
+  npm run lint
   npm run test:ci
   python -m flywheel.fit
   bash scripts/checks.sh
   ```
 - Run `git diff --cached | ./scripts/scan-secrets.py` before committing.
-- If browser dependencies are missing, run `npx playwright install chromium` or
+- If browser dependencies are missing, run `npm run playwright:install` or
   prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
 1. Run the spellcheck command and inspect the results.
-2. Correct misspellings or update `dict/allow.txt` as needed.
-3. Re-run the spellcheck until it reports no errors.
+2. Correct misspellings or update `.wordlist.txt` as needed.
+3. Re-run `pyspelling` until it reports no errors.
 4. Run all checks listed above.
 5. Commit the changes with a concise message and open a pull request.
 
@@ -61,8 +62,9 @@ Keep this spellcheck prompt accurate as tooling evolves.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
+  `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh`
+  pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
