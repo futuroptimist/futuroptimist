@@ -88,6 +88,7 @@ md
 meta's
 metaverse
 microcontroller
+mpa
 nas
 nonfinite
 npc
@@ -132,6 +133,7 @@ sugarkube
 svg
 svgs
 svgwrite
+tfrac
 tiktok
 timelapse
 tos
