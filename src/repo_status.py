@@ -21,20 +21,21 @@ GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+
 def status_to_emoji(conclusion: str | None) -> str:
     """Return an emoji representing the run conclusion.
 
-    Comparison is case-insensitive, normalizes internal whitespace and
-    hyphens to underscores, and ignores surrounding whitespace so callers
-    may pass values like ``"SUCCESS"``, ``" failure \n"``, or
-    ``"TIMED\tOUT"`` and receive the same result.
+    Accepts any object; non-string inputs fall back to ``"❓"``. Comparison is
+    case-insensitive, normalizes internal whitespace and hyphens to underscores,
+    and ignores surrounding whitespace so callers may pass values like
+    ``"SUCCESS"``, ``" failure \n"``, or ``"TIMED\tOUT"`` and receive the same
+    result.
 
     - ``"success"`` → ✅
     - ``"failure"``, ``"cancelled"``, ``"canceled"``, ``"timed_out"``,
       ``"startup_failure"`` → ❌
-    - anything else (including ``None``) → ❓
+    - anything else (including ``None`` or non-strings) → ❓
     """
-    if conclusion:
-        normalized = re.sub(r"[\s-]+", "_", conclusion.strip().lower())
-    else:
+    if not isinstance(conclusion, str) or not conclusion:
         normalized = ""
+    else:
+        normalized = re.sub(r"[\s-]+", "_", conclusion.strip().lower())
     if normalized == "success":
         return "✅"
     if normalized in {
