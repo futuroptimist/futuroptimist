@@ -10,7 +10,6 @@ def test_prompt_files_exist():
         Path("docs/prompts/codex/fuzzing.md"),
         Path("docs/prompts/codex/physics.md"),
         Path("docs/prompts/codex/propagate.md"),
-        Path("docs/prompts/codex/spellcheck.md"),
         Path("docs/prompts-codex.md"),
         Path("docs/prompts-codex-spellcheck.md"),
         Path("docs/prompts-codex-video-script.md"),
