@@ -50,8 +50,8 @@ gabriel
 gambusia
 gfx
 gh
-github
 gitignored
+github
 gitshelves
 graphql
 gridfinity
