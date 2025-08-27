@@ -7,6 +7,7 @@ auth
 axel
 backend
 baseplates
+bioplastic
 blockquote
 bluesky
 bom
@@ -40,7 +41,9 @@ env
 executables
 explainer
 externalities
+extruder
 ffmpeg
+fi
 finalise
 fmt
 formatters
@@ -50,8 +53,8 @@ gabriel
 gambusia
 gfx
 gh
-gitignored
 github
+gitignored
 gitshelves
 graphql
 gridfinity
@@ -96,9 +99,11 @@ pathlib
 pre
 prs
 ps
+pv
 py
 pyspelling
 pytest
+rainlight
 readme
 readme's
 repo
@@ -110,6 +115,7 @@ runbook
 scaffolded
 schemas
 seo
+slugify
 solarpunk
 spacex
 src
@@ -129,6 +135,7 @@ tos
 txt
 uca
 ul
+upcycled
 upgrader
 url
 urllib
