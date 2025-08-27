@@ -27,6 +27,7 @@ REQUEST:
 2. Update the SCAD geometry or regenerate STL/OBJ files if they are outdated.
 3. Run `python -m flywheel.fit` to confirm dimensions match.
 4. Commit updated models and documentation.
+5. If none of the above reveal work, polish a small part of the CAD workflow or docs.
 
 OUTPUT:
 A pull request summarizing the CAD changes and test results.
