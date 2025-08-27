@@ -13,7 +13,7 @@ Hi, I'm Futuroptimist. This repository hosts scripts and metadata for my
 If you're looking for the full project details, see
 [INSTRUCTIONS.md](INSTRUCTIONS.md). We manage Python dependencies with
 [uv](https://docs.astral.sh/uv/); check the instructions for setup steps.
-Guidelines for AI tools live in [AGENTS.md](AGENTS.md); automation prompts are in
+Guidelines for AI tools live in [AGENTS.md](AGENTS.md); the canonical Codex automation prompt is in
 [docs/prompts/codex/automation.md](docs/prompts/codex/automation.md). The automated tests
 run via GitHub Actions on each push and pull request and currently reach **100%** coverage.
 
