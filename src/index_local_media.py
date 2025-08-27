@@ -19,10 +19,11 @@ def scan_directory(base: pathlib.Path, exclude: Iterable[pathlib.Path] | None = 
     Each record contains ``path``, ``mtime`` (ISO timestamp in UTC without
     sub-second precision), and file ``size`` in bytes. The list is sorted by
     modification time and then by path to produce deterministic output. Paths
-    listed in ``exclude`` are ignored.
+    listed in ``exclude`` are ignored. Directories in ``exclude`` skip all
+    nested files.
     """
     records = []
-    exclude_set: set[str] = set()
+    exclude_rel: list[str] = []
     if exclude:
         base_resolved = base.resolve()
         for p in exclude:
@@ -30,11 +31,13 @@ def scan_directory(base: pathlib.Path, exclude: Iterable[pathlib.Path] | None = 
                 rel = p.resolve().relative_to(base_resolved).as_posix()
             except ValueError:
                 continue
-            exclude_set.add(rel)
+            exclude_rel.append(rel)
     for path in base.rglob("*"):
         if path.is_file():
             rel_path = path.relative_to(base).as_posix()
-            if rel_path in exclude_set:
+            if any(
+                rel_path == ex or rel_path.startswith(f"{ex}/") for ex in exclude_rel
+            ):
                 continue
             stat = path.stat()
             mtime = (
@@ -69,13 +72,21 @@ def main(argv=None):
         default="footage_index.json",
         help="JSON file to write",
     )
+    parser.add_argument(
+        "-x",
+        "--exclude",
+        action="append",
+        default=[],
+        type=pathlib.Path,
+        help="Additional files or directories to ignore",
+    )
     args = parser.parse_args(argv)
 
     base = pathlib.Path(args.directory)
     if not base.is_dir():
         parser.error(f"{base} is not a directory")
     output_path = pathlib.Path(args.output)
-    index = scan_directory(base, exclude=[output_path])
+    index = scan_directory(base, exclude=[output_path, *args.exclude])
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(index, indent=2) + "\n")
     print(f"Wrote {args.output}")

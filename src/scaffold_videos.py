@@ -88,7 +88,7 @@ def main():
             ).strftime("%Y-%m-%d")
             data["slug"] = slug
             data["transcript_file"] = f"subtitles/{vid}.srt"
-            meta_path.write_text(json.dumps(data, indent=2))
+            meta_path.write_text(json.dumps(data, indent=2) + "\n")
             print(f"Created {meta_path}")
 
         script_path = vdir / "script.md"
