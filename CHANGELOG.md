@@ -3,6 +3,8 @@
 ## 2025-08-27
 - fix: restore alphabetical order in .wordlist.txt.
 - docs: add wordlist regression postmortem and outage records.
+- chore: resort `.wordlist.txt` to fix failing wordlist test.
+- docs: add outage record and postmortem for wordlist sorting regression.
 
 ## 2025-08-25
 - fix: treat 'startup_failure' status as failure in repo_status.
