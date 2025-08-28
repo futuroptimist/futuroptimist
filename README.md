@@ -54,6 +54,8 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
 - ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – lean k3s platform tuned for
   Raspberry Pi clusters on solar or spotty networks, making edge Kubernetes
   plug-and-play
+- ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that
+  sweeps away your own stale pull requests in one run
 
 ## Values
 
