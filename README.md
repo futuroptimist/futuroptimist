@@ -20,7 +20,7 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-28 05:02 UTC; checks hourly_
+_Last updated: 2025-08-28 06:03 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
@@ -36,7 +36,7 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
 - ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – batteries-included template
   that wires lint, tests, docs, and releases into one reproducible CI pipeline so
   solo builders ship like a team
-- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first guardian-angel bot
+- ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first guardian-angel bot
   that watches digital habits and gently coaches safer, healthier device use
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that hoists files from
   nested directories straight to your clipboard, perfect for bulk code snippets
