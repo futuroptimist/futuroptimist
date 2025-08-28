@@ -20,42 +20,41 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-28 22:10 UTC; checks hourly_
+_Last updated: 2025-08-28 22:32 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
   reproducible scripts, data pipelines, and tests that turn maker experiments into
   polished YouTube episodes
-- ✅ **[token.place](https://token.place)** – stateless web gateway that dispenses ephemeral
-  API tokens so anyone can sample cutting-edge LLMs without sign-ups; a gentle rate
-  limit wards off abuse ([repo](https://github.com/futuroptimist/token.place))
-- ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where detailed
-  quests teach real-world hobbies, from aquaria to rocketry, with NPC guides;
-  offline-first so your space-base thrives without signal
-  ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – batteries-included template
-  that wires lint, tests, docs, and releases into one reproducible CI pipeline so
-  solo builders ship like a team
-- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first guardian-angel bot
-  that watches digital habits and gently coaches safer, healthier device use
-- ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that hoists files from
-  nested directories straight to your clipboard, perfect for bulk code snippets
-  or asset grabs
-- ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that reads
-  your repo and curates next-step checklists, keeping side projects moving forward
-- ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source AI pin that pairs
-  micro-LLMs with wearable hardware so voice commands stay local and hackable
-- ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – renders your GitHub
-  contribution graph as stackable 3D-printable blocks that fit standard 42 mm
-  Gridfinity baseplates, turning commit history into shelf art
-- ✅ **[wove](https://github.com/futuroptimist/wove)** – open toolkit for driving knitting
-  machines or robotic looms from code, bridging CAD-style workflows with
-  textiles
-- ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – lean k3s platform tuned for
-  Raspberry Pi clusters on solar or spotty networks, making edge Kubernetes
+- ✅ **[token.place](https://token.place)** – secure peer-to-peer generative AI network that
+  lets volunteers share idle compute through ephemeral, encrypted tokens—no sign-ups
+  required ([repo](https://github.com/futuroptimist/token.place))
+- ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach
+  real-world hobbies with NPC guides; offline-first so your space-base thrives without a
+  signal ([repo](https://github.com/democratizedspace/dspace/tree/v3))
+- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
+  lint, tests, docs, and release automation with LLM agents so solo builders ship like a
+  team
+- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
+  LLM that learns your environment and delivers local, actionable security coaching
+- ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex
+  task pages, grabs failing GitHub logs, and pipes concise reports straight to your
+  clipboard to speed debugging
+- ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that
+  analyzes your repos and curates next steps to keep side projects moving
+- ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with
+  push-to-talk voice control, running speech-to-text, LLM, and TTS in a 3D-printed case so
+  commands stay local
+- ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turns your GitHub
+  contributions into stackable 3D-printable blocks that fit 42 mm Gridfinity baseplates,
+  turning commit history into shelf art
+- ✅ **[wove](https://github.com/futuroptimist/wove)** – open toolkit for learning to knit and
+  crochet while evolving toward robotic looms, bridging CAD workflows with textiles
+- ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform
+  and cube art installation for Raspberry Pi clusters, making off-grid edge Kubernetes
   plug-and-play
-- ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that
-  sweeps away your own stale pull requests in one run
+- ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that closes
+  your own stale pull requests in bulk with a safe dry-run
 
 ## Values
 
