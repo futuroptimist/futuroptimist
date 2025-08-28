@@ -20,10 +20,10 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-28 04:02 UTC; checks hourly_
+_Last updated: 2025-08-28 05:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
-- ❌ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
+- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
   reproducible scripts, data pipelines, and tests that turn maker experiments into
   polished YouTube episodes
 - ✅ **[token.place](https://token.place)** – stateless web gateway that dispenses ephemeral
@@ -54,7 +54,7 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
 - ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – lean k3s platform tuned for
   Raspberry Pi clusters on solar or spotty networks, making edge Kubernetes
   plug-and-play
-- ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that
+- ❓ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that
   sweeps away your own stale pull requests in one run
 
 ## Values
