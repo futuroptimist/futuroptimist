@@ -73,17 +73,48 @@ def fetch_repo_status(
         repo_resp.raise_for_status()
         branch = repo_resp.json().get("default_branch")
 
+    # Determine the latest commit on the branch so we can filter workflow runs
+    commit_resp = requests.get(
+        f"https://api.github.com/repos/{repo}/commits/{branch}",
+        headers=headers,
+        timeout=10,
+    )
+    commit_resp.raise_for_status()
+    sha = commit_resp.json().get("sha")
+
     url = (
-        "https://api.github.com/repos/{repo}/actions/runs?per_page=1&status=completed&event=push"
+        "https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed&event=push"
     ).format(repo=repo)
     if branch:
         url += f"&branch={branch}"
 
+    keywords = re.compile(r"(test|lint|build|ci)", re.I)
+    failures = {
+        "failure",
+        "cancelled",
+        "canceled",
+        "timed_out",
+        "startup_failure",
+    }
+
     def _fetch() -> str | None:
         resp = requests.get(url, headers=headers, timeout=10)
         resp.raise_for_status()
-        runs = resp.json().get("workflow_runs", [])
-        return runs[0].get("conclusion") if runs else None
+        runs = [
+            r for r in resp.json().get("workflow_runs", []) if r.get("head_sha") == sha
+        ]
+        if not runs:
+            return None
+        # Prefer workflow runs whose names indicate CI relevance
+        important = [r for r in runs if keywords.search(r.get("name", ""))]
+        if important:
+            runs = important
+        conclusions = {r.get("conclusion") for r in runs}
+        if any(c in failures for c in conclusions):
+            return "failure"
+        if conclusions == {"success"}:
+            return "success"
+        return None
 
     conclusions = [_fetch() for _ in range(attempts)]
     if len(set(conclusions)) > 1:
