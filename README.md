@@ -20,10 +20,10 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-28 22:30 UTC; checks hourly_
+_Last updated: 2025-08-28 23:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
-- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
+- ❌ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
   reproducible scripts, data pipelines, and tests that turn maker experiments into
   polished YouTube episodes
 - ✅ **[token.place](https://token.place)** – secure peer-to-peer gateway handing out
@@ -33,7 +33,7 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
   quests teach real-world hobbies, from aquaria to rocketry, with NPC guides;
   offline-first so your space-base thrives without signal
   ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – batteries-included template
+- ❓ **[flywheel](https://github.com/futuroptimist/flywheel)** – batteries-included template
   that wires lint, tests, docs, and releases into one reproducible CI pipeline so
   solo builders ship like a team
 - ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first guardian-angel bot
