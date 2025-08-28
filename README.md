@@ -20,7 +20,7 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-28 22:02 UTC; checks hourly_
+_Last updated: 2025-08-28 22:10 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
@@ -29,14 +29,14 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
 - ✅ **[token.place](https://token.place)** – stateless web gateway that dispenses ephemeral
   API tokens so anyone can sample cutting-edge LLMs without sign-ups; a gentle rate
   limit wards off abuse ([repo](https://github.com/futuroptimist/token.place))
-- ❌ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where detailed
+- ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where detailed
   quests teach real-world hobbies, from aquaria to rocketry, with NPC guides;
   offline-first so your space-base thrives without signal
   ([repo](https://github.com/democratizedspace/dspace/tree/v3))
 - ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – batteries-included template
   that wires lint, tests, docs, and releases into one reproducible CI pipeline so
   solo builders ship like a team
-- ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first guardian-angel bot
+- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first guardian-angel bot
   that watches digital habits and gently coaches safer, healthier device use
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that hoists files from
   nested directories straight to your clipboard, perfect for bulk code snippets
