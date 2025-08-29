@@ -138,6 +138,7 @@ tfrac
 tiktok
 timelapse
 tos
+tts
 txt
 uca
 ul
