@@ -20,10 +20,10 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-08-28 22:32 UTC; checks hourly_
+_Last updated: 2025-08-29 02:29 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
-- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
+- ❓ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
   reproducible scripts, data pipelines, and tests that turn maker experiments into
   polished YouTube episodes
 - ✅ **[token.place](https://token.place)** – secure peer-to-peer generative AI network that
@@ -46,7 +46,7 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
   push-to-talk voice control, running speech-to-text, LLM, and TTS in a 3D-printed case so
   commands stay local
 - ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turns your GitHub
-  contributions into stackable 3D-printable blocks that fit 42 mm Gridfinity baseplates,
+  contributions into stackable 3D-printable blocks that fit 42 mm Gridfinity baseplates,
   turning commit history into shelf art
 - ✅ **[wove](https://github.com/futuroptimist/wove)** – open toolkit for learning to knit and
   crochet while evolving toward robotic looms, bridging CAD workflows with textiles
