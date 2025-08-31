@@ -35,6 +35,8 @@ make test       # run unit tests
 make subtitles  # download captions listed in video_ids.txt
 make index_footage  # build simple footage_index.json (paths, mtime, size)
 make index_assets   # build rich assets_index.json from per-video assets.json
+make describe_images  # scan images and write image_descriptions.md
+make convert_assets   # convert incompatible originals/ into converted/ via ffmpeg
 make clean      # remove the virtualenv and caches
 make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters + heatmap check) on commit
@@ -72,6 +74,11 @@ belong to that script, optional label files (`labels.json`), capture date, and
 tags. Then run `make index_assets` to generate a rich `assets_index.json` with
 per-asset path, size, UTC mtime, linked script folder, tags, capture date, and
 labels.
+
+Asset conversion (Premiere compatibility): run `make convert_assets` to scan
+`footage/<slug>/originals/` for formats like HEIC/HEIF, DNG, WEBP and convert
+them to Premiere-friendly JPG/PNG under `footage/<slug>/converted/` with the
+same relative structure. Originals are preserved. Use `python src/convert_assets.py --dry-run` to preview and `--force` to overwrite existing outputs.
 
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).

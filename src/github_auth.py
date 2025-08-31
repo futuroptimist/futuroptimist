@@ -11,9 +11,15 @@ def _read_token_file(var: str) -> str | None:
     path = os.getenv(var)
     if not path:
         return None
+    expanded = os.path.expandvars(path)
+    # Prefer explicit HOME if provided (e.g., in tests), otherwise use expanduser
+    home = os.environ.get("HOME")
+    if expanded.startswith("~") and home:
+        expanded = expanded.replace("~", home, 1)
+    else:
+        expanded = os.path.expanduser(expanded)
     try:
-        expanded = os.path.expanduser(os.path.expandvars(path))
-        return pathlib.Path(expanded).read_text()
+        return pathlib.Path(expanded).read_text(encoding="utf-8")
     except OSError:
         return None
 

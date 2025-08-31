@@ -154,7 +154,9 @@ def update_readme(
                 emoji = fetch_repo_status(repo, token, branch)
                 # remove existing emoji
                 lines[i] = re.sub(r"^(-\s*)(?:[✅❌❓]\s*)*", r"\1", line)
+                # Ensure UTF-8 output; lines later written with utf-8 encoding
                 lines[i] = f"- {emoji} {lines[i][2:].lstrip()}"
+    # Ensure output file encoded as UTF-8 so emoji render correctly on Windows
     readme_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 

@@ -12,7 +12,7 @@ else
 endif
 PIP := uv pip
 
-.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images
+.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets
 
 help:
 	@echo "Targets:"
@@ -24,6 +24,7 @@ help:
 	@echo "  index_footage  Index local media under ./footage to footage_index.json"
 	@echo "  index_assets   Build rich assets_index.json from per-video manifests"
 	@echo "  describe_images  Generate image_descriptions.md from ./footage"
+	@echo "  convert_assets  Convert incompatible originals/ into converted/ using ffmpeg"
 
 setup:
 	python -m venv $(VENV)
@@ -51,3 +52,6 @@ index_assets:
 
 describe_images:
 	$(PY) src/describe_images.py footage -o image_descriptions.md
+
+convert_assets:
+	$(PY) src/convert_assets.py footage
