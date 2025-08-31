@@ -17,3 +17,9 @@ def test_script_folder_naming():
                 assert final_pattern.match(
                     p.name
                 ), f"Folder {p.name} does not match YYYYMMDD_slug convention"
+                # If a matching footage directory exists, enforce same top-level name
+                footage_dir = pathlib.Path("footage") / p.name
+                if footage_dir.exists():
+                    assert (
+                        footage_dir.is_dir()
+                    ), f"Footage path {footage_dir} should be a directory"

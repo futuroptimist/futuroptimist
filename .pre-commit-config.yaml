@@ -1,4 +1,25 @@
 repos:
+  - repo: local
+    hooks:
+      - id: scan-secrets
+        name: scan-secrets
+        entry: python scripts/precommit_scan_secrets.py
+        language: system
+        pass_filenames: false
+        stages: [commit]
+      - id: ruff
+        name: ruff
+        entry: python -m ruff check --fix .
+        language: system
+        pass_filenames: false
+        stages: [commit]
+      - id: black
+        name: black
+        entry: python -m black .
+        language: system
+        pass_filenames: false
+        stages: [commit]
+repos:
   - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
@@ -11,6 +32,7 @@ repos:
     hooks:
       - id: heatmap
         name: generate 3-D LOC heatmap
-        entry: python src/generate_heatmap.py
-        language: system
+        entry: python -m src.generate_heatmap
+        language: python
+        additional_dependencies: [svgwrite==1.4.3, requests==2.32.5]
         pass_filenames: false

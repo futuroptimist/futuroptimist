@@ -130,7 +130,7 @@ def update_readme(
     now: datetime | None = None,
 ) -> None:
     """Update README with status emojis and a timestamp."""
-    lines = readme_path.read_text().splitlines()
+    lines = readme_path.read_text(encoding="utf-8").splitlines()
     in_section = False
     if now is None:
         now = datetime.now(timezone.utc)
@@ -155,7 +155,7 @@ def update_readme(
                 # remove existing emoji
                 lines[i] = re.sub(r"^(-\s*)(?:[✅❌❓]\s*)*", r"\1", line)
                 lines[i] = f"- {emoji} {lines[i][2:].lstrip()}"
-    readme_path.write_text("\n".join(lines) + "\n")
+    readme_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":  # pragma: no cover

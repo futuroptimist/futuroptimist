@@ -1,0 +1,14 @@
+{
+  "footage_dirs": [
+    "footage/20251001_indoor-aquariums-tour/originals",
+    "footage/20251001_indoor-aquariums-tour/selects"
+  ],
+  "labels_files": [
+    "footage/20251001_indoor-aquariums-tour/labels.json"
+  ],
+  "notes_file": "footage/20251001_indoor-aquariums-tour/notes.md",
+  "tags": ["aquariums", "tour", "indoor"],
+  "capture_date": "2025-08-30"
+}
+
+

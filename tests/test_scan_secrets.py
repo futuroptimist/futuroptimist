@@ -27,3 +27,20 @@ def test_flags_github_pat_token() -> None:
     assert proc.returncode == 1
     assert "Possible secrets detected" in proc.stderr
     assert token in proc.stderr
+
+
+def test_flags_ssn_like_string() -> None:
+    ssn = "123-45-6789"
+    diff = "diff --git a/x b/x\n" "--- a/x\n" "+++ b/x\n" "@@\n" f"+ssn={ssn}\n"
+    proc = run_scan(diff)
+    assert proc.returncode == 1
+    assert ssn in proc.stderr
+
+
+def test_flags_credit_card_luhn() -> None:
+    # Visa test number passes Luhn
+    cc = "4111 1111 1111 1111"
+    diff = "diff --git a/x b/x\n" "--- a/x\n" "+++ b/x\n" "@@\n" f"+card={cc}\n"
+    proc = run_scan(diff)
+    assert proc.returncode == 1
+    assert "4111111111111111" in proc.stderr

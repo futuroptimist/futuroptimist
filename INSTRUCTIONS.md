@@ -33,6 +33,8 @@ Use the Makefile for common tasks:
 make setup      # create .venv and install deps
 make test       # run unit tests
 make subtitles  # download captions listed in video_ids.txt
+make index_footage  # build simple footage_index.json (paths, mtime, size)
+make index_assets   # build rich assets_index.json from per-video assets.json
 make clean      # remove the virtualenv and caches
 make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters + heatmap check) on commit
@@ -63,6 +65,13 @@ deterministically by timestamp then path. The script creates the
 output directory if needed and skips the index file itself when rerun
 inside the footage directory. Pass `--exclude PATH` (repeatable) to
 omit specific files or folders from the index.
+
+Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
+`schemas/assets_manifest.schema.json` to declare which `footage/` directories
+belong to that script, optional label files (`labels.json`), capture date, and
+tags. Then run `make index_assets` to generate a rich `assets_index.json` with
+per-asset path, size, UTC mtime, linked script folder, tags, capture date, and
+labels.
 
 ## Next Steps
 * Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).
