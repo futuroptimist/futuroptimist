@@ -14,6 +14,7 @@ import pathlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Iterable
+from PIL import Image
 
 from jsonschema import Draft7Validator
 
@@ -61,6 +62,10 @@ class AssetRecord:
     tags: list[str]
     capture_date: str | None
     labels: dict[str, Any] | None
+    width: int | None = None
+    height: int | None = None
+    aspect_ratio: float | None = None
+    orientation: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -71,6 +76,10 @@ class AssetRecord:
             "tags": self.tags,
             "capture_date": self.capture_date,
             "labels": self.labels,
+            "width": self.width,
+            "height": self.height,
+            "aspect_ratio": self.aspect_ratio,
+            "orientation": self.orientation,
         }
 
 
@@ -116,6 +125,40 @@ def build_index() -> list[dict[str, Any]]:
                 labels = labels_map.get(rel) or labels_map.get(
                     (REPO_ROOT / "footage" / rel).as_posix()
                 )
+                width: int | None = None
+                height: int | None = None
+                aspect: float | None = None
+                orientation: str | None = None
+                try:
+                    # HEIC support
+                    try:
+                        from pillow_heif import register_heif_opener  # type: ignore
+
+                        register_heif_opener()
+                    except Exception:
+                        pass
+                    if f.suffix.lower() == ".dng":
+                        try:
+                            import rawpy  # type: ignore
+
+                            with rawpy.imread(str(f)) as raw:
+                                width, height = int(raw.sizes.width), int(
+                                    raw.sizes.height
+                                )
+                        except Exception:
+                            width = height = None
+                    if width is None or height is None:
+                        with Image.open(f) as im:
+                            width, height = im.size
+                    if width and height:
+                        aspect = round(width / height, 6)
+                        orientation = (
+                            "landscape"
+                            if width > height
+                            else ("portrait" if height > width else "square")
+                        )
+                except Exception:
+                    pass
                 results.append(
                     AssetRecord(
                         path=f"footage/{rel}",
@@ -125,6 +168,10 @@ def build_index() -> list[dict[str, Any]]:
                         tags=tags,
                         capture_date=capture_date,
                         labels=labels,
+                        width=width,
+                        height=height,
+                        aspect_ratio=aspect,
+                        orientation=orientation,
                     )
                 )
     # Sort deterministically for stable diffs

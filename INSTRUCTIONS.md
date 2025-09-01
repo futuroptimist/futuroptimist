@@ -37,6 +37,8 @@ make index_footage  # build simple footage_index.json (paths, mtime, size)
 make index_assets   # build rich assets_index.json from per-video assets.json
 make describe_images  # scan images and write image_descriptions.md
 make convert_assets   # convert incompatible originals/ into converted/ via ffmpeg
+make convert_all      # convert images+videos for all slugs (or SLUG=YYYYMMDD_slug)
+make verify_assets    # verify converted assets match originals
 make clean      # remove the virtualenv and caches
 make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters + heatmap check) on commit
