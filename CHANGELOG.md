@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-09-01
+- chore: drop pyheif dependency and simplify HEIF conversion.
+
 ## 2025-08-27
 - feat: detect fine-grained GitHub tokens in scan-secrets script.
 - chore: whitelist project jargon for spellcheck.
