@@ -431,8 +431,9 @@ def _convert_with_libraries(conv: Conversion) -> bool:
             from PIL import Image, ImageOps, ImageCms
             import io
 
-            # Try pillow-heif first, then pyheif fallback
+            # Use pillow-heif to read HEIF/HEIC images
             image = None
+            icc = None
             try:
                 from pillow_heif import read_heif
 
@@ -440,19 +441,7 @@ def _convert_with_libraries(conv: Conversion) -> bool:
                 image = Image.frombytes(heif.mode, heif.size, heif.data)
                 icc = heif.info.get("icc_profile")
             except Exception:
-                try:
-                    import pyheif
-
-                    h = pyheif.read(str(conv.src))
-                    image = Image.frombytes(h.mode, h.size, h.data, "raw", h.mode, 0, 1)
-                    icc = None
-                    for meta in h.metadata or []:
-                        if meta.get("type") == "prof":
-                            icc = meta.get("data")
-                            break
-                except Exception:
-                    image = None
-                    icc = None
+                image = None
             if image is None:
                 return False
             # Apply EXIF orientation
