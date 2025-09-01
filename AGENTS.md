@@ -128,6 +128,7 @@ When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make rende
 - Avoid detailed how-tos like subtitle downloading; store them in other docs.
 - [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap.
 - [RUNBOOK](RUNBOOK.md): production checklist.
+- [Video Editing Playbook](docs/video-editing-playbook.md): concise guide to structure, pacing, and post steps.
 - [Ideas guide](ideas/README.md): idea-file schema.
 - Prompt docs in `docs/prompts/codex/` (e.g. `automation.md`, `spellcheck.md`, `video-script.md`).
 
