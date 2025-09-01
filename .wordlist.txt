@@ -25,6 +25,7 @@ contributionsCollection
 cov
 crowdsourced
 csv
+cta
 daphnia
 democratizedspace
 deps
@@ -32,6 +33,7 @@ dirs
 discoverable
 diy
 dlp
+dng
 docstrings
 dspace
 durations
@@ -62,6 +64,8 @@ gridfinity
 hackable
 heatmap
 heatmaps
+heic
+heif
 hibbeler
 href
 https
@@ -70,6 +74,7 @@ img
 ingester
 io
 irl
+jpg
 json
 kubernetes
 li
@@ -83,12 +88,14 @@ llmstxt
 loc
 lora
 lt
+lufs
 makefile
 md
 meta's
 metaverse
 microcontroller
 mpa
+mtime
 nas
 nonfinite
 npc
@@ -99,6 +106,7 @@ openai
 opentimelineio
 optimised
 pathlib
+png
 poisson
 pre
 prs
@@ -110,6 +118,7 @@ pytest
 rainlight
 readme
 readme's
+reframe
 repo
 repos
 reproducibility
@@ -119,6 +128,7 @@ runbook
 scaffolded
 schemas
 seo
+sfx
 shigley
 slugify
 solarpunk
@@ -159,6 +169,7 @@ vlog
 voiceover
 walkthrough
 walstad
+webp
 whitespace
 wip
 wordlist
