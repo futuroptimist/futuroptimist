@@ -12,7 +12,7 @@ else
 endif
 PIP := uv pip
 
-.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all
+.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel process
 
 help:
 	@echo "Targets:"
@@ -28,6 +28,8 @@ help:
 	@echo "  verify_assets  Verify converted/ matches originals/ dimensions/aspect"
 	@echo "  convert_missing Convert only missing items from verify_report.json"
 	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
+	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
+	@echo "  process       One-command: convert+verify+report (requires SLUG=...)"
 
 setup:
 	python -m venv $(VENV)
@@ -70,3 +72,15 @@ convert_missing:
 CONVERT_SLUG:=$(if $(SLUG),--slug $(SLUG),)
 convert_all:
 	$(PY) src/convert_assets.py footage --include-video $(CONVERT_SLUG) --force
+
+report_funnel:
+	@if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
+	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+
+# One-command processing for a slug
+process:
+	@if [ -z "$(SLUG)" ]; then echo "Usage: make process SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
+	$(PY) src/convert_assets.py footage --include-video --slug $(SLUG) --force
+	$(PY) src/verify_converted_assets.py footage --slug $(SLUG) --report verify_report.json || true
+	$(PY) src/convert_missing.py --report verify_report.json || true
+	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)

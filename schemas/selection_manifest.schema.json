@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SelectionManifest",
+  "type": "object",
+  "required": [
+    "slug",
+    "generated_at",
+    "originals_total",
+    "converted_total",
+    "selected_count",
+    "selected_assets"
+  ],
+  "properties": {
+    "slug": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "originals_total": { "type": "integer", "minimum": 0 },
+    "converted_total": { "type": "integer", "minimum": 0 },
+    "selected_count": { "type": "integer", "minimum": 0 },
+    "notes": { "type": "string" },
+    "selected_assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "kind"],
+        "properties": {
+          "path": { "type": "string" },
+          "kind": { "type": "string", "enum": ["image", "video"] },
+          "duration_sec": { "type": "number", "minimum": 0 },
+          "ranges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["in", "out"],
+              "properties": {
+                "in": { "type": "number", "minimum": 0 },
+                "out": { "type": "number", "minimum": 0 }
+              }
+            }
+          },
+          "labels": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}
+
+
