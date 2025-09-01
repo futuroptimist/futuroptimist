@@ -1,0 +1,9 @@
+{
+    "$schema": "./schema.json",
+    "date": "2025-09-01",
+    "workflow": "tests",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17370113596",
+  "root_cause": "rawpy 0.23 lacked Python 3.12 wheels, causing uv pip install to fail",
+  "resolution": "pinned rawpy to 0.25.1 which ships prebuilt wheels"
+}
+
