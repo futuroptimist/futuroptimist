@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2025-09-02
+- fix: set up Python before uv in docs workflow.
+- docs: record docs workflow outage.
+- docs: consolidate outage records under outages/.
 - fix: pin rawpy to 0.25.1 to ensure Python 3.12 wheels.
 - test: assert rawpy requirement is pinned.
 - docs: record test suite outage for rawpy pin.

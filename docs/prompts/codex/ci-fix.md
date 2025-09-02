@@ -23,7 +23,7 @@ Diagnose a failed GitHub Actions run and produce a fix.
 
 CONTEXT:
 - Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
-- Consult existing outage entries in `docs/outages` for similar symptoms.
+- Consult existing outage entries in `outages` for similar symptoms.
 - Constraints:
   * Do **not** break existing functionality.
   * Follow the repository’s style guidelines and commit-lint rules.
@@ -38,7 +38,7 @@ REQUEST:
 1. Read the failure logs and locate the first real error.
 2. Explain (in the pull-request body) *why* the failure occurred.
 3. Commit the necessary code, configuration, or documentation changes.
-4. Record the incident in `docs/outages/YYYY-MM-DD-<slug>.json` using `docs/outages/schema.json`.
+4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`.
 5. Push to a branch named `codex/ci-fix/<short-description>`.
 6. Open a pull request that – once merged – makes the default branch CI-green.
 7. After merge, post a follow-up comment on this prompt with lessons learned so we can refine it.
@@ -49,14 +49,15 @@ A GitHub pull request URL. The PR must include:
 * Evidence that **all** checks are now passing (`✔️`).
 * Links to any new or updated tests.
 Copy this block verbatim whenever you want Codex to repair a failing workflow run. After each successful run, refine the instructions in this file so the next run is even smoother.
-After opening the pull request, create a new postmortem file under `docs/pms/` (create it if missing) named `YYYY-MM-DD-short-title.md` capturing:
+After opening the pull request, add a postmortem under `outages/`.
+Name it `YYYY-MM-DD-short-title.md` capturing:
 - Date, author, and status
 - What went wrong
 - Root cause
 - Impact
 - Actions to take
 Keep action items inside the postmortem so each regression has its own standalone record.
-Log each incident in `docs/outages` so future fixes can reference past outages.
+Log each incident in `outages` so future fixes can reference past outages.
 ```
 
 ### Why this mirrors the existing pattern

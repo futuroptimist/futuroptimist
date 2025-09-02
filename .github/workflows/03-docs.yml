@@ -20,6 +20,13 @@ jobs:
         with:
           python-version: '3.x'
       - uses: astral-sh/setup-uv@v6
+      # MANUAL DECISION REQUIRED:
+      # Alternative older versions (commented out for reference):
+      # - uses: actions/checkout@v3
+      # - uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.x'
+      # - uses: astral-sh/setup-uv@v1
       - run: |
           uv venv
           uv pip install linkchecker
