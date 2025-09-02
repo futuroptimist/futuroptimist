@@ -4,5 +4,5 @@
     "workflow": "Test Suite",
     "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17184138754",
     "root_cause": "Shell prompt text appended to .github/workflows/02-tests.yml broke YAML parsing and prevented the test job from running.",
-    "resolution": "Removed the stray line and added a test to validate workflow YAML files.",
+    "resolution": "Removed the stray line and added a test to validate workflow YAML files."
 }
