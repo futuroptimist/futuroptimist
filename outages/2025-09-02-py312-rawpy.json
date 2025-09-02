@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-09-02",
+  "workflow": "02-tests.yml",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17370644977",
+  "root_cause": "rawpy wheel missing for Python 3.12 causing uv pip install to fail",
+  "resolution": "Pinned workflow to Python 3.11 until wheels are available"
+}
