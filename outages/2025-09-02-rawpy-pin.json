@@ -1,0 +1,8 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-09-02",
+  "workflow": "Test Suite",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17370644977",
+  "root_cause": "rawpy >=0.25.1 allowed a wheel-less release that failed to build on Python 3.12",
+  "resolution": "pinned rawpy to 0.25.1 which ships prebuilt wheels"
+}
