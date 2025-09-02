@@ -1,0 +1,9 @@
+{
+  "$schema": "./schema.json",
+  "date": "2025-09-02",
+  "workflow": "Docs Preview & Link Check",
+  "job": "linkcheck",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/17368853539",
+  "root_cause": "uv pip install --system attempted to write to system site-packages without permission.",
+  "resolution": "Create a uv-managed virtualenv and install linkchecker there."
+}
