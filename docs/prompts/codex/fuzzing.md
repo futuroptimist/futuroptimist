@@ -39,6 +39,8 @@ CONTEXT:
   or supply-chain swaps.
 - Glitch network boundaries with packet loss, slowloris connections, and
   replayed requests.
+- Probe AI/ML interfaces: feed prompt injections, malformed tool calls,
+  truncated streaming outputs, and corrupt model weights.
 - Stress caching layers and stateful services: inject stale, oversized, or corrupted entries,
   and flip feature flags mid-run.
 - Inject random OS signals (SIGTERM, SIGKILL, SIGHUP) or abrupt restarts to verify cleanup
