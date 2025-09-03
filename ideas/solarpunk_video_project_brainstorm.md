@@ -3,3 +3,9 @@
 - **Sun-Charged Mesh Router** – A palm-sized, PV-backed node keeps neighborhood Wi-Fi alive when the grid blinks.
 - **Rainlight Purifier** – A solar LED lantern that filters collected rainwater, illuminating and hydrating overnight.
 - **Upcycled E-Bike Generator** – Salvage e-bike parts to build a pedal-power station that tops off devices with every commute.
+
+- **Sun-Tracking Window Shelves** – Scrap steppers pivot herb trays to chase sun for balcony salads.
+- **Solar Suitcase Still** – Scrap glass mirrors form a carry-on still turning seawater into sips.
+- **Solar Ferment Fridge** – A hacked dorm fridge and tiny panel keep kimchi bubbling off-grid.
+- **Solar Seed Dryer** – Repurposed computer fans and a tiny panel dry saved seeds without the grid.
+- **Solar Pond Filter Blocks** – 3D-printed bricks snap onto a solar pump to freshen rain barrels.
