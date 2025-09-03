@@ -29,7 +29,6 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 | `/llms.txt` | Complementary file containing creative context & tone. |
 | `/subtitles/` | Downloaded `.srt` caption files populated by `fetch_subtitles.py`. |
 | `/src/srt_to_markdown.py` | Convert `.srt` captions; handles italics/bold, emoji; strips HTML, speaker prefixes, collapses whitespace, and skips non-dialog lines like `[Music]`. |
-| `/src/generate_heatmap.py` | Create a 3‑D lines-of-code heatmap with light/dark SVGs |
 | `/src/index_local_media.py` | Build a flat `footage_index.json` of local media under `footage/`. |
 | `/src/index_assets.py` | Build a rich `assets_index.json` by scanning per‑video manifests. |
 | `/sources/` | Reference files fetched via `collect_sources.py`. |
@@ -39,7 +38,7 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 
 ## Coding Conventions
 
-* Python 3.11+, black formatting & ruff lint. A `.pre-commit-config.yaml` runs these along with `generate_heatmap.py`.
+* Python 3.11+, black formatting & ruff lint. A `.pre-commit-config.yaml` runs these hooks.
 * Run `black .` and `ruff check --fix .` (or `make fmt`) before committing. Hooks fire automatically if you run `pre-commit install`.
 * One logical change per PR; always include/extend tests.
 * Scripts must be cross-platform – prefer `pathlib` for file paths and avoid

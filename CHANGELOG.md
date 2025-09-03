@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-09-03
+- chore: remove obsolete heatmap workflow and artifacts.
+
 ## 2025-09-02
 - fix: set up Python before uv in docs workflow.
 - docs: record docs workflow outage.
@@ -30,7 +33,6 @@
 - fix: normalize whitespace in status_to_emoji.
 
 ## 2025-08-24
-- fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
 - test: verify all workflow files parse as valid YAML.
 - docs: record tests workflow outage and postmortem.
