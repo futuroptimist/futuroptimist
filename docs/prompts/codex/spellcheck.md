@@ -16,7 +16,7 @@ PURPOSE:
 Keep Markdown documentation free of spelling errors.
 
 CONTEXT:
-- Check all Markdown files using `pyspelling -c spellcheck.yaml`.
+- Check all Markdown files using `uv run pyspelling -c spellcheck.yaml`.
 - Add unknown but legitimate words to
   [`.wordlist.txt`](../../../.wordlist.txt) and keep the entries
   alphabetically sorted.
@@ -35,7 +35,7 @@ CONTEXT:
 REQUEST:
 1. Run the spellcheck command and inspect the results.
 2. Correct misspellings or update `.wordlist.txt` as needed.
-3. Re-run `pyspelling` until it reports no errors.
+3. Re-run the spellcheck command until it reports no errors.
 4. Run all checks listed above.
 5. Commit the changes with a concise message and open a pull request.
 
@@ -63,6 +63,9 @@ CONTEXT:
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+- Run `git diff --cached | ./scripts/scan-secrets.py` before committing.
+- If browser dependencies are missing, run `npm run playwright:install` or
+  prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
 1. Review this file for outdated commands or paths.
