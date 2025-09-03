@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-09-03
+- fix: parse SRT entries lacking numeric index.
+- test: cover SRT parsing without sequence numbers.
+- docs: note optional SRT sequence numbers.
+
 ## 2025-09-02
 - fix: set up Python before uv in docs workflow.
 - docs: record docs workflow outage.
