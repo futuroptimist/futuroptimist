@@ -63,6 +63,7 @@ CONTEXT:
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+- Run `git diff --cached | ./scripts/scan-secrets.py` before committing.
 
 REQUEST:
 1. Review this file for outdated commands or paths.
