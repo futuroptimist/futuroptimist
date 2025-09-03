@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2025-09-03
+- docs: clarify flywheel stress limits in construction guide.
 - chore: remove obsolete heatmap workflow and artifacts.
 
 ## 2025-09-02
