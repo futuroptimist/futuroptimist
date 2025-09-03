@@ -11,9 +11,21 @@ Use this prompt to ask Codex to seed missing `docs/prompts/codex/*.md` files acr
 
 **Human set-up steps:**
 
-1. Ensure `dict/prompt-doc-repos.txt` lists the target repositories and regenerate
-   [`docs/prompt-docs-summary.md`](../../prompt-docs-summary.md) with
-   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+1. Ensure `dict/prompt-doc-repos.txt` lists the target repositories:
+
+   ```text
+   flywheel
+   futuroptimist
+   pr-reaper
+   ```
+
+   Then regenerate [`docs/prompt-docs-summary.md`](../../prompt-docs-summary.md):
+
+   ```bash
+   python scripts/update_prompt_docs_summary.py \
+     --repos-from dict/prompt-doc-repos.txt \
+     --out docs/prompt-docs-summary.md
+   ```
 2. Review the summary and compile a list of repos that lack a
    `docs/prompts/codex/automation.md` baseline.
 3. Paste that list (one repo per line) at the top of your ChatGPT message.
