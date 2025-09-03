@@ -30,13 +30,15 @@ def clean_srt_text(text: str) -> str:
 def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
     """Parse ``path`` into a list of ``(start, end, text)`` tuples.
 
-    Lines that resolve to an empty string after :func:`clean_srt_text` are
-    skipped. This filters out non-dialog captions such as ``[Music]`` or
+    Sequence numbers are optional – segments may start directly with the time
+    range. Lines that resolve to an empty string after :func:`clean_srt_text`
+    are skipped. This filters out non-dialog captions such as ``[Music]`` or
     ``[Applause]`` so downstream scripts see only spoken narration.
     """
 
     entries = []
     lines = path.read_text(encoding="utf-8-sig", errors="replace").splitlines()
+    time_re = r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})"
     i = 0
     while i < len(lines):
         line = lines[i].strip()
@@ -47,24 +49,25 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
             if i + 1 >= len(lines):
                 break
             time_line = lines[i + 1].strip()
-            match = re.match(
-                r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})",
-                time_line,
-            )
+            match = re.match(time_re, time_line)
             if not match:
                 i += 1
                 continue
-            start, end = match.groups()
             i += 2
-            text_lines = []
-            while i < len(lines) and lines[i].strip():
-                text_lines.append(lines[i].strip())
-                i += 1
-            text = clean_srt_text(" ".join(text_lines))
-            if text and start < end:
-                entries.append((start, end, text))
         else:
+            match = re.match(time_re, line)
+            if not match:
+                i += 1
+                continue
             i += 1
+        start, end = match.groups()
+        text_lines = []
+        while i < len(lines) and lines[i].strip():
+            text_lines.append(lines[i].strip())
+            i += 1
+        text = clean_srt_text(" ".join(text_lines))
+        if text and start < end:
+            entries.append((start, end, text))
     return entries
 
 
