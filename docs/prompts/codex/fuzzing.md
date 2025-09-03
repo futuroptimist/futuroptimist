@@ -39,6 +39,8 @@ CONTEXT:
   or supply-chain swaps.
 - Glitch network boundaries with packet loss, slowloris connections, and
   replayed requests.
+- Probe AI/ML interfaces: feed prompt injections, malformed tool calls,
+  truncated streaming outputs, and corrupt model weights.
 - Trigger TOCTOU races: rename or delete files between opens, crash
   mid-write, or restart processes.
 - When a crash, security flaw, or undefined behavior is found:
