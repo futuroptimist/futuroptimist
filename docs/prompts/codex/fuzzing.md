@@ -39,6 +39,12 @@ CONTEXT:
   or supply-chain swaps.
 - Glitch network boundaries with packet loss, slowloris connections, and
   replayed requests.
+- Stress caching layers and stateful services: inject stale, oversized, or corrupted entries,
+  and flip feature flags mid-run.
+- Inject random OS signals (SIGTERM, SIGKILL, SIGHUP) or abrupt restarts to verify cleanup
+  and restart logic.
+- Simulate network partitions, clock skew, and slow I/O to reveal timeout and retry flaws.
+- Mix path separators and case sensitivity to surface cross-platform file handling bugs.
 - Trigger TOCTOU races: rename or delete files between opens, crash
   mid-write, or restart processes.
 - Stress signal handling: rapid SIGINT, SIGTERM, SIGHUP, and SIGPIPE
