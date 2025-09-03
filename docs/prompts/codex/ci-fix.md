@@ -39,8 +39,9 @@ REQUEST:
 1. Read the failure logs and locate the first real error.
 2. Explain (in the pull-request body) *why* the failure occurred.
 3. Commit the necessary code, configuration, or documentation changes.
-4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`.
-5. Push to a branch named `codex/ci-fix/<short-description>`.
+4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`,
+   and write a matching `outages/YYYY-MM-DD-<slug>.md` postmortem.
+5. Push to a branch named `codex/ci-fix` (extend with `-<short>` if helpful).
 6. Open a pull request that – once merged – makes the default branch CI-green.
 7. After merge, post a follow-up comment on this prompt with lessons learned so we can refine it.
 
