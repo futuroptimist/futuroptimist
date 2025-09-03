@@ -23,6 +23,7 @@ Diagnose a failed GitHub Actions run and produce a fix.
 
 CONTEXT:
 - Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
+- Inspect the repository's `.github/workflows/` and mirror the failing job's steps locally.
 - Consult existing outage entries in `outages` for similar symptoms.
 - Constraints:
   * Do **not** break existing functionality.
