@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-09-03
+- feat: detect Slack tokens in scan-secrets script.
+
 ## 2025-09-02
 - fix: set up Python before uv in docs workflow.
 - docs: record docs workflow outage.
