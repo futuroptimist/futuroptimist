@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2025-09-03
+- fix: parse SRT entries lacking numeric index.
+- test: cover SRT parsing without sequence numbers.
+- docs: note optional SRT sequence numbers.
 - chore: remove obsolete heatmap workflow and artifacts.
 
 ## 2025-09-02
