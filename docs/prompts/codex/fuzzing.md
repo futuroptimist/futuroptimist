@@ -31,6 +31,12 @@ CONTEXT:
   and non-UTF-8 locales.
 - Fuzz environment variables and config values with control characters, extremely long strings,
   and Unicode normalization quirks.
+- Probe numeric and algorithmic extremes: zero, negative, and max values, subnormal floats,
+  and deeply nested structures to expose overflow or worst-case performance.
+- Flip architecture assumptions: 32-bit vs 64-bit, big- vs little-endian, and missing CPU
+  features to catch portability bugs.
+- Exhaust system quotas: file descriptors, disk/inode limits, cgroup memory caps, and tmpfs
+  shrinkage.
 - Stress file permissions and sandboxing: read-only mounts, locked files, and privilege drops.
 - Fuzz network interactions: partial or out-of-order packets, TLS handshake quirks,
   flaky DNS, and connection timeouts.
