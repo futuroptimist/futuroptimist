@@ -7,6 +7,7 @@
 - fix: pin rawpy to 0.25.1 to ensure Python 3.12 wheels.
 - test: assert rawpy requirement is pinned.
 - docs: record test suite outage for rawpy pin.
+- fix: treat 'action_required' status as failure in repo_status.
 
 ## 2025-09-01
 - chore: drop pyheif dependency and simplify HEIF conversion.
