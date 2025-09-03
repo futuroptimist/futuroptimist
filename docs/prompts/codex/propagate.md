@@ -6,7 +6,7 @@ slug: 'codex-propagate'
 # Codex Prompt Propagation Prompt
 Type: evergreen
 
-Use this prompt to ask Codex to seed missing `prompts-*.md` files across repositories listed in
+Use this prompt to ask Codex to seed missing `docs/prompts/codex/*.md` files across repositories listed in
 [`docs/prompt-docs-summary.md`](../../prompt-docs-summary.md).
 
 **Human set-up steps:**
@@ -30,7 +30,7 @@ guidance.
 CONTEXT:
 - For each repo in the list, check for existing `docs/prompts/codex/*.md` files.
 - If none exist, create `docs/prompts/codex/automation.md` based on the version in
-  `futuroptimist/flywheel`.
+  `futuroptimist/futuroptimist`.
 - Follow the repository's `AGENTS.md`, style guides, and commit conventions.
 - Run the repository's lint and test suite before committing:
   - `pre-commit run --all-files`
@@ -58,7 +58,7 @@ Use this prompt to refine the propagation instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this propagation prompt accurate for seeding prompt docs.
