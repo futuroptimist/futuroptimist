@@ -129,7 +129,7 @@ When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make rende
 - [RUNBOOK](RUNBOOK.md): production checklist.
 - [Video Editing Playbook](docs/video-editing-playbook.md): concise guide to structure, pacing, and post steps.
 - [Ideas guide](ideas/README.md): idea-file schema.
-- Prompt docs in `docs/prompts/codex/` (e.g. `automation.md`, `spellcheck.md`, `video-script.md`).
+- Prompt docs in `docs/prompts/codex/` (e.g. `automation.md`, `spellcheck.md`, `video-script-ideas.md`).
 
 ### Schemas
 - [Video Metadata Schema](schemas/video_metadata.schema.json): strict JSON schema for `metadata.json`.
