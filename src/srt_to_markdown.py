@@ -47,8 +47,9 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
             if i + 1 >= len(lines):
                 break
             time_line = lines[i + 1].strip()
+            # Support captions exceeding 99 hours by allowing multi-digit hour fields.
             match = re.match(
-                r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})",
+                r"(\d{2,}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2,}:\d{2}:\d{2},\d{3})",
                 time_line,
             )
             if not match:
