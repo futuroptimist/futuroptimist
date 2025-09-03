@@ -25,11 +25,12 @@ CONTEXT:
 - Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
 - Inspect the repository's `.github/workflows/` and mirror the failing job's steps locally.
 - Consult existing outage entries in `outages` for similar symptoms.
+- Inspect `.github/workflows/` and replicate the CI steps locally.
 - Constraints:
   * Do **not** break existing functionality.
   * Follow the repository’s style guidelines and commit-lint rules.
   * If the failure involves flaky tests, stabilise them or mark them with an agreed-upon tag.
-  * Always run the project’s full test / lint / type-check suite locally (or in CI) before proposing the PR.
+  * Run `pre-commit run --all-files`, `pytest -q`, and `bash scripts/checks.sh` before committing.
   * Scan staged changes for secrets with repository tooling (e.g., `git diff --cached | ./scripts/scan-secrets.py`).
   * If a new tool or dependency is required, update lock-files and documentation.
   * Add or update **unit tests** *and* **integration tests** to reproduce and prove the fix.
