@@ -41,6 +41,11 @@ CONTEXT:
   replayed requests.
 - Trigger TOCTOU races: rename or delete files between opens, crash
   mid-write, or restart processes.
+- Stress signal handling: rapid SIGINT, SIGTERM, SIGHUP, and SIGPIPE
+  to verify cleanup and restart logic.
+- Probe container boundaries and sandbox escapes: shifting cgroup limits,
+  seccomp filter misconfigurations, and `LD_PRELOAD` tricks.
+- Inject corrupted caches or partial writes to test persistence and recovery paths.
 - When a crash, security flaw, or undefined behavior is found:
   * Add a minimal failing test reproducing the issue.
   * Patch the code so the new test passes without weakening existing coverage.
