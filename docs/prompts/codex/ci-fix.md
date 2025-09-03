@@ -78,9 +78,11 @@ python scripts/update_prompt_docs_summary.py \
   --out docs/prompt-docs-summary.md
 ```
 
-Run the repository checks before committing:
+Install dependencies and run the repository checks before committing:
 
 ```bash
+uv venv
+uv pip install -r requirements.txt
 pre-commit run --all-files
 pytest -q
 bash scripts/checks.sh
