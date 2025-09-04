@@ -193,6 +193,22 @@ bar
     assert entries == [("00:00:01,000", "00:00:02,000", "bar")]
 
 
+def test_parse_srt_without_index(tmp_path):
+    srt = """00:00:00,000 --> 00:00:01,000
+Hello
+
+00:00:01,500 --> 00:00:02,000
+World
+"""
+    p = tmp_path / "noindex.srt"
+    p.write_text(srt)
+    entries = stm.parse_srt(p)
+    assert entries == [
+        ("00:00:00,000", "00:00:01,000", "Hello"),
+        ("00:00:01,500", "00:00:02,000", "World"),
+    ]
+
+
 def test_entrypoint(tmp_path, monkeypatch, capsys):
     srt_path = tmp_path / "in.srt"
     srt_path.write_text("1\n00:00:00,000 --> 00:00:01,000\nHi\n")

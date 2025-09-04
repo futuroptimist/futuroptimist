@@ -5,6 +5,9 @@
 - fix: allow multi-digit hour fields in `parse_srt` for very long videos.
 - test: cover SRT parsing with hours beyond 99.
 - docs: record SRT hour overflow outage and postmortem.
+- fix: parse SRT entries lacking numeric index.
+- test: cover SRT parsing without sequence numbers.
+- docs: note optional SRT sequence numbers.
 
 ## 2025-09-02
 - fix: set up Python before uv in docs workflow.
@@ -13,6 +16,7 @@
 - fix: pin rawpy to 0.25.1 to ensure Python 3.12 wheels.
 - test: assert rawpy requirement is pinned.
 - docs: record test suite outage for rawpy pin.
+- fix: treat 'action_required' status as failure in repo_status.
 
 ## 2025-09-01
 - chore: drop pyheif dependency and simplify HEIF conversion.
@@ -36,7 +40,6 @@
 - fix: normalize whitespace in status_to_emoji.
 
 ## 2025-08-24
-- fix: validate svg3d shading factor to reject NaN and infinity.
 - fix: remove stray prompt text from tests workflow to restore CI.
 - test: verify all workflow files parse as valid YAML.
 - docs: record tests workflow outage and postmortem.

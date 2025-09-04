@@ -39,8 +39,21 @@ CONTEXT:
   or supply-chain swaps.
 - Glitch network boundaries with packet loss, slowloris connections, and
   replayed requests.
+- Probe AI/ML interfaces: feed prompt injections, malformed tool calls,
+  truncated streaming outputs, and corrupt model weights.
+- Stress caching layers and stateful services: inject stale, oversized, or corrupted entries,
+  and flip feature flags mid-run.
+- Inject random OS signals (SIGTERM, SIGKILL, SIGHUP) or abrupt restarts to verify cleanup
+  and restart logic.
+- Simulate network partitions, clock skew, and slow I/O to reveal timeout and retry flaws.
+- Mix path separators and case sensitivity to surface cross-platform file handling bugs.
 - Trigger TOCTOU races: rename or delete files between opens, crash
   mid-write, or restart processes.
+- Stress signal handling: rapid SIGINT, SIGTERM, SIGHUP, and SIGPIPE
+  to verify cleanup and restart logic.
+- Probe container boundaries and sandbox escapes: shifting cgroup limits,
+  seccomp filter misconfigurations, and `LD_PRELOAD` tricks.
+- Inject corrupted caches or partial writes to test persistence and recovery paths.
 - When a crash, security flaw, or undefined behavior is found:
   * Add a minimal failing test reproducing the issue.
   * Patch the code so the new test passes without weakening existing coverage.

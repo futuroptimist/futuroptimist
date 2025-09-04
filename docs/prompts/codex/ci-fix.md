@@ -22,23 +22,26 @@ PURPOSE:
 Diagnose a failed GitHub Actions run and produce a fix.
 
 CONTEXT:
-- Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
-- Consult existing outage entries in `outages` for similar symptoms.
-- Constraints:
-  * Do **not** break existing functionality.
-  * Follow the repository’s style guidelines and commit-lint rules.
-  * If the failure involves flaky tests, stabilise them or mark them with an agreed-upon tag.
-  * Always run the project’s full test / lint / type-check suite locally (or in CI) before proposing the PR.
-  * Scan staged changes for secrets with repository tooling (e.g., `git diff --cached | ./scripts/scan-secrets.py`).
-  * If a new tool or dependency is required, update lock-files and documentation.
-  * Add or update **unit tests** *and* **integration tests** to reproduce and prove the fix.
-  * Provide a concise changelog entry.
+- Follow `AGENTS.md` and `README.md`.
+- Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
+- Ensure the following pass:
+  - `pre-commit run --all-files`
+  - `pytest -q`
+  - `npm ci` (if `package.json` exists)
+  - `npm run lint` (if `package.json` exists)
+  - `npm run test:ci` (if `package.json` exists)
+  - `python -m flywheel.fit` (if installed)
+  - `bash scripts/checks.sh`
+- Regenerate `docs/prompt-docs-summary.md` with:
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Read the failure logs and locate the first real error.
 2. Explain (in the pull-request body) *why* the failure occurred.
 3. Commit the necessary code, configuration, or documentation changes.
-4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`.
+4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`,
+   and write a matching `outages/YYYY-MM-DD-<slug>.md` postmortem.
 5. Push to a branch named `codex/ci-fix/<short-description>`.
 6. Open a pull request that – once merged – makes the default branch CI-green.
 7. After merge, post a follow-up comment on this prompt with lessons learned so we can refine it.
@@ -48,9 +51,9 @@ A GitHub pull request URL. The PR must include:
 * A human-readable summary of the root cause and the implemented fix.
 * Evidence that **all** checks are now passing (`✔️`).
 * Links to any new or updated tests.
-Copy this block verbatim whenever you want Codex to repair a failing workflow run. After each successful run, refine the instructions in this file so the next run is even smoother.
-After opening the pull request, add a postmortem under `outages/`.
-Name it `YYYY-MM-DD-short-title.md` capturing:
+Copy this block verbatim whenever you want Codex to repair a failing workflow run.
+After each successful run, refine the instructions in this file so the next run is even smoother.
+Each incident’s Markdown file should capture:
 - Date, author, and status
 - What went wrong
 - Root cause
@@ -78,11 +81,13 @@ python scripts/update_prompt_docs_summary.py \
   --out docs/prompt-docs-summary.md
 ```
 
-Run the repository checks before committing:
+Install dependencies and run the repository checks before committing:
 
 ```bash
+uv venv
+uv pip install -r requirements.txt
 pre-commit run --all-files
-pytest -q
+pytest --cov=./src --cov=./tests
 bash scripts/checks.sh
 git diff --cached | ./scripts/scan-secrets.py
 ```
@@ -144,16 +149,18 @@ Keep this CI-fix prompt aligned with current workflow patterns.
   CONTEXT:
   - Follow `AGENTS.md` and `README.md`.
   - Inspect `.github/workflows/` and mirror CI steps locally.
-  - Ensure `pre-commit run --all-files`, `pytest -q`, and
+  - Ensure `pre-commit run --all-files`, `pytest --cov=./src --cov=./tests`, and
     `bash scripts/checks.sh` pass.
+  - If `package.json` exists, `scripts/checks.sh` also runs
+    `npm run lint` and `npm run test:ci`.
   - Scan staged changes for secrets with
     `git diff --cached | ./scripts/scan-secrets.py`.
   - Regenerate `docs/prompt-docs-summary.md` with
     `python scripts/update_prompt_docs_summary.py --repos-from \
     dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
-- Keep `dict/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
-  repositories are "small flywheels" belted to this codebase—if the summary
-  script drops any, fix the repo or integration instead of removing it.
+  - Keep `dict/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
+    repositories are "small flywheels" belted to this codebase—if the summary
+    script drops any, fix the repo or integration instead of removing it.
 
 REQUEST:
 1. Audit this document for outdated guidance or missing steps.
