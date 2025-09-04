@@ -26,6 +26,9 @@ CONTEXT:
   ```bash
   pre-commit run --all-files
   pytest -q
+  npm run lint
+  npm run test:ci
+  python -m flywheel.fit
   bash scripts/checks.sh
   ```
 - Run `git diff --cached | ./scripts/scan-secrets.py` before committing.
@@ -59,7 +62,7 @@ Keep this spellcheck prompt accurate as tooling evolves.
 
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, and `bash scripts/checks.sh` pass.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`, `npm run test:ci`, and `python -m flywheel.fit` pass, along with `bash scripts/checks.sh`.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
