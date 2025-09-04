@@ -24,10 +24,11 @@ CONTEXT:
 - Ensure these commands succeed:
   - `pre-commit run --all-files`
   - `pytest -q`
+  - `npm run lint`
   - `npm run test:ci`
   - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
-- If browser dependencies are missing, run `npx playwright install chromium`
+- If browser dependencies are missing, run `npm run playwright:install`
   or prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
@@ -58,11 +59,13 @@ Keep CAD instructions accurate and up to date.
 
 CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
+  `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+- If browser dependencies are missing, run `npm run playwright:install`
+  or prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
 1. Review this file for stale guidance or links.
