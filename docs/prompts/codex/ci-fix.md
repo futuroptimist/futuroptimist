@@ -51,9 +51,9 @@ A GitHub pull request URL. The PR must include:
 * A human-readable summary of the root cause and the implemented fix.
 * Evidence that **all** checks are now passing (`✔️`).
 * Links to any new or updated tests.
-Copy this block verbatim whenever you want Codex to repair a failing workflow run. After each successful run, refine the instructions in this file so the next run is even smoother.
-After opening the pull request, add a postmortem under `outages/`.
-Name it `YYYY-MM-DD-short-title.md` capturing:
+Copy this block verbatim whenever you want Codex to repair a failing workflow run.
+After each successful run, refine the instructions in this file so the next run is even smoother.
+Each incident’s Markdown file should capture:
 - Date, author, and status
 - What went wrong
 - Root cause
