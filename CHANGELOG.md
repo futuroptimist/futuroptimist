@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2025-09-03
+- fix: handle missing npm in checks script and ensure trailing newline.
+- test: verify checks script handles missing npm and newline.
 - fix: parse SRT entries lacking numeric index.
 - test: cover SRT parsing without sequence numbers.
 - docs: note optional SRT sequence numbers.
