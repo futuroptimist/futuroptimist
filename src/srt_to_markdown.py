@@ -27,6 +27,13 @@ def clean_srt_text(text: str) -> str:
     return text
 
 
+def _timestamp_to_ms(ts: str) -> int:
+    """Convert ``HH:MM:SS,mmm`` string into milliseconds."""
+    hours, minutes, sec_ms = ts.split(":")
+    seconds, millis = sec_ms.split(",")
+    return ((int(hours) * 60 + int(minutes)) * 60 + int(seconds)) * 1000 + int(millis)
+
+
 def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
     """Parse ``path`` into a list of ``(start, end, text)`` tuples.
 
@@ -47,8 +54,9 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
             if i + 1 >= len(lines):
                 break
             time_line = lines[i + 1].strip()
+            # Support captions exceeding 99 hours by allowing multi-digit hour fields.
             match = re.match(
-                r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})",
+                r"(\d{2,}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2,}:\d{2}:\d{2},\d{3})",
                 time_line,
             )
             if not match:
@@ -61,7 +69,7 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
                 text_lines.append(lines[i].strip())
                 i += 1
             text = clean_srt_text(" ".join(text_lines))
-            if text and start < end:
+            if text and _timestamp_to_ms(start) < _timestamp_to_ms(end):
                 entries.append((start, end, text))
         else:
             i += 1

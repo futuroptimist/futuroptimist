@@ -1,5 +1,12 @@
 # Changelog
 
+## 2025-09-03
+- chore: remove obsolete heatmap workflow and artifacts.
+- fix: allow multi-digit hour fields in `parse_srt` for very long videos.
+- fix: compare SRT timestamps numerically to keep captions across 99h boundary.
+- test: cover SRT parsing with hours beyond 99.
+- docs: record SRT hour overflow outage and postmortem.
+
 ## 2025-09-02
 - fix: set up Python before uv in docs workflow.
 - docs: record docs workflow outage.

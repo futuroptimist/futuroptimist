@@ -228,3 +228,25 @@ def test_parse_srt_invalid_utf8(tmp_path):
     p.write_bytes(data)
     entries = stm.parse_srt(p)
     assert entries == [("00:00:00,000", "00:00:01,000", "Hi�")]
+
+
+def test_parse_srt_large_hour_values(tmp_path):
+    srt = """1
+100:00:00,000 --> 100:00:01,000
+Hello
+"""
+    path = tmp_path / "long.srt"
+    path.write_text(srt)
+    entries = stm.parse_srt(path)
+    assert entries == [("100:00:00,000", "100:00:01,000", "Hello")]
+
+
+def test_parse_srt_hour_boundary(tmp_path):
+    srt = """1
+99:59:59,000 --> 100:00:00,000
+Boundary
+"""
+    path = tmp_path / "boundary.srt"
+    path.write_text(srt)
+    entries = stm.parse_srt(path)
+    assert entries == [("99:59:59,000", "100:00:00,000", "Boundary")]
