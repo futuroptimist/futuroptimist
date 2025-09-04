@@ -38,7 +38,8 @@ REQUEST:
 1. Read the failure logs and locate the first real error.
 2. Explain (in the pull-request body) *why* the failure occurred.
 3. Commit the necessary code, configuration, or documentation changes.
-4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`.
+4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`
+   and write a matching Markdown postmortem at `outages/YYYY-MM-DD-<slug>.md`.
 5. Push to a branch named `codex/ci-fix/<short-description>`.
 6. Open a pull request that – once merged – makes the default branch CI-green.
 7. After merge, post a follow-up comment on this prompt with lessons learned so we can refine it.
@@ -48,9 +49,9 @@ A GitHub pull request URL. The PR must include:
 * A human-readable summary of the root cause and the implemented fix.
 * Evidence that **all** checks are now passing (`✔️`).
 * Links to any new or updated tests.
-Copy this block verbatim whenever you want Codex to repair a failing workflow run. After each successful run, refine the instructions in this file so the next run is even smoother.
-After opening the pull request, add a postmortem under `outages/`.
-Name it `YYYY-MM-DD-short-title.md` capturing:
+Copy this block verbatim whenever you want Codex to repair a failing workflow run.
+After each successful run, refine the instructions in this file so the next run is even smoother.
+Each incident’s Markdown file should capture:
 - Date, author, and status
 - What went wrong
 - Root cause
