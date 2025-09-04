@@ -29,7 +29,7 @@ def status_to_emoji(conclusion: str | None) -> str:
 
     - ``"success"`` → ✅
     - ``"failure"``, ``"cancelled"``, ``"canceled"``, ``"timed_out"``,
-      ``"startup_failure"`` → ❌
+      ``"startup_failure"``, ``"action_required"`` → ❌
     - anything else (including ``None`` or non-strings) → ❓
     """
     if not isinstance(conclusion, str) or not conclusion:
@@ -44,6 +44,7 @@ def status_to_emoji(conclusion: str | None) -> str:
         "canceled",
         "timed_out",
         "startup_failure",
+        "action_required",
     }:
         return "❌"
     return "❓"
@@ -95,6 +96,7 @@ def fetch_repo_status(
         "canceled",
         "timed_out",
         "startup_failure",
+        "action_required",
     }
 
     def _fetch() -> str | None:
