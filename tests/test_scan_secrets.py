@@ -29,6 +29,14 @@ def test_flags_github_pat_token() -> None:
     assert token in proc.stderr
 
 
+def test_flags_slack_token() -> None:
+    token = "xoxb-" + "123456789012" + "-" + "123456789012" + "-" + "abcdefghijklmnop"
+    diff = "diff --git a/x b/x\n" "--- a/x\n" "+++ b/x\n" "@@\n" f"+token={token}\n"
+    proc = run_scan(diff)
+    assert proc.returncode == 1
+    assert token in proc.stderr
+
+
 def test_flags_ssn_like_string() -> None:
     ssn = "123-45-6789"
     diff = "diff --git a/x b/x\n" "--- a/x\n" "+++ b/x\n" "@@\n" f"+ssn={ssn}\n"

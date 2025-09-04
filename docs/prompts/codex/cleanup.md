@@ -6,7 +6,7 @@ slug: 'codex-cleanup'
 # Obsolete Prompt Cleanup
 Type: evergreen
 
-Use this prompt to delete one-off prompts already implemented and remove any lingering references.
+Use this prompt to remove one-off prompts already implemented and clean up lingering references.
 
 ```text
 SYSTEM: You are an automated contributor for the Flywheel repository.
@@ -17,9 +17,9 @@ Maintain prompt hygiene by deleting fulfilled one-off prompts and clearing outda
 CONTEXT:
 - Scan `docs/prompts/codex/` for `Type: one-off` prompts whose features now exist in the codebase.
 - Delete each obsolete prompt file or section and remove any lingering references.
-- Regenerate `docs/prompt-docs-summary.md` with
-    `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
-    --out docs/prompt-docs-summary.md`.
+- Regenerate `docs/prompt-docs-summary.md` with:
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md`.
 - Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
 - Run checks:
   - `pre-commit run --all-files`
@@ -31,8 +31,8 @@ CONTEXT:
   - `bash scripts/checks.sh`
 
 REQUEST:
-1. Identify an obsolete prompt.
-2. Remove it and update references.
+1. Locate an obsolete prompt.
+2. Remove it and refresh references such as `docs/prompt-docs-summary.md`.
 3. Run all required checks before committing.
 
 OUTPUT:
@@ -55,16 +55,16 @@ CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
 - Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
 - Ensure the following pass:
-    - `pre-commit run --all-files`
-    - `pytest -q`
-    - `npm ci` (if `package.json` exists)
-    - `npm run lint` (if `package.json` exists)
-    - `npm run test:ci` (if `package.json` exists)
-    - `python -m flywheel.fit` (if installed)
-    - `bash scripts/checks.sh`
-- Regenerate `docs/prompt-docs-summary.md` with
-    `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
-    --out docs/prompt-docs-summary.md`.
+  - `pre-commit run --all-files`
+  - `pytest -q`
+  - `npm ci` (if `package.json` exists)
+  - `npm run lint` (if `package.json` exists)
+  - `npm run test:ci` (if `package.json` exists)
+  - `python -m flywheel.fit` (if installed)
+  - `bash scripts/checks.sh`
+- Regenerate `docs/prompt-docs-summary.md` with:
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Review this file for outdated steps or unclear language.
