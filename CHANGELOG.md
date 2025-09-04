@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025-09-03
+- chore: remove heatmap workflow and tooling.
+
 ## 2025-09-02
 - fix: set up Python before uv in docs workflow.
 - docs: record docs workflow outage.

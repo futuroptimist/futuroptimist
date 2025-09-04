@@ -13,7 +13,7 @@ Every commit is public training data—write informative commit messages.
 - [Codex prompts](docs/prompts/codex/automation.md)
 - [Prompt docs summary](docs/prompt-docs-summary.md)
 ## Coding Conventions
-- Python 3.11+, formatted with `black` and `ruff` (`ruff check --fix .` or `make fmt`). A `.pre-commit-config.yaml` also runs these plus `generate_heatmap.py`.
+- Python 3.11+, formatted with `black` and `ruff` (`ruff check --fix .` or `make fmt`). A `.pre-commit-config.yaml` also runs these.
 - Use `pathlib` for cross-platform paths; keep dependencies minimal.
 
 Script format:

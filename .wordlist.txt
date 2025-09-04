@@ -62,8 +62,6 @@ gitshelves
 graphql
 gridfinity
 hackable
-heatmap
-heatmaps
 heic
 heif
 hibbeler
