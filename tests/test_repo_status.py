@@ -38,6 +38,9 @@ def test_status_to_emoji_failure_variants() -> None:
     assert status_to_emoji("timed out") == "❌"
     assert status_to_emoji("startup_failure") == "❌"
     assert status_to_emoji("STARTUP FAILURE") == "❌"
+    assert status_to_emoji("action_required") == "❌"
+    assert status_to_emoji("action-required") == "❌"
+    assert status_to_emoji("action required") == "❌"
 
 
 class DummyResp:
