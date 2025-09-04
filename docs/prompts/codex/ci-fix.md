@@ -82,7 +82,7 @@ Run the repository checks before committing:
 
 ```bash
 pre-commit run --all-files
-pytest -q
+pytest --cov=./src --cov=./tests
 bash scripts/checks.sh
 git diff --cached | ./scripts/scan-secrets.py
 ```
@@ -144,7 +144,7 @@ Keep this CI-fix prompt aligned with current workflow patterns.
   CONTEXT:
   - Follow `AGENTS.md` and `README.md`.
   - Inspect `.github/workflows/` and mirror CI steps locally.
-  - Ensure `pre-commit run --all-files`, `pytest -q`, and
+  - Ensure `pre-commit run --all-files`, `pytest --cov=./src --cov=./tests`, and
     `bash scripts/checks.sh` pass.
   - Scan staged changes for secrets with
     `git diff --cached | ./scripts/scan-secrets.py`.
