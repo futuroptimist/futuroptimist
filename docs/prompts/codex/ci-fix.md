@@ -146,14 +146,16 @@ Keep this CI-fix prompt aligned with current workflow patterns.
   - Inspect `.github/workflows/` and mirror CI steps locally.
   - Ensure `pre-commit run --all-files`, `pytest -q`, and
     `bash scripts/checks.sh` pass.
+  - If `package.json` exists, `scripts/checks.sh` also runs
+    `npm run lint` and `npm run test:ci`.
   - Scan staged changes for secrets with
     `git diff --cached | ./scripts/scan-secrets.py`.
   - Regenerate `docs/prompt-docs-summary.md` with
     `python scripts/update_prompt_docs_summary.py --repos-from \
     dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
-- Keep `dict/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
-  repositories are "small flywheels" belted to this codebase—if the summary
-  script drops any, fix the repo or integration instead of removing it.
+  - Keep `dict/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
+    repositories are "small flywheels" belted to this codebase—if the summary
+    script drops any, fix the repo or integration instead of removing it.
 
 REQUEST:
 1. Audit this document for outdated guidance or missing steps.
