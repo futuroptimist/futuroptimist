@@ -22,19 +22,19 @@ PURPOSE:
 Diagnose a failed GitHub Actions run and produce a fix.
 
 CONTEXT:
-- Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
-- Inspect the repository's `.github/workflows/` and mirror the failing job's steps locally.
-- Consult existing outage entries in `outages` for similar symptoms.
-- Inspect `.github/workflows/` and replicate the CI steps locally.
-- Constraints:
-  * Do **not** break existing functionality.
-  * Follow the repository’s style guidelines and commit-lint rules.
-  * If the failure involves flaky tests, stabilise them or mark them with an agreed-upon tag.
-  * Run `pre-commit run --all-files`, `pytest -q`, and `bash scripts/checks.sh` before committing.
-  * Scan staged changes for secrets with repository tooling (e.g., `git diff --cached | ./scripts/scan-secrets.py`).
-  * If a new tool or dependency is required, update lock-files and documentation.
-  * Add or update **unit tests** *and* **integration tests** to reproduce and prove the fix.
-  * Provide a concise changelog entry.
+- Follow `AGENTS.md` and `README.md`.
+- Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
+- Ensure the following pass:
+  - `pre-commit run --all-files`
+  - `pytest -q`
+  - `npm ci` (if `package.json` exists)
+  - `npm run lint` (if `package.json` exists)
+  - `npm run test:ci` (if `package.json` exists)
+  - `python -m flywheel.fit` (if installed)
+  - `bash scripts/checks.sh`
+- Regenerate `docs/prompt-docs-summary.md` with:
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Read the failure logs and locate the first real error.
@@ -42,7 +42,7 @@ REQUEST:
 3. Commit the necessary code, configuration, or documentation changes.
 4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`,
    and write a matching `outages/YYYY-MM-DD-<slug>.md` postmortem.
-5. Push to a branch named `codex/ci-fix` (extend with `-<short>` if helpful).
+5. Push to a branch named `codex/ci-fix/<short-description>`.
 6. Open a pull request that – once merged – makes the default branch CI-green.
 7. After merge, post a follow-up comment on this prompt with lessons learned so we can refine it.
 
