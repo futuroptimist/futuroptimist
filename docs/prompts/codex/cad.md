@@ -21,9 +21,11 @@ CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
 - Ensure SCAD files export cleanly to STL and OBJ models.
 - Verify parts fit with `python -m flywheel.fit`.
+- Install Node dependencies with `npm ci` when `package.json` is present.
 - Ensure these commands succeed:
   - `pre-commit run --all-files`
   - `pytest -q`
+  - `npm run lint`
   - `npm run test:ci`
   - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
@@ -58,8 +60,10 @@ Keep CAD instructions accurate and up to date.
 
 CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
+- Install Node dependencies with `npm ci` when `package.json` is present.
+- Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
+  `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh`
+  pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
