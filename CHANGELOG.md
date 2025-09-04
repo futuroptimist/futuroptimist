@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2025-09-03
+- docs: clarify flywheel stress limits in construction guide.
+- docs: correct hoop stress location and evaluation in flywheel guide.
 - fix: parse SRT entries lacking numeric index.
 - test: cover SRT parsing without sequence numbers.
 - docs: note optional SRT sequence numbers.

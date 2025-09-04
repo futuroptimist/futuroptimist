@@ -4,7 +4,7 @@ Designing a flywheel means balancing energy storage against material limits.
 This note captures the basic physics behind the CAD model used in Futuroptimist
 prototypes. The disk in our CAD has
 
-* outer radius $r_o = 75\,\text{mm}$
+* outer radius $r_o = 75\,\text{mm}$ (150\,mm outer diameter)
 * bore radius $r_i = 6\,\text{mm}$
 * thickness $t = 10\,\text{mm}$
 
@@ -32,8 +32,9 @@ angular velocity $\omega$:
 
 $$E = 0.5\, I \omega^2.$$
 
-At 3 000 rpm (314 rad/s) this flywheel stores about $66\,\text{J}$ of kinetic
-energy.
+At 3 000 rpm ($\omega = 2\pi N$ with $N = \tfrac{3000}{60}\,\text{rev·s}^{-1}$,
+so $\omega \approx 314\,\text{rad·s}^{-1}$) this flywheel stores about
+$66\,\text{J}$ of kinetic energy.
 
 ## Torque and spin‑up
 
@@ -41,19 +42,29 @@ Torque relates angular acceleration $\alpha$ to inertia:
 
 $$\tau = I\alpha.$$
 
-Spinning the disk from rest to 3 000 rpm in $5\,\text{s}$ requires roughly
+For a constant spin‑up, $\alpha = \Delta\omega/\Delta t$. Bringing the disk from
+rest to 3 000 rpm in $5\,\text{s}$ therefore requires roughly
 $0.08\,\text{N·m}$ of torque.
 
 ## Stress check
 
-Rotational speed is limited by the material's tensile strength.  The approximate
-hoop stress for a solid disk is
+Rotational speed is limited by the material's tensile strength. In a solid disk
+the peak hoop stress actually occurs at the center. The center value is
 
-$$\sigma \approx (\rho \omega^2 r^2)/3,$$
+$$\sigma_c = \frac{3 + \nu}{8}\, \rho\, \omega^2 r_o^2,$$
 
-where $\rho$ is the material density. At 3 000 rpm the stress is about
-$0.5\,\text{MPa}$, well below the alloy's $276\,\text{MPa}$ yield strength.
-Compare the computed stress to the material limit to set a safe operating speed.
+while the rim stress is smaller:
+
+$$\sigma_r = \frac{1 - \nu}{4}\, \rho\, \omega^2 r_o^2.$$
+
+Our flywheel includes a 12 mm bore, so the critical location is the inner
+radius $r_i = 6\,\text{mm}$ where the stress is close to $\sigma_c$. At
+3 000 rpm these expressions give $\sigma_r \approx 0.25\,\text{MPa}$ at the rim
+and $\sigma_c \approx 0.62\,\text{MPa}$ at the bore\footnote{See R. C.
+Hibbeler, *Engineering Mechanics: Dynamics*, or Budynas & Nisbett, *Shigley's
+Mechanical Engineering Design*.}. Both are well below the alloy's
+$276\,\text{MPa}$ yield strength. Compare the computed stress to the material
+limit to set a safe operating speed.
 
 ```
     outer radius r
