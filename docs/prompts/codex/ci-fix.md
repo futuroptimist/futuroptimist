@@ -87,7 +87,7 @@ Install dependencies and run the repository checks before committing:
 uv venv
 uv pip install -r requirements.txt
 pre-commit run --all-files
-pytest -q
+pytest --cov=./src --cov=./tests
 bash scripts/checks.sh
 git diff --cached | ./scripts/scan-secrets.py
 ```
@@ -149,7 +149,7 @@ Keep this CI-fix prompt aligned with current workflow patterns.
   CONTEXT:
   - Follow `AGENTS.md` and `README.md`.
   - Inspect `.github/workflows/` and mirror CI steps locally.
-  - Ensure `pre-commit run --all-files`, `pytest -q`, and
+  - Ensure `pre-commit run --all-files`, `pytest --cov=./src --cov=./tests`, and
     `bash scripts/checks.sh` pass.
   - If `package.json` exists, `scripts/checks.sh` also runs
     `npm run lint` and `npm run test:ci`.
