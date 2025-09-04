@@ -15,20 +15,20 @@ PURPOSE:
 Maintain prompt hygiene by deleting fulfilled one-off prompts and clearing outdated references.
 
 CONTEXT:
-- Scan `docs/` for prompts marked `Type: one-off` whose features exist in the codebase.
-- Delete those prompt sections or files.
+- Scan `docs/prompts/codex/` for `Type: one-off` prompts whose features now exist in the codebase.
+- Delete each obsolete prompt file or section and remove any lingering references.
 - Regenerate `docs/prompt-docs-summary.md` with
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
-- Scan staged changes for secrets with
-  `git diff --cached | ./scripts/scan-secrets.py`.
+    `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+    --out docs/prompt-docs-summary.md`.
+- Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
 - Run checks:
-  `pre-commit run --all-files`,
-  `pytest -q`,
-  `npm ci` (if `package.json` exists),
-  `npm run lint` (if `package.json` exists),
-  `npm run test:ci` (if `package.json` exists),
-  `python -m flywheel.fit` (if installed), and
-  `bash scripts/checks.sh`.
+  - `pre-commit run --all-files`
+  - `pytest -q`
+  - `npm ci` (if `package.json` exists)
+  - `npm run lint` (if `package.json` exists)
+  - `npm run test:ci` (if `package.json` exists)
+  - `python -m flywheel.fit` (if installed)
+  - `bash scripts/checks.sh`
 
 REQUEST:
 1. Identify an obsolete prompt.
@@ -54,11 +54,17 @@ Keep this cleanup prompt effective for removing obsolete items.
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
 - Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `npm ci` (if `package.json` exists),
-  `npm run lint` (if `package.json` exists), `npm run test:ci` (if `package.json` exists),
-  `python -m flywheel.fit` (if installed), and `bash scripts/checks.sh` pass.
+- Ensure the following pass:
+    - `pre-commit run --all-files`
+    - `pytest -q`
+    - `npm ci` (if `package.json` exists)
+    - `npm run lint` (if `package.json` exists)
+    - `npm run test:ci` (if `package.json` exists)
+    - `python -m flywheel.fit` (if installed)
+    - `bash scripts/checks.sh`
 - Regenerate `docs/prompt-docs-summary.md` with
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+    `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+    --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Review this file for outdated steps or unclear language.
