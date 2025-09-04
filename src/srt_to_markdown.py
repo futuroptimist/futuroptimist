@@ -38,7 +38,8 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
 
     entries = []
     lines = path.read_text(encoding="utf-8-sig", errors="replace").splitlines()
-    time_re = r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})"
+    # Support captions exceeding 99 hours by allowing multi-digit hour fields.
+    time_re = r"(\d{2,}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2,}:\d{2}:\d{2},\d{3})"
     i = 0
     while i < len(lines):
         line = lines[i].strip()
