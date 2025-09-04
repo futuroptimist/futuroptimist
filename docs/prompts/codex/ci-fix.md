@@ -24,6 +24,7 @@ Diagnose a failed GitHub Actions run and produce a fix.
 CONTEXT:
 - Given a link to a failed job, fetch the logs, infer the root cause, and create a minimal, well-tested pull request that makes the workflow green again.
 - Consult existing outage entries in `outages` for similar symptoms.
+- Inspect `.github/workflows/` to mirror failing CI steps locally.
 - Constraints:
   * Do **not** break existing functionality.
   * Follow the repository’s style guidelines and commit-lint rules.
@@ -39,6 +40,7 @@ REQUEST:
 2. Explain (in the pull-request body) *why* the failure occurred.
 3. Commit the necessary code, configuration, or documentation changes.
 4. Record the incident in `outages/YYYY-MM-DD-<slug>.json` using `outages/schema.json`.
+   Add a matching `outages/YYYY-MM-DD-<slug>.md` postmortem.
 5. Push to a branch named `codex/ci-fix/<short-description>`.
 6. Open a pull request that – once merged – makes the default branch CI-green.
 7. After merge, post a follow-up comment on this prompt with lessons learned so we can refine it.
