@@ -15,11 +15,11 @@ PURPOSE:
 Maintain prompt hygiene by deleting fulfilled one-off prompts and clearing outdated references.
 
 CONTEXT:
-- Search `docs/` for prompts marked `Type: one-off` whose features now exist in the codebase.
-- Delete those prompts or sections.
+- Scan `docs/prompts/codex/` for `Type: one-off` prompts whose features now exist in the codebase.
+- Delete each obsolete prompt file or section and remove any lingering references.
 - Regenerate `docs/prompt-docs-summary.md` with:
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \`
-  `--out docs/prompt-docs-summary.md`.
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md`.
 - Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
 - Run checks:
   - `pre-commit run --all-files`
@@ -54,7 +54,7 @@ Keep this cleanup prompt effective for removing obsolete items.
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
 - Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
-- Run checks:
+- Ensure the following pass:
   - `pre-commit run --all-files`
   - `pytest -q`
   - `npm ci` (if `package.json` exists)
@@ -63,8 +63,8 @@ CONTEXT:
   - `python -m flywheel.fit` (if installed)
   - `bash scripts/checks.sh`
 - Regenerate `docs/prompt-docs-summary.md` with:
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \`
-  `--out docs/prompt-docs-summary.md`.
+  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Review this file for outdated steps or unclear language.
