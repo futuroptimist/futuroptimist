@@ -55,6 +55,8 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
   plug-and-play
 - ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that closes
   your own stale pull requests in bulk with a safe dry-run
+- ✅ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job search copilot
+  bootstrapped from the flywheel template
 
 ## Values
 
