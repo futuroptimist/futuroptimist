@@ -74,6 +74,8 @@ img
 ingester
 io
 irl
+jobbot
+jobbot3000
 jpg
 json
 kubernetes
