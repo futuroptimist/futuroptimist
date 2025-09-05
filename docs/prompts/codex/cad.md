@@ -21,6 +21,7 @@ CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
 - Ensure SCAD files export cleanly to STL and OBJ models.
 - Verify parts fit with `python -m flywheel.fit`.
+- Install Node dependencies with `npm ci` when `package.json` is present.
 - Ensure these commands succeed:
   - `pre-commit run --all-files`
   - `pytest -q`
@@ -28,7 +29,7 @@ CONTEXT:
   - `bash scripts/checks.sh`
   - `npm run lint` *(when `package.json` is present)*
   - `npm run test:ci` *(when `package.json` is present)*
-- If browser dependencies are missing, run `npx playwright install chromium`
+- If browser dependencies are missing, run `npm run playwright:install`
   or prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
@@ -59,9 +60,12 @@ Keep CAD instructions accurate and up to date.
 
 CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
+- Install Node dependencies with `npm ci` when `package.json` is present.
 - Ensure `pre-commit run --all-files`, `pytest -q`, `python -m flywheel.fit`, and
   `bash scripts/checks.sh` pass.
-- When `package.json` is present, also run `npm run lint` and `npm run test:ci`.
+- When `package.json` is present, also run:
+  - `npm run lint`
+  - `npm run test:ci`
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.

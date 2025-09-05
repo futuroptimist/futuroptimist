@@ -12,6 +12,7 @@ blockquote
 bluesky
 bom
 br
+budynas
 changelog
 chunker
 cli
@@ -50,6 +51,7 @@ fi
 finalise
 fmt
 formatters
+frac
 frontend
 futuroptimist
 gabriel
@@ -74,6 +76,8 @@ img
 ingester
 io
 irl
+jobbot
+jobbot3000
 jpg
 json
 kubernetes
@@ -97,6 +101,7 @@ microcontroller
 mpa
 mtime
 nas
+nisbett
 nonfinite
 npc
 npcs
@@ -130,6 +135,7 @@ schemas
 seo
 sfx
 shigley
+shigley's
 slugify
 solarpunk
 spacex
