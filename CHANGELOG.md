@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-09-03
+- fix: handle missing npm in checks script and ensure trailing newline.
+- test: verify checks script handles missing npm and newline.
+
 ## 2025-09-02
 - fix: set up Python before uv in docs workflow.
 - docs: record docs workflow outage.
