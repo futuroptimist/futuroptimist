@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2025-09-03
+- fix: handle missing npm in checks script and ensure trailing newline.
+- test: verify checks script handles missing npm and newline.
 - chore: remove obsolete heatmap workflow and artifacts.
 - fix: allow multi-digit hour fields in `parse_srt` for very long videos.
 - fix: compare SRT timestamps numerically to keep captions across 99h boundary.
