@@ -27,16 +27,26 @@ def clean_srt_text(text: str) -> str:
     return text
 
 
+def _timestamp_to_ms(ts: str) -> int:
+    """Convert ``HH:MM:SS,mmm`` string into milliseconds."""
+    hours, minutes, sec_ms = ts.split(":")
+    seconds, millis = sec_ms.split(",")
+    return ((int(hours) * 60 + int(minutes)) * 60 + int(seconds)) * 1000 + int(millis)
+
+
 def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
     """Parse ``path`` into a list of ``(start, end, text)`` tuples.
 
-    Lines that resolve to an empty string after :func:`clean_srt_text` are
-    skipped. This filters out non-dialog captions such as ``[Music]`` or
+    Sequence numbers are optional – segments may start directly with the time
+    range. Lines that resolve to an empty string after :func:`clean_srt_text`
+    are skipped. This filters out non-dialog captions such as ``[Music]`` or
     ``[Applause]`` so downstream scripts see only spoken narration.
     """
 
     entries = []
     lines = path.read_text(encoding="utf-8-sig", errors="replace").splitlines()
+    # Support captions exceeding 99 hours by allowing multi-digit hour fields.
+    time_re = r"(\d{2,}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2,}:\d{2}:\d{2},\d{3})"
     i = 0
     while i < len(lines):
         line = lines[i].strip()
@@ -47,24 +57,26 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
             if i + 1 >= len(lines):
                 break
             time_line = lines[i + 1].strip()
-            match = re.match(
-                r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})",
-                time_line,
-            )
+            match = re.match(time_re, time_line)
             if not match:
                 i += 1
                 continue
-            start, end = match.groups()
             i += 2
-            text_lines = []
-            while i < len(lines) and lines[i].strip():
-                text_lines.append(lines[i].strip())
-                i += 1
-            text = clean_srt_text(" ".join(text_lines))
-            if text and start < end:
-                entries.append((start, end, text))
         else:
+            match = re.match(time_re, line)
+            if not match:
+                i += 1
+                continue
             i += 1
+        start, end = match.groups()
+        text_lines = []
+        while i < len(lines) and lines[i].strip():
+            text_lines.append(lines[i].strip())
+            i += 1
+        text = clean_srt_text(" ".join(text_lines))
+        # Compare timestamps numerically to handle captions spanning the 99h boundary
+        if text and _timestamp_to_ms(start) < _timestamp_to_ms(end):
+            entries.append((start, end, text))
     return entries
 
 
