@@ -62,11 +62,12 @@ CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
 - Install Node dependencies with `npm ci` when `package.json` is present.
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`,
-  `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh`
-  pass.
+  `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+- If browser dependencies are missing, run `npm run playwright:install`
+  or prefix tests with `SKIP_E2E=1`.
 
 REQUEST:
 1. Review this file for stale guidance or links.
