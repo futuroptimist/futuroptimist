@@ -144,7 +144,6 @@ sugarkube
 svg
 svgs
 svgwrite
-tfrac
 tiktok
 timelapse
 tos
