@@ -139,6 +139,7 @@ shigley's
 slugify
 solarpunk
 spacex
+sqrt
 src
 srcset
 srt

@@ -66,6 +66,16 @@ Mechanical Engineering Design*.}. Both are well below the alloy's
 $276\,\text{MPa}$ yield strength. Compare the computed stress to the material
 limit to set a safe operating speed.
 
+Setting $\sigma$ equal to the alloy's yield strength $\sigma_y$ and solving for
+angular velocity gives a conservative limit,
+
+$$\omega_{\max} \approx \sqrt{\frac{3\sigma_y}{\rho r_o^2}}.$$
+For $\sigma_y = 276\,\text{MPa}$ and $r_o = 75\,\text{mm}$, the maximum speed is
+about $7.4\times10^3\,\text{rad·s}^{-1}$ (roughly $70\,000\,\text{rpm}$).
+Designers typically apply a safety factor to this value to account for fatigue
+and manufacturing tolerances.
+
+
 ```
     outer radius r
       ┌────────────┐
