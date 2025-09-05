@@ -50,6 +50,7 @@ fi
 finalise
 fmt
 formatters
+frac
 frontend
 futuroptimist
 gabriel
@@ -133,6 +134,7 @@ shigley
 slugify
 solarpunk
 spacex
+sqrt
 src
 srcset
 srt
