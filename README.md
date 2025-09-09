@@ -20,7 +20,7 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-09-09 06:02 UTC; checks hourly_
+_Last updated: 2025-09-09 07:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ❓ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
@@ -50,7 +50,7 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
   turning commit history into shelf art
 - ✅ **[wove](https://github.com/futuroptimist/wove)** – open toolkit for learning to knit and
   crochet while evolving toward robotic looms, bridging CAD workflows with textiles
-- ❓ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform
+- ✅ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform
   and cube art installation for Raspberry Pi clusters, making off-grid edge Kubernetes
   plug-and-play
 - ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that closes
