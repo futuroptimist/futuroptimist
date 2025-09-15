@@ -20,7 +20,7 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-09-15 19:02 UTC; checks hourly_
+_Last updated: 2025-09-15 20:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ❓ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
@@ -55,7 +55,7 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
   plug-and-play
 - ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that closes
   your own stale pull requests in bulk with a safe dry-run
-- ✅ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job search copilot
+- ❓ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job search copilot
   bootstrapped from the flywheel template
 
 ## Values
