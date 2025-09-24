@@ -10,12 +10,16 @@ from __future__ import annotations
 
 import os
 import re
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Iterable
 
 import requests
 
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
+SKIP_COMMIT_RE = re.compile(
+    r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
+)
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -63,6 +67,7 @@ def fetch_repo_status(
     status multiple times and ensure all results match. If they differ we raise
     ``RuntimeError`` so the calling workflow fails loudly.
     """
+
     headers = {"Accept": "application/vnd.github+json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -73,15 +78,6 @@ def fetch_repo_status(
         )
         repo_resp.raise_for_status()
         branch = repo_resp.json().get("default_branch")
-
-    # Determine the latest commit on the branch so we can filter workflow runs
-    commit_resp = requests.get(
-        f"https://api.github.com/repos/{repo}/commits/{branch}",
-        headers=headers,
-        timeout=10,
-    )
-    commit_resp.raise_for_status()
-    sha = commit_resp.json().get("sha")
 
     url = (
         "https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed&event=push"
@@ -99,23 +95,68 @@ def fetch_repo_status(
         "action_required",
     }
 
-    def _fetch() -> str | None:
-        resp = requests.get(url, headers=headers, timeout=10)
-        resp.raise_for_status()
-        runs = [
-            r for r in resp.json().get("workflow_runs", []) if r.get("head_sha") == sha
-        ]
-        if not runs:
-            return None
-        # Prefer workflow runs whose names indicate CI relevance
-        important = [r for r in runs if keywords.search(r.get("name", ""))]
-        if important:
-            runs = important
-        conclusions = {r.get("conclusion") for r in runs}
+    def _normalize_conclusion(value: str | None) -> str:
+        if not isinstance(value, str):
+            return ""
+        return re.sub(r"[\s-]+", "_", value.strip().lower())
+
+    def _should_skip_commit(commit: dict) -> bool:
+        message = commit.get("commit", {}).get("message", "")
+        if SKIP_COMMIT_RE.search(message):
+            return True
+        for key in ("author", "committer"):
+            login = (commit.get(key) or {}).get("login")
+            name = commit.get("commit", {}).get(key, {}).get("name")
+            if isinstance(login, str) and login.endswith("[bot]"):
+                return True
+            if isinstance(name, str) and name.endswith("[bot]"):
+                return True
+        return False
+
+    def _evaluate_runs(runs: Iterable[dict]) -> str:
+        conclusions = {_normalize_conclusion(r.get("conclusion")) for r in runs}
         if any(c in failures for c in conclusions):
             return "failure"
-        if conclusions == {"success"}:
+        if "success" in conclusions:
             return "success"
+        # Default to failure so lack of CI coverage surfaces as ❌
+        return "failure"
+
+    def _fetch() -> str | None:
+        commits_resp = requests.get(
+            f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
+            headers=headers,
+            timeout=10,
+        )
+        commits_resp.raise_for_status()
+        commits = commits_resp.json()
+
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        runs = resp.json().get("workflow_runs", [])
+
+        runs_by_sha: dict[str, list[dict]] = {}
+        for run in runs:
+            sha = run.get("head_sha")
+            if not isinstance(sha, str):
+                continue
+            runs_by_sha.setdefault(sha, []).append(run)
+
+        for commit in commits:
+            sha = commit.get("sha")
+            if not isinstance(sha, str):
+                continue
+            commit_runs = runs_by_sha.get(sha, [])
+            if commit_runs:
+                important = [
+                    r for r in commit_runs if keywords.search(r.get("name", ""))
+                ]
+                if important:
+                    commit_runs = important
+                return _evaluate_runs(commit_runs)
+            if _should_skip_commit(commit):
+                continue
+            return "failure"
         return None
 
     conclusions = [_fetch() for _ in range(attempts)]

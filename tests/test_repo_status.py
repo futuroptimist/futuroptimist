@@ -61,8 +61,23 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
         calls.append(url)
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
-        if url == "https://api.github.com/repos/user/repo/commits/main":
-            return DummyResp({"sha": "abc"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
         assert url == (
             "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main"
         )
@@ -78,8 +93,9 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert repo_status.fetch_repo_status("user/repo", token="abc") == "✅"
     assert calls == [
         "https://api.github.com/repos/user/repo",
-        "https://api.github.com/repos/user/repo/commits/main",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main",
     ]
 
@@ -91,19 +107,35 @@ def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
         calls.append(url)
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
-        if url == "https://api.github.com/repos/user/repo/commits/main":
-            return DummyResp({"sha": "abc"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add docs",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
         assert url == (
             "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main"
         )
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
-    assert repo_status.fetch_repo_status("user/repo") == "❓"
+    assert repo_status.fetch_repo_status("user/repo") == "❌"
     assert calls == [
         "https://api.github.com/repos/user/repo",
-        "https://api.github.com/repos/user/repo/commits/main",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main",
     ]
 
@@ -113,8 +145,23 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
 
     def fake_get(url: str, headers: dict, timeout: int):
         calls.append(url)
-        if url == "https://api.github.com/repos/user/repo/commits/dev":
-            return DummyResp({"sha": "abc"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
         assert url == (
             "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=dev"
         )
@@ -129,38 +176,68 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
     assert calls == [
-        "https://api.github.com/repos/user/repo/commits/dev",
+        "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=dev",
+        "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=dev",
     ]
 
 
 def test_fetch_repo_status_nondeterministic(monkeypatch: pytest.MonkeyPatch) -> None:
-    responses = [
-        DummyResp({"default_branch": "main"}),
-        DummyResp({"sha": "abc"}),
-        DummyResp(
-            {
-                "workflow_runs": [
-                    {"conclusion": "success", "head_sha": "abc", "name": "tests"}
+    calls: list[str] = []
+    run_calls = 0
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        nonlocal run_calls
+        calls.append(url)
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
                 ]
-            }
-        ),
-        DummyResp(
+            )
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main"
+        )
+        run_calls += 1
+        if run_calls == 1:
+            return DummyResp(
+                {
+                    "workflow_runs": [
+                        {"conclusion": "success", "head_sha": "abc", "name": "tests"}
+                    ]
+                }
+            )
+        return DummyResp(
             {
                 "workflow_runs": [
                     {"conclusion": "failure", "head_sha": "abc", "name": "tests"}
                 ]
             }
-        ),
-    ]
-
-    def fake_get(url: str, headers: dict, timeout: int):
-        return responses.pop(0)
+        )
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     with pytest.raises(RuntimeError):
         repo_status.fetch_repo_status("user/repo")
+    assert (
+        calls.count(
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main"
+        )
+        == 2
+    )
 
 
 def test_fetch_repo_status_ignores_non_ci_runs(
@@ -169,8 +246,23 @@ def test_fetch_repo_status_ignores_non_ci_runs(
     def fake_get(url: str, headers: dict, timeout: int):
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
-        if url == "https://api.github.com/repos/user/repo/commits/main":
-            return DummyResp({"sha": "abc"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
         return DummyResp(
             {
                 "workflow_runs": [
@@ -184,6 +276,102 @@ def test_fetch_repo_status_ignores_non_ci_runs(
                         "head_sha": "abc",
                         "name": "tests",
                     },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+
+
+def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "botsha",
+                        "commit": {
+                            "message": "chore: automated update",
+                            "author": {"name": "github-actions[bot]"},
+                            "committer": {"name": "github-actions[bot]"},
+                        },
+                        "author": {"login": "github-actions[bot]"},
+                        "committer": {"login": "github-actions[bot]"},
+                    },
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add api",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    },
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {"conclusion": "success", "head_sha": "abc", "name": "tests"}
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+    # ensure we queried for runs twice (two attempts)
+    assert (
+        calls.count(
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&event=push&branch=main"
+        )
+        == 2
+    )
+
+
+def test_fetch_repo_status_skip_ci_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "skipsha",
+                        "commit": {
+                            "message": "docs: update [skip ci]",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    },
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add api",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    },
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {"conclusion": "success", "head_sha": "abc", "name": "tests"}
                 ]
             }
         )
