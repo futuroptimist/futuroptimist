@@ -16,7 +16,9 @@ Use this prompt to ask Codex to seed missing `docs/prompts/codex/*.md` files acr
    ```text
    flywheel
    futuroptimist
+   jobbot3000
    pr-reaper
+   danielsmith.io
    ```
 
    Then regenerate [`docs/prompt-docs-summary.md`](../../prompt-docs-summary.md):
