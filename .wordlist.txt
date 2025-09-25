@@ -27,6 +27,7 @@ cov
 crowdsourced
 csv
 cta
+danielsmith
 daphnia
 democratizedspace
 deps
@@ -79,7 +80,9 @@ irl
 jobbot
 jobbot3000
 jpg
+js
 json
+kimchi
 kubernetes
 li
 lifecycle
@@ -170,6 +173,7 @@ venv's
 videoid
 virtualenv
 visualise
+vite
 vitest
 vlog
 voiceover
