@@ -79,9 +79,9 @@ def fetch_repo_status(
         repo_resp.raise_for_status()
         branch = repo_resp.json().get("default_branch")
 
-    url = (
-        "https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed&event=push"
-    ).format(repo=repo)
+    url = "https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed".format(
+        repo=repo
+    )
     if branch:
         url += f"&branch={branch}"
 
@@ -114,7 +114,32 @@ def fetch_repo_status(
         return False
 
     def _evaluate_runs(runs: Iterable[dict]) -> str:
-        conclusions = {_normalize_conclusion(r.get("conclusion")) for r in runs}
+        """Return the overall conclusion for the most recent attempt of each workflow."""
+
+        latest_runs: dict[tuple[object, object, object], dict] = {}
+
+        def _attempt_key(run: dict) -> tuple[int, str]:
+            raw_attempt = run.get("run_attempt")
+            try:
+                attempt = int(raw_attempt)
+            except (TypeError, ValueError):
+                attempt = 0
+            updated = run.get("updated_at")
+            return (attempt, str(updated) if updated is not None else "")
+
+        for run in runs:
+            key = (
+                run.get("workflow_id"),
+                run.get("run_number"),
+                run.get("name"),
+            )
+            current = latest_runs.get(key)
+            if current is None or _attempt_key(run) > _attempt_key(current):
+                latest_runs[key] = run
+
+        conclusions = {
+            _normalize_conclusion(r.get("conclusion")) for r in latest_runs.values()
+        }
         if any(c in failures for c in conclusions):
             return "failure"
         if "success" in conclusions:
