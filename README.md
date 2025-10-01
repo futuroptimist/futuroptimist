@@ -20,7 +20,7 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-09-30 23:02 UTC; checks hourly_
+_Last updated: 2025-10-01 00:09 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
