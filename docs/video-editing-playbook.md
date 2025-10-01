@@ -73,7 +73,7 @@ Purpose: A fast, repeatable path from long selects to a tight 3–5 minute video
 ```bash
 make convert_all SLUG=<slug>
 make verify_assets
-make describe_images
+make describe_images  # refresh heuristic image captions
 make index_assets
 ```
 
