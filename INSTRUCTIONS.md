@@ -81,7 +81,11 @@ labels.
 Asset conversion (Premiere compatibility): run `make convert_assets` to scan
 `footage/<slug>/originals/` for formats like HEIC/HEIF, DNG, WEBP and convert
 them to Premiere-friendly JPG/PNG under `footage/<slug>/converted/` with the
-same relative structure. Originals are preserved. Use `python src/convert_assets.py --dry-run` to preview and `--force` to overwrite existing outputs.
+same relative structure. HEIC/HEIF/DNG stills are exported as high-quality
+`.jpg` files, while WEBP graphics stay `.png`. Originals are preserved. Use
+`python src/convert_assets.py --dry-run` to preview and `--force` to overwrite
+existing outputs. See `tests/test_convert_assets.py` for regression coverage of
+the extension mapping.
 
 `tests/test_describe_images.py` covers the heuristic captioning so changes to
 `src/describe_images.py` keep emitting meaningful alt-text summaries.
