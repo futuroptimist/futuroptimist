@@ -25,7 +25,7 @@ def test_plan_conversions_maps_exts(tmp_path):
     webp.write_text("x")
     convs = plan_conversions(tmp_path / "footage")
     paths = {c.dst.suffix for c in convs}
-    assert ".png" in paths
+    assert ".jpg" in paths
 
 
 def test_build_ffmpeg_cmd_contains_flags(tmp_path):

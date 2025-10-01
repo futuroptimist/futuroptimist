@@ -29,10 +29,10 @@ import shutil
 
 # Image conversions (library-first)
 EXTENSION_RULES: dict[str, tuple[str, list[str]]] = {
-    # Prefer PNG to preserve color and avoid JPEG subsampling shifts
-    ".heic": (".png", []),
-    ".heif": (".png", []),
-    ".dng": (".png", []),
+    # Save camera-originated stills as high-quality JPEGs for NLE compatibility
+    ".heic": (".jpg", []),
+    ".heif": (".jpg", []),
+    ".dng": (".jpg", []),
     ".webp": (".png", []),
 }
 
@@ -473,13 +473,16 @@ def _convert_with_libraries(conv: Conversion) -> bool:
                     image = _apply_hdr_tonemap_if_needed(image)
             conv.dst.parent.mkdir(parents=True, exist_ok=True)
             # Embed sRGB ICC profile to avoid NLE desaturation
+            save_kwargs: dict[str, object] = {}
+            if conv.dst.suffix.lower() in {".jpg", ".jpeg"}:
+                save_kwargs.update({"quality": 95, "subsampling": 0, "optimize": True})
             try:
                 srgb = ImageCms.createProfile("sRGB")
                 bio = io.BytesIO()
                 ImageCms.ImageCmsProfile(srgb).tobytesio(bio)
-                image.save(str(conv.dst), icc_profile=bio.getvalue())
+                image.save(str(conv.dst), icc_profile=bio.getvalue(), **save_kwargs)
             except Exception:
-                image.save(str(conv.dst))
+                image.save(str(conv.dst), **save_kwargs)
             return True
         if ext == ".dng":
             import rawpy
@@ -509,13 +512,16 @@ def _convert_with_libraries(conv: Conversion) -> bool:
                     rgb = (arr * 255.0 + 0.5).astype("uint8")
             im = Image.fromarray(rgb, "RGB")
             conv.dst.parent.mkdir(parents=True, exist_ok=True)
+            save_kwargs: dict[str, object] = {}
+            if conv.dst.suffix.lower() in {".jpg", ".jpeg"}:
+                save_kwargs.update({"quality": 95, "subsampling": 0, "optimize": True})
             try:
                 srgb = ImageCms.createProfile("sRGB")
                 bio = io.BytesIO()
                 ImageCms.ImageCmsProfile(srgb).tobytesio(bio)
-                im.save(str(conv.dst), icc_profile=bio.getvalue())
+                im.save(str(conv.dst), icc_profile=bio.getvalue(), **save_kwargs)
             except Exception:
-                im.save(str(conv.dst))
+                im.save(str(conv.dst), **save_kwargs)
             return True
         if ext == ".webp":
             from PIL import Image
