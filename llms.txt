@@ -20,7 +20,10 @@ Script format:
 - `srt_to_markdown.py` converts `.srt` captions into Futuroptimist script format, handling
   italics and bold tags (`<i>/<em>` and `<b>/<strong>`, even with attributes), line breaks,
   emoji, case-insensitive HTML tags, removing speaker prefixes, stripping other tags,
-  collapsing extra whitespace, and skipping non-dialog lines like `[Music]`.
+  collapsing extra whitespace, and skipping non-dialog lines like `[Music]`. Tests such as
+  `tests/test_srt_to_markdown.py::test_to_markdown_splits_sentences` and
+  `::test_to_markdown_handles_abbreviations` ensure multi-sentence captions expand into one
+  `[NARRATOR]` line per thought without breaking common abbreviations.
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.

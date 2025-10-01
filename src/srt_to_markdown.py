@@ -5,6 +5,13 @@ import re
 from typing import List, Tuple
 
 
+_ABBREV_RE = re.compile(
+    r"(?:^|[\s(])(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|Mt|Gen|Capt|Sgt|Col|Lt|Maj|etc|e\.g|i\.e|vs)\.$",
+    re.IGNORECASE,
+)
+_CLOSERS = "\"')]}»”’'"
+
+
 def clean_srt_text(text: str) -> str:
     """Normalize SRT caption text for Markdown.
 
@@ -80,6 +87,37 @@ def parse_srt(path: pathlib.Path) -> List[Tuple[str, str, str]]:
     return entries
 
 
+def _split_sentences(text: str) -> List[str]:
+    sentences: List[str] = []
+    start = 0
+    i = 0
+    length = len(text)
+    while i < length:
+        ch = text[i]
+        if ch in ".!?":
+            candidate = text[start : i + 1]
+            if _ABBREV_RE.search(candidate):
+                i += 1
+                continue
+            while i + 1 < length and text[i + 1] in _CLOSERS:
+                i += 1
+                candidate = text[start : i + 1]
+            sentence = candidate.strip()
+            if sentence:
+                sentences.append(sentence)
+            i += 1
+            while i < length and text[i].isspace():
+                i += 1
+            start = i
+        else:
+            i += 1
+    if start < length:
+        tail = text[start:].strip()
+        if tail:
+            sentences.append(tail)
+    return sentences if sentences else ([text.strip()] if text.strip() else [])
+
+
 def to_markdown(
     entries: List[Tuple[str, str, str]], title: str, youtube_id: str
 ) -> str:
@@ -93,8 +131,9 @@ def to_markdown(
     parts.append("## Script")
     parts.append("")
     for start, end, text in entries:
-        parts.append(f"[NARRATOR]: {text}  <!-- {start} -> {end} -->")
-        parts.append("")
+        for sentence in _split_sentences(text):
+            parts.append(f"[NARRATOR]: {sentence}  <!-- {start} -> {end} -->")
+            parts.append("")
     return "\n".join(parts)
 
 
