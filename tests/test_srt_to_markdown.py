@@ -238,6 +238,43 @@ def test_entrypoint(tmp_path, monkeypatch, capsys):
     assert "[NARRATOR]: Hi" in captured.out
 
 
+def test_to_markdown_splits_sentences():
+    entries = [
+        (
+            "00:00:00,000",
+            "00:00:05,000",
+            "First sentence. Second sentence? Third sentence!",
+        )
+    ]
+    md = stm.to_markdown(entries, "", "")
+    narrator_lines = [
+        line for line in md.splitlines() if line.startswith("[NARRATOR]: ")
+    ]
+    assert narrator_lines == [
+        "[NARRATOR]: First sentence.  <!-- 00:00:00,000 -> 00:00:05,000 -->",
+        "[NARRATOR]: Second sentence?  <!-- 00:00:00,000 -> 00:00:05,000 -->",
+        "[NARRATOR]: Third sentence!  <!-- 00:00:00,000 -> 00:00:05,000 -->",
+    ]
+
+
+def test_to_markdown_handles_abbreviations():
+    entries = [
+        (
+            "00:00:10,000",
+            "00:00:15,000",
+            "Dr. Smith arrives soon. Ready to roll.",
+        )
+    ]
+    md = stm.to_markdown(entries, "", "")
+    narrator_lines = [
+        line for line in md.splitlines() if line.startswith("[NARRATOR]: ")
+    ]
+    assert narrator_lines == [
+        "[NARRATOR]: Dr. Smith arrives soon.  <!-- 00:00:10,000 -> 00:00:15,000 -->",
+        "[NARRATOR]: Ready to roll.  <!-- 00:00:10,000 -> 00:00:15,000 -->",
+    ]
+
+
 def test_parse_srt_invalid_utf8(tmp_path):
     data = b"1\n00:00:00,000 --> 00:00:01,000\nHi\x80\n"
     p = tmp_path / "bad.srt"
