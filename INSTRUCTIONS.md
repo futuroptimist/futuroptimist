@@ -71,6 +71,13 @@ output directory if needed and skips the index file itself when rerun
 inside the footage directory. Pass `--exclude PATH` (repeatable) to
 omit specific files or folders from the index.
 
+Metadata enrichment: run `python src/update_video_metadata.py`
+(or `make update_metadata`) to refresh video titles, publish dates,
+durations, descriptions, and keyword tags using YouTube Data API v3.
+Provide `YOUTUBE_API_KEY` in the environment. The tool only rewrites
+files when values change and is covered by
+`tests/test_update_video_metadata.py`.
+
 Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
 `schemas/assets_manifest.schema.json` to declare which `footage/` directories
 belong to that script, optional label files (`labels.json`), capture date, and
@@ -91,7 +98,6 @@ the extension mapping.
 `src/describe_images.py` keep emitting meaningful alt-text summaries.
 
 ## Next Steps
-* Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).
 * Convert `.srt` caption timing into fully-fledged markdown scripts.
 * Build a lightweight RAG pipeline that indexes past scripts for rapid outline generation of future videos.
 
