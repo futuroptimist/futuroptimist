@@ -27,6 +27,8 @@ CONTEXT:
 - Follow the conventions in AGENTS.md and README.md.
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
   `python -m flywheel.fit`, and `bash scripts/checks.sh` all succeed.
+- `npm run test:ci` now checks that `docs/prompt-docs-summary.md` renders a
+  valid two-column table so linked prompt guides stay readable.
 - Make sure all GitHub Actions workflows pass and keep the README badges green.
 - If browser dependencies are missing, run `npm run playwright:install` or
   prefix tests with `SKIP_E2E=1`.
