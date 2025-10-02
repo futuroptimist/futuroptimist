@@ -47,7 +47,7 @@ def parse_duration(value: str | None) -> int:
 def iter_metadata_files(
     root: pathlib.Path, slugs: set[str] | None
 ) -> Iterable[pathlib.Path]:
-    for meta in root.glob("*/metadata.json"):
+    for meta in sorted(root.glob("*/metadata.json")):
         if slugs and meta.parent.name not in slugs:
             continue
         yield meta

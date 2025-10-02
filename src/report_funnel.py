@@ -6,7 +6,8 @@ Usage:
 If a selects file is provided, it should contain one repo-relative path per line
 referring to assets under footage/<slug>/converted/. Lines starting with '#'
 are comments. The tool will classify kind by extension and include the listed
-assets in the manifest.
+assets in the manifest. Paths are normalised to repo-relative
+``footage/<slug>/converted/...`` entries in the output.
 """
 
 from __future__ import annotations
@@ -45,33 +46,58 @@ def _read_selects(paths: Iterable[str]) -> list[str]:
     return result
 
 
+def _normalize_select_path(
+    footage_root: pathlib.Path, repo_root: pathlib.Path, slug: str, entry: str
+) -> pathlib.Path:
+    """Return resolved path for a selects entry."""
+
+    raw_path = pathlib.Path(entry)
+
+    if raw_path.is_absolute():
+        return raw_path
+
+    parts = raw_path.parts
+    if parts and parts[0] == "footage":
+        return repo_root / raw_path
+    if parts and parts[0] == slug:
+        return footage_root / raw_path
+    if parts and parts[0] == "converted":
+        tail = pathlib.Path(*parts[1:]) if len(parts) > 1 else pathlib.Path()
+        return footage_root / slug / "converted" / tail
+    return footage_root / slug / "converted" / raw_path
+
+
 def build_manifest(
     root: pathlib.Path, slug: str, selects_file: pathlib.Path | None
 ) -> dict:
-    slug_dir = root / slug
+    footage_root = root.resolve()
+    repo_root = footage_root.parent
+    slug_dir = footage_root / slug
     originals = slug_dir / "originals"
     converted = slug_dir / "converted"
     originals_total = _count_files(originals) if originals.is_dir() else 0
     converted_total = _count_files(converted) if converted.is_dir() else 0
 
     selected_assets: list[dict] = []
+    seen_paths: set[str] = set()
     if selects_file and selects_file.exists():
         selects = _read_selects(selects_file.read_text().splitlines())
         for p in selects:
-            path = pathlib.Path(p)
-            # Support both repo-relative and footage-relative entries
-            if not path.is_absolute():
-                if not path.parts or path.parts[0] != "footage":
-                    path = root / slug / "converted" / path
-                else:
-                    path = root.parents[0] / path  # repo root + footage/...
-            ext = path.suffix.lower()
+            resolved = _normalize_select_path(footage_root, repo_root, slug, p)
+            try:
+                display_path = resolved.relative_to(repo_root).as_posix()
+            except ValueError:
+                display_path = resolved.as_posix()
+            if display_path in seen_paths:
+                continue
+            seen_paths.add(display_path)
+            ext = resolved.suffix.lower()
             kind = (
                 "image"
                 if ext in IMAGE_EXTS
                 else ("video" if ext in VIDEO_EXTS else "image")
             )
-            selected_assets.append({"path": str(path.as_posix()), "kind": kind})
+            selected_assets.append({"path": display_path, "kind": kind})
 
     manifest = {
         "slug": slug,

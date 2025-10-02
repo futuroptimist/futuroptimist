@@ -48,6 +48,11 @@ make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters) on commit
 ```
 
+`make report_funnel` normalises selects entries so the resulting
+`selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
+See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
+for coverage of this behaviour.
+
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
 and `read:org` scopes. You may also set `GH_TOKEN_FILE` or `GITHUB_TOKEN_FILE`

@@ -36,3 +36,28 @@ def test_build_manifest_with_selects(tmp_path: Path):
     assert manifest["selected_count"] == 2
     kinds = {a["kind"] for a in manifest["selected_assets"]}
     assert kinds == {"image", "video"}
+
+
+def test_build_manifest_normalizes_select_paths(tmp_path: Path) -> None:
+    root = tmp_path / "footage"
+    slug = "20251212_demo"
+    converted = root / slug / "converted"
+    converted.mkdir(parents=True)
+    (converted / "a.png").write_bytes(b"x")
+    (converted / "b.mp4").write_bytes(b"x")
+    selects = tmp_path / "selects.txt"
+    selects.write_text(
+        "\n".join(
+            [
+                "converted/a.png",
+                f"footage/{slug}/converted/b.mp4",
+            ]
+        )
+    )
+
+    manifest = build_manifest(root, slug, selects)
+    paths = [entry["path"] for entry in manifest["selected_assets"]]
+    assert paths == [
+        f"footage/{slug}/converted/a.png",
+        f"footage/{slug}/converted/b.mp4",
+    ]
