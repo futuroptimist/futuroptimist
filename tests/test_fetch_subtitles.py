@@ -31,6 +31,34 @@ def test_download_subtitles_constructs_command(monkeypatch):
     assert "--write-auto-sub" not in cmd
 
 
+def test_download_subtitles_fallback_converts_vtt(tmp_path, monkeypatch):
+    out_dir = tmp_path / "subs"
+    out_dir.mkdir()
+    monkeypatch.setattr(fs, "OUTPUT_DIR", out_dir)
+
+    calls: list[list[str]] = []
+
+    def fake_run(cmd, check):
+        calls.append(cmd)
+        if len(calls) == 1:
+            raise subprocess.CalledProcessError(returncode=1, cmd=cmd)
+        vtt_path = out_dir / "XYZ123.en.vtt"
+        vtt_path.write_text("WEBVTT\n\n00:00:00.000 --> 00:00:02.000\nHello world!\n")
+        return types.SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    fs.download_subtitles("XYZ123")
+
+    srt_path = out_dir / "XYZ123.srt"
+    assert srt_path.exists()
+    text = srt_path.read_text().strip().splitlines()
+    assert text[0] == "1"
+    assert text[1] == "00:00:00,000 --> 00:00:02,000"
+    assert text[2] == "Hello world!"
+    assert not any(p.suffix == ".vtt" for p in out_dir.iterdir())
+
+
 def test_ensure_requirements_missing(monkeypatch):
     monkeypatch.setattr(fs.shutil, "which", lambda _: None)
     with pytest.raises(SystemExit):
