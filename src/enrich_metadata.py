@@ -17,9 +17,7 @@ import urllib.request
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "video_scripts"
 ENV_VAR = "YOUTUBE_API_KEY"
-API_URL = (
-    "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={ids}&key={key}"
-)
+API_URL = "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={ids}&key={key}"
 
 
 @dataclass(frozen=True)
@@ -72,7 +70,9 @@ def _chunked(items: Sequence[str], size: int) -> Iterable[list[str]]:
         yield list(items[i : i + size])
 
 
-def fetch_video_metadata(video_ids: Sequence[str], youtube_key: str) -> dict[str, VideoInfo]:
+def fetch_video_metadata(
+    video_ids: Sequence[str], youtube_key: str
+) -> dict[str, VideoInfo]:
     """Fetch metadata for ``video_ids`` using the YouTube Data v3 API."""
 
     results: dict[str, VideoInfo] = {}
@@ -94,7 +94,9 @@ def fetch_video_metadata(video_ids: Sequence[str], youtube_key: str) -> dict[str
             content = item.get("contentDetails") or {}
             title = snippet.get("title") or ""
             published_at = snippet.get("publishedAt")
-            publish_date = _extract_date(published_at) if isinstance(published_at, str) else None
+            publish_date = (
+                _extract_date(published_at) if isinstance(published_at, str) else None
+            )
             duration_seconds = parse_duration(content.get("duration", ""))
             results[video_id] = VideoInfo(
                 title=title,
@@ -137,7 +139,9 @@ def apply_updates(
             changed = True
         if changed:
             if not dry_run:
-                meta_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+                meta_path.write_text(
+                    json.dumps(data, indent=2) + "\n", encoding="utf-8"
+                )
             updated.append(meta_path)
     return updated
 
