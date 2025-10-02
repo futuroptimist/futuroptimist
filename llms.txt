@@ -34,6 +34,10 @@ Script format:
   file paths, UTC modification times, and file sizes for assets stored in the
   local `footage/` directory. Use `--exclude PATH` (repeatable) to skip
   files or folders.
+- Run `python src/enrich_metadata.py` to sync `metadata.json` title,
+  publish date, and duration fields from the YouTube Data v3 API whenever
+  `YOUTUBE_API_KEY` is exported. Add `--dry-run` to preview changes; see
+  `tests/test_enrich_metadata.py` for coverage.
 
 Run tests with:
 ```bash
