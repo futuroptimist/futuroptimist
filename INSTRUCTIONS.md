@@ -87,11 +87,16 @@ same relative structure. HEIC/HEIF/DNG stills are exported as high-quality
 existing outputs. See `tests/test_convert_assets.py` for regression coverage of
 the extension mapping.
 
+Run `python src/enrich_metadata.py` to pull each video's title, publish date,
+and duration directly from the YouTube Data v3 API when `metadata.json`
+contains a `youtube_id`. Export `YOUTUBE_API_KEY` before running; add
+`--dry-run` to preview which files would change. The behaviour is covered by
+`tests/test_enrich_metadata.py` so future edits stay regression-tested.
+
 `tests/test_describe_images.py` covers the heuristic captioning so changes to
 `src/describe_images.py` keep emitting meaningful alt-text summaries.
 
 ## Next Steps
-* Automate enrichment of each video entry via the YouTube Data v3 API (publish date, title, duration, etc.).
 * Convert `.srt` caption timing into fully-fledged markdown scripts.
 * Build a lightweight RAG pipeline that indexes past scripts for rapid outline generation of future videos.
 
