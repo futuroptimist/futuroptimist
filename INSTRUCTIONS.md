@@ -24,6 +24,8 @@ python src/fetch_subtitles.py
 make test
 ```
 The script fetches **manual** subtitles only. Videos without manual captions are skipped. Files are saved as `subtitles/<videoid>.srt`.
+If YouTube only offers WebVTT tracks, the fallback path converts them to `.srt` so downstream
+tools stay compatible (see `tests/test_fetch_subtitles.py::test_download_subtitles_fallback_converts_vtt`).
 
 ## Development Workflow
 
