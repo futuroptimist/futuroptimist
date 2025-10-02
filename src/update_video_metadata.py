@@ -133,7 +133,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Updated {updated} metadata file(s)")
     else:
         print("No metadata updates applied")
-    return 1 if failures and not updated else 0
+    if failures:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":  # pragma: no cover

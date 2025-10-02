@@ -109,3 +109,74 @@ def test_entrypoint_runs(monkeypatch, tmp_path):
 
     with pytest.raises(SystemExit):
         runpy.run_module("src.update_video_metadata", run_name="__main__")
+
+
+def test_main_returns_error_on_partial_failures(monkeypatch, tmp_path):
+    import src.update_video_metadata as updater
+
+    scripts_dir = tmp_path / "video_scripts"
+    scripts_dir.mkdir()
+
+    first = scripts_dir / "20240101_demo" / "metadata.json"
+    first.parent.mkdir()
+    first.write_text(
+        json.dumps(
+            {
+                "youtube_id": "good",
+                "title": "Old Title",
+                "publish_date": "2020-01-01",
+                "duration_seconds": 0,
+                "keywords": [],
+                "description": "",
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
+    second = scripts_dir / "20240102_demo" / "metadata.json"
+    second.parent.mkdir()
+    second.write_text(
+        json.dumps(
+            {
+                "youtube_id": "bad",
+                "title": "Keep Title",
+                "publish_date": "2020-01-02",
+                "duration_seconds": 0,
+                "keywords": [],
+                "description": "",
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
+    monkeypatch.setenv("YOUTUBE_API_KEY", "TEST")
+    monkeypatch.setattr(updater, "BASE_DIR", tmp_path)
+    monkeypatch.setattr(updater, "VIDEO_ROOT", scripts_dir)
+
+    responses = [
+        {
+            "title": "New Title",
+            "publish_date": "2024-08-15",
+            "duration_seconds": 10,
+            "description": "Updated",
+            "keywords": ["tag"],
+        },
+        None,
+    ]
+
+    def fake_fetch(video_id, youtube_key, timeout=10):  # noqa: ARG001
+        return responses.pop(0)
+
+    monkeypatch.setattr(updater, "fetch_metadata", fake_fetch)
+
+    exit_code = updater.main([])
+
+    assert exit_code == 1
+    first_data = json.loads(first.read_text())
+    assert first_data["title"] == "New Title"
+    assert first_data["publish_date"] == "2024-08-15"
+    assert first_data["duration_seconds"] == 10
+    assert first_data["keywords"] == ["tag"]
+    assert json.loads(second.read_text())["title"] == "Keep Title"
