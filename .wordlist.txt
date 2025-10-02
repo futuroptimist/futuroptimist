@@ -177,9 +177,11 @@ vite
 vitest
 vlog
 voiceover
+vtt
 walkthrough
 walstad
 webp
+webvtt
 whitespace
 wip
 wordlist
