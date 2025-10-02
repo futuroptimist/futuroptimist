@@ -20,6 +20,9 @@ CONTEXT:
 - Regenerate `docs/prompt-docs-summary.md` with:
   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
   --out docs/prompt-docs-summary.md`.
+  This command now pulls the automation prompt (and linked guides) for every repository listed
+  in `dict/prompt-doc-repos.txt`, so cross-repo prompt inventories stay current. Regression
+  coverage lives in `tests/test_update_prompt_docs_summary.py`.
 - Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
 - Run checks:
   - `pre-commit run --all-files`

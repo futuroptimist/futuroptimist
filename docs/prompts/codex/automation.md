@@ -79,6 +79,10 @@ USER:
 3. Regenerate `docs/prompt-docs-summary.md` with
    `python scripts/update_prompt_docs_summary.py --repos-from \
    dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+   The helper now reads each repository listed in `dict/prompt-doc-repos.txt`, adds their
+   `docs/prompts/codex/automation.md` entry, and follows its "Related prompt guides" links so
+   cross-repo prompts appear alongside Futuroptimist's files (see
+   `tests/test_update_prompt_docs_summary.py`).
 4. Run the checks above.
 
 OUTPUT:
