@@ -12,7 +12,7 @@ else
 endif
 PIP := uv pip
 
-.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel process
+.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel process update_metadata
 
 help:
 	@echo "Targets:"
@@ -29,6 +29,7 @@ help:
 	@echo "  convert_missing Convert only missing items from verify_report.json"
 	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
 	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
+	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
 	@echo "  process       One-command: convert+verify+report (requires SLUG=...)"
 
 setup:
@@ -72,6 +73,9 @@ convert_missing:
 CONVERT_SLUG:=$(if $(SLUG),--slug $(SLUG),)
 convert_all:
 	$(PY) src/convert_assets.py footage --include-video $(CONVERT_SLUG) --force
+
+update_metadata:
+	$(PY) src/update_video_metadata.py $(if $(SLUG),--slug $(SLUG),)
 
 report_funnel:
 	@if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
