@@ -1,0 +1,15 @@
+{
+  "name": "futuroptimist-repo-tools",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Utility npm scripts for Futuroptimist docs and prompt hygiene checks.",
+  "scripts": {
+    "lint": "node scripts/npm/run-checks.mjs lint",
+    "format:check": "node scripts/npm/run-checks.mjs format",
+    "test:ci": "node scripts/npm/run-checks.mjs test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
