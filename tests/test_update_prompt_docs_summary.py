@@ -72,10 +72,12 @@ def test_main_generates_summary_with_remote(tmp_path, monkeypatch):
 
     monkeypatch.setattr(upd.urllib.request, "urlopen", fake_urlopen)
     out = tmp_path / "summary.md"
+    repos = tmp_path / "repos.txt"
+    repos.write_text("foo/bar\n")
     argv = [
         "update_prompt_docs_summary.py",
         "--repos-from",
-        "dict/prompt-doc-repos.txt",
+        str(repos),
         "--out",
         str(out),
         "--external-prompts-codex",
@@ -84,6 +86,7 @@ def test_main_generates_summary_with_remote(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, "argv", argv)
     upd.main()
     text = out.read_text()
+    assert "bar/docs/prompts/codex/automation.md" in text
     assert "bar/items.md#foo" in text
 
 
@@ -105,10 +108,12 @@ def test_main_handles_multiple_external_codex(tmp_path, monkeypatch):
 
     monkeypatch.setattr(upd.urllib.request, "urlopen", fake_urlopen)
     out = tmp_path / "summary.md"
+    repos = tmp_path / "repos.txt"
+    repos.write_text("foo/bar\nfoo/baz\n")
     argv = [
         "update_prompt_docs_summary.py",
         "--repos-from",
-        "dict/prompt-doc-repos.txt",
+        str(repos),
         "--out",
         str(out),
         "--external-prompts-codex",
@@ -119,5 +124,39 @@ def test_main_handles_multiple_external_codex(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, "argv", argv)
     upd.main()
     text = out.read_text()
+    assert "bar/docs/prompts/codex/automation.md" in text
+    assert "baz/docs/prompts/codex/automation.md" in text
     assert "bar/items.md" in text
     assert "baz/items.md" in text
+
+
+def test_main_uses_repos_from_file(tmp_path, monkeypatch):
+    prompts_text = "## Related prompt guides\n\n- [Item](items.md)\n"
+    item_text = "---\ntitle: Item\n---\n# Item"
+
+    mapping = {
+        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/automation.md": prompts_text,
+        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/items.md": item_text,
+    }
+
+    def fake_urlopen(url):
+        if url in mapping:
+            return DummyResp(mapping[url].encode())
+        raise AssertionError(f"unexpected URL {url}")
+
+    monkeypatch.setattr(upd.urllib.request, "urlopen", fake_urlopen)
+    out = tmp_path / "summary.md"
+    repos = tmp_path / "repos.txt"
+    repos.write_text("foo/bar\n")
+    argv = [
+        "update_prompt_docs_summary.py",
+        "--repos-from",
+        str(repos),
+        "--out",
+        str(out),
+    ]
+    monkeypatch.setattr(sys, "argv", argv)
+    upd.main()
+    text = out.read_text()
+    assert "bar/docs/prompts/codex/automation.md" in text
+    assert "bar/items.md" in text
