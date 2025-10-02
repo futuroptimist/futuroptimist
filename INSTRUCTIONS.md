@@ -48,13 +48,10 @@ make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters) on commit
 ```
 
-Use the companion npm scripts to keep prompt docs tidy:
-
-```bash
-npm run lint         # flag trailing whitespace in docs/prompts/codex/*.md
-npm run format:check # ensure package.json stays two-space formatted with a trailing newline
-npm run test:ci      # verify docs/prompt-docs-summary.md renders a two-column table
-```
+`make report_funnel` normalises selects entries so the resulting
+`selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
+See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
+for coverage of this behaviour.
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
