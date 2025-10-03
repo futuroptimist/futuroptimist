@@ -99,10 +99,18 @@ function checkPromptDocsSummary() {
   return ok;
 }
 
+function lintDocs() {
+  const summaryOk = checkPromptDocsSummary();
+  const whitespaceOk = checkTrailingWhitespace();
+  return summaryOk && whitespaceOk;
+}
+
 const commands = {
   lint: checkTrailingWhitespace,
   format: checkPackageJsonFormat,
   test: checkPromptDocsSummary,
+  docs: lintDocs,
+  'docs-lint': lintDocs,
 };
 
 const command = process.argv[2] ?? 'test';

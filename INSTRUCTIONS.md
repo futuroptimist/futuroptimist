@@ -57,6 +57,16 @@ npm run playwright:install
 This wrapper calls `npx playwright install --with-deps` so CI and local runs stay aligned and
 is covered by `tests/test_package_json.py::test_package_json_exposes_playwright_install_script`.
 
+Lint prompt documentation tables (and catch stray trailing whitespace) with:
+
+```bash
+npm run docs-lint
+```
+
+The helper reuses `scripts/npm/run-checks.mjs` so both CI and local edits enforce the same
+Markdown table shape in `docs/prompt-docs-summary.md` and whitespace hygiene in
+`docs/prompts/codex/**/*.md`.
+
 `make report_funnel` normalises selects entries so the resulting
 `selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
 See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
