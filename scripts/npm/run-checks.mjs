@@ -110,6 +110,7 @@ const commands = {
   format: checkPackageJsonFormat,
   test: checkPromptDocsSummary,
   docs: lintDocs,
+  'docs-lint': lintDocs,
 };
 
 const command = process.argv[2] ?? 'test';
