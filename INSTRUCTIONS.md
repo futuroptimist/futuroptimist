@@ -48,6 +48,11 @@ make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters) on commit
 ```
 
+Run `npm run docs-lint` to validate prompt documentation formatting. The
+command piggybacks on the Node checks (`tests/test_package_json.py` ensures the
+script exists while `tests/test_update_prompt_docs_summary.py` covers the table
+validation logic) so Markdown table pipes stay intact between repositories.
+
 `make report_funnel` normalises selects entries so the resulting
 `selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
 See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`

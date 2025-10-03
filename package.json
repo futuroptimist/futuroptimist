@@ -7,7 +7,8 @@
   "scripts": {
     "lint": "node scripts/npm/run-checks.mjs lint",
     "format:check": "node scripts/npm/run-checks.mjs format",
-    "test:ci": "node scripts/npm/run-checks.mjs test"
+    "test:ci": "node scripts/npm/run-checks.mjs test",
+    "docs-lint": "node scripts/npm/run-checks.mjs docs"
   },
   "engines": {
     "node": ">=18"
