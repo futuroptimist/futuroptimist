@@ -8,7 +8,7 @@
     "lint": "node scripts/npm/run-checks.mjs lint",
     "format:check": "node scripts/npm/run-checks.mjs format",
     "test:ci": "node scripts/npm/run-checks.mjs test",
-    "docs-lint": "node scripts/npm/run-checks.mjs docs"
+    "playwright:install": "npx playwright install --with-deps"
   },
   "engines": {
     "node": ">=18"
