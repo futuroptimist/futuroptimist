@@ -48,6 +48,15 @@ make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters) on commit
 ```
 
+If Playwright-based tests complain about missing browsers, install them via:
+
+```bash
+npm run playwright:install
+```
+
+This wrapper calls `npx playwright install --with-deps` so CI and local runs stay aligned and
+is covered by `tests/test_package_json.py::test_package_json_exposes_playwright_install_script`.
+
 `make report_funnel` normalises selects entries so the resulting
 `selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
 See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
