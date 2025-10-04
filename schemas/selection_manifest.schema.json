@@ -24,7 +24,7 @@
         "required": ["path", "kind"],
         "properties": {
           "path": { "type": "string" },
-          "kind": { "type": "string", "enum": ["image", "video"] },
+          "kind": { "type": "string", "enum": ["image", "video", "audio"] },
           "duration_sec": { "type": "number", "minimum": 0 },
           "ranges": {
             "type": "array",

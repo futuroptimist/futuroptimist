@@ -21,6 +21,7 @@ from typing import Iterable
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg"}
 VIDEO_EXTS = {".mp4"}
+AUDIO_EXTS = {".wav", ".mp3", ".aac", ".m4a", ".flac", ".ogg"}
 
 
 def _utc_now_iso() -> str:
@@ -92,11 +93,14 @@ def build_manifest(
                 continue
             seen_paths.add(display_path)
             ext = resolved.suffix.lower()
-            kind = (
-                "image"
-                if ext in IMAGE_EXTS
-                else ("video" if ext in VIDEO_EXTS else "image")
-            )
+            if ext in IMAGE_EXTS:
+                kind = "image"
+            elif ext in VIDEO_EXTS:
+                kind = "video"
+            elif ext in AUDIO_EXTS:
+                kind = "audio"
+            else:
+                kind = "image"
             selected_assets.append({"path": display_path, "kind": kind})
 
     manifest = {
