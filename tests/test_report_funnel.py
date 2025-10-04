@@ -29,13 +29,16 @@ def test_build_manifest_with_selects(tmp_path: Path):
     (root / slug / "converted").mkdir(parents=True)
     (root / slug / "converted" / "a.png").write_bytes(b"x")
     (root / slug / "converted" / "b.mp4").write_bytes(b"x")
+    (root / slug / "converted" / "c.wav").write_bytes(b"x")
     selects = tmp_path / "selects.txt"
-    selects.write_text("\n".join(["converted/a.png", "converted/b.mp4"]))
+    selects.write_text(
+        "\n".join(["converted/a.png", "converted/b.mp4", "converted/c.wav"])
+    )
 
     manifest = build_manifest(root, slug, selects)
-    assert manifest["selected_count"] == 2
+    assert manifest["selected_count"] == 3
     kinds = {a["kind"] for a in manifest["selected_assets"]}
-    assert kinds == {"image", "video"}
+    assert kinds == {"image", "video", "audio"}
 
 
 def test_build_manifest_normalizes_select_paths(tmp_path: Path) -> None:

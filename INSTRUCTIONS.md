@@ -69,6 +69,8 @@ Markdown table shape in `docs/prompt-docs-summary.md` and whitespace hygiene in
 
 `make report_funnel` normalises selects entries so the resulting
 `selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
+It also classifies selects as images, video, or audio (see
+`tests/test_report_funnel.py::test_build_manifest_with_selects`).
 See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
 for coverage of this behaviour.
 
