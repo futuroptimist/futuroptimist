@@ -24,6 +24,10 @@ Script format:
   `tests/test_srt_to_markdown.py::test_to_markdown_splits_sentences` and
   `::test_to_markdown_handles_abbreviations` ensure multi-sentence captions expand into one
   `[NARRATOR]` line per thought without breaking common abbreviations.
+- `generate_scripts_from_subtitles.py` scans `video_scripts/*/metadata.json`, resolves each
+  transcript in `subtitles/`, and produces `script.md` files via the converter above. The
+  workflow is covered by `tests/test_generate_scripts_from_subtitles.py` to keep narration
+  comments and `[NARRATOR]` lines consistent.
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.
