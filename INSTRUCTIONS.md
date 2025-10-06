@@ -84,7 +84,9 @@ Markdown table shape in `docs/prompt-docs-summary.md` and whitespace hygiene in
 It also classifies selects as images, video, or audio (see
 `tests/test_report_funnel.py::test_build_manifest_with_selects`).
 See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
-for coverage of this behaviour.
+for coverage of this behaviour and
+`tests/test_report_funnel.py::test_build_manifest_normalizes_slug_prefixed_paths`
+for slug-prefixed selects that omit the `converted/` segment.
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`

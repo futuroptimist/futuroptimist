@@ -57,15 +57,20 @@ def _normalize_select_path(
     if raw_path.is_absolute():
         return raw_path
 
-    parts = raw_path.parts
+    parts = list(raw_path.parts)
+
     if parts and parts[0] == "footage":
-        return repo_root / raw_path
-    if parts and parts[0] == slug:
-        return footage_root / raw_path
-    if parts and parts[0] == "converted":
-        tail = pathlib.Path(*parts[1:]) if len(parts) > 1 else pathlib.Path()
-        return footage_root / slug / "converted" / tail
-    return footage_root / slug / "converted" / raw_path
+        parts = parts[1:]
+        if parts and parts[0] == slug:
+            parts = parts[1:]
+    elif parts and parts[0] == slug:
+        parts = parts[1:]
+
+    if parts and parts[0].lower() == "converted":
+        parts = parts[1:]
+
+    tail = pathlib.Path(*parts) if parts else pathlib.Path()
+    return footage_root / slug / "converted" / tail
 
 
 def build_manifest(
