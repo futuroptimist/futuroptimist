@@ -24,10 +24,10 @@ help:
 	@echo "  index_footage  Index local media under ./footage to footage_index.json"
 	@echo "  index_assets   Build rich assets_index.json from per-video manifests"
 	@echo "  describe_images  Generate image_descriptions.md from ./footage"
-        @echo "  convert_assets  Convert incompatible originals/ into converted/ using ffmpeg"
-        @echo "  verify_assets  Verify converted/ matches originals/ dimensions/aspect"
-        @echo "  convert_missing Convert only missing items from verify_report.json"
-        @echo "  scripts_from_subtitles Generate script.md files from subtitles"
+	@echo "  convert_assets  Convert incompatible originals/ into converted/ using ffmpeg"
+	@echo "  verify_assets  Verify converted/ matches originals/ dimensions/aspect"
+	@echo "  convert_missing Convert only missing items from verify_report.json"
+	@echo "  scripts_from_subtitles Generate script.md files from subtitles"
 	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
 	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
 	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
@@ -67,10 +67,10 @@ verify_assets:
 	$(PY) src/verify_converted_assets.py footage
 
 convert_missing:
-        $(PY) src/convert_missing.py --report verify_report.json
+	$(PY) src/convert_missing.py --report verify_report.json
 
 scripts_from_subtitles:
-        $(PY) src/generate_scripts_from_subtitles.py
+	$(PY) src/generate_scripts_from_subtitles.py
 
 # Convert images and videos in one command. Optionally limit to a slug:
 #   make convert_all SLUG=20251001_indoor-aquariums-tour

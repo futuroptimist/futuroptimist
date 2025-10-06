@@ -36,7 +36,9 @@ def _resolve_transcript(
     return None
 
 
-def _load_metadata_paths(video_root: pathlib.Path, slugs: Iterable[str] | None) -> list[pathlib.Path]:
+def _load_metadata_paths(
+    video_root: pathlib.Path, slugs: Iterable[str] | None
+) -> list[pathlib.Path]:
     allowed = set(slugs) if slugs is not None else None
     paths: list[pathlib.Path] = []
     for meta_path in sorted(video_root.glob("*/metadata.json")):
