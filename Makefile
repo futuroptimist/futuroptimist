@@ -12,6 +12,7 @@ else
 endif
 PIP := uv pip
 
+# NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
 .PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel process update_metadata scripts_from_subtitles
 
 help:
