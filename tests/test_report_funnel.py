@@ -64,3 +64,20 @@ def test_build_manifest_normalizes_select_paths(tmp_path: Path) -> None:
         f"footage/{slug}/converted/a.png",
         f"footage/{slug}/converted/b.mp4",
     ]
+
+
+def test_build_manifest_normalizes_slug_prefixed_paths(tmp_path: Path) -> None:
+    root = tmp_path / "footage"
+    slug = "20260101_future"
+    converted = root / slug / "converted"
+    converted.mkdir(parents=True)
+    (converted / "clip.png").write_bytes(b"x")
+    selects = tmp_path / "selects.txt"
+    selects.write_text("\n".join([slug, f"{slug}/clip.png"]))
+
+    manifest = build_manifest(root, slug, selects)
+    paths = [entry["path"] for entry in manifest["selected_assets"]]
+    assert paths == [
+        f"footage/{slug}/converted",
+        f"footage/{slug}/converted/clip.png",
+    ]
