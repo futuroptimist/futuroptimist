@@ -1,8 +1,12 @@
 import argparse
 import html
+import json
 import pathlib
 import re
 from typing import List, Tuple
+
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 _ABBREV_RE = re.compile(
@@ -137,15 +141,99 @@ def to_markdown(
     return "\n".join(parts)
 
 
-def main() -> None:
+def generate_script_for_slug(
+    slug: str,
+    *,
+    repo_root: pathlib.Path = REPO_ROOT,
+    overwrite: bool = True,
+    output: pathlib.Path | None = None,
+) -> pathlib.Path:
+    """Build ``script.md`` for ``slug`` using the stored metadata and subtitles."""
+
+    repo_root = repo_root.resolve()
+    slug_dir = repo_root / "video_scripts" / slug
+    if not slug_dir.is_dir():
+        raise FileNotFoundError(f"Missing video script directory for slug {slug!r}")
+    metadata_path = slug_dir / "metadata.json"
+    try:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:  # pragma: no cover - validated in tests
+        raise FileNotFoundError(
+            f"Missing metadata.json for slug {slug!r}: {metadata_path}"
+        ) from exc
+    except json.JSONDecodeError as exc:  # pragma: no cover - defensive
+        raise ValueError(f"Invalid JSON in {metadata_path}: {exc}") from exc
+    youtube_id = str(metadata.get("youtube_id", "")).strip()
+    if not youtube_id:
+        raise ValueError(f"metadata for {slug!r} is missing a youtube_id")
+    title = str(metadata.get("title", "")).strip()
+    subtitles_path = repo_root / "subtitles" / f"{youtube_id}.srt"
+    if not subtitles_path.exists():
+        raise FileNotFoundError(
+            f"Subtitle file not found for {youtube_id}: {subtitles_path}"
+        )
+    if output is None:
+        output_path = slug_dir / "script.md"
+    else:
+        output_path = pathlib.Path(output)
+        if not output_path.is_absolute():
+            output_path = (repo_root / output_path).resolve()
+    if output_path.exists() and not overwrite:
+        raise FileExistsError(f"Refusing to overwrite existing script: {output_path}")
+    entries = parse_srt(subtitles_path)
+    markdown = to_markdown(entries, title, youtube_id)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(markdown)
+    return output_path
+
+
+def main(argv: List[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Convert SRT captions to Futuroptimist script format"
     )
-    parser.add_argument("srt", type=pathlib.Path)
+    parser.add_argument("srt", nargs="?", type=pathlib.Path)
     parser.add_argument("--title", default="", help="Video title")
     parser.add_argument("--youtube-id", default="", help="YouTube ID")
     parser.add_argument("-o", "--output", type=pathlib.Path)
-    args = parser.parse_args()
+    parser.add_argument(
+        "--slug",
+        default=None,
+        help="Video slug like YYYYMMDD_slug to read metadata & subtitles",
+    )
+    parser.add_argument(
+        "--repo-root",
+        type=pathlib.Path,
+        default=REPO_ROOT,
+        help="Repository root (used with --slug)",
+    )
+    overwrite_group = parser.add_mutually_exclusive_group()
+    overwrite_group.add_argument(
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        help="Overwrite existing script when using --slug (default)",
+    )
+    overwrite_group.add_argument(
+        "--no-overwrite",
+        dest="overwrite",
+        action="store_false",
+        help="Fail if the output exists when using --slug",
+    )
+    parser.set_defaults(overwrite=True)
+    args = parser.parse_args(argv)
+
+    if args.slug:
+        written = generate_script_for_slug(
+            args.slug,
+            repo_root=args.repo_root,
+            overwrite=args.overwrite,
+            output=args.output,
+        )
+        print(f"Wrote {written}")
+        return
+
+    if args.srt is None:
+        parser.error("SRT path is required unless --slug is provided")
 
     entries = parse_srt(args.srt)
     markdown = to_markdown(entries, args.title, args.youtube_id)

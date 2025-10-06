@@ -27,6 +27,18 @@ The script fetches **manual** subtitles only. Videos without manual captions are
 If YouTube only offers WebVTT tracks, the fallback path converts them to `.srt` so downstream
 tools stay compatible (see `tests/test_fetch_subtitles.py::test_download_subtitles_fallback_converts_vtt`).
 
+Turn finished captions into Futuroptimist scripts with:
+
+```bash
+python src/srt_to_markdown.py --slug YYYYMMDD_slug
+```
+
+The helper reads `video_scripts/YYYYMMDD_slug/metadata.json` to locate the YouTube ID,
+loads `subtitles/<youtube_id>.srt`, and writes `script.md` with one `[NARRATOR]` line per
+sentence (timestamps preserved in HTML comments). Pass `--no-overwrite` to keep an existing
+script file in place. Regression coverage lives in
+`tests/test_srt_to_markdown.py::test_generate_script_for_slug`.
+
 ## Development Workflow
 
 Use the Makefile for common tasks:
@@ -132,7 +144,6 @@ contains a `youtube_id`. Export `YOUTUBE_API_KEY` before running; add
 `src/describe_images.py` keep emitting meaningful alt-text summaries.
 
 ## Next Steps
-* Convert `.srt` caption timing into fully-fledged markdown scripts.
 * Build a lightweight RAG pipeline that indexes past scripts for rapid outline generation of future videos.
 
 ## 🌱 Roadmap / Flywheel Enhancements

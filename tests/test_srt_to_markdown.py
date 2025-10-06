@@ -1,7 +1,10 @@
-import sys
+import json
 import runpy
-import warnings
 import random
+import sys
+import warnings
+
+import pytest
 import src.srt_to_markdown as stm
 
 
@@ -303,3 +306,40 @@ Boundary
     path.write_text(srt)
     entries = stm.parse_srt(path)
     assert entries == [("99:59:59,000", "100:00:00,000", "Boundary")]
+
+
+def test_generate_script_for_slug(tmp_path):
+    repo = tmp_path
+    slug = "20250101_demo"
+    slug_dir = repo / "video_scripts" / slug
+    slug_dir.mkdir(parents=True)
+    metadata = {"youtube_id": "abc123", "title": "Demo Title"}
+    (slug_dir / "metadata.json").write_text(json.dumps(metadata, indent=2))
+    subs = repo / "subtitles"
+    subs.mkdir()
+    (subs / "abc123.srt").write_text("1\n00:00:00,000 --> 00:00:01,000\nHello world.\n")
+
+    out_path = stm.generate_script_for_slug(slug, repo_root=repo)
+
+    assert out_path == slug_dir / "script.md"
+    content = out_path.read_text()
+    assert content.startswith("# Demo Title")
+    assert "[NARRATOR]: Hello world." in content
+    assert "`abc123`" in content
+
+
+def test_generate_script_for_slug_no_overwrite(tmp_path):
+    repo = tmp_path
+    slug = "20250102_demo"
+    slug_dir = repo / "video_scripts" / slug
+    slug_dir.mkdir(parents=True)
+    metadata = {"youtube_id": "def456", "title": "Existing Script"}
+    (slug_dir / "metadata.json").write_text(json.dumps(metadata, indent=2))
+    subs = repo / "subtitles"
+    subs.mkdir()
+    (subs / "def456.srt").write_text("1\n00:00:00,000 --> 00:00:01,000\nHello again.\n")
+    existing = slug_dir / "script.md"
+    existing.write_text("old content")
+
+    with pytest.raises(FileExistsError):
+        stm.generate_script_for_slug(slug, repo_root=repo, overwrite=False)
