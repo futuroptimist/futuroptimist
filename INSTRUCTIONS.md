@@ -20,12 +20,20 @@ uv pip install -r requirements.txt
 # 2. Download available English subtitles into ./subtitles
 python src/fetch_subtitles.py
 
-# 3. Run the full test suite (schema, naming, e2e)
+# 3. Convert subtitles into Futuroptimist script format
+python src/generate_scripts_from_subtitles.py
+
+# 4. Run the full test suite (schema, naming, e2e)
 make test
 ```
 The script fetches **manual** subtitles only. Videos without manual captions are skipped. Files are saved as `subtitles/<videoid>.srt`.
 If YouTube only offers WebVTT tracks, the fallback path converts them to `.srt` so downstream
 tools stay compatible (see `tests/test_fetch_subtitles.py::test_download_subtitles_fallback_converts_vtt`).
+Generate Markdown scripts from the downloaded captions with
+`python src/generate_scripts_from_subtitles.py` (or `make scripts_from_subtitles`). The helper
+creates `video_scripts/<slug>/script.md` files using the narration style covered by
+`tests/test_generate_scripts_from_subtitles.py` so `[NARRATOR]` lines and timestamp comments match
+the existing pipeline.
 
 Turn finished captions into Futuroptimist scripts with:
 
@@ -55,6 +63,7 @@ make convert_all      # convert images+videos for all slugs (or SLUG=YYYYMMDD_sl
 make verify_assets    # verify converted assets match originals
 make report_funnel SLUG=<slug> [SELECTS=path]  # write selections.json for the slug
 make process SLUG=<slug> [SELECTS=path]        # one-command: convert+verify+report
+make scripts_from_subtitles  # regenerate script.md files from subtitles
 make clean      # remove the virtualenv and caches
 make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters) on commit
@@ -146,6 +155,7 @@ contains a `youtube_id`. Export `YOUTUBE_API_KEY` before running; add
 `src/describe_images.py` keep emitting meaningful alt-text summaries.
 
 ## Next Steps
+* ~~Convert `.srt` caption timing into fully-fledged markdown scripts.~~ ✅ Use `make scripts_from_subtitles`.
 * Build a lightweight RAG pipeline that indexes past scripts for rapid outline generation of future videos.
 
 ## 🌱 Roadmap / Flywheel Enhancements

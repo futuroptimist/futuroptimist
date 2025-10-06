@@ -12,7 +12,8 @@ else
 endif
 PIP := uv pip
 
-.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel process update_metadata
+# NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
+.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel process update_metadata scripts_from_subtitles
 
 help:
 	@echo "Targets:"
@@ -27,6 +28,7 @@ help:
 	@echo "  convert_assets  Convert incompatible originals/ into converted/ using ffmpeg"
 	@echo "  verify_assets  Verify converted/ matches originals/ dimensions/aspect"
 	@echo "  convert_missing Convert only missing items from verify_report.json"
+	@echo "  scripts_from_subtitles Generate script.md files from subtitles"
 	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
 	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
 	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
@@ -67,6 +69,9 @@ verify_assets:
 
 convert_missing:
 	$(PY) src/convert_missing.py --report verify_report.json
+
+scripts_from_subtitles:
+	$(PY) src/generate_scripts_from_subtitles.py
 
 # Convert images and videos in one command. Optionally limit to a slug:
 #   make convert_all SLUG=20251001_indoor-aquariums-tour
