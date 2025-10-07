@@ -93,7 +93,8 @@ git diff --cached | ./scripts/scan-secrets.py
 ```
 
 Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repos stay
-connected.
+connected. Regression coverage lives in `tests/test_repo_list_sync.py` to prevent the lists
+from drifting.
 
 Push and open a PR in flywheel. Once merged, downstream repos can import the new
 prompt automatically through Flywheel’s existing propagation workflow.
