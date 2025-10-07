@@ -62,6 +62,7 @@ class AssetRecord:
     tags: list[str]
     capture_date: str | None
     labels: dict[str, Any] | None
+    notes_file: str | None = None
     width: int | None = None
     height: int | None = None
     aspect_ratio: float | None = None
@@ -76,6 +77,7 @@ class AssetRecord:
             "tags": self.tags,
             "capture_date": self.capture_date,
             "labels": self.labels,
+            "notes_file": self.notes_file,
             "width": self.width,
             "height": self.height,
             "aspect_ratio": self.aspect_ratio,
@@ -111,6 +113,10 @@ def build_index() -> list[dict[str, Any]]:
         script_folder = manifest_path.parent.name
         tags = list(data.get("tags", []))
         capture_date = data.get("capture_date")
+        notes_file_raw = data.get("notes_file")
+        notes_file = None
+        if isinstance(notes_file_raw, str) and notes_file_raw.strip():
+            notes_file = notes_file_raw.strip()
         labels_map = _load_labels(list(data.get("labels_files", [])))
         for dir_str in data["footage_dirs"]:
             d = REPO_ROOT / dir_str
@@ -168,6 +174,7 @@ def build_index() -> list[dict[str, Any]]:
                         tags=tags,
                         capture_date=capture_date,
                         labels=labels,
+                        notes_file=notes_file,
                         width=width,
                         height=height,
                         aspect_ratio=aspect,

@@ -30,7 +30,7 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 | `/subtitles/` | Downloaded `.srt` caption files populated by `fetch_subtitles.py`. |
 | `/src/srt_to_markdown.py` | Convert `.srt` captions; handles italics/bold, emoji; strips HTML, speaker prefixes, collapses whitespace, and skips non-dialog lines like `[Music]`. |
 | `/src/index_local_media.py` | Build a flat `footage_index.json` of local media under `footage/`. |
-| `/src/index_assets.py` | Build a rich `assets_index.json` by scanning per‑video manifests. |
+| `/src/index_assets.py` | Build a rich `assets_index.json` from per-video manifests (labels + optional notes paths). |
 | `/src/index_script_segments.py` | Export `[NARRATOR]` segments to JSON for embeddings and retrieval. |
 | `/src/update_video_metadata.py` | Refresh video metadata (title/date/duration) via YouTube API. |
 | `/sources/` | Reference files fetched via `collect_sources.py`. |

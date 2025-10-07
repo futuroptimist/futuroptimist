@@ -27,6 +27,7 @@ def test_build_index_with_labels(tmp_path, monkeypatch):
             "footage/20251001_indoor-aquariums-tour/selects",
         ],
         "labels_files": ["footage/20251001_indoor-aquariums-tour/labels.json"],
+        "notes_file": "footage/20251001_indoor-aquariums-tour/notes.md",
         "tags": ["aquariums"],
         "capture_date": "2025-08-30",
     }
@@ -64,6 +65,8 @@ def test_build_index_with_labels(tmp_path, monkeypatch):
     labeled = next(e for e in index if e["path"].endswith("clip1.mp4"))
     assert labeled["labels"]["script_lines"] == [23, 31]
     assert labeled["tags"] == ["aquariums"]
+    # notes_file should be propagated so downstream tooling can locate shoot notes
+    assert labeled["notes_file"] == ("footage/20251001_indoor-aquariums-tour/notes.md")
 
 
 def test_entrypoint_runs(tmp_path, monkeypatch):
