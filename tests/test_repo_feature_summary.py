@@ -20,5 +20,3 @@ def test_repo_feature_summary_exists() -> None:
             break
         data_lines.append(line)
     assert data_lines, "Feature table must contain at least one row"
-
-
