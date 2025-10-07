@@ -80,12 +80,18 @@ def test_process_video_dir_and_main(monkeypatch, tmp_path):
         "http://example.com/a.txt\nhttp://example.com/b.txt\n"
     )
 
+    urls_file = tmp_path / "source_urls.txt"
+    urls_file.write_text("http://example.com/global.txt\n")
+
     def fake_download(url, dest):
         dest.write_text(f"data for {url}")
         return True
 
     monkeypatch.setattr(cs, "download_url", fake_download)
     monkeypatch.setattr(cs, "VIDEO_ROOT", tmp_path)
+    global_dir = tmp_path / "sources"
+    monkeypatch.setenv(cs.SOURCE_URLS_ENV, str(urls_file))
+    monkeypatch.setenv(cs.GLOBAL_SOURCES_ENV, str(global_dir))
 
     cs.main()
 
@@ -94,6 +100,10 @@ def test_process_video_dir_and_main(monkeypatch, tmp_path):
         "http://example.com/a.txt": "1.txt",
         "http://example.com/b.txt": "2.txt",
     }
+
+    global_mapping = json.loads((global_dir / "sources.json").read_text())
+    assert global_mapping == {"http://example.com/global.txt": "1.txt"}
+    assert (global_dir / "sources.json").read_text().endswith("\n")
 
 
 def test_process_skips_without_file(tmp_path):
@@ -111,6 +121,9 @@ def test_cli_entrypoint(monkeypatch, tmp_path):
         called.append(path)
 
     monkeypatch.setattr(cs, "process_video_dir", fake_process)
+    monkeypatch.setenv(cs.SOURCE_URLS_ENV, str(tmp_path / "source_urls.txt"))
+    monkeypatch.setenv(cs.GLOBAL_SOURCES_ENV, str(tmp_path / "sources"))
+    monkeypatch.setattr(cs, "download_url", lambda url, dest: False)
     d = tmp_path / "20250101_test"
     d.mkdir()
     (d / "sources.txt").write_text("")
@@ -145,3 +158,32 @@ def test_sources_json_has_trailing_newline(monkeypatch, tmp_path):
 
     content = (vid_dir / "sources.json").read_text()
     assert content.endswith("\n")
+
+
+def test_process_global_sources(monkeypatch, tmp_path):
+    urls_file = tmp_path / "source_urls.txt"
+    urls_file.write_text(
+        "# comment\n\nhttp://example.com/a.txt\nhttp://example.com/path/data.mp4\n"
+    )
+
+    written: dict[str, pathlib.Path] = {}
+
+    def fake_download(url, dest):
+        dest.write_text("data")
+        written[url] = dest
+        return True
+
+    monkeypatch.setattr(cs, "download_url", fake_download)
+    global_dir = tmp_path / "sources"
+
+    mapping = cs.process_global_sources(source_file=urls_file, dest_dir=global_dir)
+
+    assert mapping == {
+        "http://example.com/a.txt": "1.txt",
+        "http://example.com/path/data.mp4": "2.mp4",
+    }
+    assert written["http://example.com/a.txt"].name == "1.txt"
+    assert written["http://example.com/path/data.mp4"].name == "2.mp4"
+    output_path = global_dir / "sources.json"
+    assert json.loads(output_path.read_text()) == mapping
+    assert output_path.read_text().endswith("\n")

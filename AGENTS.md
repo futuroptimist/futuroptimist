@@ -79,7 +79,7 @@ that installs dependencies and runs the full test suite with coverage on every
 push or pull request.
 
 ### Data & Schemas
-- [source_urls.txt](source_urls.txt): URLs consumed by `collect_sources.py`.
+- [source_urls.txt](source_urls.txt): URLs consumed by `collect_sources.py` to populate `/sources/sources.json`.
 
 ```bash
 make setup   # venv + deps (or ./setup.ps1)
