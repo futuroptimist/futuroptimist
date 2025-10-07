@@ -156,7 +156,9 @@ contains a `youtube_id`. Export `YOUTUBE_API_KEY` before running; add
 
 ## Next Steps
 * ~~Convert `.srt` caption timing into fully-fledged markdown scripts.~~ ✅ Use `make scripts_from_subtitles`.
-* Build a lightweight RAG pipeline that indexes past scripts for rapid outline generation of future videos.
+* ~~Build a lightweight RAG pipeline that indexes past scripts for rapid outline generation of future videos.~~
+  ✅ Run `python src/index_script_segments.py` to export `[NARRATOR]` lines into JSON chunks ready for embeddings
+  (see `tests/test_index_script_segments.py`).
 
 ## 🌱 Roadmap / Flywheel Enhancements
 The goal: turn this repo into a self-reinforcing engine that **accelerates Futuroptimist content velocity**.
