@@ -26,7 +26,7 @@ CONTEXT:
   - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
 - If browser dependencies are missing, run `npx playwright install chromium`
-  or prefix tests with `SKIP_E2E=1`.
+  or prefix tests with `SKIP_E2E=1` (validated by `tests/test_skip_e2e_flag.py`).
 - Cross-reference CAD dimensions where helpful.
 - Verify core equations such as rotational kinetic energy `E = 1/2 I ω^2`, torque `τ = I α`,
   moment of inertia for an annular disk `I = 1/2 m (r_o^2 + r_i^2)`, and maximum

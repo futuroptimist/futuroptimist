@@ -70,7 +70,7 @@ CONTEXT:
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 - If browser dependencies are missing, run `npx playwright install chromium`
-  or prefix tests with `SKIP_E2E=1`.
+  or prefix tests with `SKIP_E2E=1` (validated by `tests/test_skip_e2e_flag.py`).
 
 REQUEST:
 1. Review this file for stale guidance or links.

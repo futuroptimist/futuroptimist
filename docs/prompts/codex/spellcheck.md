@@ -33,7 +33,7 @@ CONTEXT:
   ```
 - Run `git diff --cached | ./scripts/scan-secrets.py` before committing.
 - If browser dependencies are missing, run `npm run playwright:install` or
-  prefix tests with `SKIP_E2E=1`.
+  prefix tests with `SKIP_E2E=1` (validated by `tests/test_skip_e2e_flag.py`).
 
 REQUEST:
 1. Run the spellcheck command and inspect the results.
