@@ -64,6 +64,8 @@ Each prompt is file-scoped, single-purpose and immediately actionable.
 - Use the CI matrix to test on Node 18 LTS and the latest Node 20.
 - Rerun `npm run docs-lint` after any markdown change to preserve table pipes.
 - Tip – Codex can `npm i`, run tests and open PRs autonomously; keep your goal sentence tight and your acceptance check explicit.
+- `docs/repo-feature-summary.md` tracks automation coverage; see
+  `tests/test_repo_feature_summary.py` for the structure guard.
 
 ## Upgrade Prompt
 Type: evergreen
