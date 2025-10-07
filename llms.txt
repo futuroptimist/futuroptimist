@@ -55,7 +55,7 @@ make test    # runs `pytest -q`
 ```bash
 pytest --cov=./scripts --cov=./tests
 ```
-- [source_urls.txt](source_urls.txt) consumed by `collect_sources.py`
+- [source_urls.txt](source_urls.txt) consumed by `collect_sources.py` to populate `/sources/sources.json`
 The Makefile picks the correct Python path for Windows or Unix automatically.
 If that fails, run `python3 -m venv .venv && uv pip install -r requirements.txt` then `pytest -q`.
 If `make test` complains about `.venv/Scripts/python`, run `PATH=.venv/bin:$PATH pytest -q`.
@@ -68,7 +68,7 @@ If `yt-dlp` isn't found during tests, prefix the command with `PATH=.venv/bin:$P
 - `/schemas/` JSON schemas
 - `/tests/` pytest suites
 - `/subtitles/` caption files from `fetch_subtitles.py`
-- `/sources/` reference files downloaded by `collect_sources.py`
+- `/sources/` reference files downloaded by `collect_sources.py` (see `tests/test_collect_sources.py::test_process_global_sources`)
 - `video_ids.txt` canonical YouTube ID list (`#` lines are comments)
 
 ## Data & Schemas
