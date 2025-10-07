@@ -31,7 +31,7 @@ CONTEXT:
   valid two-column table so linked prompt guides stay readable.
 - Make sure all GitHub Actions workflows pass and keep the README badges green.
 - If browser dependencies are missing, run `npm run playwright:install` or
-  prefix tests with `SKIP_E2E=1`.
+  prefix tests with `SKIP_E2E=1` (validated by `tests/test_skip_e2e_flag.py`).
 
 REQUEST:
 1. Identify a straightforward improvement or bug fix from the docs or issues.
@@ -72,7 +72,7 @@ Use this prompt to refine Futuroptimist's own prompt documentation.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Futuroptimist repository. Follow `AGENTS.md` and `README.md`. Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` pass before committing. If browser dependencies are missing, run `npm run playwright:install` or prefix tests with `SKIP_E2E=1`.
+You are an automated contributor for the Futuroptimist repository. Follow `AGENTS.md` and `README.md`. Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` pass before committing. If browser dependencies are missing, run `npm run playwright:install` or prefix tests with `SKIP_E2E=1` (see `tests/test_skip_e2e_flag.py`).
 
 USER:
 1. Pick one prompt doc under `docs/prompts/codex/` (for example,

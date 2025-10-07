@@ -2,9 +2,15 @@ import json
 import pathlib
 import tempfile
 import types
+import subprocess
+
+import pytest
+
 import src.scaffold_videos as scaffold
 import src.fetch_subtitles as fs
-import subprocess
+
+
+pytestmark = pytest.mark.e2e
 
 
 def test_e2e_pipeline(monkeypatch):
