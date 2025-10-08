@@ -12,6 +12,10 @@ This document collects the full workflow for managing video scripts and metadata
 
 > Video scripts live in `video_scripts/YYYYMMDD_slug/script.md` (auto-scaffolded). Idea files are collected in `ideas/` as checklists without date prefixes.
 
+Schema guardrails: `tests/test_metadata_schema.py` now scans every
+`video_scripts/**/metadata.json` and enforces `schemas/video_metadata.schema.json`
+so malformed front-matter is caught during CI.
+
 ## Quick Start
 ```bash
 # 1. Install dependencies (yt-dlp only for now)
