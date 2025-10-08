@@ -101,7 +101,10 @@ Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
 and `read:org` scopes. You may also set `GH_TOKEN_FILE` or `GITHUB_TOKEN_FILE`
 to point at a file containing the token. Paths in these variables may include
-`~` or environment variables and will be expanded.
+`~` or environment variables and will be expanded (see
+`tests/test_collect_sources.py::test_resolve_source_urls_file_expands_env_and_user`
+and
+`tests/test_collect_sources.py::test_resolve_global_sources_dir_expands_env_and_user`).
 
 Create new script folders from the IDs in `video_ids.txt`:
 

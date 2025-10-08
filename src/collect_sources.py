@@ -72,7 +72,9 @@ def _resolve_source_urls_file(source_file: pathlib.Path | None = None) -> pathli
         return source_file
     override = os.environ.get(SOURCE_URLS_ENV, "").strip()
     if override:
-        return pathlib.Path(override)
+        expanded = os.path.expandvars(override)
+        expanded = os.path.expanduser(expanded)
+        return pathlib.Path(expanded)
     return SOURCE_URLS_FILE
 
 
@@ -81,7 +83,9 @@ def _resolve_global_sources_dir(dest_dir: pathlib.Path | None = None) -> pathlib
         return dest_dir
     override = os.environ.get(GLOBAL_SOURCES_ENV, "").strip()
     if override:
-        return pathlib.Path(override)
+        expanded = os.path.expandvars(override)
+        expanded = os.path.expanduser(expanded)
+        return pathlib.Path(expanded)
     return GLOBAL_SOURCES_DIR
 
 
