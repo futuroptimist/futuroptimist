@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createLinter } from 'actionlint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -99,16 +100,79 @@ function checkPromptDocsSummary() {
   return ok;
 }
 
+let cachedActionlint;
+
+async function runActionlint() {
+  try {
+    if (!cachedActionlint) {
+      cachedActionlint = await createLinter();
+    }
+  } catch (error) {
+    console.error(`Failed to initialise actionlint: ${error.message}`);
+    console.error('Install dependencies with `npm ci` and try again.');
+    return false;
+  }
+
+  const workflowsDir = path.join(repoRoot, '.github', 'workflows');
+  let entries = [];
+  try {
+    entries = readdirSync(workflowsDir, { withFileTypes: true });
+  } catch (error) {
+    console.error(`Unable to read ${workflowsDir}: ${error.message}`);
+    return false;
+  }
+
+  let ok = true;
+  for (const entry of entries) {
+    if (!entry.isFile() || !/\.ya?ml$/i.test(entry.name)) {
+      continue;
+    }
+    const fullPath = path.join(workflowsDir, entry.name);
+    const relPath = path.relative(repoRoot, fullPath).replace(/\\/g, '/');
+    let content;
+    try {
+      content = readFileSync(fullPath, 'utf8');
+    } catch (error) {
+      console.error(`Failed to read ${relPath}: ${error.message}`);
+      ok = false;
+      continue;
+    }
+    try {
+      const results = cachedActionlint(content, relPath);
+      for (const result of results) {
+        ok = false;
+        console.error(
+          `${result.file}:${result.line}:${result.column} ${result.kind} ${result.message}`,
+        );
+      }
+    } catch (error) {
+      console.error(`actionlint threw while analysing ${relPath}: ${error.message}`);
+      ok = false;
+    }
+  }
+
+  if (!ok) {
+    console.error('actionlint found workflow issues.');
+  }
+  return ok;
+}
+
 function lintDocs() {
   const summaryOk = checkPromptDocsSummary();
   const whitespaceOk = checkTrailingWhitespace();
   return summaryOk && whitespaceOk;
 }
 
+async function runCiChecks() {
+  const summaryOk = checkPromptDocsSummary();
+  const actionlintOk = await runActionlint();
+  return summaryOk && actionlintOk;
+}
+
 const commands = {
   lint: checkTrailingWhitespace,
   format: checkPackageJsonFormat,
-  test: checkPromptDocsSummary,
+  test: runCiChecks,
   docs: lintDocs,
   'docs-lint': lintDocs,
 };
@@ -121,5 +185,19 @@ if (!runner) {
   process.exit(1);
 }
 
-const result = runner();
-process.exit(result ? 0 : 1);
+try {
+  const result = runner();
+  if (result && typeof result.then === 'function') {
+    result
+      .then((ok) => process.exit(ok ? 0 : 1))
+      .catch((error) => {
+        console.error(error);
+        process.exit(1);
+      });
+  } else {
+    process.exit(result ? 0 : 1);
+  }
+} catch (error) {
+  console.error(error);
+  process.exit(1);
+}
