@@ -81,3 +81,35 @@ def test_build_manifest_normalizes_slug_prefixed_paths(tmp_path: Path) -> None:
         f"footage/{slug}/converted",
         f"footage/{slug}/converted/clip.png",
     ]
+
+
+def test_build_manifest_skips_outside_converted_entries(tmp_path: Path) -> None:
+    root = tmp_path / "footage"
+    slug = "20270202_demo"
+    converted = root / slug / "converted"
+    converted.mkdir(parents=True)
+    valid = converted / "keep.png"
+    valid.write_bytes(b"x")
+
+    outside = tmp_path / "elsewhere" / "clip.png"
+    outside.parent.mkdir()
+    outside.write_bytes(b"y")
+
+    selects = tmp_path / "selects.txt"
+    selects.write_text(
+        "\n".join(
+            [
+                "../sneaky.png",
+                outside.as_posix(),
+                f"{slug}/../escape.png",
+                "converted/../also_bad.mov",
+                "converted/keep.png",
+            ]
+        )
+    )
+
+    manifest = build_manifest(root, slug, selects)
+    assert manifest["selected_count"] == 1
+    assert manifest["selected_assets"] == [
+        {"path": f"footage/{slug}/converted/keep.png", "kind": "image"}
+    ]
