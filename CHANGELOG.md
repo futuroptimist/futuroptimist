@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2025-10-08
+- chore: add pre-commit hook to validate outage JSON schema and add regression tests.
 - feat: expand collect_sources overrides to resolve `~` and env variables.
 - test: cover collect_sources override expansion cases.
 - docs: reference the new override tests in INSTRUCTIONS.

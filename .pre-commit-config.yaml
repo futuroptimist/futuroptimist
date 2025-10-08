@@ -6,20 +6,25 @@ repos:
         entry: python scripts/precommit_scan_secrets.py
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
+      - id: outages-json-schema
+        name: validate outage records
+        entry: python scripts/validate_outages.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
       - id: ruff
         name: ruff
         entry: python -m ruff check --fix .
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
       - id: black
         name: black
         entry: python -m black .
         language: system
         pass_filenames: false
-        stages: [commit]
-repos:
+        stages: [pre-commit]
   - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
@@ -32,7 +37,6 @@ repos:
     hooks:
       - id: heatmap
         name: generate 3-D LOC heatmap
-        entry: python -m src.generate_heatmap
-        language: python
-        additional_dependencies: [svgwrite==1.4.3, requests==2.32.5]
+        entry: python scripts/precommit_heatmap.py
+        language: system
         pass_filenames: false
