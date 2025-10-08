@@ -6,7 +6,10 @@ import json
 import sys
 from pathlib import Path
 
-from jsonschema import Draft7Validator
+from collections.abc import Iterable
+from typing import Any
+
+from jsonschema import Draft7Validator, ValidationError
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUTAGES_DIR = REPO_ROOT / "outages"
@@ -28,6 +31,20 @@ def _load_schema() -> Draft7Validator:
     return Draft7Validator(schema)
 
 
+def _error_sort_key(error: ValidationError) -> tuple[tuple[int, str], ...]:
+    def _normalise_part(part: Any) -> tuple[int, str]:
+        if isinstance(part, int):
+            return (0, f"{part:06d}")
+        return (1, str(part))
+
+    return tuple(_normalise_part(part) for part in error.path)
+
+
+def _format_pointer(path: Iterable[Any]) -> str:
+    pointer = "/".join(str(part) for part in path)
+    return pointer or "<root>"
+
+
 def validate_outages() -> list[str]:
     validator = _load_schema()
     errors: list[str] = []
@@ -37,11 +54,8 @@ def validate_outages() -> list[str]:
         except json.JSONDecodeError as exc:
             errors.append(f"{path}: invalid JSON ({exc})")
             continue
-        for error in sorted(
-            validator.iter_errors(data), key=lambda e: tuple(str(part) for part in e.path)
-        ):
-            pointer = "/".join(str(part) for part in error.path)
-            location = f"{path}: {pointer or '<root>'}"
+        for error in sorted(validator.iter_errors(data), key=_error_sort_key):
+            location = f"{path}: {_format_pointer(error.path)}"
             errors.append(f"{location} – {error.message}")
     return errors
 
