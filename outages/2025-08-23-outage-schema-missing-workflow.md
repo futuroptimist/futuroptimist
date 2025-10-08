@@ -15,4 +15,5 @@ GitHub Actions `02-tests` workflow failed on the default branch, blocking merges
 
 ## Actions to take
 - Validate new outage entries locally before committing.
-- Consider automation to lint outage files in pre-commit.
+- Enforce outage schema validation via a `pre-commit` hook (`scripts/validate_outages.py`),
+  covered by `tests/test_precommit_hooks.py::test_precommit_validates_outage_json`.
