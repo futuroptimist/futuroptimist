@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-08
+- feat: expand collect_sources overrides to resolve `~` and env variables.
+- test: cover collect_sources override expansion cases.
+- docs: reference the new override tests in INSTRUCTIONS.
+
 ## 2025-09-03
 - fix: handle missing npm in checks script and ensure trailing newline.
 - test: verify checks script handles missing npm and newline.

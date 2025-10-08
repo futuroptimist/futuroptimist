@@ -187,3 +187,25 @@ def test_process_global_sources(monkeypatch, tmp_path):
     output_path = global_dir / "sources.json"
     assert json.loads(output_path.read_text()) == mapping
     assert output_path.read_text().endswith("\n")
+
+
+def test_resolve_source_urls_file_expands_env_and_user(monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("CUSTOM_SEGMENT", "overrides")
+    override = "~/data/$CUSTOM_SEGMENT/urls.txt"
+    monkeypatch.setenv(cs.SOURCE_URLS_ENV, override)
+
+    resolved = cs._resolve_source_urls_file()
+
+    assert resolved == tmp_path / "data" / "overrides" / "urls.txt"
+
+
+def test_resolve_global_sources_dir_expands_env_and_user(monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("DEST_SUBDIR", "downloads")
+    override = "~/cache/$DEST_SUBDIR"
+    monkeypatch.setenv(cs.GLOBAL_SOURCES_ENV, override)
+
+    resolved = cs._resolve_global_sources_dir()
+
+    assert resolved == tmp_path / "cache" / "downloads"
