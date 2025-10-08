@@ -62,7 +62,9 @@ def _replace_slug_in_data(
             new_key = key.replace(old_folder, new_folder)
             if new_key != key:
                 changed = True
-            new_value, child_changed = _replace_slug_in_data(value, old_folder, new_folder)
+            new_value, child_changed = _replace_slug_in_data(
+                value, old_folder, new_folder
+            )
             if child_changed:
                 changed = True
             new_dict[new_key] = new_value
@@ -71,7 +73,9 @@ def _replace_slug_in_data(
         changed = False
         new_list = []
         for item in obj:
-            new_item, child_changed = _replace_slug_in_data(item, old_folder, new_folder)
+            new_item, child_changed = _replace_slug_in_data(
+                item, old_folder, new_folder
+            )
             if child_changed:
                 changed = True
             new_list.append(new_item)
@@ -179,7 +183,9 @@ def rename_slug(
         if replaced:
             changed = True
         if changed:
-            metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+            metadata_path.write_text(
+                json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
+            )
 
     assets_path = dest_dir / "assets.json"
     _rewrite_json(
