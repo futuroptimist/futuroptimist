@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-10
+- feat: add rename_video_slug helper to rename script and footage slugs.
+- test: cover slug rename workflow.
+- docs: document the rename helper and roadmap update.
+
 ## 2025-10-08
 - chore: add pre-commit hook to validate outage JSON schema and add regression tests.
 - feat: expand collect_sources overrides to resolve `~` and env variables.
