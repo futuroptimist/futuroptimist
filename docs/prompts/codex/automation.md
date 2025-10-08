@@ -28,7 +28,10 @@ CONTEXT:
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
   `python -m flywheel.fit`, and `bash scripts/checks.sh` all succeed.
 - `npm run test:ci` now checks that `docs/prompt-docs-summary.md` renders a
-  valid two-column table so linked prompt guides stay readable.
+  valid two-column table and runs `actionlint` against `.github/workflows/` so
+  linked prompt guides stay readable and workflow regressions surface early
+  (see `tests/test_package_json.py::test_package_json_requires_actionlint_dev_dependency`
+  and `tests/test_workflow_yaml.py::test_run_checks_invokes_actionlint`).
 - Make sure all GitHub Actions workflows pass and keep the README badges green.
 - If browser dependencies are missing, run `npm run playwright:install` or
   prefix tests with `SKIP_E2E=1` (validated by `tests/test_skip_e2e_flag.py`).

@@ -7,3 +7,10 @@
 - **Resolution**: Promote the Codecov token into a job-level environment variable and guard the upload step with `if: ${{ env.CODECOV_TOKEN != '' }}` while passing the env value to the action.
 - **Lessons**: Lint workflows for forbidden contexts (e.g., with actionlint) and rely on env-scoped flags instead of referencing `secrets` directly in conditions.
 - **Links**: [Outage record](2025-09-24-tests-secrets-if.json)
+
+## Follow-up
+
+- `npm run test:ci` now runs `actionlint` in addition to the prompt summary
+  checks so future forbidden contexts fail fast (see
+  `tests/test_package_json.py::test_package_json_requires_actionlint_dev_dependency`
+  and `tests/test_workflow_yaml.py::test_run_checks_invokes_actionlint`).

@@ -11,6 +11,9 @@
     "docs-lint": "node scripts/npm/run-checks.mjs docs",
     "playwright:install": "npx playwright install --with-deps"
   },
+  "devDependencies": {
+    "actionlint": "^2.0.6"
+  },
   "engines": {
     "node": ">=18"
   }

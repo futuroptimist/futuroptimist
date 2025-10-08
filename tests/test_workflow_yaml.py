@@ -22,3 +22,11 @@ def test_workflows_do_not_use_secrets_in_if():
                 pytest.fail(
                     f"{path.name}:{lineno} uses secrets context in if expression"
                 )
+
+
+def test_run_checks_invokes_actionlint() -> None:
+    script = Path("scripts/npm/run-checks.mjs").read_text(encoding="utf-8")
+    assert "actionlint" in script, "run-checks.mjs must invoke actionlint"
+    assert (
+        "createLinter" in script
+    ), "run-checks.mjs should load actionlint's WASM linter"
