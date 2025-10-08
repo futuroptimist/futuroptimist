@@ -123,6 +123,17 @@ This fetches titles and dates to generate `video_scripts/YYYYMMDD_slug` director
 If metadata can't be fetched (network issues or parsing errors) the script
 logs the failure and continues so scaffolding never blocks your workflow.
 
+If you need to revise a slug after scaffolding, run:
+
+```bash
+python src/rename_video_slug.py 20240101_old-slug --slug refreshed-slug
+```
+
+The helper renames the script folder, matching `footage/` directory, and
+updates JSON metadata so asset manifests stay aligned (see
+`tests/test_rename_video_slug.py`). Pass `--dry-run` to preview changes or
+`--no-footage` to leave footage untouched.
+
 Large media assets should live in a local `footage/` directory.
 Use `python src/index_local_media.py` to build `footage_index.json`
 so you can quickly locate clips while editing. Each entry includes
@@ -178,7 +189,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | Phase | Feature | Impact |
 |-------|---------|--------|
 | 1️⃣  Plumbing | • **CI action now runs tests with coverage** on every push.<br>• Pre-commit hooks (black, ruff) | Confidence & code quality |
-| 2️⃣  Metadata Automation | • YouTube Data API sync to enrich markdown front-matter (title, publish date, views, tags).<br>• Slug auto-generation + filename rename helper. | Less manual bookkeeping |
+| 2️⃣  Metadata Automation | • YouTube Data API sync to enrich markdown front-matter (title, publish date, views, tags).<br>• Slug auto-generation + filename rename helper (`src/rename_video_slug.py`). | Less manual bookkeeping |
 | 3️⃣  Script Intelligence | • SRT → Markdown converter that preserves timing blocks.<br>• Semantic chunker + embeddings (OpenAI / local) into `data/index` for RAG. | Opens door to AI-assisted new scripts |
 | 4️⃣  Creative Toolkit | • Prompt library for hook/headline generation trained on past hits.<br>• Thumbnail text predictor (CTR estimation) using small vision model. | Higher audience retention |
 | 5️⃣  Distribution Insights | • Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
