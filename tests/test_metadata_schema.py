@@ -39,3 +39,23 @@ def test_metadata_validation_error(monkeypatch, tmp_path):
     monkeypatch.setattr("tests.test_metadata_schema.VIDEO_DIR", tmp_path)
     with pytest.raises(AssertionError):
         test_metadata_files_validate()
+
+
+def test_live_metadata_includes_publish_details():
+    """Published videos should expose publish date, tags, and thumbnail paths."""
+
+    failures: list[str] = []
+    for meta_path in _iter_metadata_files(VIDEO_DIR):
+        data = json.loads(meta_path.read_text())
+        if str(data.get("status", "")).lower() != "live":
+            continue
+        publish_date = str(data.get("publish_date", "")).strip()
+        keywords = data.get("keywords") or []
+        thumbnail = str(data.get("thumbnail", "")).strip()
+        if not publish_date or not keywords or not thumbnail:
+            failures.append(str(meta_path))
+
+    assert not failures, (
+        "Published metadata must include publish_date, keywords, and thumbnail as"
+        " documented in docs/video-editing-playbook.md: " + ", ".join(failures)
+    )
