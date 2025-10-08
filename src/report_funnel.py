@@ -48,36 +48,55 @@ def _read_selects(paths: Iterable[str]) -> list[str]:
 
 
 def _normalize_select_path(
-    footage_root: pathlib.Path, repo_root: pathlib.Path, slug: str, entry: str
-) -> pathlib.Path:
-    """Return resolved path for a selects entry."""
+    converted_root: pathlib.Path,
+    repo_root: pathlib.Path,
+    slug: str,
+    entry: str,
+) -> tuple[pathlib.Path, str] | None:
+    """Return the canonical path and display string for a selects entry.
 
-    raw_path = pathlib.Path(entry)
+    Entries that resolve outside ``converted_root`` (for example, via absolute
+    paths or ``..`` components) return ``None`` so callers can skip them.
+    """
+
+    raw = entry.strip()
+    if not raw:
+        return None
+    raw_path = pathlib.Path(raw)
 
     if raw_path.is_absolute():
-        return raw_path
-
-    parts = list(raw_path.parts)
-
-    if parts and parts[0] == "footage":
-        parts = parts[1:]
+        candidate = raw_path.resolve()
+    else:
+        parts = list(raw_path.parts)
+        if parts and parts[0] == "footage":
+            parts = parts[1:]
         if parts and parts[0] == slug:
             parts = parts[1:]
-    elif parts and parts[0] == slug:
-        parts = parts[1:]
+        if parts and parts[0].lower() == "converted":
+            parts = parts[1:]
+        if any(part == ".." for part in parts):
+            return None
+        filtered = [part for part in parts if part not in {"", "."}]
+        tail = pathlib.Path(*filtered) if filtered else pathlib.Path()
+        candidate = (converted_root / tail).resolve()
 
-    if parts and parts[0].lower() == "converted":
-        parts = parts[1:]
+    try:
+        candidate.relative_to(converted_root)
+    except ValueError:
+        return None
 
-    tail = pathlib.Path(*parts) if parts else pathlib.Path()
-    return footage_root / slug / "converted" / tail
+    try:
+        display = candidate.relative_to(repo_root).as_posix()
+    except ValueError:
+        display = candidate.as_posix()
+    return candidate, display
 
 
 def build_manifest(
     root: pathlib.Path, slug: str, selects_file: pathlib.Path | None
 ) -> dict:
     footage_root = root.resolve()
-    repo_root = footage_root.parent
+    repo_root = footage_root.parent.resolve()
     slug_dir = footage_root / slug
     originals = slug_dir / "originals"
     converted = slug_dir / "converted"
@@ -86,14 +105,15 @@ def build_manifest(
 
     selected_assets: list[dict] = []
     seen_paths: set[str] = set()
+    converted_root = (slug_dir / "converted").resolve()
+
     if selects_file and selects_file.exists():
         selects = _read_selects(selects_file.read_text().splitlines())
         for p in selects:
-            resolved = _normalize_select_path(footage_root, repo_root, slug, p)
-            try:
-                display_path = resolved.relative_to(repo_root).as_posix()
-            except ValueError:
-                display_path = resolved.as_posix()
+            normalized = _normalize_select_path(converted_root, repo_root, slug, p)
+            if normalized is None:
+                continue
+            resolved, display_path = normalized
             if display_path in seen_paths:
                 continue
             seen_paths.add(display_path)
