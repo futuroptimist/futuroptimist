@@ -37,7 +37,9 @@ def validate_outages() -> list[str]:
         except json.JSONDecodeError as exc:
             errors.append(f"{path}: invalid JSON ({exc})")
             continue
-        for error in sorted(validator.iter_errors(data), key=lambda e: e.path):
+        for error in sorted(
+            validator.iter_errors(data), key=lambda e: tuple(str(part) for part in e.path)
+        ):
             pointer = "/".join(str(part) for part in error.path)
             location = f"{path}: {pointer or '<root>'}"
             errors.append(f"{location} – {error.message}")
