@@ -138,7 +138,7 @@ async function runActionlint() {
       continue;
     }
     try {
-      const results = cachedActionlint(content, relPath);
+      const results = await cachedActionlint.lintText(content, relPath);
       for (const result of results) {
         ok = false;
         console.error(
