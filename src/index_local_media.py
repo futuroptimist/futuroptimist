@@ -23,20 +23,31 @@ def scan_directory(base: pathlib.Path, exclude: Iterable[pathlib.Path] | None = 
     nested files.
     """
     records = []
-    exclude_rel: list[str] = []
+    exclude_rel: set[str] = set()
     if exclude:
         base_resolved = base.resolve()
-        for p in exclude:
-            try:
-                rel = p.resolve().relative_to(base_resolved).as_posix()
-            except ValueError:
-                continue
-            exclude_rel.append(rel)
+        for raw_path in exclude:
+            candidate_paths: list[pathlib.Path] = []
+            path = pathlib.Path(raw_path)
+            if path.is_absolute():
+                candidate_paths.append(path)
+            else:
+                candidate_paths.append(base_resolved / path)
+                candidate_paths.append(path.resolve())
+            for candidate in candidate_paths:
+                try:
+                    resolved = candidate.resolve()
+                    rel = resolved.relative_to(base_resolved)
+                except ValueError:
+                    continue
+                rel_posix = rel.as_posix()
+                exclude_rel.add("" if rel_posix == "." else rel_posix)
     for path in base.rglob("*"):
         if path.is_file():
             rel_path = path.relative_to(base).as_posix()
             if any(
-                rel_path == ex or rel_path.startswith(f"{ex}/") for ex in exclude_rel
+                ex == "" or rel_path == ex or rel_path.startswith(f"{ex}/")
+                for ex in exclude_rel
             ):
                 continue
             stat = path.stat()

@@ -150,7 +150,9 @@ the file path, modification time in UTC, and size in bytes, sorted
 deterministically by timestamp then path. The script creates the
 output directory if needed and skips the index file itself when rerun
 inside the footage directory. Pass `--exclude PATH` (repeatable) to
-omit specific files or folders from the index.
+omit specific files or folders; paths may be absolute or relative to
+the footage root so `--exclude skip` works even when running inside the
+directory. See `tests/test_index_local_media.py::test_scan_directory_excludes_relative_path`.
 
 Metadata enrichment: run `python src/update_video_metadata.py`
 (or `make update_metadata`) to refresh video titles, publish dates,
