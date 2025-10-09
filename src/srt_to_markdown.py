@@ -147,8 +147,14 @@ def generate_script_for_slug(
     repo_root: pathlib.Path = REPO_ROOT,
     overwrite: bool = True,
     output: pathlib.Path | None = None,
-) -> pathlib.Path:
-    """Build ``script.md`` for ``slug`` using the stored metadata and subtitles."""
+) -> tuple[pathlib.Path, bool]:
+    """Build ``script.md`` for ``slug`` using the stored metadata and subtitles.
+
+    Returns a tuple of ``(path, created)`` where ``created`` is ``True`` when a
+    new file was written. When ``overwrite`` is ``False`` and the target file
+    already exists the function leaves it untouched and returns ``False`` for the
+    ``created`` flag so callers can report that nothing changed.
+    """
 
     repo_root = repo_root.resolve()
     slug_dir = repo_root / "video_scripts" / slug
@@ -179,12 +185,13 @@ def generate_script_for_slug(
         if not output_path.is_absolute():
             output_path = (repo_root / output_path).resolve()
     if output_path.exists() and not overwrite:
-        raise FileExistsError(f"Refusing to overwrite existing script: {output_path}")
+        return output_path, False
+
     entries = parse_srt(subtitles_path)
     markdown = to_markdown(entries, title, youtube_id)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(markdown)
-    return output_path
+    return output_path, True
 
 
 def main(argv: List[str] | None = None) -> None:
@@ -223,13 +230,16 @@ def main(argv: List[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     if args.slug:
-        written = generate_script_for_slug(
+        path, created = generate_script_for_slug(
             args.slug,
             repo_root=args.repo_root,
             overwrite=args.overwrite,
             output=args.output,
         )
-        print(f"Wrote {written}")
+        if created:
+            print(f"Wrote {path}")
+        else:
+            print(f"Skipped existing {path}")
         return
 
     if args.srt is None:
