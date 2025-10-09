@@ -35,6 +35,20 @@ def test_scan_directory_excludes_directory(tmp_path):
     assert names == {"keep.mp4"}
 
 
+def test_scan_directory_excludes_relative_path(tmp_path):
+    base = tmp_path / "media"
+    base.mkdir()
+    keep = base / "keep.mp4"
+    keep.write_text("y")
+    skip_dir = base / "skip"
+    skip_dir.mkdir()
+    (skip_dir / "ignore.mov").write_text("x")
+
+    result = ilm.scan_directory(base, exclude=[pathlib.Path("skip")])
+    names = {r["path"] for r in result}
+    assert names == {"keep.mp4"}
+
+
 def test_scan_directory_utc_mtime(tmp_path):
     file_path = tmp_path / "clip.mp4"
     file_path.write_text("data")
@@ -109,6 +123,24 @@ def test_main_excludes_directory_via_cli(tmp_path):
     data = json.loads(out_file.read_text())
     names = {entry["path"] for entry in data}
     assert "keep.mov" in names and all(not name.startswith("skip/") for name in names)
+
+
+def test_main_excludes_relative_path_via_cli(tmp_path, monkeypatch):
+    base = tmp_path / "media"
+    base.mkdir()
+    keep = base / "keep.mov"
+    keep.write_text("x")
+    skip_dir = base / "skip"
+    skip_dir.mkdir()
+    (skip_dir / "ignore.mp4").write_text("y")
+    out_file = tmp_path / "index.json"
+
+    monkeypatch.chdir(base)
+    ilm.main([".", "--exclude", "skip", "-o", str(out_file)])
+
+    data = json.loads(out_file.read_text())
+    names = {entry["path"] for entry in data}
+    assert names == {"keep.mov"}
 
 
 def test_scan_directory_deterministic_order(tmp_path, monkeypatch):

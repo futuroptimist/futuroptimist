@@ -275,13 +275,24 @@ def plan_conversions(
     only_slugs: set[str] | None = None,
     name_like: list[str] | None = None,
     mirror_compatible: bool = False,
+    only_sources: set[pathlib.Path] | None = None,
 ) -> list[Conversion]:
     root = base
     footage_root = base
     candidates: list[Conversion] = []
+    resolved_sources: set[pathlib.Path] | None = None
+    if only_sources:
+        resolved_sources = {p.resolve() for p in only_sources}
+
     for path in root.rglob("*"):
         if not path.is_file():
             continue
+        if resolved_sources is not None:
+            try:
+                if path.resolve() not in resolved_sources:
+                    continue
+            except OSError:
+                continue
         ext = path.suffix.lower()
         if exts is not None and ext not in exts:
             continue
@@ -595,12 +606,34 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Copy through compatible files (.mp4/.jpg/.jpeg/.png) to converted/",
     )
+    parser.add_argument(
+        "--source",
+        action="append",
+        default=None,
+        help="Only convert these original files (repeatable)",
+    )
     args = parser.parse_args(argv)
 
     base = pathlib.Path(args.input)
     global CLI_HDR_TONEMAP
     CLI_HDR_TONEMAP = args.hdr_tonemap
     exts = set(e.lower() for e in args.only_ext) if args.only_ext else None
+    only_sources: set[pathlib.Path] | None = None
+    if args.source:
+        only_sources = set()
+        base_resolved = base.resolve()
+        for raw in args.source:
+            candidate = pathlib.Path(raw)
+            if not candidate.is_absolute():
+                candidate = (base / candidate).resolve()
+            else:
+                candidate = candidate.resolve()
+            try:
+                candidate.relative_to(base_resolved)
+            except ValueError:
+                continue
+            only_sources.add(candidate)
+
     conversions = plan_conversions(
         base,
         exts=exts,
@@ -609,6 +642,7 @@ def main(argv: list[str] | None = None) -> int:
         only_slugs=set(args.slug) if args.slug else None,
         name_like=args.name_like or None,
         mirror_compatible=args.mirror_compatible,
+        only_sources=only_sources,
     )
     if args.dry_run:
         for c in conversions:

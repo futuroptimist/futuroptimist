@@ -28,6 +28,25 @@ def test_plan_conversions_maps_exts(tmp_path):
     assert ".jpg" in paths
 
 
+def test_plan_conversions_limits_to_sources(tmp_path):
+    footage = tmp_path / "footage"
+    a_dir = footage / "20250101_alpha" / "originals"
+    b_dir = footage / "20250102_beta" / "originals"
+    a_dir.mkdir(parents=True)
+    b_dir.mkdir(parents=True)
+    target = a_dir / "keep.heic"
+    target.write_text("x")
+    other = b_dir / "skip.heic"
+    other.write_text("x")
+
+    convs = plan_conversions(
+        footage,
+        only_sources={target.resolve()},
+    )
+
+    assert [c.src for c in convs] == [target]
+
+
 def test_build_ffmpeg_cmd_contains_flags(tmp_path):
     src = tmp_path / "x.heic"
     dst = tmp_path / "out.jpg"

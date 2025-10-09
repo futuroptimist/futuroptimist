@@ -73,6 +73,12 @@ make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters) on commit
 ```
 
+When `verify_converted_assets.py` reports gaps, run
+`python src/convert_missing.py --report verify_report.json`. The helper now
+passes each missing original back into `convert_assets` so only the flagged
+files are processed (see
+`tests/test_convert_missing.py::test_convert_missing_invokes_convert_assets`).
+
 If Playwright-based tests complain about missing browsers, install them via:
 
 ```bash
@@ -100,9 +106,12 @@ attempt to escape the `converted/` directory (absolute paths or `..`
 segments) are ignored so manifests can't reference outside assets (see
 `tests/test_report_funnel.py::test_build_manifest_skips_outside_converted_entries`).
 See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
-for coverage of this behaviour and
+for coverage of this behaviour,
 `tests/test_report_funnel.py::test_build_manifest_normalizes_slug_prefixed_paths`
-for slug-prefixed selects that omit the `converted/` segment.
+for slug-prefixed selects that omit the `converted/` segment, and
+`tests/test_report_funnel.py::test_build_manifest_canonicalizes_repo_relative_paths`
+for the guaranteed `footage/<slug>/converted/...` prefix even when selects
+reference absolute paths.
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
@@ -141,7 +150,9 @@ the file path, modification time in UTC, and size in bytes, sorted
 deterministically by timestamp then path. The script creates the
 output directory if needed and skips the index file itself when rerun
 inside the footage directory. Pass `--exclude PATH` (repeatable) to
-omit specific files or folders from the index.
+omit specific files or folders; paths may be absolute or relative to
+the footage root so `--exclude skip` works even when running inside the
+directory. See `tests/test_index_local_media.py::test_scan_directory_excludes_relative_path`.
 
 Metadata enrichment: run `python src/update_video_metadata.py`
 (or `make update_metadata`) to refresh video titles, publish dates,
