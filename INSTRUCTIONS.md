@@ -73,6 +73,12 @@ make fmt       # format code with black & ruff
 pre-commit install  # optional: run hooks (formatters) on commit
 ```
 
+When `verify_converted_assets.py` reports gaps, run
+`python src/convert_missing.py --report verify_report.json`. The helper now
+passes each missing original back into `convert_assets` so only the flagged
+files are processed (see
+`tests/test_convert_missing.py::test_convert_missing_invokes_convert_assets`).
+
 If Playwright-based tests complain about missing browsers, install them via:
 
 ```bash
