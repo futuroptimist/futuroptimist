@@ -10,3 +10,10 @@ def test_checks_script_handles_missing_npm():
     text = Path("scripts/checks.sh").read_text()
     assert "command -v npm >/dev/null 2>&1" in text
     assert "package.json not found or npm missing" in text
+
+
+def test_checks_script_runs_docs_lint() -> None:
+    text = Path("scripts/checks.sh").read_text()
+    assert (
+        "npm run docs-lint" in text
+    ), "checks.sh should invoke docs-lint to enforce markdown hygiene"
