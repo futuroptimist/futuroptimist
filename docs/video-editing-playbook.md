@@ -62,7 +62,10 @@ Purpose: A fast, repeatable path from long selects to a tight 3–5 minute video
 - Verify credits and sources (APA in script folder)
 - Confirm asset rights for any third‑party footage
 - Ensure `metadata.json` has publish date, tags, and thumbnail path
-  (_enforced by `tests/test_metadata_schema.py::test_live_metadata_includes_publish_details`_)
+  (_enforced by `tests/test_metadata_schema.py::test_live_metadata_includes_publish_details`_).
+  `python src/update_video_metadata.py` now also records the highest-resolution
+  thumbnail URL from YouTube (see
+  `tests/test_update_video_metadata.py::test_updates_metadata_from_api`).
 
 ### Anti‑Patterns to Avoid
 - Visual repetition without new information

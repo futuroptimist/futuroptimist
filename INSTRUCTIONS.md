@@ -158,10 +158,11 @@ directory. See `tests/test_index_local_media.py::test_scan_directory_excludes_re
 
 Metadata enrichment: run `python src/update_video_metadata.py`
 (or `make update_metadata`) to refresh video titles, publish dates,
-durations, descriptions, and keyword tags using YouTube Data API v3.
-Provide `YOUTUBE_API_KEY` in the environment. The tool only rewrites
-files when values change and is covered by
-`tests/test_update_video_metadata.py`.
+durations, descriptions, keyword tags, **and the highest-resolution
+thumbnail URL** using YouTube Data API v3. Provide `YOUTUBE_API_KEY`
+in the environment. The tool only rewrites files when values change
+and is covered by `tests/test_update_video_metadata.py`
+(`::test_updates_metadata_from_api` now asserts thumbnail selection).
 
 Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
 `schemas/assets_manifest.schema.json` to declare which `footage/` directories
