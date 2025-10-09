@@ -13,10 +13,10 @@ bluesky
 bom
 br
 budynas
+canonicalizes
 changelog
 chunker
 cli
-canonicalizes
 codebase
 codecov
 colour
