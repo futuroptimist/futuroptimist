@@ -69,6 +69,39 @@ def test_build_index_with_labels(tmp_path, monkeypatch):
     assert labeled["notes_file"] == ("footage/20251001_indoor-aquariums-tour/notes.md")
 
 
+def test_build_index_normalizes_notes_file(tmp_path, monkeypatch):
+    repo = tmp_path
+    slug = "20251001_indoor-aquariums-tour"
+    (repo / "schemas").mkdir(parents=True)
+    (repo / "video_scripts" / slug).mkdir(parents=True)
+    (repo / "footage" / slug / "originals").mkdir(parents=True)
+
+    schema_src = pathlib.Path("schemas/assets_manifest.schema.json").read_text()
+    (repo / "schemas" / "assets_manifest.schema.json").write_text(schema_src)
+
+    manifest = {
+        "footage_dirs": [f"footage/{slug}/originals"],
+        "notes_file": "notes.md",
+    }
+    manifest_path = repo / "video_scripts" / slug / "assets.json"
+    manifest_path.write_text(json.dumps(manifest))
+
+    notes_path = repo / "video_scripts" / slug / "notes.md"
+    notes_path.write_text("shoot notes")
+
+    # Create an example asset so the index isn't empty
+    asset = repo / "footage" / slug / "originals" / "clip.mp4"
+    asset.write_bytes(b"x")
+
+    import src.index_assets as ia
+
+    monkeypatch.setattr(ia, "REPO_ROOT", repo)
+    index = ia.build_index()
+    assert index, "Expected at least one indexed asset"
+    for entry in index:
+        assert entry["notes_file"] == f"video_scripts/{slug}/notes.md"
+
+
 def test_entrypoint_runs(tmp_path, monkeypatch):
     repo = tmp_path
     (repo / "schemas").mkdir(parents=True)
