@@ -9,8 +9,13 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
+import sys
 
-from src import convert_assets
+if __package__ in {None, ""}:
+    sys.path.append(str(pathlib.Path(__file__).resolve().parent))
+    import convert_assets  # type: ignore[import-not-found]
+else:  # pragma: no cover - exercised via package import in tests
+    from . import convert_assets
 
 MISSING_PREFIX = "Missing converted for "
 VIDEO_EXTS = set(convert_assets.VIDEO_RULES)
