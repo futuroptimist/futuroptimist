@@ -58,6 +58,10 @@ def test_updates_metadata_from_api(tmp_path, monkeypatch):
                     "publishedAt": "2024-08-15T12:34:56Z",
                     "description": "Updated description",
                     "tags": ["space", "maker"],
+                    "thumbnails": {
+                        "maxres": {"url": "https://img.youtube.com/maxres.jpg"},
+                        "high": {"url": "https://img.youtube.com/high.jpg"},
+                    },
                 },
                 "contentDetails": {"duration": "PT1H2M3S"},
             }
@@ -78,6 +82,7 @@ def test_updates_metadata_from_api(tmp_path, monkeypatch):
     assert data["duration_seconds"] == 3723
     assert data["keywords"] == ["space", "maker"]
     assert data["description"] == "Updated description"
+    assert data["thumbnail"] == "https://img.youtube.com/maxres.jpg"
 
 
 def test_parse_duration_handles_weeks():
@@ -87,6 +92,50 @@ def test_parse_duration_handles_weeks():
     assert updater.parse_duration("P1DT1H") == 90000
     assert updater.parse_duration("P1W") == 604800
     assert updater.parse_duration("invalid") == 0
+
+
+def test_fetch_metadata_thumbnail_fallback(monkeypatch):
+    import src.update_video_metadata as updater
+
+    payload = {
+        "items": [
+            {
+                "snippet": {
+                    "title": "Fallback",
+                    "publishedAt": "",
+                    "description": "",
+                    "tags": [],
+                    "thumbnails": {
+                        "high": {"url": "https://img.youtube.com/high.jpg"},
+                        "default": {"url": "https://img.youtube.com/default.jpg"},
+                    },
+                },
+                "contentDetails": {"duration": "PT0S"},
+            }
+        ]
+    }
+
+    class FakeResponse:
+        def __init__(self, data: bytes):
+            self._data = data
+
+        def read(self) -> bytes:
+            return self._data
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(
+        urllib.request,
+        "urlopen",
+        lambda url, timeout=10: FakeResponse(json.dumps(payload).encode("utf-8")),
+    )
+
+    info = updater.fetch_metadata("fallback", "TOKEN")
+    assert info["thumbnail"] == "https://img.youtube.com/high.jpg"
 
 
 def test_entrypoint_runs(monkeypatch, tmp_path):
@@ -162,6 +211,7 @@ def test_main_returns_error_on_partial_failures(monkeypatch, tmp_path):
             "duration_seconds": 10,
             "description": "Updated",
             "keywords": ["tag"],
+            "thumbnail": "https://img.youtube.com/fallback.jpg",
         },
         None,
     ]

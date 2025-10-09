@@ -71,12 +71,37 @@ def fetch_metadata(video_id: str, youtube_key: str, timeout: int = 10) -> dict |
     duration_seconds = parse_duration(details.get("duration"))
     published = snippet.get("publishedAt", "")
     publish_date = published.split("T", 1)[0] if published else ""
+    thumbnails = snippet.get("thumbnails") or {}
+
+    def _select_thumbnail(data: dict) -> str:
+        if not isinstance(data, dict):
+            return ""
+        preference = ["maxres", "standard", "high", "medium", "default"]
+        for key in preference:
+            entry = data.get(key)
+            if isinstance(entry, dict):
+                url = entry.get("url")
+                if isinstance(url, str) and url.strip():
+                    return url.strip()
+            elif isinstance(entry, str) and entry.strip():
+                return entry.strip()
+        # Sometimes thumbnails dict is a simple mapping of size->URL string
+        for value in data.values():
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+            if isinstance(value, dict):
+                url = value.get("url")
+                if isinstance(url, str) and url.strip():
+                    return url.strip()
+        return ""
+
     return {
         "title": snippet.get("title", ""),
         "publish_date": publish_date,
         "duration_seconds": duration_seconds,
         "description": snippet.get("description", ""),
         "keywords": list(snippet.get("tags", []) or []),
+        "thumbnail": _select_thumbnail(thumbnails),
     }
 
 
@@ -88,6 +113,8 @@ def update_metadata_file(path: pathlib.Path, updates: dict) -> bool:
     changed = False
     for key, value in updates.items():
         if key == "keywords" and value == [] and original.get(key):
+            continue
+        if key == "thumbnail" and not value:
             continue
         if original.get(key) != value:
             original[key] = value
