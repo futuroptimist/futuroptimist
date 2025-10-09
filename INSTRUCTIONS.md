@@ -49,7 +49,9 @@ The helper reads `video_scripts/YYYYMMDD_slug/metadata.json` to locate the YouTu
 loads `subtitles/<youtube_id>.srt`, and writes `script.md` with one `[NARRATOR]` line per
 sentence (timestamps preserved in HTML comments). Pass `--no-overwrite` to keep an existing
 script file in place. Regression coverage lives in
-`tests/test_srt_to_markdown.py::test_generate_script_for_slug`.
+`tests/test_srt_to_markdown.py::test_generate_script_for_slug`,
+`::test_generate_script_for_slug_no_overwrite_keeps_existing`, and
+`::test_main_slug_no_overwrite_skips_existing`.
 
 ## Development Workflow
 

@@ -4,7 +4,6 @@ import random
 import sys
 import warnings
 
-import pytest
 import src.srt_to_markdown as stm
 
 
@@ -319,16 +318,17 @@ def test_generate_script_for_slug(tmp_path):
     subs.mkdir()
     (subs / "abc123.srt").write_text("1\n00:00:00,000 --> 00:00:01,000\nHello world.\n")
 
-    out_path = stm.generate_script_for_slug(slug, repo_root=repo)
+    out_path, created = stm.generate_script_for_slug(slug, repo_root=repo)
 
     assert out_path == slug_dir / "script.md"
+    assert created is True
     content = out_path.read_text()
     assert content.startswith("# Demo Title")
     assert "[NARRATOR]: Hello world." in content
     assert "`abc123`" in content
 
 
-def test_generate_script_for_slug_no_overwrite(tmp_path):
+def test_generate_script_for_slug_no_overwrite_keeps_existing(tmp_path):
     repo = tmp_path
     slug = "20250102_demo"
     slug_dir = repo / "video_scripts" / slug
@@ -341,5 +341,38 @@ def test_generate_script_for_slug_no_overwrite(tmp_path):
     existing = slug_dir / "script.md"
     existing.write_text("old content")
 
-    with pytest.raises(FileExistsError):
-        stm.generate_script_for_slug(slug, repo_root=repo, overwrite=False)
+    out_path, created = stm.generate_script_for_slug(
+        slug, repo_root=repo, overwrite=False
+    )
+
+    assert out_path == existing
+    assert created is False
+    assert existing.read_text() == "old content"
+
+
+def test_main_slug_no_overwrite_skips_existing(tmp_path, capsys):
+    repo = tmp_path
+    slug = "20250103_demo"
+    slug_dir = repo / "video_scripts" / slug
+    slug_dir.mkdir(parents=True)
+    metadata = {"youtube_id": "ghi789", "title": "CLI Skip"}
+    (slug_dir / "metadata.json").write_text(json.dumps(metadata, indent=2))
+    subs = repo / "subtitles"
+    subs.mkdir()
+    (subs / "ghi789.srt").write_text("1\n00:00:00,000 --> 00:00:01,000\nHello CLI.\n")
+    script_path = slug_dir / "script.md"
+    script_path.write_text("keep me")
+
+    stm.main(
+        [
+            "--slug",
+            slug,
+            "--repo-root",
+            str(repo),
+            "--no-overwrite",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert "Skipped existing" in captured.out
+    assert script_path.read_text() == "keep me"
