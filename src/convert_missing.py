@@ -28,18 +28,51 @@ def main(argv: list[str] | None = None) -> int:
     if not sources:
         print("No missing items in report.")
         return 0
-    # Group by extension and run convert_assets with --only-ext filters (faster than per-file for now)
-    exts = sorted({pathlib.Path(s).suffix.lower() for s in sources})
-    cmd = [sys.executable, "src/convert_assets.py", "footage", "--force"]
-    # Include video conversions if any video extensions present
-    if any(
-        e in {".mov", ".mkv", ".avi", ".mts", ".m2ts", ".m4v", ".wmv", ".3gp"}
-        for e in exts
-    ):
+    exts = sorted({pathlib.Path(s).suffix.lower() for s in sources if s})
+    footage_root = pathlib.Path("footage")
+    video_exts = {".mov", ".mkv", ".avi", ".mts", ".m2ts", ".m4v", ".wmv", ".3gp"}
+    include_video = any(ext in video_exts for ext in exts)
+    slugs: set[str] = set()
+    normalized_sources: list[str] = []
+    for raw in sources:
+        if not raw:
+            continue
+        src_path = pathlib.Path(raw)
+        under_base = False
+        if not src_path.is_absolute():
+            candidate = src_path
+            under_base = True
+        else:
+            try:
+                candidate = src_path.relative_to(footage_root.resolve())
+                under_base = True
+            except ValueError:
+                candidate = src_path
+        parts = candidate.parts
+        rel_parts = parts
+        if parts and parts[0] == "footage":
+            rel_parts = parts[1:]
+            under_base = True
+        if rel_parts and under_base:
+            slugs.add(rel_parts[0])
+        rel_candidate = pathlib.Path(*rel_parts) if rel_parts else candidate
+        normalized_sources.append(str(rel_candidate))
+
+    unique_sources = sorted(set(normalized_sources))
+    if not unique_sources:
+        print("No convertible sources found in report.")
+        return 0
+
+    cmd = [sys.executable, "src/convert_assets.py", "footage"]
+    if include_video:
         cmd.append("--include-video")
     for ext in exts:
         cmd += ["--only-ext", ext]
-    print("Converting extensions:", ", ".join(exts))
+    for slug in sorted(slugs):
+        cmd += ["--slug", slug]
+    for source in unique_sources:
+        cmd += ["--source", source]
+    print(f"Converting {len(unique_sources)} missing source(s)")
     res = subprocess.run(cmd)
     return res.returncode
 
