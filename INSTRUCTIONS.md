@@ -168,6 +168,11 @@ same relative structure. HEIC/HEIF/DNG stills are exported as high-quality
 existing outputs. See `tests/test_convert_assets.py` for regression coverage of
 the extension mapping.
 
+Use `make convert_missing` after running the verifier to read
+`verify_report.json` and reconvert only the original files flagged as missing.
+This keeps the conversion step incremental instead of reprocessing every file
+with the same extension (see `tests/test_convert_missing.py`).
+
 Run `python src/enrich_metadata.py` to pull each video's title, publish date,
 and duration directly from the YouTube Data v3 API when `metadata.json`
 contains a `youtube_id`. Export `YOUTUBE_API_KEY` before running; add
