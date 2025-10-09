@@ -106,9 +106,12 @@ attempt to escape the `converted/` directory (absolute paths or `..`
 segments) are ignored so manifests can't reference outside assets (see
 `tests/test_report_funnel.py::test_build_manifest_skips_outside_converted_entries`).
 See `tests/test_report_funnel.py::test_build_manifest_normalizes_select_paths`
-for coverage of this behaviour and
+for coverage of this behaviour,
 `tests/test_report_funnel.py::test_build_manifest_normalizes_slug_prefixed_paths`
-for slug-prefixed selects that omit the `converted/` segment.
+for slug-prefixed selects that omit the `converted/` segment, and
+`tests/test_report_funnel.py::test_build_manifest_canonicalizes_repo_relative_paths`
+for the guaranteed `footage/<slug>/converted/...` prefix even when selects
+reference absolute paths.
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
