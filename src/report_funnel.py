@@ -81,14 +81,22 @@ def _normalize_select_path(
         candidate = (converted_root / tail).resolve()
 
     try:
-        candidate.relative_to(converted_root)
+        rel_within_converted = candidate.relative_to(converted_root)
     except ValueError:
         return None
 
+    rel_suffix = rel_within_converted.as_posix().lstrip("./")
+    if not rel_suffix:
+        canonical = f"footage/{slug}/converted"
+    else:
+        canonical = f"footage/{slug}/converted/{rel_suffix}"
+
     try:
-        display = candidate.relative_to(repo_root).as_posix()
+        repo_relative = candidate.relative_to(repo_root).as_posix()
     except ValueError:
-        display = candidate.as_posix()
+        repo_relative = ""
+
+    display = repo_relative if repo_relative.startswith("footage/") else canonical
     return candidate, display
 
 

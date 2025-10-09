@@ -113,3 +113,20 @@ def test_build_manifest_skips_outside_converted_entries(tmp_path: Path) -> None:
     assert manifest["selected_assets"] == [
         {"path": f"footage/{slug}/converted/keep.png", "kind": "image"}
     ]
+
+
+def test_build_manifest_canonicalizes_repo_relative_paths(tmp_path: Path) -> None:
+    root = tmp_path / "media"
+    slug = "20270303_demo"
+    converted = root / slug / "converted"
+    converted.mkdir(parents=True)
+    asset = converted / "still.png"
+    asset.write_text("x", encoding="utf-8")
+
+    selects = tmp_path / "selects.txt"
+    selects.write_text(asset.resolve().as_posix())
+
+    manifest = build_manifest(root, slug, selects)
+    assert manifest["selected_assets"] == [
+        {"path": f"footage/{slug}/converted/still.png", "kind": "image"}
+    ]
