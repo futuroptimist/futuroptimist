@@ -107,6 +107,33 @@ def _load_labels(paths: list[str]) -> dict[str, dict[str, Any]]:
     return labels_map
 
 
+def _normalise_notes_file(manifest_path: pathlib.Path, value: str) -> str:
+    raw = value.strip()
+    if not raw:
+        return raw
+    path = pathlib.Path(raw)
+    candidates: list[pathlib.Path] = []
+    if path.is_absolute():
+        candidates.append(path)
+    else:
+        first_part = path.parts[0] if path.parts else ""
+        if first_part in {"footage", "video_scripts", "docs", "sources", "subtitles"}:
+            candidates.append(REPO_ROOT / path)
+        else:
+            candidates.append(manifest_path.parent / path)
+            candidates.append(REPO_ROOT / path)
+    for candidate in candidates:
+        try:
+            resolved = candidate.resolve()
+        except Exception:
+            resolved = candidate
+        try:
+            return resolved.relative_to(REPO_ROOT).as_posix()
+        except ValueError:
+            continue
+    return path.as_posix()
+
+
 def build_index() -> list[dict[str, Any]]:
     results: list[AssetRecord] = []
     for manifest_path, data in _iter_assets_manifests(REPO_ROOT):
@@ -116,7 +143,7 @@ def build_index() -> list[dict[str, Any]]:
         notes_file_raw = data.get("notes_file")
         notes_file = None
         if isinstance(notes_file_raw, str) and notes_file_raw.strip():
-            notes_file = notes_file_raw.strip()
+            notes_file = _normalise_notes_file(manifest_path, notes_file_raw)
         labels_map = _load_labels(list(data.get("labels_files", [])))
         for dir_str in data["footage_dirs"]:
             d = REPO_ROOT / dir_str

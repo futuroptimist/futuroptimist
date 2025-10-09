@@ -168,7 +168,10 @@ and an optional `notes_file` pointer for shoot notes. Then run
 `make index_assets` to generate a rich `assets_index.json` with per-asset path,
 size, UTC mtime, linked script folder, tags, capture date, labels, and the
 manifest's notes file so edit checklists stay discoverable (see
-`tests/test_index_assets.py::test_build_index_with_labels`).
+`tests/test_index_assets.py::test_build_index_with_labels`). Notes file paths
+are normalised to repo-relative strings even when manifests use relative or
+absolute references (see
+`tests/test_index_assets.py::test_build_index_normalizes_notes_file`).
 
 Asset conversion (Premiere compatibility): run `make convert_assets` to scan
 `footage/<slug>/originals/` for formats like HEIC/HEIF, DNG, WEBP and convert
