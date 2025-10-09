@@ -13,6 +13,7 @@ bluesky
 bom
 br
 budynas
+canonicalizes
 changelog
 chunker
 cli
@@ -172,6 +173,7 @@ urls
 uv
 venv
 venv's
+verifier
 videoid
 virtualenv
 visualise
