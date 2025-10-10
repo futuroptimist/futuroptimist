@@ -22,6 +22,25 @@ def test_scan_directory(tmp_path):
     assert names == {"dir/a.jpg", "b.mp4"}
     sizes = {r["size"] for r in result}
     assert sizes == {1}
+    kinds = {r["kind"] for r in result}
+    assert kinds == {"image", "video"}
+
+
+def test_scan_directory_records_kind(tmp_path):
+    img = tmp_path / "photo.heic"
+    img.write_text("x")
+    vid = tmp_path / "clip.webm"
+    vid.write_text("y")
+    audio = tmp_path / "sound.flac"
+    audio.write_text("z")
+    doc = tmp_path / "notes.txt"
+    doc.write_text("note")
+
+    entries = {entry["path"]: entry for entry in ilm.scan_directory(tmp_path)}
+    assert entries["photo.heic"]["kind"] == "image"
+    assert entries["clip.webm"]["kind"] == "video"
+    assert entries["sound.flac"]["kind"] == "audio"
+    assert entries["notes.txt"]["kind"] == "other"
 
 
 def test_scan_directory_excludes_directory(tmp_path):
