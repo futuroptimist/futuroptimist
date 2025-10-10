@@ -162,6 +162,21 @@ def test_main_excludes_relative_path_via_cli(tmp_path, monkeypatch):
     assert names == {"keep.mov"}
 
 
+def test_main_defaults_inside_footage_dir(tmp_path, monkeypatch):
+    footage = tmp_path / "footage"
+    footage.mkdir()
+    (footage / "clip.mp4").write_text("x")
+
+    monkeypatch.chdir(footage)
+    ilm.main([])
+
+    out_file = footage / "footage_index.json"
+    assert out_file.exists(), "Expected default output inside footage directory"
+    data = json.loads(out_file.read_text())
+    paths = {entry["path"] for entry in data}
+    assert paths == {"clip.mp4"}
+
+
 def test_scan_directory_deterministic_order(tmp_path, monkeypatch):
     f1 = tmp_path / "b.txt"
     f2 = tmp_path / "a.txt"

@@ -156,7 +156,11 @@ output directory if needed and skips the index file itself when rerun
 inside the footage directory. Pass `--exclude PATH` (repeatable) to
 omit specific files or folders; paths may be absolute or relative to
 the footage root so `--exclude skip` works even when running inside the
-directory. See `tests/test_index_local_media.py::test_scan_directory_records_kind`
+directory. You can now run the helper directly from within `footage/`
+without extra arguments; it resolves the repo root automatically so the
+default `footage_index.json` lands beside your media (see
+`tests/test_index_local_media.py::test_main_defaults_inside_footage_dir`).
+See `tests/test_index_local_media.py::test_scan_directory_records_kind`
 and `::test_scan_directory_excludes_relative_path`.
 
 Metadata enrichment: run `python src/update_video_metadata.py`
