@@ -149,13 +149,15 @@ updates JSON metadata so asset manifests stay aligned (see
 Large media assets should live in a local `footage/` directory.
 Use `python src/index_local_media.py` to build `footage_index.json`
 so you can quickly locate clips while editing. Each entry includes
-the file path, modification time in UTC, and size in bytes, sorted
+the file path, modification time in UTC, size in bytes, **and a
+`kind` classification (`image`, `video`, `audio`, or `other`)** sorted
 deterministically by timestamp then path. The script creates the
 output directory if needed and skips the index file itself when rerun
 inside the footage directory. Pass `--exclude PATH` (repeatable) to
 omit specific files or folders; paths may be absolute or relative to
 the footage root so `--exclude skip` works even when running inside the
-directory. See `tests/test_index_local_media.py::test_scan_directory_excludes_relative_path`.
+directory. See `tests/test_index_local_media.py::test_scan_directory_records_kind`
+and `::test_scan_directory_excludes_relative_path`.
 
 Metadata enrichment: run `python src/update_video_metadata.py`
 (or `make update_metadata`) to refresh video titles, publish dates,

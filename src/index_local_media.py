@@ -13,11 +13,62 @@ from collections.abc import Iterable
 from datetime import datetime, timezone
 
 
+IMAGE_EXTS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".tiff",
+    ".heic",
+    ".heif",
+    ".dng",
+    ".raw",
+    ".webp",
+}
+
+VIDEO_EXTS = {
+    ".mp4",
+    ".mov",
+    ".mkv",
+    ".avi",
+    ".wmv",
+    ".mpg",
+    ".mpeg",
+    ".mts",
+    ".m2ts",
+    ".m4v",
+    ".webm",
+}
+
+AUDIO_EXTS = {
+    ".wav",
+    ".mp3",
+    ".aac",
+    ".m4a",
+    ".flac",
+    ".ogg",
+    ".oga",
+}
+
+
+def _classify_kind(path: pathlib.Path) -> str:
+    ext = path.suffix.lower()
+    if ext in IMAGE_EXTS:
+        return "image"
+    if ext in VIDEO_EXTS:
+        return "video"
+    if ext in AUDIO_EXTS:
+        return "audio"
+    return "other"
+
+
 def scan_directory(base: pathlib.Path, exclude: Iterable[pathlib.Path] | None = None):
     """Return a list of dictionaries describing files under ``base``.
 
     Each record contains ``path``, ``mtime`` (ISO timestamp in UTC without
-    sub-second precision), and file ``size`` in bytes. The list is sorted by
+    sub-second precision), file ``size`` in bytes, and a ``kind`` classification
+    (``image``, ``video``, ``audio``, or ``other``). The list is sorted by
     modification time and then by path to produce deterministic output. Paths
     listed in ``exclude`` are ignored. Directories in ``exclude`` skip all
     nested files.
@@ -62,6 +113,7 @@ def scan_directory(base: pathlib.Path, exclude: Iterable[pathlib.Path] | None = 
                     "path": rel_path,
                     "mtime": mtime,
                     "size": stat.st_size,
+                    "kind": _classify_kind(path),
                 }
             )
     return sorted(records, key=lambda r: (r["mtime"], r["path"]))
