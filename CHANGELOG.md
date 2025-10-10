@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-12
+- feat: store HTTPS YouTube thumbnail URLs in live metadata files.
+- test: enforce live thumbnails point at YouTube via metadata schema tests.
+- docs: note the thumbnail URL check in INSTRUCTIONS and video editing playbook.
+
 ## 2025-10-10
 - feat: add rename_video_slug helper to rename script and footage slugs.
 - test: cover slug rename workflow.

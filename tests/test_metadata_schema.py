@@ -59,3 +59,21 @@ def test_live_metadata_includes_publish_details():
         "Published metadata must include publish_date, keywords, and thumbnail as"
         " documented in docs/video-editing-playbook.md: " + ", ".join(failures)
     )
+
+
+def test_live_metadata_thumbnails_are_urls() -> None:
+    """Live entries should store canonical YouTube thumbnail URLs."""
+
+    failures: list[str] = []
+    for meta_path in _iter_metadata_files(VIDEO_DIR):
+        data = json.loads(meta_path.read_text())
+        if str(data.get("status", "")).lower() != "live":
+            continue
+        thumbnail = str(data.get("thumbnail", "")).strip()
+        if not thumbnail or not thumbnail.startswith("https://"):
+            failures.append(str(meta_path))
+
+    assert not failures, (
+        "Live metadata should record YouTube thumbnail URLs (https) as promised in "
+        "INSTRUCTIONS.md; offending files: " + ", ".join(failures)
+    )
