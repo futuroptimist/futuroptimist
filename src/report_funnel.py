@@ -125,6 +125,9 @@ def build_manifest(
             if display_path in seen_paths:
                 continue
             seen_paths.add(display_path)
+            if resolved.is_dir():
+                selected_assets.append({"path": display_path, "kind": "directory"})
+                continue
             ext = resolved.suffix.lower()
             if ext in IMAGE_EXTS:
                 kind = "image"
