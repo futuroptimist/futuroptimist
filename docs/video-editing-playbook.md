@@ -52,6 +52,9 @@ Purpose: A fast, repeatable path from long selects to a tight 3–5 minute video
 - Title formula: problem → promise → specificity (avoid clickbait)
 - Thumbnail: one idea, 3–5 words; readable at 120px; avoid clutter
 - Consistency beats novelty; update templates rather than re‑invent
+- Evaluate overlay text with
+  `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png`
+  (regression in `tests/test_thumbnail_text_predictor.py`).
 
 ### 8) Review Loops
 - Watch once at 1x; fix pacing

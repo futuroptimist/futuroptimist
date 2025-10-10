@@ -13,6 +13,10 @@ from collections.abc import Iterable
 from datetime import datetime, timezone
 
 
+SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent
+
+
 IMAGE_EXTS = {
     ".jpg",
     ".jpeg",
@@ -145,9 +149,32 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    base = pathlib.Path(args.directory)
-    if not base.is_dir():
-        parser.error(f"{base} is not a directory")
+    raw_directory = pathlib.Path(args.directory)
+    candidates: list[pathlib.Path] = []
+    if raw_directory.is_absolute():
+        candidates.append(raw_directory)
+    else:
+        candidates.append((pathlib.Path.cwd() / raw_directory).resolve())
+        candidates.append((REPO_ROOT / raw_directory).resolve())
+        if (
+            len(raw_directory.parts) == 1
+            and raw_directory.name == pathlib.Path.cwd().name
+        ):
+            candidates.append(pathlib.Path.cwd().resolve())
+
+    base: pathlib.Path | None = None
+    seen: set[pathlib.Path] = set()
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if resolved.is_dir():
+            base = resolved
+            break
+
+    if base is None:
+        parser.error(f"{raw_directory} is not a directory")
     output_path = pathlib.Path(args.output)
     index = scan_directory(base, exclude=[output_path, *args.exclude])
     output_path.parent.mkdir(parents=True, exist_ok=True)
