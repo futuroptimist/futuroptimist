@@ -19,6 +19,6 @@ def test_changelog_entries_are_not_future_dated() -> None:
             if entry_date > today:
                 future_entries.append(match.group(1))
 
-    assert not future_entries, (
-        "CHANGELOG.md contains future-dated entries: " + ", ".join(future_entries)
-    )
+    assert (
+        not future_entries
+    ), "CHANGELOG.md contains future-dated entries: " + ", ".join(future_entries)
