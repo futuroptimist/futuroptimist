@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-10-13
+- feat: add thumbnail text predictor CLI for CTR heuristics.
+- test: cover predictor scoring and reasoning heuristics.
+- docs: note the predictor helper in INSTRUCTIONS and video editing playbook.
+
 ## 2025-10-12
 - feat: store HTTPS YouTube thumbnail URLs in live metadata files.
 - test: enforce live thumbnails point at YouTube via metadata schema tests.
