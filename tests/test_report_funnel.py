@@ -76,10 +76,9 @@ def test_build_manifest_normalizes_slug_prefixed_paths(tmp_path: Path) -> None:
     selects.write_text("\n".join([slug, f"{slug}/clip.png"]))
 
     manifest = build_manifest(root, slug, selects)
-    paths = [entry["path"] for entry in manifest["selected_assets"]]
-    assert paths == [
-        f"footage/{slug}/converted",
-        f"footage/{slug}/converted/clip.png",
+    assert manifest["selected_assets"] == [
+        {"path": f"footage/{slug}/converted", "kind": "directory"},
+        {"path": f"footage/{slug}/converted/clip.png", "kind": "image"},
     ]
 
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-10-13
+- feat: tag report_funnel directory selects with a dedicated kind so manifests stay
+  faithful to their inputs.
+- test: assert directory selects are labelled explicitly.
+- docs: note the new directory classification in INSTRUCTIONS.
+
 ## 2025-10-12
 - feat: store HTTPS YouTube thumbnail URLs in live metadata files.
 - test: enforce live thumbnails point at YouTube via metadata schema tests.
