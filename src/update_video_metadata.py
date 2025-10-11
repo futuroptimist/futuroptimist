@@ -16,7 +16,7 @@ VIDEO_ROOT = BASE_DIR / "video_scripts"
 YOUTUBE_KEY_ENV = "YOUTUBE_API_KEY"
 API_URL = (
     "https://www.googleapis.com/youtube/v3/videos"
-    "?part=snippet,contentDetails&id={video_id}&key={youtube_key}"
+    "?part=snippet,contentDetails,statistics&id={video_id}&key={youtube_key}"
 )
 
 _DURATION_RE = re.compile(
@@ -68,6 +68,7 @@ def fetch_metadata(video_id: str, youtube_key: str, timeout: int = 10) -> dict |
     item = items[0]
     snippet = item.get("snippet") or {}
     details = item.get("contentDetails") or {}
+    statistics = item.get("statistics") or {}
     duration_seconds = parse_duration(details.get("duration"))
     published = snippet.get("publishedAt", "")
     publish_date = published.split("T", 1)[0] if published else ""
@@ -95,6 +96,12 @@ def fetch_metadata(video_id: str, youtube_key: str, timeout: int = 10) -> dict |
                     return url.strip()
         return ""
 
+    view_count_raw = statistics.get("viewCount", "0")
+    try:
+        view_count = int(str(view_count_raw))
+    except (TypeError, ValueError):
+        view_count = 0
+
     return {
         "title": snippet.get("title", ""),
         "publish_date": publish_date,
@@ -102,6 +109,7 @@ def fetch_metadata(video_id: str, youtube_key: str, timeout: int = 10) -> dict |
         "description": snippet.get("description", ""),
         "keywords": list(snippet.get("tags", []) or []),
         "thumbnail": _select_thumbnail(thumbnails),
+        "view_count": view_count,
     }
 
 

@@ -64,10 +64,11 @@ Purpose: A fast, repeatable path from long selects to a tight 3–5 minute video
 ### 9) Publish Checklist (preview)
 - Verify credits and sources (APA in script folder)
 - Confirm asset rights for any third‑party footage
-  - Ensure `metadata.json` has publish date, tags, and thumbnail path
+  - Ensure `metadata.json` has publish date, tags, thumbnail path, and a
+    positive `view_count`
     (_enforced by `tests/test_metadata_schema.py::test_live_metadata_includes_publish_details`_).
     `python src/update_video_metadata.py` now also records the highest-resolution
-    thumbnail URL from YouTube (see
+    thumbnail URL from YouTube and the latest view counts (see
     `tests/test_update_video_metadata.py::test_updates_metadata_from_api`).
     Live metadata entries are additionally checked to keep HTTPS YouTube
     thumbnail URLs via
