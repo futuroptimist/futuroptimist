@@ -64,6 +64,7 @@ def test_updates_metadata_from_api(tmp_path, monkeypatch):
                     },
                 },
                 "contentDetails": {"duration": "PT1H2M3S"},
+                "statistics": {"viewCount": "12345"},
             }
         ]
     }
@@ -83,6 +84,7 @@ def test_updates_metadata_from_api(tmp_path, monkeypatch):
     assert data["keywords"] == ["space", "maker"]
     assert data["description"] == "Updated description"
     assert data["thumbnail"] == "https://img.youtube.com/maxres.jpg"
+    assert data["view_count"] == 12345
 
 
 def test_parse_duration_handles_weeks():
@@ -111,6 +113,7 @@ def test_fetch_metadata_thumbnail_fallback(monkeypatch):
                     },
                 },
                 "contentDetails": {"duration": "PT0S"},
+                "statistics": {},
             }
         ]
     }
@@ -136,6 +139,7 @@ def test_fetch_metadata_thumbnail_fallback(monkeypatch):
 
     info = updater.fetch_metadata("fallback", "TOKEN")
     assert info["thumbnail"] == "https://img.youtube.com/high.jpg"
+    assert info["view_count"] is None
 
 
 def test_entrypoint_runs(monkeypatch, tmp_path):

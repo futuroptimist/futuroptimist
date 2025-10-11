@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- feat: store latest YouTube view counts in metadata via update_video_metadata.
 - feat: tag report_funnel directory selects with a dedicated kind so manifests stay
   faithful to their inputs.
 - feat: add thumbnail text predictor CLI for CTR heuristics.

@@ -164,11 +164,12 @@ and `::test_scan_directory_excludes_relative_path`.
 
 Metadata enrichment: run `python src/update_video_metadata.py`
 (or `make update_metadata`) to refresh video titles, publish dates,
-durations, descriptions, keyword tags, **and the highest-resolution
-thumbnail URL** using YouTube Data API v3. Provide `YOUTUBE_API_KEY`
-in the environment. The tool only rewrites files when values change
-and is covered by `tests/test_update_video_metadata.py`
-(`::test_updates_metadata_from_api` now asserts thumbnail selection).
+durations, descriptions, keyword tags, **the latest YouTube view count**, and
+the highest-resolution thumbnail URL using YouTube Data API v3. Provide
+`YOUTUBE_API_KEY` in the environment. The tool only rewrites files when values
+change and is covered by `tests/test_update_video_metadata.py`
+(`::test_updates_metadata_from_api` now asserts view-count updates alongside
+thumbnail selection).
 Live entries are also validated to keep HTTPS YouTube thumbnail URLs via
 `tests/test_metadata_schema.py::test_live_metadata_thumbnails_are_urls`.
 

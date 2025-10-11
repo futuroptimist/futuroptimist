@@ -16,7 +16,7 @@ VIDEO_ROOT = BASE_DIR / "video_scripts"
 YOUTUBE_KEY_ENV = "YOUTUBE_API_KEY"
 API_URL = (
     "https://www.googleapis.com/youtube/v3/videos"
-    "?part=snippet,contentDetails&id={video_id}&key={youtube_key}"
+    "?part=snippet,contentDetails,statistics&id={video_id}&key={youtube_key}"
 )
 
 _DURATION_RE = re.compile(
@@ -53,6 +53,15 @@ def iter_metadata_files(
         yield meta
 
 
+def _parse_view_count(value: object) -> int | None:
+    if isinstance(value, str):
+        value = value.strip()
+    try:
+        return int(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+
+
 def fetch_metadata(video_id: str, youtube_key: str, timeout: int = 10) -> dict | None:
     url = API_URL.format(video_id=video_id, youtube_key=youtube_key)
     try:
@@ -72,6 +81,8 @@ def fetch_metadata(video_id: str, youtube_key: str, timeout: int = 10) -> dict |
     published = snippet.get("publishedAt", "")
     publish_date = published.split("T", 1)[0] if published else ""
     thumbnails = snippet.get("thumbnails") or {}
+    statistics = item.get("statistics") or {}
+    view_count = _parse_view_count(statistics.get("viewCount"))
 
     def _select_thumbnail(data: dict) -> str:
         if not isinstance(data, dict):
@@ -102,6 +113,7 @@ def fetch_metadata(video_id: str, youtube_key: str, timeout: int = 10) -> dict |
         "description": snippet.get("description", ""),
         "keywords": list(snippet.get("tags", []) or []),
         "thumbnail": _select_thumbnail(thumbnails),
+        "view_count": view_count,
     }
 
 
@@ -112,6 +124,8 @@ def update_metadata_file(path: pathlib.Path, updates: dict) -> bool:
         return False
     changed = False
     for key, value in updates.items():
+        if value is None:
+            continue
         if key == "keywords" and value == [] and original.get(key):
             continue
         if key == "thumbnail" and not value:
