@@ -136,7 +136,7 @@ def build_manifest(
             elif ext in AUDIO_EXTS:
                 kind = "audio"
             else:
-                kind = "image"
+                kind = "other"
             selected_assets.append({"path": display_path, "kind": kind})
 
     manifest = {

@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- fix: classify unknown report_funnel selects as `other` so manifests stay faithful.
+- test: cover fallback classification for report_funnel selects.
 - feat: tag report_funnel directory selects with a dedicated kind so manifests stay
   faithful to their inputs.
 - feat: add thumbnail text predictor CLI for CTR heuristics.

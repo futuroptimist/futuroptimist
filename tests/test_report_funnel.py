@@ -114,6 +114,23 @@ def test_build_manifest_skips_outside_converted_entries(tmp_path: Path) -> None:
     ]
 
 
+def test_build_manifest_classifies_unknown_extension_as_other(tmp_path: Path) -> None:
+    root = tmp_path / "footage"
+    slug = "20280101_future"
+    converted = root / slug / "converted"
+    converted.mkdir(parents=True)
+    unknown = converted / "notes.txt"
+    unknown.write_text("reference")
+
+    selects = tmp_path / "selects.txt"
+    selects.write_text("converted/notes.txt")
+
+    manifest = build_manifest(root, slug, selects)
+    assert manifest["selected_assets"] == [
+        {"path": f"footage/{slug}/converted/notes.txt", "kind": "other"}
+    ]
+
+
 def test_build_manifest_canonicalizes_repo_relative_paths(tmp_path: Path) -> None:
     root = tmp_path / "media"
     slug = "20270303_demo"
