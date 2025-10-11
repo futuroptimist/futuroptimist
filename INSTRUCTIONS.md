@@ -104,7 +104,7 @@ Markdown table shape in `docs/prompt-docs-summary.md` and whitespace hygiene in
 `make report_funnel` normalises selects entries so the resulting
 `selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
 It classifies selects as images, video, audio, or `other` and tags folder
-entries as `directory` (see `tests/test_report_funnel.py::test_build_manifest_with_selects`
+entries as `directory_select` (see `tests/test_report_funnel.py::test_build_manifest_with_selects`
 and `::test_build_manifest_normalizes_slug_prefixed_paths`). Entries that
 attempt to escape the `converted/` directory (absolute paths or `..`
 segments) are ignored so manifests can't reference outside assets (see
@@ -166,13 +166,16 @@ and `::test_scan_directory_excludes_relative_path`.
 
 Metadata enrichment: run `python src/update_video_metadata.py`
 (or `make update_metadata`) to refresh video titles, publish dates,
-durations, descriptions, keyword tags, **and the highest-resolution
-thumbnail URL** using YouTube Data API v3. Provide `YOUTUBE_API_KEY`
-in the environment. The tool only rewrites files when values change
-and is covered by `tests/test_update_video_metadata.py`
-(`::test_updates_metadata_from_api` now asserts thumbnail selection).
-Live entries are also validated to keep HTTPS YouTube thumbnail URLs via
-`tests/test_metadata_schema.py::test_live_metadata_thumbnails_are_urls`.
+durations, descriptions, keyword tags, **the highest-resolution
+thumbnail URL**, **and YouTube view counts** using Data API v3. Provide
+`YOUTUBE_API_KEY` in the environment. The tool only rewrites files when
+values change and is covered by `tests/test_update_video_metadata.py`
+(`::test_updates_metadata_from_api` now asserts thumbnail selection and
+`view_count` updates). Live entries are also validated to keep HTTPS
+YouTube thumbnail URLs via
+`tests/test_metadata_schema.py::test_live_metadata_thumbnails_are_urls`
+and must expose positive view counts per
+`tests/test_metadata_schema.py::test_live_metadata_includes_publish_details`.
 
 Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
 `schemas/assets_manifest.schema.json` to declare which `footage/` directories

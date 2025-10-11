@@ -50,9 +50,9 @@ Script format:
   `YOUTUBE_API_KEY` is exported. Add `--dry-run` to preview changes; see
   `tests/test_enrich_metadata.py` for coverage.
 - Run `python src/update_video_metadata.py` to refresh titles, publish dates,
-  durations, keyword tags, descriptions, and the highest-resolution
-  thumbnail URL via the YouTube Data v3 API. Coverage lives in
-  `tests/test_update_video_metadata.py::test_updates_metadata_from_api`.
+  durations, keyword tags, descriptions, the highest-resolution
+  thumbnail URL, and current view counts via the YouTube Data v3 API.
+  Coverage lives in `tests/test_update_video_metadata.py::test_updates_metadata_from_api`.
 
 Run tests with:
 ```bash

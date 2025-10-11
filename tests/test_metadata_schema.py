@@ -47,17 +47,26 @@ def test_live_metadata_includes_publish_details():
     failures: list[str] = []
     for meta_path in _iter_metadata_files(VIDEO_DIR):
         data = json.loads(meta_path.read_text())
-        if str(data.get("status", "")).lower() != "live":
+        status = str(data.get("status", "")).lower()
+        if status != "live":
             continue
         publish_date = str(data.get("publish_date", "")).strip()
         keywords = data.get("keywords") or []
         thumbnail = str(data.get("thumbnail", "")).strip()
-        if not publish_date or not keywords or not thumbnail:
+        view_count = data.get("view_count")
+        if (
+            not publish_date
+            or not keywords
+            or not thumbnail
+            or not isinstance(view_count, int)
+            or view_count <= 0
+        ):
             failures.append(str(meta_path))
 
     assert not failures, (
-        "Published metadata must include publish_date, keywords, and thumbnail as"
-        " documented in docs/video-editing-playbook.md: " + ", ".join(failures)
+        "Published metadata must include publish_date, keywords, thumbnail, and"
+        " a positive view_count as documented in docs/video-editing-playbook.md: "
+        + ", ".join(failures)
     )
 
 
