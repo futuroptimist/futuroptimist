@@ -104,7 +104,7 @@ Markdown table shape in `docs/prompt-docs-summary.md` and whitespace hygiene in
 `make report_funnel` normalises selects entries so the resulting
 `selections.json` stores repo-relative `footage/<slug>/converted/...` paths.
 It classifies selects as images, video, or audio and tags folder entries as
-`directory` (see `tests/test_report_funnel.py::test_build_manifest_with_selects`
+`directory_select` (see `tests/test_report_funnel.py::test_build_manifest_with_selects`
 and `::test_build_manifest_normalizes_slug_prefixed_paths`). Entries that
 attempt to escape the `converted/` directory (absolute paths or `..`
 segments) are ignored so manifests can't reference outside assets (see
