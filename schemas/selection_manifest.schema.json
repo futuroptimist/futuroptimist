@@ -26,7 +26,7 @@
           "path": { "type": "string" },
           "kind": {
             "type": "string",
-            "enum": ["image", "video", "audio", "directory", "directory_select"]
+            "enum": ["image", "video", "audio", "directory_select", "other"]
           },
           "duration_sec": { "type": "number", "minimum": 0 },
           "ranges": {
@@ -46,5 +46,3 @@
     }
   }
 }
-
-

@@ -1,6 +1,6 @@
-# Changelog
-
 ## Unreleased
+- fix: classify unknown report_funnel selects as `other` so manifests stay faithful.
+- test: cover fallback classification for report_funnel selects.
 - feat: record YouTube view counts when enriching metadata.
 - test: require live metadata to expose positive view_count values.
 - docs: note the view_count sync in INSTRUCTIONS, llms.txt, and the
