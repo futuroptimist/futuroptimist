@@ -77,7 +77,10 @@ def test_build_manifest_normalizes_slug_prefixed_paths(tmp_path: Path) -> None:
 
     manifest = build_manifest(root, slug, selects)
     assert manifest["selected_assets"] == [
-        {"path": f"footage/{slug}/converted", "kind": "directory"},
+        {
+            "path": f"footage/{slug}/converted",
+            "kind": "directory_select",
+        },
         {"path": f"footage/{slug}/converted/clip.png", "kind": "image"},
     ]
 
