@@ -164,13 +164,16 @@ and `::test_scan_directory_excludes_relative_path`.
 
 Metadata enrichment: run `python src/update_video_metadata.py`
 (or `make update_metadata`) to refresh video titles, publish dates,
-durations, descriptions, keyword tags, **and the highest-resolution
-thumbnail URL** using YouTube Data API v3. Provide `YOUTUBE_API_KEY`
-in the environment. The tool only rewrites files when values change
-and is covered by `tests/test_update_video_metadata.py`
-(`::test_updates_metadata_from_api` now asserts thumbnail selection).
-Live entries are also validated to keep HTTPS YouTube thumbnail URLs via
-`tests/test_metadata_schema.py::test_live_metadata_thumbnails_are_urls`.
+durations, descriptions, keyword tags, **the highest-resolution
+thumbnail URL**, **and YouTube view counts** using Data API v3. Provide
+`YOUTUBE_API_KEY` in the environment. The tool only rewrites files when
+values change and is covered by `tests/test_update_video_metadata.py`
+(`::test_updates_metadata_from_api` now asserts thumbnail selection and
+`view_count` updates). Live entries are also validated to keep HTTPS
+YouTube thumbnail URLs via
+`tests/test_metadata_schema.py::test_live_metadata_thumbnails_are_urls`
+and must expose positive view counts per
+`tests/test_metadata_schema.py::test_live_metadata_includes_publish_details`.
 
 Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
 `schemas/assets_manifest.schema.json` to declare which `footage/` directories

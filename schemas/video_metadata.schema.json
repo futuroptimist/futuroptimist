@@ -20,6 +20,7 @@
     "slug": {"type": "string"},
     "thumbnail": {"type": "string"},
     "transcript_file": {"type": "string"},
-    "summary": {"type": "string"}
+    "summary": {"type": "string"},
+    "view_count": {"type": "integer", "minimum": 0}
   }
 }

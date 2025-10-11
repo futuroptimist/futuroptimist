@@ -64,6 +64,7 @@ def test_updates_metadata_from_api(tmp_path, monkeypatch):
                     },
                 },
                 "contentDetails": {"duration": "PT1H2M3S"},
+                "statistics": {"viewCount": "12345"},
             }
         ]
     }
@@ -83,6 +84,7 @@ def test_updates_metadata_from_api(tmp_path, monkeypatch):
     assert data["keywords"] == ["space", "maker"]
     assert data["description"] == "Updated description"
     assert data["thumbnail"] == "https://img.youtube.com/maxres.jpg"
+    assert data["view_count"] == 12345
 
 
 def test_parse_duration_handles_weeks():
@@ -136,6 +138,48 @@ def test_fetch_metadata_thumbnail_fallback(monkeypatch):
 
     info = updater.fetch_metadata("fallback", "TOKEN")
     assert info["thumbnail"] == "https://img.youtube.com/high.jpg"
+
+
+def test_fetch_metadata_defaults_missing_view_count(monkeypatch):
+    import src.update_video_metadata as updater
+
+    payload = {
+        "items": [
+            {
+                "snippet": {
+                    "title": "No Views",
+                    "publishedAt": "2024-01-01T00:00:00Z",
+                    "description": "",
+                    "tags": [],
+                    "thumbnails": {},
+                },
+                "contentDetails": {"duration": "PT0S"},
+                "statistics": {},
+            }
+        ]
+    }
+
+    class FakeResponse:
+        def __init__(self, data: bytes):
+            self._data = data
+
+        def read(self) -> bytes:
+            return self._data
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(
+        urllib.request,
+        "urlopen",
+        lambda url, timeout=10: FakeResponse(json.dumps(payload).encode("utf-8")),
+    )
+
+    info = updater.fetch_metadata("noviews", "TOKEN")
+    assert info["view_count"] == 0
 
 
 def test_entrypoint_runs(monkeypatch, tmp_path):
@@ -212,6 +256,7 @@ def test_main_returns_error_on_partial_failures(monkeypatch, tmp_path):
             "description": "Updated",
             "keywords": ["tag"],
             "thumbnail": "https://img.youtube.com/fallback.jpg",
+            "view_count": 987,
         },
         None,
     ]
@@ -229,4 +274,5 @@ def test_main_returns_error_on_partial_failures(monkeypatch, tmp_path):
     assert first_data["publish_date"] == "2024-08-15"
     assert first_data["duration_seconds"] == 10
     assert first_data["keywords"] == ["tag"]
+    assert first_data["view_count"] == 987
     assert json.loads(second.read_text())["title"] == "Keep Title"

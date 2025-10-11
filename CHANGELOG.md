@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- feat: record YouTube view counts when enriching metadata.
+- test: require live metadata to expose positive view_count values.
+- docs: note the view_count sync in INSTRUCTIONS, llms.txt, and the
+  video editing playbook publish checklist.
 - feat: tag report_funnel directory selects with a dedicated kind so manifests stay
   faithful to their inputs.
 - feat: add thumbnail text predictor CLI for CTR heuristics.
