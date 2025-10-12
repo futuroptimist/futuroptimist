@@ -19,7 +19,8 @@ Keep CAD sources and exported models current and validated.
 
 CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
-- Ensure SCAD files export cleanly to STL and OBJ models.
+- Ensure SCAD files export cleanly to STL and OBJ models (`python -m flywheel.fit`
+  enforces this; see `tests/test_flywheel_fit.py::test_verify_fit_requires_matching_obj`).
 - Verify parts fit with `python -m flywheel.fit`.
 - Install Node dependencies with `npm ci` when `package.json` is present.
 - Ensure these commands succeed:

@@ -9,6 +9,11 @@ DEFAULT_CAD_DIR = Path("cad")
 DEFAULT_STL_DIR = Path("stl")
 DEFAULT_TIME_TOLERANCE = 1.0  # seconds
 
+_EXPORT_PATTERNS: dict[str, str] = {
+    "STL": "*.stl",
+    "OBJ": "*.obj",
+}
+
 
 def _collect(parts_dir: Path, pattern: str) -> Dict[str, Path]:
     files: Dict[str, Path] = {}
@@ -24,7 +29,7 @@ def verify_fit(
     *,
     time_tolerance: float = DEFAULT_TIME_TOLERANCE,
 ) -> bool:
-    """Ensure each SCAD source has a matching, up-to-date STL export."""
+    """Ensure each SCAD source has matching, up-to-date STL and OBJ exports."""
 
     cad_path = Path(cad_dir)
     stl_path = Path(stl_dir)
@@ -44,27 +49,44 @@ def verify_fit(
         print(f"No .scad files found under {cad_path}; nothing to verify.")
         return True
 
-    stl_parts = _collect(stl_path, "*.stl")
-    missing = sorted(name for name in cad_parts if name not in stl_parts)
-    if missing:
-        raise AssertionError("Missing STL export(s) for: " + ", ".join(missing))
+    exports: dict[str, Dict[str, Path]] = {
+        kind: _collect(stl_path, pattern) for kind, pattern in _EXPORT_PATTERNS.items()
+    }
+
+    missing_errors: list[str] = []
+    for kind, parts in exports.items():
+        missing = sorted(name for name in cad_parts if name not in parts)
+        if missing:
+            missing_errors.append(
+                f"Missing {kind} export(s) for: " + ", ".join(missing)
+            )
+    if missing_errors:
+        raise AssertionError("; ".join(missing_errors))
 
     stale: list[str] = []
     for name, scad_file in cad_parts.items():
-        export = stl_parts[name]
         scad_mtime = scad_file.stat().st_mtime
-        stl_mtime = export.stat().st_mtime
-        if stl_mtime + time_tolerance < scad_mtime:
-            delta = scad_mtime - stl_mtime
-            stale.append(f"{name} ({delta:.1f}s stale export)")
+        for parts in exports.values():
+            export_file = parts[name]
+            export_mtime = export_file.stat().st_mtime
+            if export_mtime + time_tolerance < scad_mtime:
+                delta = scad_mtime - export_mtime
+                stale.append(
+                    f"{name}.{export_file.suffix.lstrip('.')} ({delta:.1f}s stale export)"
+                )
 
     if stale:
         raise AssertionError("Detected stale exports: " + ", ".join(stale))
 
-    extras = sorted(name for name in stl_parts if name not in cad_parts)
-    if extras:
+    extras_messages: list[str] = []
+    for kind, parts in exports.items():
+        extras = sorted(name for name in parts if name not in cad_parts)
+        if extras:
+            extras_messages.append(f"{kind}: " + ", ".join(extras))
+    if extras_messages:
         print(
-            "Warning: STL files without matching SCAD sources: " + ", ".join(extras),
+            "Warning: exports without matching SCAD sources -> "
+            + "; ".join(extras_messages),
             file=sys.stderr,
         )
 
@@ -74,7 +96,7 @@ def verify_fit(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Verify CAD sources have matching, fresh STL exports",
+        description="Verify CAD sources have matching, fresh STL/OBJ exports",
     )
     parser.add_argument(
         "--cad-dir",
@@ -86,13 +108,13 @@ def main(argv: list[str] | None = None) -> int:
         "--stl-dir",
         type=Path,
         default=DEFAULT_STL_DIR,
-        help="Directory containing .stl exports (default: ./stl)",
+        help="Directory containing .stl/.obj exports (default: ./stl)",
     )
     parser.add_argument(
         "--time-tolerance",
         type=float,
         default=DEFAULT_TIME_TOLERANCE,
-        help="Allowed seconds an STL may be older than its SCAD source",
+        help="Allowed seconds an export may be older than its SCAD source",
     )
     args = parser.parse_args(argv)
 
