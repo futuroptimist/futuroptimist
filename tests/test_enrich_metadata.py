@@ -71,6 +71,7 @@ def test_fetch_video_metadata_batches_requests(monkeypatch: pytest.MonkeyPatch) 
     def fake_urlopen(url: str):
         calls.append(url)
         query = dict(part.split("=", 1) for part in url.split("?")[1].split("&"))
+        assert query["part"] == "snippet,contentDetails,statistics"
         ids = query["id"].split(",")
         return DummyResponse(_build_api_payload(ids))
 

@@ -17,7 +17,9 @@ import urllib.request
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "video_scripts"
 ENV_VAR = "YOUTUBE_API_KEY"
-API_URL = "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={ids}&key={key}"
+API_URL = (
+    "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id={ids}&key={key}"
+)
 
 
 @dataclass(frozen=True)
