@@ -130,13 +130,14 @@ def _normalize_select_path(
     if any(part == ".." for part in parts):
         return None
 
-    if parts and parts[0].lower() == "footage":
-        parts = parts[1:]
-        footage_found = True
-    else:
-        footage_found = False
-
-    if is_absolute and not footage_found:
+    footage_index: int | None = next(
+        (idx for idx, part in enumerate(parts) if part.lower() == "footage"),
+        None,
+    )
+    footage_found = footage_index is not None
+    if footage_found:
+        parts = parts[footage_index + 1 :]
+    elif is_absolute:
         return None
 
     if parts and parts[0].lower() == slug.lower():
