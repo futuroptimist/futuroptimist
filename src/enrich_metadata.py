@@ -17,8 +17,9 @@ import urllib.request
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "video_scripts"
 ENV_VAR = "YOUTUBE_API_KEY"
+API_PARTS = ("snippet", "contentDetails", "statistics")
 API_URL = (
-    "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id={ids}&key={key}"
+    "https://www.googleapis.com/youtube/v3/videos?part={parts}&id={ids}&key={key}"
 )
 
 
@@ -85,6 +86,7 @@ def fetch_video_metadata(
     for batch in _chunked(video_ids, 50):
         ids = ",".join(batch)
         url = API_URL.format(
+            parts=",".join(API_PARTS),
             ids=urllib.parse.quote(ids, safe=","),
             key=urllib.parse.quote(youtube_key, safe=""),
         )
