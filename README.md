@@ -20,7 +20,7 @@ The automated tests run via GitHub Actions on each push and pull request and cur
 reach **100%** coverage.
 
 ## Related Projects
-_Last updated: 2025-10-11 06:02 UTC; checks hourly_
+_Last updated: 2025-10-12 04:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 
 - ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
@@ -32,7 +32,10 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
 - ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach
   real-world hobbies with NPC guides; offline-first so your space-base thrives without a
   signal ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
+- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
+  lint, tests, docs, and release automation with LLM agents so solo builders ship like a
+  team
+- ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
   LLM that learns your environment and delivers local, actionable security coaching
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex
   task pages, grabs failing GitHub logs, and pipes concise reports straight to your

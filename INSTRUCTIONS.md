@@ -68,6 +68,7 @@ make convert_assets   # convert incompatible originals/ into converted/ via ffmp
 make convert_all      # convert images+videos for all slugs (or SLUG=YYYYMMDD_slug)
 make verify_assets    # verify converted assets match originals
 make report_funnel SLUG=<slug> [SELECTS=path]  # write selections.json for the slug
+make newsletter [STATUS=live] [SINCE=YYYY-MM-DD] [OUTPUT=path]  # assemble newsletter markdown
 make process SLUG=<slug> [SELECTS=path]        # one-command: convert+verify+report
 make scripts_from_subtitles  # regenerate script.md files from subtitles
 make clean      # remove the virtualenv and caches
@@ -114,7 +115,17 @@ for coverage of this behaviour,
 for the fallback classification, and
 `::test_build_manifest_canonicalizes_repo_relative_paths`
 for the guaranteed `footage/<slug>/converted/...` prefix even when selects
-reference absolute paths.
+reference absolute paths. Windows-style selects with backslashes or drive
+letters are normalised the same way so cross-platform selects files stay
+compatible (see `tests/test_report_funnel.py::test_build_manifest_handles_windows_paths`).
+
+Use `python src/newsletter_builder.py` (or `make newsletter`) to assemble a
+Markdown digest of recent videos. The helper defaults to `--status live`,
+accepts `--since YYYY-MM-DD` to filter by publish date, and honours `--limit`
+and `--output` when you want to cap the list or write to disk. Each entry links
+back to the script and its YouTube watch URL so the update can drop straight
+into a newsletter platform. See `tests/test_newsletter_builder.py` for
+regression coverage of summary fallbacks, ordering, and Markdown formatting.
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`
@@ -203,12 +214,13 @@ This keeps the conversion step incremental instead of reprocessing every file
 with the same extension (see `tests/test_convert_missing.py`).
 
 Run `python src/enrich_metadata.py` to pull each video's title, publish date,
-and duration directly from the YouTube Data v3 API when `metadata.json`
-contains a `youtube_id`. Export `YOUTUBE_API_KEY` before running; add
-`--dry-run` to preview which files would change. Regression coverage in
-`tests/test_enrich_metadata.py` now exercises the duration parser,
-batched API fetches, dry-run output, and the real write path so
-future edits stay regression-tested.
+duration, highest-resolution thumbnail URL, and current view count directly
+from the YouTube Data v3 API when `metadata.json` contains a `youtube_id`.
+Export `YOUTUBE_API_KEY` before running; add `--dry-run` to preview which files
+would change. Regression coverage in `tests/test_enrich_metadata.py` now
+exercises the duration parser, batched API fetches, thumbnail selection, view
+count syncing, dry-run output, and the real write path so future edits stay
+regression-tested.
 
 `tests/test_describe_images.py` covers the heuristic captioning so changes to
 `src/describe_images.py` keep emitting meaningful alt-text summaries.
@@ -233,7 +245,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | 3️⃣  Script Intelligence | • SRT → Markdown converter that preserves timing blocks.<br>• Semantic chunker + embeddings (OpenAI / local) into `data/index` for RAG. | Opens door to AI-assisted new scripts |
 | 4️⃣  Creative Toolkit | • ✅ Prompt library for hook/headline generation trained on past hits.<br>• ✅ Thumbnail text predictor (CTR estimation) using small vision model via `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png` (see `tests/test_thumbnail_text_predictor.py`). | Higher audience retention |
 | 5️⃣  Distribution Insights | • Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
-| 6️⃣  Community | • GitHub Discussions integration for crowdsourced fact-checks.<br>• Scheduled newsletter builder that stitches new scripts + links. | Audience feedback loop |
+| 6️⃣  Community | • GitHub Discussions integration for crowdsourced fact-checks.<br>• ✅ Scheduled newsletter builder that stitches new scripts + links (`python src/newsletter_builder.py`; see `tests/test_newsletter_builder.py`). | Audience feedback loop |
 | 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders.<br>• FFmpeg rendering scripts for rough-cut assembly and caption burn-in.<br>• CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
 | 8️⃣  Publish Orchestration | • YouTube Data API V3 upload endpoint (draft/private).<br>• Automatic thumbnail + metadata attach from repo files.<br>• Post-publish annotation back into metadata.json (video url, processing times). | One-command release |
 | 9️⃣  Source Archival | • `collect_sources.py` downloads HTML/mp4 references from each `sources.txt` into `video_scripts/<slug>/sources/` folders and reads the root `source_urls.txt` into `/sources/` with a manifest (`sources.json`).<br>• Friendly `User-Agent`; see `tests/test_collect_sources.py::test_process_global_sources`. | Reliable citation & reproducibility |

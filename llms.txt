@@ -32,6 +32,9 @@ Script format:
 - `index_script_segments.py` exports every `[NARRATOR]` line (plus timestamps) into
   `data/script_segments.json` for lightweight RAG indexing. Regression coverage lives in
   `tests/test_index_script_segments.py`.
+- `newsletter_builder.py` assembles Markdown digests of recent videos filtered by status,
+  publish date and optional limits so updates slot straight into newsletters. See
+  `tests/test_newsletter_builder.py`.
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.
@@ -46,9 +49,11 @@ Script format:
   extra arguments; it auto-detects the repo root so the default output lands beside
   your media (see `tests/test_index_local_media.py::test_main_defaults_inside_footage_dir`).
 - Run `python src/enrich_metadata.py` to sync `metadata.json` title,
-  publish date, and duration fields from the YouTube Data v3 API whenever
-  `YOUTUBE_API_KEY` is exported. Add `--dry-run` to preview changes; see
-  `tests/test_enrich_metadata.py` for coverage.
+  publish date, duration, the highest-resolution thumbnail URL, and current
+  view count from the YouTube Data v3 API whenever `YOUTUBE_API_KEY` is
+  exported. Add `--dry-run` to preview changes; see
+  `tests/test_enrich_metadata.py` for coverage of thumbnail picking and view
+  count syncing.
 - Run `python src/update_video_metadata.py` to refresh titles, publish dates,
   durations, keyword tags, descriptions, the highest-resolution
   thumbnail URL, and current view counts via the YouTube Data v3 API.

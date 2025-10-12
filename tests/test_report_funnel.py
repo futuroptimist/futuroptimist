@@ -149,3 +149,52 @@ def test_build_manifest_canonicalizes_repo_relative_paths(tmp_path: Path) -> Non
     assert manifest["selected_assets"] == [
         {"path": f"footage/{slug}/converted/still.png", "kind": "image"}
     ]
+
+
+def test_build_manifest_handles_windows_paths(tmp_path: Path) -> None:
+    root = tmp_path / "footage"
+    slug = "20251001_demo"
+    converted = root / slug / "converted"
+    converted.mkdir(parents=True)
+    asset = converted / "clip.png"
+    asset.write_bytes(b"x")
+
+    selects = tmp_path / "selects.txt"
+    selects.write_text(
+        "\n".join(
+            [
+                "converted\\\\clip.png",
+                f"C:\\\\repo\\\\footage\\\\{slug}\\\\converted\\\\clip.png",
+            ]
+        )
+    )
+
+    manifest = build_manifest(root, slug, selects)
+    assert manifest["selected_assets"] == [
+        {"path": f"footage/{slug}/converted/clip.png", "kind": "image"}
+    ]
+    assert manifest["selected_count"] == 1
+
+
+def test_build_manifest_handles_windows_paths_with_repo_prefix(tmp_path: Path) -> None:
+    root = tmp_path / "footage"
+    slug = "20251130_repo"
+    converted = root / slug / "converted"
+    converted.mkdir(parents=True)
+    asset = converted / "clip.png"
+    asset.write_bytes(b"x")
+
+    selects = tmp_path / "selects.txt"
+    selects.write_text(
+        "\n".join(
+            [
+                f"C:\\\\Users\\\\me\\\\project\\\\footage\\\\{slug}\\\\converted\\\\clip.png",
+            ]
+        )
+    )
+
+    manifest = build_manifest(root, slug, selects)
+    assert manifest["selected_assets"] == [
+        {"path": f"footage/{slug}/converted/clip.png", "kind": "image"}
+    ]
+    assert manifest["selected_count"] == 1

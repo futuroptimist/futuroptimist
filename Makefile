@@ -13,7 +13,7 @@ endif
 PIP := uv pip
 
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
-.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel process update_metadata scripts_from_subtitles
+.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel newsletter process update_metadata scripts_from_subtitles
 
 help:
 	@echo "Targets:"
@@ -31,6 +31,7 @@ help:
 	@echo "  scripts_from_subtitles Generate script.md files from subtitles"
 	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
 	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
+	@echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
 	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
 	@echo "  process       One-command: convert+verify+report (requires SLUG=...)"
 
@@ -85,6 +86,14 @@ update_metadata:
 report_funnel:
 	@if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
 	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+
+newsletter:
+	$(PY) src/newsletter_builder.py \
+		$(if $(OUTPUT),--output $(OUTPUT),) \
+		$(if $(SINCE),--since $(SINCE),) \
+		$(if $(STATUS),--status $(STATUS),) \
+		$(if $(LIMIT),--limit $(LIMIT),) \
+		$(if $(DATE),--date $(DATE),)
 
 # One-command processing for a slug
 process:
