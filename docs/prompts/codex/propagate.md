@@ -14,7 +14,6 @@ Use this prompt to ask Codex to seed missing `docs/prompts/codex/*.md` files acr
 1. Ensure `dict/prompt-doc-repos.txt` lists the target repositories:
 
    ```text
-   flywheel
    futuroptimist
    jobbot3000
    pr-reaper
@@ -53,7 +52,6 @@ CONTEXT:
   - `pre-commit run --all-files`
   - `pytest -q`
   - `npm run lint` and `npm run test:ci` if a `package.json` is present
-  - `python -m flywheel.fit` if the module is available
   - `bash scripts/checks.sh`
 
 REQUEST:
@@ -84,7 +82,6 @@ Keep this propagation prompt accurate for seeding prompt docs.
  - Follow `AGENTS.md` and `README.md`.
  - Ensure `pre-commit run --all-files` and `pytest -q` pass.
  - If a `package.json` exists, run `npm run lint` and `npm run test:ci`.
- - If the `flywheel` module is available, run `python -m flywheel.fit`.
  - Run `bash scripts/checks.sh`.
  - Regenerate `docs/prompt-docs-summary.md` with
    `python scripts/update_prompt_docs_summary.py --repos-from \

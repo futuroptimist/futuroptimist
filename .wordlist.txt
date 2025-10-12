@@ -48,6 +48,7 @@ executables
 explainer
 externalities
 extruder
+fallbacks
 ffmpeg
 fi
 finalise
@@ -196,4 +197,5 @@ yaml
 yml
 youtube
 yt
+yyyy
 yyyymmdd

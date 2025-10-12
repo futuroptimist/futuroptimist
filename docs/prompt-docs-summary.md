@@ -13,7 +13,6 @@
 | [prompts/codex/spellcheck.md](prompts/codex/spellcheck.md) | Codex Spellcheck Prompt |
 | [prompts/codex/video-script-ideas.md](prompts/codex/video-script-ideas.md) | Video Script Ideas Prompt |
 | [danielsmith.io/docs/prompts/codex/automation.md](https://github.com/futuroptimist/danielsmith.io/blob/main/docs/prompts/codex/automation.md) | Flywheel Codex Prompt |
-| [flywheel/docs/prompts/codex/automation.md](https://github.com/futuroptimist/flywheel/blob/main/docs/prompts/codex/automation.md) | Flywheel Codex Prompt |
 | [futuroptimist/docs/prompts/codex/automation.md](https://github.com/futuroptimist/futuroptimist/blob/main/docs/prompts/codex/automation.md) | Futuroptimist Codex Prompt |
 | [jobbot3000/docs/prompts/codex/automation.md](https://github.com/futuroptimist/jobbot3000/blob/main/docs/prompts/codex/automation.md) | Codex Automation Prompt |
 | [pr-reaper/docs/prompts/codex/automation.md](https://github.com/futuroptimist/pr-reaper/blob/main/docs/prompts/codex/automation.md) | pr-reaper Codex Prompt |

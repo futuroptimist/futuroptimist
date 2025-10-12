@@ -41,7 +41,6 @@ CONTEXT:
   - `pre-commit run --all-files`
   - `pytest -q`
   - `npm run test:ci`
-  - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
 - Use `rg` to scan for TODO, FIXME, "future work", and similar markers across `src/`, `tests/`,
   `video_scripts/`, and docs; pick items that fit into a single PR.
@@ -60,7 +59,7 @@ REQUEST:
    that promised the behavior.
 4. Update related docs (e.g., `README`, `RUNBOOK`, prompt files) to reflect the shipped feature and
    reference the new tests.
-5. Run the commands above (`pre-commit`, `pytest -q`, `npm run test:ci`, `python -m flywheel.fit`,
+5. Run the commands above (`pre-commit`, `pytest -q`, `npm run test:ci`,
    `bash scripts/checks.sh`, staged-diff secret-scan helper). Resolve failures and capture outcomes
    for the PR body.
 
@@ -92,7 +91,6 @@ CONTEXT:
   - `pre-commit run --all-files`
   - `pytest -q`
   - `npm run test:ci`
-  - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
 - Regenerate the prompt summary with
   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
