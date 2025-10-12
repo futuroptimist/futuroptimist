@@ -17,7 +17,8 @@ import urllib.request
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 VIDEO_ROOT = BASE_DIR / "video_scripts"
 ENV_VAR = "YOUTUBE_API_KEY"
-API_URL = "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={ids}&key={key}"
+API_PARTS = ("snippet", "contentDetails", "statistics")
+API_URL = "https://www.googleapis.com/youtube/v3/videos?part={parts}&id={ids}&key={key}"
 
 
 @dataclass(frozen=True)
@@ -27,6 +28,8 @@ class VideoInfo:
     title: str
     publish_date: str | None
     duration_seconds: int
+    thumbnail: str
+    view_count: int
 
 
 _DURATION_RE = re.compile(
@@ -81,6 +84,7 @@ def fetch_video_metadata(
     for batch in _chunked(video_ids, 50):
         ids = ",".join(batch)
         url = API_URL.format(
+            parts=",".join(API_PARTS),
             ids=urllib.parse.quote(ids, safe=","),
             key=urllib.parse.quote(youtube_key, safe=""),
         )
@@ -92,16 +96,51 @@ def fetch_video_metadata(
                 continue
             snippet = item.get("snippet") or {}
             content = item.get("contentDetails") or {}
+            statistics = item.get("statistics") or {}
             title = snippet.get("title") or ""
             published_at = snippet.get("publishedAt")
             publish_date = (
                 _extract_date(published_at) if isinstance(published_at, str) else None
             )
             duration_seconds = parse_duration(content.get("duration", ""))
+            thumbnails = snippet.get("thumbnails") or {}
+
+            def _select_thumbnail(data: dict) -> str:
+                if not isinstance(data, dict):
+                    return ""
+                preference = ["maxres", "standard", "high", "medium", "default"]
+                for key in preference:
+                    entry = data.get(key)
+                    if isinstance(entry, dict):
+                        url = entry.get("url")
+                        if isinstance(url, str) and url.strip():
+                            return url.strip()
+                    elif isinstance(entry, str) and entry.strip():
+                        return entry.strip()
+                for value in data.values():
+                    if isinstance(value, str) and value.strip():
+                        return value.strip()
+                    if isinstance(value, dict):
+                        url = value.get("url")
+                        if isinstance(url, str) and url.strip():
+                            return url.strip()
+                return ""
+
+            raw_view_count = statistics.get("viewCount", "0")
+            try:
+                view_count = int(str(raw_view_count))
+            except (TypeError, ValueError):
+                view_count = 0
+
+            thumbnail = _select_thumbnail(thumbnails)
+            if thumbnail and not thumbnail.startswith("http"):
+                thumbnail = ""
             results[video_id] = VideoInfo(
                 title=title,
                 publish_date=publish_date,
                 duration_seconds=duration_seconds,
+                thumbnail=thumbnail,
+                view_count=view_count,
             )
     return results
 
@@ -136,6 +175,17 @@ def apply_updates(
             changed = True
         if data.get("duration_seconds") != info.duration_seconds:
             data["duration_seconds"] = info.duration_seconds
+            changed = True
+        if info.thumbnail:
+            if data.get("thumbnail") != info.thumbnail:
+                data["thumbnail"] = info.thumbnail
+                changed = True
+        if info.view_count > 0:
+            if data.get("view_count") != info.view_count:
+                data["view_count"] = info.view_count
+                changed = True
+        elif "view_count" not in data:
+            data["view_count"] = 0
             changed = True
         if changed:
             if not dry_run:
