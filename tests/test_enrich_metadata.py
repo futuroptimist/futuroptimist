@@ -31,8 +31,15 @@ def _build_api_payload(video_ids: Iterator[str]) -> bytes:
                 "snippet": {
                     "title": f"Title {idx}",
                     "publishedAt": "2025-02-03T04:05:06Z",
+                    "thumbnails": {
+                        "maxres": {
+                            "url": f"https://img.youtube.com/{video_id}/maxres.jpg"
+                        },
+                        "high": {"url": f"https://img.youtube.com/{video_id}/high.jpg"},
+                    },
                 },
                 "contentDetails": {"duration": "PT1H2M3S"},
+                "statistics": {"viewCount": str(idx * 1000)},
             }
         )
     return json.dumps({"items": items}).encode()
@@ -77,6 +84,8 @@ def test_fetch_video_metadata_batches_requests(monkeypatch: pytest.MonkeyPatch) 
     assert sample.title == "Title 1"
     assert sample.publish_date == "2025-02-03"
     assert sample.duration_seconds == 3723
+    assert sample.thumbnail == "https://img.youtube.com/vid0/maxres.jpg"
+    assert sample.view_count == 1000
 
 
 def test_apply_updates_respects_dry_run(tmp_path: Path) -> None:
@@ -88,12 +97,20 @@ def test_apply_updates_respects_dry_run(tmp_path: Path) -> None:
                 "title": "Old",
                 "publish_date": "2024-01-01",
                 "duration_seconds": 10,
+                "thumbnail": "https://img.youtube.com/abc/high.jpg",
+                "view_count": 5,
             }
         )
         + "\n"
     )
     info = {
-        "abc": em.VideoInfo(title="New", publish_date="2025-02-02", duration_seconds=20)
+        "abc": em.VideoInfo(
+            title="New",
+            publish_date="2025-02-02",
+            duration_seconds=20,
+            thumbnail="https://img.youtube.com/abc/maxres.jpg",
+            view_count=1234,
+        )
     }
 
     updated = em.apply_updates([meta], info, dry_run=True)
@@ -101,6 +118,8 @@ def test_apply_updates_respects_dry_run(tmp_path: Path) -> None:
     data = json.loads(meta.read_text())
     assert data["title"] == "Old"
     assert data["duration_seconds"] == 10
+    assert data["thumbnail"] == "https://img.youtube.com/abc/high.jpg"
+    assert data["view_count"] == 5
 
     updated = em.apply_updates([meta], info, dry_run=False)
     assert updated == [meta]
@@ -108,6 +127,8 @@ def test_apply_updates_respects_dry_run(tmp_path: Path) -> None:
     assert data["title"] == "New"
     assert data["publish_date"] == "2025-02-02"
     assert data["duration_seconds"] == 20
+    assert data["thumbnail"] == "https://img.youtube.com/abc/maxres.jpg"
+    assert data["view_count"] == 1234
 
 
 def test_main_dry_run_and_update(
@@ -139,7 +160,11 @@ def test_main_dry_run_and_update(
         assert ids == ["abc"]
         return {
             "abc": em.VideoInfo(
-                title="Fresh", publish_date="2025-02-02", duration_seconds=90
+                title="Fresh",
+                publish_date="2025-02-02",
+                duration_seconds=90,
+                thumbnail="https://img.youtube.com/abc/maxres.jpg",
+                view_count=321,
             )
         }
 
@@ -159,5 +184,7 @@ def test_main_dry_run_and_update(
     assert data["title"] == "Fresh"
     assert data["publish_date"] == "2025-02-02"
     assert data["duration_seconds"] == 90
+    assert data["thumbnail"] == "https://img.youtube.com/abc/maxres.jpg"
+    assert data["view_count"] == 321
     full_output = capsys.readouterr().out
     assert "Updated" in full_output

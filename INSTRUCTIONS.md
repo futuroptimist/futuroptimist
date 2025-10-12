@@ -204,12 +204,13 @@ This keeps the conversion step incremental instead of reprocessing every file
 with the same extension (see `tests/test_convert_missing.py`).
 
 Run `python src/enrich_metadata.py` to pull each video's title, publish date,
-and duration directly from the YouTube Data v3 API when `metadata.json`
-contains a `youtube_id`. Export `YOUTUBE_API_KEY` before running; add
-`--dry-run` to preview which files would change. Regression coverage in
-`tests/test_enrich_metadata.py` now exercises the duration parser,
-batched API fetches, dry-run output, and the real write path so
-future edits stay regression-tested.
+duration, highest-resolution thumbnail URL, and current view count directly
+from the YouTube Data v3 API when `metadata.json` contains a `youtube_id`.
+Export `YOUTUBE_API_KEY` before running; add `--dry-run` to preview which files
+would change. Regression coverage in `tests/test_enrich_metadata.py` now
+exercises the duration parser, batched API fetches, thumbnail selection, view
+count syncing, dry-run output, and the real write path so future edits stay
+regression-tested.
 
 `tests/test_describe_images.py` covers the heuristic captioning so changes to
 `src/describe_images.py` keep emitting meaningful alt-text summaries.
