@@ -12,6 +12,9 @@
   and reasoning heuristics.
 - docs: note the new directory classification in INSTRUCTIONS and reference the
   predictor helper in the video editing playbook.
+- feat: ship newsletter_builder CLI to generate Markdown digests from video metadata.
+- test: cover newsletter builder filtering, summary fallbacks, and CLI output.
+- docs: document the newsletter builder workflow in INSTRUCTIONS and llms.txt.
 
 - feat: store HTTPS YouTube thumbnail URLs in live metadata files.
 - test: enforce live thumbnails point at YouTube via metadata schema tests.
