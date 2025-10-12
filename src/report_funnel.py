@@ -16,6 +16,7 @@ import argparse
 import json
 import pathlib
 from datetime import datetime, timezone
+from pathlib import PurePosixPath, PureWindowsPath
 from typing import Iterable
 
 
@@ -47,6 +48,61 @@ def _read_selects(paths: Iterable[str]) -> list[str]:
     return result
 
 
+def _split_select_entry(entry: str) -> tuple[list[str], bool, bool]:
+    """Return components, absolute flag, and whether the path looked Windows-specific."""
+
+    raw = entry.strip()
+    if not raw:
+        return [], False, False
+    uses_windows = "\\" in raw or (len(raw) >= 2 and raw[0].isalpha() and raw[1] == ":")
+    pure = PureWindowsPath(raw) if uses_windows else PurePosixPath(raw)
+    parts: list[str] = []
+    for part in pure.parts:
+        if not part:
+            continue
+        if part in {pure.anchor, pure.root}:
+            continue
+        if part == ".":
+            continue
+        parts.append(part)
+    is_absolute = pure.is_absolute() or (
+        uses_windows
+        and len(raw) >= 3
+        and raw[0].isalpha()
+        and raw[1] == ":"
+        and raw[2] in {"/", "\\"}
+    )
+    if parts and len(parts[0]) == 2 and parts[0][1] == ":" and parts[0][0].isalpha():
+        parts = parts[1:]
+        is_absolute = True
+    return parts, is_absolute, uses_windows
+
+
+def _build_display(
+    candidate: pathlib.Path,
+    converted_root: pathlib.Path,
+    repo_root: pathlib.Path,
+    slug: str,
+) -> tuple[pathlib.Path, str] | None:
+    try:
+        rel_within_converted = candidate.relative_to(converted_root)
+    except ValueError:
+        return None
+
+    rel_suffix = rel_within_converted.as_posix().lstrip("./")
+    canonical = "footage/{slug}/converted".format(slug=slug)
+    if rel_suffix:
+        canonical = f"{canonical}/{rel_suffix}"
+
+    try:
+        repo_relative = candidate.relative_to(repo_root).as_posix()
+    except ValueError:
+        repo_relative = ""
+
+    display = repo_relative if repo_relative.startswith("footage/") else canonical
+    return candidate, display
+
+
 def _normalize_select_path(
     converted_root: pathlib.Path,
     repo_root: pathlib.Path,
@@ -62,42 +118,41 @@ def _normalize_select_path(
     raw = entry.strip()
     if not raw:
         return None
-    raw_path = pathlib.Path(raw)
-
-    if raw_path.is_absolute():
-        candidate = raw_path.resolve()
-    else:
-        parts = list(raw_path.parts)
-        if parts and parts[0] == "footage":
-            parts = parts[1:]
-        if parts and parts[0] == slug:
-            parts = parts[1:]
-        if parts and parts[0].lower() == "converted":
-            parts = parts[1:]
-        if any(part == ".." for part in parts):
-            return None
-        filtered = [part for part in parts if part not in {"", "."}]
-        tail = pathlib.Path(*filtered) if filtered else pathlib.Path()
-        candidate = (converted_root / tail).resolve()
-
-    try:
-        rel_within_converted = candidate.relative_to(converted_root)
-    except ValueError:
+    parts, is_absolute, uses_windows = _split_select_entry(raw)
+    if is_absolute and not uses_windows:
+        raw_path = pathlib.Path(raw)
+        if raw_path.is_absolute():
+            normalized = _build_display(
+                raw_path.resolve(), converted_root, repo_root, slug
+            )
+            if normalized is not None:
+                return normalized
+    if any(part == ".." for part in parts):
         return None
 
-    rel_suffix = rel_within_converted.as_posix().lstrip("./")
-    if not rel_suffix:
-        canonical = f"footage/{slug}/converted"
-    else:
-        canonical = f"footage/{slug}/converted/{rel_suffix}"
+    footage_index: int | None = next(
+        (idx for idx, part in enumerate(parts) if part.lower() == "footage"),
+        None,
+    )
+    footage_found = footage_index is not None
+    if footage_found:
+        parts = parts[footage_index + 1 :]
+    elif is_absolute:
+        return None
 
-    try:
-        repo_relative = candidate.relative_to(repo_root).as_posix()
-    except ValueError:
-        repo_relative = ""
+    if parts and parts[0].lower() == slug.lower():
+        parts = parts[1:]
+    elif footage_found:
+        return None
 
-    display = repo_relative if repo_relative.startswith("footage/") else canonical
-    return candidate, display
+    if parts and parts[0].lower() == "converted":
+        parts = parts[1:]
+
+    filtered = [part for part in parts if part and part != "."]
+    tail = pathlib.Path(*filtered) if filtered else pathlib.Path()
+    candidate = (converted_root / tail).resolve()
+
+    return _build_display(candidate, converted_root, repo_root, slug)
 
 
 def build_manifest(

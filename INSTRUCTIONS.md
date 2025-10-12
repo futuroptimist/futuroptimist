@@ -116,7 +116,9 @@ for coverage of this behaviour,
 for the fallback classification, and
 `::test_build_manifest_canonicalizes_repo_relative_paths`
 for the guaranteed `footage/<slug>/converted/...` prefix even when selects
-reference absolute paths.
+reference absolute paths. Windows-style selects with backslashes or drive
+letters are normalised the same way so cross-platform selects files stay
+compatible (see `tests/test_report_funnel.py::test_build_manifest_handles_windows_paths`).
 
 Use `python src/newsletter_builder.py` (or `make newsletter`) to assemble a
 Markdown digest of recent videos. The helper defaults to `--status live`,
