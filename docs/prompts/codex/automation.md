@@ -26,7 +26,6 @@ Keep the project healthy by making small, well-tested improvements.
 CONTEXT:
 - Follow the conventions in AGENTS.md and README.md.
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` all succeed.
 - `npm run test:ci` now checks that `docs/prompt-docs-summary.md` renders a
   valid two-column table and runs `actionlint` against `.github/workflows/` so
   linked prompt guides stay readable and workflow regressions surface early
@@ -77,7 +76,6 @@ Use this prompt to refine Futuroptimist's own prompt documentation.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Futuroptimist repository. Follow `AGENTS.md` and `README.md`. Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`, `python -m flywheel.fit`, and `bash scripts/checks.sh` pass before committing. If browser dependencies are missing, run `npm run playwright:install` or prefix tests with `SKIP_E2E=1` (see `tests/test_skip_e2e_flag.py`).
 
 USER:
 1. Pick one prompt doc under `docs/prompts/codex/` (for example,

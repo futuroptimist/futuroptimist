@@ -66,8 +66,6 @@ make index_assets   # build rich assets_index.json from per-video assets.json
 make describe_images  # scan images and write heuristic captions to image_descriptions.md
 make convert_assets   # convert incompatible originals/ into converted/ via ffmpeg
 make convert_all      # convert images+videos for all slugs (or SLUG=YYYYMMDD_slug)
-python -m flywheel.fit  # verify cad/*.scad exports match stl/*.stl/*.obj
-                        # (tests/test_flywheel_fit.py::test_verify_fit_requires_matching_obj)
 make verify_assets    # verify converted assets match originals
 make report_funnel SLUG=<slug> [SELECTS=path]  # write selections.json for the slug
 make process SLUG=<slug> [SELECTS=path]        # one-command: convert+verify+report
@@ -225,7 +223,7 @@ future edits stay regression-tested.
   `data/script_hooks.json`, providing a ready-made dataset for headline generation tools (see
   `tests/test_index_script_hooks.py`).
 
-## 🌱 Roadmap / Flywheel Enhancements
+## 🌱 Roadmap Enhancements
 The goal: turn this repo into a self-reinforcing engine that **accelerates Futuroptimist content velocity**.
 
 | Phase | Feature | Impact |

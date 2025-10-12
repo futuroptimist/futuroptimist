@@ -15,8 +15,7 @@ related projects that share the same tooling foundations.
 ## Companion projects quick scan
 | Repo | Focus | Automation highlights |
 | ---- | ----- | --------------------- |
-| [flywheel](https://github.com/futuroptimist/flywheel) | Template | Prompts + pre-commit + CI. |
-| [token.place](https://github.com/futuroptimist/token.place) | Mesh | Flywheel prompts + AGENTS. |
+| [token.place](https://github.com/futuroptimist/token.place) | Mesh | Prompt docs + AGENTS. |
 | [gabriel](https://github.com/futuroptimist/gabriel) | Security | Shared prompts + scanning. |
 | [axel](https://github.com/futuroptimist/axel) | Tracker | Codex automation triage. |
 | [jobbot](https://github.com/futuroptimist/jobbot3000) | Copilot | Mirrors Futuroptimist prompts. |

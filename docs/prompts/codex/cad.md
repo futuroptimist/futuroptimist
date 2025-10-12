@@ -12,21 +12,17 @@ consistent.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository focused on 3D assets.
+You are an automated contributor for the Futuroptimist repository focused on 3D assets.
 
 PURPOSE:
 Keep CAD sources and exported models current and validated.
 
 CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
-- Ensure SCAD files export cleanly to STL and OBJ models (`python -m flywheel.fit`
-  enforces this; see `tests/test_flywheel_fit.py::test_verify_fit_requires_matching_obj`).
-- Verify parts fit with `python -m flywheel.fit`.
 - Install Node dependencies with `npm ci` when `package.json` is present.
 - Ensure these commands succeed:
   - `pre-commit run --all-files`
   - `pytest -q`
-  - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
   - `npm run lint` *(when `package.json` is present)*
   - `npm run test:ci` *(when `package.json` is present)*
@@ -37,7 +33,6 @@ REQUEST:
 1. Look for TODO comments in `cad/*.scad` or open issues tagged `cad`.
    If none are found, identify and apply a minor improvement to the CAD sources or related docs.
 2. Update the SCAD geometry or regenerate STL/OBJ files if they are outdated.
-3. Run `python -m flywheel.fit` to confirm dimensions match.
 4. Commit updated models and documentation.
 
 OUTPUT:
@@ -54,7 +49,7 @@ Use this prompt to refine this CAD prompt document.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository focused on 3D assets.
+You are an automated contributor for the Futuroptimist repository focused on 3D assets.
 
 PURPOSE:
 Keep CAD instructions accurate and up to date.
@@ -62,7 +57,6 @@ Keep CAD instructions accurate and up to date.
 CONTEXT:
 - Follow [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md).
 - Install Node dependencies with `npm ci` when `package.json` is present.
-- Ensure `pre-commit run --all-files`, `pytest -q`, `python -m flywheel.fit`, and
   `bash scripts/checks.sh` pass.
 - When `package.json` is present, also run:
   - `npm run lint`

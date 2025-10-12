@@ -6,12 +6,12 @@ slug: 'codex-physics'
 # OpenAI Codex Physics Explainer Prompt
 Type: evergreen
 
-Use this prompt to automatically expand Flywheel's physics documentation. The agent pulls
+Use this prompt to automatically expand Futuroptimist's physics documentation. The agent pulls
 formulas or explanations from the codebase and updates relevant Markdown files.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Enrich and clarify the physics documentation.
@@ -23,7 +23,6 @@ CONTEXT:
   - `pre-commit run --all-files`
   - `pytest -q`
   - `npm run test:ci`
-  - `python -m flywheel.fit`
   - `bash scripts/checks.sh`
 - If browser dependencies are missing, run `npx playwright install chromium`
   or prefix tests with `SKIP_E2E=1` (validated by `tests/test_skip_e2e_flag.py`).
@@ -56,7 +55,7 @@ Use this prompt to refine the physics explainer instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep physics prompt guidance accurate and clear.
@@ -64,7 +63,6 @@ Keep physics prompt guidance accurate and clear.
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.

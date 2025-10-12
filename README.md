@@ -32,9 +32,6 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
 - ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach
   real-world hobbies with NPC guides; offline-first so your space-base thrives without a
   signal ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
-  lint, tests, docs, and release automation with LLM agents so solo builders ship like a
-  team
 - ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
   LLM that learns your environment and delivers local, actionable security coaching
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex
@@ -58,7 +55,6 @@ Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no complete
 - ✅ **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js
   playground for an orthographic, keyboard-navigable portfolio scene
 - ✅ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job search copilot
-  bootstrapped from the flywheel template
 
 ## Values
 

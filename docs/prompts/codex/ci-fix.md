@@ -30,7 +30,6 @@ CONTEXT:
   - `npm ci` (if `package.json` exists)
   - `npm run lint` (if `package.json` exists)
   - `npm run test:ci` (if `package.json` exists)
-  - `python -m flywheel.fit` (if installed)
   - `bash scripts/checks.sh`
 - Regenerate `docs/prompt-docs-summary.md` with:
   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
@@ -96,8 +95,7 @@ Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream re
 connected. Regression coverage lives in `tests/test_repo_list_sync.py` to prevent the lists
 from drifting.
 
-Push and open a PR in flywheel. Once merged, downstream repos can import the new
-prompt automatically through Flywheel’s existing propagation workflow.
+prompt automatically through Futuroptimist’s existing propagation workflow.
 
 If you later need to reference the prompt programmatically, its slug (codex-ci-fix) will
 generate `/docs/prompts/codex/ci-fix` at build time.
@@ -142,7 +140,7 @@ Use this prompt to refine the CI-failure fix instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this CI-fix prompt aligned with current workflow patterns.
@@ -160,7 +158,6 @@ Keep this CI-fix prompt aligned with current workflow patterns.
     `python scripts/update_prompt_docs_summary.py --repos-from \
     dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
   - Keep `dict/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
-    repositories are "small flywheels" belted to this codebase—if the summary
     script drops any, fix the repo or integration instead of removing it.
 
 REQUEST:
