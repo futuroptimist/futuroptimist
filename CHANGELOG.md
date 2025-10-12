@@ -1,6 +1,8 @@
 ## Unreleased
 - fix: classify unknown report_funnel selects as `other` so manifests stay faithful.
 - test: cover fallback classification for report_funnel selects.
+- fix: normalise Windows-style report_funnel selects to canonical repo paths.
+- test: ensure Windows-select manifests collapse to the canonical converted path.
 - feat: record YouTube view counts when enriching metadata.
 - test: require live metadata to expose positive view_count values.
 - docs: note the view_count sync in INSTRUCTIONS, llms.txt, and the
