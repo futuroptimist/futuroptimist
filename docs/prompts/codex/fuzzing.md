@@ -65,7 +65,7 @@ CONTEXT:
 
 REQUEST:
 1. Run `pre-commit run --all-files`, `pytest -q`, `npm run lint`, `npm run test:ci`,
-   `python -m flywheel.fit`, and `bash scripts/checks.sh`.
+   and `bash scripts/checks.sh`.
 2. Commit the failing test, the fix, and documentation updates.
 3. Push to a branch named `codex/fuzzing/short-desc` and open a pull request.
 4. Link the postmortem and dspace entry in the PR description.
@@ -84,7 +84,7 @@ Use this prompt to refine the fuzzing instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this fuzzing prompt current with emerging edge cases.
@@ -92,7 +92,7 @@ Keep this fuzzing prompt current with emerging edge cases.
 CONTEXT:
 - Follow `AGENTS.md` and `README.md`.
 - Ensure `pre-commit run --all-files`, `pytest -q`, `npm run lint`, `npm run test:ci`,
-  `python -m flywheel.fit`, and `bash scripts/checks.sh` pass.
+  and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
   dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.

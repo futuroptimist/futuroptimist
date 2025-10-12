@@ -9,7 +9,7 @@ Type: evergreen
 Use this prompt to remove one-off prompts already implemented and clean up lingering references.
 
 ```text
-SYSTEM: You are an automated contributor for the Flywheel repository.
+SYSTEM: You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Maintain prompt hygiene by deleting fulfilled one-off prompts and clearing outdated references.
@@ -30,7 +30,6 @@ CONTEXT:
   - `npm ci` (if `package.json` exists)
   - `npm run lint` (if `package.json` exists)
   - `npm run test:ci` (if `package.json` exists)
-  - `python -m flywheel.fit` (if installed)
   - `bash scripts/checks.sh`
 
 REQUEST:
@@ -49,7 +48,7 @@ Use this prompt to refine the cleanup instructions.
 
 ```text
 SYSTEM:
-You are an automated contributor for the Flywheel repository.
+You are an automated contributor for the Futuroptimist repository.
 
 PURPOSE:
 Keep this cleanup prompt effective for removing obsolete items.
@@ -63,7 +62,6 @@ CONTEXT:
   - `npm ci` (if `package.json` exists)
   - `npm run lint` (if `package.json` exists)
   - `npm run test:ci` (if `package.json` exists)
-  - `python -m flywheel.fit` (if installed)
   - `bash scripts/checks.sh`
 - Regenerate `docs/prompt-docs-summary.md` with:
   `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
