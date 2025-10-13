@@ -64,6 +64,13 @@ Script format:
   durations, keyword tags, descriptions, the highest-resolution
   thumbnail URL, and current view counts via the YouTube Data v3 API.
   Coverage lives in `tests/test_update_video_metadata.py::test_updates_metadata_from_api`.
+- Run `python src/analytics_ingester.py --start-date YYYY-MM-DD --end-date YYYY-MM-DD`
+  to fetch watch time minutes, average view duration, impressions, and
+  click-through rate from the YouTube Analytics API. Set
+  `YOUTUBE_ANALYTICS_TOKEN` to an OAuth bearer token. The helper updates
+  each `metadata.json` with an `analytics` block and writes
+  `analytics/report.json`; see `tests/test_analytics_ingester.py` for
+  coverage.
 
 Run tests with:
 ```bash

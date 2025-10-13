@@ -21,6 +21,17 @@
     "thumbnail": {"type": "string"},
     "transcript_file": {"type": "string"},
     "summary": {"type": "string"},
-    "view_count": {"type": "integer", "minimum": 0}
+    "view_count": {"type": "integer", "minimum": 0},
+    "analytics": {
+      "type": "object",
+      "properties": {
+        "views": {"type": "integer", "minimum": 0},
+        "watch_time_minutes": {"type": "number", "minimum": 0},
+        "average_view_duration_seconds": {"type": "number", "minimum": 0},
+        "impressions": {"type": "integer", "minimum": 0},
+        "impressions_click_through_rate": {"type": "number", "minimum": 0},
+        "updated_at": {"type": "string", "format": "date-time"}
+      }
+    }
   }
 }

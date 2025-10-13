@@ -1,4 +1,9 @@
 ## Unreleased
+- feat: add analytics_ingester CLI to persist YouTube Analytics metrics into
+  metadata `analytics` blocks.
+- test: cover analytics ingestion parsing, metadata updates, and CLI summary
+  output.
+- docs: document the analytics ingestion workflow in INSTRUCTIONS and llms.txt.
 - fix: return `❓` when repositories have no completed workflow runs in repo_status.
 - test: assert repo_status reports unknown status for branches without completed runs.
 - docs: note the repo_status unknown-state test beside the README status legend.
