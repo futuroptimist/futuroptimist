@@ -238,7 +238,10 @@ count syncing, dry-run output, and the real write path so future edits stay
 regression-tested.
 
 `tests/test_describe_images.py` covers the heuristic captioning so changes to
-`src/describe_images.py` keep emitting meaningful alt-text summaries.
+`src/describe_images.py` keep emitting meaningful alt-text summaries. When
+footage assets are unavailable, the exporter now fills in metadata-based
+fallback text rather than `(description pending)` (see
+`tests/test_describe_images.py::test_write_markdown_fallback_populates_placeholder`).
 
 ## Next Steps
 * ~~Convert `.srt` caption timing into fully-fledged markdown scripts.~~ ✅ Use `make scripts_from_subtitles`.

@@ -48,6 +48,10 @@ Script format:
   files or folders. Running the helper from inside `footage/` now works without
   extra arguments; it auto-detects the repo root so the default output lands beside
   your media (see `tests/test_index_local_media.py::test_main_defaults_inside_footage_dir`).
+- Run `python src/describe_images.py` to refresh `image_descriptions.md`. The exporter
+  now fills metadata-based fallback text when footage is unavailable so the
+  Markdown never regresses to `(description pending)` (see
+  `tests/test_describe_images.py::test_write_markdown_fallback_populates_placeholder`).
 - Run `python src/report_funnel.py --slug <slug>` (optionally add
   `--selects-file selects.txt`) to print funnel stats. The CLI surfaces totals
   and coverage percentages for converted and selected assets, plus a kind
