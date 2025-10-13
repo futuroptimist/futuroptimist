@@ -106,6 +106,61 @@ def test_main_creates_discussion(tmp_path, monkeypatch, capsys):
     assert "Created discussion" in output
 
 
+def test_main_uses_default_video_root(tmp_path, monkeypatch, capsys):
+    slug = "20240102_default-root"
+    video_root = tmp_path / "video_scripts"
+    _write_metadata(
+        video_root,
+        slug,
+        {
+            "title": "Default Root Video",
+        },
+    )
+
+    responses = [
+        DummyResponse(
+            {
+                "data": {
+                    "repository": {
+                        "id": "repo123",
+                        "discussionCategories": {
+                            "nodes": [
+                                {"id": "cat456", "name": "Fact Checks"},
+                            ]
+                        },
+                    }
+                }
+            }
+        ),
+        DummyResponse(
+            {
+                "data": {
+                    "createDiscussion": {
+                        "discussion": {
+                            "url": "https://example.test/discussions/99"
+                        }
+                    }
+                }
+            }
+        ),
+    ]
+
+    monkeypatch.chdir(tmp_path)
+
+    def fake_urlopen(request):
+        assert responses, "Unexpected GraphQL call"
+        return responses.pop(0)
+
+    monkeypatch.setattr(cfcd.github_auth, "get_github_token", lambda: "token-abc")
+    monkeypatch.setattr(cfcd.urllib.request, "urlopen", fake_urlopen)
+
+    exit_code = cfcd.main([slug])
+
+    assert exit_code == 0
+    output = capsys.readouterr().out
+    assert "Created discussion" in output
+
+
 def test_main_errors_when_category_missing(tmp_path, monkeypatch):
     slug = "20240101_missing"
     _write_metadata(tmp_path, slug, {"title": "Missing Category", "youtube_id": "zzz"})

@@ -206,7 +206,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("slug", help="Video slug like 20240101_example-video")
     parser.add_argument(
         "--video-root",
-        default="video_scripts",
+        default=pathlib.Path("video_scripts"),
         type=pathlib.Path,
         help="Directory containing video script folders",
     )
