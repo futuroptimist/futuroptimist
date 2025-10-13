@@ -1,4 +1,6 @@
 ## Unreleased
+- feat: add `create_fact_check_discussion.py` CLI to open GitHub Discussions for
+  crowdsourced fact-checks from `video_scripts/<slug>` metadata.
 - feat: add analytics_ingester CLI to persist YouTube Analytics metrics into
   metadata `analytics` blocks.
 - test: cover analytics ingestion parsing, metadata updates, and CLI summary

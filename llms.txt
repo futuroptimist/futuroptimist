@@ -35,6 +35,9 @@ Script format:
 - `newsletter_builder.py` assembles Markdown digests of recent videos filtered by status,
   publish date and optional limits so updates slot straight into newsletters. See
   `tests/test_newsletter_builder.py`.
+- `create_fact_check_discussion.py` opens GitHub Discussions for crowdsourced fact checks,
+  pulling metadata from `video_scripts/<slug>/metadata.json` and authenticating via the
+  GraphQL API (see `tests/test_create_fact_check_discussion.py`).
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.

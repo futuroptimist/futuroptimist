@@ -11,6 +11,7 @@ related projects that share the same tooling foundations.
 | Credential scanning | ✅ | `scan-secrets.py` and the pre-commit wrapper block credential patterns. |
 | Asset pipeline | ✅ | Conversion, verification, and funnel scripts keep footage reproducible. |
 | Docs hygiene | ✅ | scripts/checks.sh runs docs-lint (see tests/test_checks_script.py). |
+| Fact-check threads | ✅ | `create_fact_check_discussion.py` spins up GitHub Discussions for crowdsourced review (see tests/test_create_fact_check_discussion.py). |
 
 ## Companion projects quick scan
 | Repo | Focus | Automation highlights |
