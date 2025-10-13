@@ -1,4 +1,7 @@
 ## Unreleased
+- feat: derive newsletter summaries from scripts when metadata lacks copy.
+- test: assert newsletter builder promotes script narration into summaries.
+- docs: note the script-summary fallback in INSTRUCTIONS and llms.txt.
 - feat: add analytics_ingester CLI to persist YouTube Analytics metrics into
   metadata `analytics` blocks.
 - test: cover analytics ingestion parsing, metadata updates, and CLI summary
