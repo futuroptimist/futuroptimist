@@ -187,6 +187,17 @@ YouTube thumbnail URLs via
 and must expose positive view counts per
 `tests/test_metadata_schema.py::test_live_metadata_includes_publish_details`.
 
+Analytics ingestion: run
+`python src/analytics_ingester.py --start-date YYYY-MM-DD --end-date YYYY-MM-DD`
+to pull view counts, **watch time minutes**, **average view duration**, and
+**impressions click-through rate** for each live video via the YouTube
+Analytics API. Set `YOUTUBE_ANALYTICS_TOKEN` to an OAuth bearer token. The
+helper updates each `metadata.json` with an `analytics` object (including an
+`updated_at` timestamp) and writes a JSON summary to
+`analytics/report.json` by default. Pass `--slug SLUG` to scope the run or
+`--dry-run` to preview metrics without writing files. Regression coverage
+lives in `tests/test_analytics_ingester.py`.
+
 Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
 `schemas/assets_manifest.schema.json` to declare which `footage/` directories
 belong to that script, optional label files (`labels.json`), capture date, tags,

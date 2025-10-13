@@ -1,4 +1,9 @@
 ## Unreleased
+- feat: add analytics_ingester CLI to persist YouTube Analytics metrics into
+  metadata `analytics` blocks.
+- test: cover analytics ingestion parsing, metadata updates, and CLI summary
+  output.
+- docs: document the analytics ingestion workflow in INSTRUCTIONS and llms.txt.
 - fix: classify unknown report_funnel selects as `other` so manifests stay faithful.
 - test: cover fallback classification for report_funnel selects.
 - fix: normalise Windows-style report_funnel selects to canonical repo paths.
