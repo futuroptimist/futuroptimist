@@ -1,768 +1,768 @@
 # Image Descriptions
 
 - footage/20251001_indoor-aquariums-tour/originals/IMG_0271.HEIC — 1583.1 KB — 2025-06-11T21:44:02Z
-  - (description pending)
+  - Description unavailable (1583.1 KB @ 2025-06-11T21:44:02Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1472.HEIC — 3028.0 KB — 2025-06-11T21:34:30Z
-  - (description pending)
+  - Description unavailable (3028.0 KB @ 2025-06-11T21:34:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1474.HEIC — 3457.9 KB — 2025-06-11T21:34:30Z
-  - (description pending)
+  - Description unavailable (3457.9 KB @ 2025-06-11T21:34:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1476.HEIC — 2833.0 KB — 2025-06-11T21:34:29Z
-  - (description pending)
+  - Description unavailable (2833.0 KB @ 2025-06-11T21:34:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1486.HEIC — 665.5 KB — 2025-06-11T21:34:25Z
-  - (description pending)
+  - Description unavailable (665.5 KB @ 2025-06-11T21:34:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1491.HEIC — 2641.6 KB — 2025-06-11T21:34:24Z
-  - (description pending)
+  - Description unavailable (2641.6 KB @ 2025-06-11T21:34:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1529.HEIC — 3899.6 KB — 2025-06-11T21:34:18Z
-  - (description pending)
+  - Description unavailable (3899.6 KB @ 2025-06-11T21:34:18Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1530.HEIC — 2842.9 KB — 2025-06-11T21:34:18Z
-  - (description pending)
+  - Description unavailable (2842.9 KB @ 2025-06-11T21:34:18Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1544.HEIC — 2924.7 KB — 2025-06-11T21:34:16Z
-  - (description pending)
+  - Description unavailable (2924.7 KB @ 2025-06-11T21:34:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1545.HEIC — 2422.3 KB — 2025-06-11T21:34:16Z
-  - (description pending)
+  - Description unavailable (2422.3 KB @ 2025-06-11T21:34:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1546.HEIC — 2232.4 KB — 2025-06-11T21:34:16Z
-  - (description pending)
+  - Description unavailable (2232.4 KB @ 2025-06-11T21:34:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1547.DNG — 24305.7 KB — 2025-06-11T21:41:25Z
-  - (description pending)
+  - Description unavailable (24305.7 KB @ 2025-06-11T21:41:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1552.HEIC — 2543.0 KB — 2025-06-11T21:34:16Z
-  - (description pending)
+  - Description unavailable (2543.0 KB @ 2025-06-11T21:34:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1554.HEIC — 3992.4 KB — 2025-06-11T21:34:15Z
-  - (description pending)
+  - Description unavailable (3992.4 KB @ 2025-06-11T21:34:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1555.HEIC — 3949.7 KB — 2025-06-11T21:34:15Z
-  - (description pending)
+  - Description unavailable (3949.7 KB @ 2025-06-11T21:34:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1556.HEIC — 3102.1 KB — 2025-06-11T21:34:15Z
-  - (description pending)
+  - Description unavailable (3102.1 KB @ 2025-06-11T21:34:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1557.HEIC — 3851.0 KB — 2025-06-11T21:34:15Z
-  - (description pending)
+  - Description unavailable (3851.0 KB @ 2025-06-11T21:34:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1558.HEIC — 940.7 KB — 2025-06-11T21:34:14Z
-  - (description pending)
+  - Description unavailable (940.7 KB @ 2025-06-11T21:34:14Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1562.HEIC — 1569.8 KB — 2025-06-11T21:34:13Z
-  - (description pending)
+  - Description unavailable (1569.8 KB @ 2025-06-11T21:34:13Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1563.HEIC — 1714.7 KB — 2025-06-11T21:34:13Z
-  - (description pending)
+  - Description unavailable (1714.7 KB @ 2025-06-11T21:34:13Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1566.HEIC — 370.3 KB — 2025-06-11T21:34:12Z
-  - (description pending)
+  - Description unavailable (370.3 KB @ 2025-06-11T21:34:12Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1567.HEIC — 985.7 KB — 2025-06-11T21:34:12Z
-  - (description pending)
+  - Description unavailable (985.7 KB @ 2025-06-11T21:34:12Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1568.HEIC — 3548.8 KB — 2025-06-11T21:34:12Z
-  - (description pending)
+  - Description unavailable (3548.8 KB @ 2025-06-11T21:34:12Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1588.HEIC — 2726.0 KB — 2025-06-11T21:34:09Z
-  - (description pending)
+  - Description unavailable (2726.0 KB @ 2025-06-11T21:34:09Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1615.HEIC — 2338.0 KB — 2025-06-11T21:34:04Z
-  - (description pending)
+  - Description unavailable (2338.0 KB @ 2025-06-11T21:34:04Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1616.HEIC — 2893.1 KB — 2025-06-11T21:34:03Z
-  - (description pending)
+  - Description unavailable (2893.1 KB @ 2025-06-11T21:34:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1617.HEIC — 990.7 KB — 2025-06-11T21:34:03Z
-  - (description pending)
+  - Description unavailable (990.7 KB @ 2025-06-11T21:34:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1618.DNG — 19139.3 KB — 2025-06-11T21:41:25Z
-  - (description pending)
+  - Description unavailable (19139.3 KB @ 2025-06-11T21:41:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1620.HEIC — 4045.6 KB — 2025-06-11T21:34:03Z
-  - (description pending)
+  - Description unavailable (4045.6 KB @ 2025-06-11T21:34:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1627.HEIC — 2603.1 KB — 2025-06-11T21:34:01Z
-  - (description pending)
+  - Description unavailable (2603.1 KB @ 2025-06-11T21:34:01Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1639.HEIC — 3788.2 KB — 2025-06-11T21:34:01Z
-  - (description pending)
+  - Description unavailable (3788.2 KB @ 2025-06-11T21:34:01Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1640.HEIC — 3817.3 KB — 2025-06-11T21:34:01Z
-  - (description pending)
+  - Description unavailable (3817.3 KB @ 2025-06-11T21:34:01Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1641.HEIC — 3850.7 KB — 2025-06-11T21:34:01Z
-  - (description pending)
+  - Description unavailable (3850.7 KB @ 2025-06-11T21:34:01Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1660.HEIC — 4041.0 KB — 2025-06-11T21:33:51Z
-  - (description pending)
+  - Description unavailable (4041.0 KB @ 2025-06-11T21:33:51Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1679.HEIC — 1186.9 KB — 2025-06-11T21:34:45Z
-  - (description pending)
+  - Description unavailable (1186.9 KB @ 2025-06-11T21:34:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1680.HEIC — 3150.8 KB — 2025-06-11T21:34:44Z
-  - (description pending)
+  - Description unavailable (3150.8 KB @ 2025-06-11T21:34:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1684.DNG — 27951.2 KB — 2025-06-11T21:41:25Z
-  - (description pending)
+  - Description unavailable (27951.2 KB @ 2025-06-11T21:41:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1685.HEIC — 3536.2 KB — 2025-06-11T21:34:43Z
-  - (description pending)
+  - Description unavailable (3536.2 KB @ 2025-06-11T21:34:43Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1688.HEIC — 1238.2 KB — 2025-06-11T21:34:41Z
-  - (description pending)
+  - Description unavailable (1238.2 KB @ 2025-06-11T21:34:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1692.HEIC — 1677.2 KB — 2025-06-11T21:34:41Z
-  - (description pending)
+  - Description unavailable (1677.2 KB @ 2025-06-11T21:34:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1695.HEIC — 978.6 KB — 2025-06-11T21:34:40Z
-  - (description pending)
+  - Description unavailable (978.6 KB @ 2025-06-11T21:34:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1696.HEIC — 937.6 KB — 2025-06-11T21:34:40Z
-  - (description pending)
+  - Description unavailable (937.6 KB @ 2025-06-11T21:34:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1697.HEIC — 947.2 KB — 2025-06-11T21:34:40Z
-  - (description pending)
+  - Description unavailable (947.2 KB @ 2025-06-11T21:34:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1698.HEIC — 988.2 KB — 2025-06-11T21:34:39Z
-  - (description pending)
+  - Description unavailable (988.2 KB @ 2025-06-11T21:34:39Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1705.PNG — 4710.6 KB — 2025-06-11T21:34:34Z
-  - (description pending)
+  - Description unavailable (4710.6 KB @ 2025-06-11T21:34:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1725.HEIC — 513.1 KB — 2025-06-11T21:34:30Z
-  - (description pending)
+  - Description unavailable (513.1 KB @ 2025-06-11T21:34:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1726.HEIC — 535.3 KB — 2025-06-11T21:34:29Z
-  - (description pending)
+  - Description unavailable (535.3 KB @ 2025-06-11T21:34:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1741.HEIC — 2211.3 KB — 2025-06-11T21:34:25Z
-  - (description pending)
+  - Description unavailable (2211.3 KB @ 2025-06-11T21:34:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1742.HEIC — 1750.4 KB — 2025-06-11T21:34:24Z
-  - (description pending)
+  - Description unavailable (1750.4 KB @ 2025-06-11T21:34:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1747.HEIC — 1690.2 KB — 2025-06-11T21:34:24Z
-  - (description pending)
+  - Description unavailable (1690.2 KB @ 2025-06-11T21:34:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1748.HEIC — 1185.5 KB — 2025-06-11T21:34:24Z
-  - (description pending)
+  - Description unavailable (1185.5 KB @ 2025-06-11T21:34:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1749.HEIC — 1194.4 KB — 2025-06-11T21:34:23Z
-  - (description pending)
+  - Description unavailable (1194.4 KB @ 2025-06-11T21:34:23Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1750.HEIC — 1114.9 KB — 2025-06-11T21:34:23Z
-  - (description pending)
+  - Description unavailable (1114.9 KB @ 2025-06-11T21:34:23Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1751.HEIC — 1159.5 KB — 2025-06-11T21:34:23Z
-  - (description pending)
+  - Description unavailable (1159.5 KB @ 2025-06-11T21:34:23Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1752.HEIC — 1208.1 KB — 2025-06-11T21:34:23Z
-  - (description pending)
+  - Description unavailable (1208.1 KB @ 2025-06-11T21:34:23Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1753.HEIC — 1200.0 KB — 2025-06-11T21:34:22Z
-  - (description pending)
+  - Description unavailable (1200.0 KB @ 2025-06-11T21:34:22Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1807.HEIC — 2359.4 KB — 2025-06-11T21:34:10Z
-  - (description pending)
+  - Description unavailable (2359.4 KB @ 2025-06-11T21:34:10Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1812.HEIC — 1261.2 KB — 2025-06-11T21:34:09Z
-  - (description pending)
+  - Description unavailable (1261.2 KB @ 2025-06-11T21:34:09Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_1833.PNG — 5657.5 KB — 2025-06-11T21:34:04Z
-  - (description pending)
+  - Description unavailable (5657.5 KB @ 2025-06-11T21:34:04Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2026.HEIC — 3277.6 KB — 2025-06-11T21:33:34Z
-  - (description pending)
+  - Description unavailable (3277.6 KB @ 2025-06-11T21:33:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2027.HEIC — 2980.2 KB — 2025-06-11T21:33:34Z
-  - (description pending)
+  - Description unavailable (2980.2 KB @ 2025-06-11T21:33:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2028.HEIC — 2614.9 KB — 2025-06-11T21:33:34Z
-  - (description pending)
+  - Description unavailable (2614.9 KB @ 2025-06-11T21:33:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2117.HEIC — 2566.6 KB — 2025-06-11T21:33:26Z
-  - (description pending)
+  - Description unavailable (2566.6 KB @ 2025-06-11T21:33:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2118.HEIC — 3363.1 KB — 2025-06-11T21:33:26Z
-  - (description pending)
+  - Description unavailable (3363.1 KB @ 2025-06-11T21:33:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2119.HEIC — 3639.6 KB — 2025-06-11T21:33:26Z
-  - (description pending)
+  - Description unavailable (3639.6 KB @ 2025-06-11T21:33:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2124.HEIC — 1871.0 KB — 2025-06-11T21:33:25Z
-  - (description pending)
+  - Description unavailable (1871.0 KB @ 2025-06-11T21:33:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2125.HEIC — 2283.9 KB — 2025-06-11T21:33:25Z
-  - (description pending)
+  - Description unavailable (2283.9 KB @ 2025-06-11T21:33:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2126.HEIC — 3595.5 KB — 2025-06-11T21:33:25Z
-  - (description pending)
+  - Description unavailable (3595.5 KB @ 2025-06-11T21:33:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2127.HEIC — 3484.5 KB — 2025-06-11T21:33:25Z
-  - (description pending)
+  - Description unavailable (3484.5 KB @ 2025-06-11T21:33:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2128.HEIC — 2025.3 KB — 2025-06-11T21:33:25Z
-  - (description pending)
+  - Description unavailable (2025.3 KB @ 2025-06-11T21:33:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2129.HEIC — 2917.9 KB — 2025-06-11T21:33:25Z
-  - (description pending)
+  - Description unavailable (2917.9 KB @ 2025-06-11T21:33:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2172.HEIC — 992.0 KB — 2025-06-11T21:33:22Z
-  - (description pending)
+  - Description unavailable (992.0 KB @ 2025-06-11T21:33:22Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2173.HEIC — 996.5 KB — 2025-06-11T21:33:22Z
-  - (description pending)
+  - Description unavailable (996.5 KB @ 2025-06-11T21:33:22Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2180.HEIC — 1340.7 KB — 2025-06-11T21:33:20Z
-  - (description pending)
+  - Description unavailable (1340.7 KB @ 2025-06-11T21:33:20Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2188.HEIC — 2026.0 KB — 2025-06-11T21:33:20Z
-  - (description pending)
+  - Description unavailable (2026.0 KB @ 2025-06-11T21:33:20Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2189.HEIC — 1021.1 KB — 2025-06-11T21:33:20Z
-  - (description pending)
+  - Description unavailable (1021.1 KB @ 2025-06-11T21:33:20Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2190.HEIC — 2691.6 KB — 2025-06-11T21:33:20Z
-  - (description pending)
+  - Description unavailable (2691.6 KB @ 2025-06-11T21:33:20Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2191.HEIC — 1533.5 KB — 2025-06-11T21:33:20Z
-  - (description pending)
+  - Description unavailable (1533.5 KB @ 2025-06-11T21:33:20Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2192.HEIC — 1672.9 KB — 2025-06-11T21:33:19Z
-  - (description pending)
+  - Description unavailable (1672.9 KB @ 2025-06-11T21:33:19Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2193.HEIC — 2148.7 KB — 2025-06-11T21:33:19Z
-  - (description pending)
+  - Description unavailable (2148.7 KB @ 2025-06-11T21:33:19Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2220.HEIC — 3640.9 KB — 2025-06-11T21:32:27Z
-  - (description pending)
+  - Description unavailable (3640.9 KB @ 2025-06-11T21:32:27Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2221.HEIC — 3684.2 KB — 2025-06-11T21:32:27Z
-  - (description pending)
+  - Description unavailable (3684.2 KB @ 2025-06-11T21:32:27Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2224.HEIC — 1289.0 KB — 2025-06-11T21:35:05Z
-  - (description pending)
+  - Description unavailable (1289.0 KB @ 2025-06-11T21:35:05Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2225.HEIC — 1581.7 KB — 2025-06-11T21:35:06Z
-  - (description pending)
+  - Description unavailable (1581.7 KB @ 2025-06-11T21:35:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2226.HEIC — 1445.8 KB — 2025-06-11T21:35:05Z
-  - (description pending)
+  - Description unavailable (1445.8 KB @ 2025-06-11T21:35:05Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2228.HEIC — 1200.8 KB — 2025-06-11T21:35:03Z
-  - (description pending)
+  - Description unavailable (1200.8 KB @ 2025-06-11T21:35:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2259.HEIC — 3893.4 KB — 2025-06-11T21:33:04Z
-  - (description pending)
+  - Description unavailable (3893.4 KB @ 2025-06-11T21:33:04Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2260.HEIC — 3296.8 KB — 2025-06-11T21:33:04Z
-  - (description pending)
+  - Description unavailable (3296.8 KB @ 2025-06-11T21:33:04Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2261.HEIC — 2704.3 KB — 2025-06-11T21:33:03Z
-  - (description pending)
+  - Description unavailable (2704.3 KB @ 2025-06-11T21:33:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2262.HEIC — 1477.5 KB — 2025-06-11T21:33:03Z
-  - (description pending)
+  - Description unavailable (1477.5 KB @ 2025-06-11T21:33:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2263.HEIC — 1277.5 KB — 2025-06-11T21:33:02Z
-  - (description pending)
+  - Description unavailable (1277.5 KB @ 2025-06-11T21:33:02Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2297.HEIC — 918.3 KB — 2025-06-11T21:32:35Z
-  - (description pending)
+  - Description unavailable (918.3 KB @ 2025-06-11T21:32:35Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2299.HEIC — 641.2 KB — 2025-06-11T21:32:34Z
-  - (description pending)
+  - Description unavailable (641.2 KB @ 2025-06-11T21:32:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2306.HEIC — 1333.7 KB — 2025-06-11T21:32:30Z
-  - (description pending)
+  - Description unavailable (1333.7 KB @ 2025-06-11T21:32:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2307.HEIC — 1280.7 KB — 2025-06-11T21:32:30Z
-  - (description pending)
+  - Description unavailable (1280.7 KB @ 2025-06-11T21:32:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2308.HEIC — 1097.7 KB — 2025-06-11T21:32:27Z
-  - (description pending)
+  - Description unavailable (1097.7 KB @ 2025-06-11T21:32:27Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2309.HEIC — 1340.8 KB — 2025-06-11T21:32:25Z
-  - (description pending)
+  - Description unavailable (1340.8 KB @ 2025-06-11T21:32:25Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2376.PNG — 5489.9 KB — 2025-06-11T21:31:40Z
-  - (description pending)
+  - Description unavailable (5489.9 KB @ 2025-06-11T21:31:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2377.HEIC — 1390.4 KB — 2025-06-11T21:31:39Z
-  - (description pending)
+  - Description unavailable (1390.4 KB @ 2025-06-11T21:31:39Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2378.HEIC — 2066.2 KB — 2025-06-11T21:31:39Z
-  - (description pending)
+  - Description unavailable (2066.2 KB @ 2025-06-11T21:31:39Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2385.PNG — 5103.4 KB — 2025-06-11T21:31:33Z
-  - (description pending)
+  - Description unavailable (5103.4 KB @ 2025-06-11T21:31:33Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2399.HEIC — 2953.5 KB — 2025-06-11T21:31:24Z
-  - (description pending)
+  - Description unavailable (2953.5 KB @ 2025-06-11T21:31:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2400.HEIC — 2368.4 KB — 2025-06-11T21:31:23Z
-  - (description pending)
+  - Description unavailable (2368.4 KB @ 2025-06-11T21:31:23Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2401.HEIC — 2708.4 KB — 2025-06-11T21:31:23Z
-  - (description pending)
+  - Description unavailable (2708.4 KB @ 2025-06-11T21:31:23Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2402.HEIC — 3568.3 KB — 2025-06-11T21:31:21Z
-  - (description pending)
+  - Description unavailable (3568.3 KB @ 2025-06-11T21:31:21Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2403.HEIC — 4109.4 KB — 2025-06-11T21:31:21Z
-  - (description pending)
+  - Description unavailable (4109.4 KB @ 2025-06-11T21:31:21Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2404.HEIC — 3379.5 KB — 2025-06-11T21:31:20Z
-  - (description pending)
+  - Description unavailable (3379.5 KB @ 2025-06-11T21:31:20Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2405.HEIC — 1767.6 KB — 2025-06-11T21:31:20Z
-  - (description pending)
+  - Description unavailable (1767.6 KB @ 2025-06-11T21:31:20Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2409.HEIC — 2566.3 KB — 2025-06-11T21:31:15Z
-  - (description pending)
+  - Description unavailable (2566.3 KB @ 2025-06-11T21:31:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2412.HEIC — 530.5 KB — 2025-06-11T21:31:14Z
-  - (description pending)
+  - Description unavailable (530.5 KB @ 2025-06-11T21:31:14Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2413.HEIC — 581.5 KB — 2025-06-11T21:31:13Z
-  - (description pending)
+  - Description unavailable (581.5 KB @ 2025-06-11T21:31:13Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2414.HEIC — 1114.0 KB — 2025-06-11T21:31:12Z
-  - (description pending)
+  - Description unavailable (1114.0 KB @ 2025-06-11T21:31:12Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2415.HEIC — 2203.4 KB — 2025-06-11T21:31:11Z
-  - (description pending)
+  - Description unavailable (2203.4 KB @ 2025-06-11T21:31:11Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2416.HEIC — 2776.7 KB — 2025-06-11T21:31:10Z
-  - (description pending)
+  - Description unavailable (2776.7 KB @ 2025-06-11T21:31:10Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2433.HEIC — 1832.0 KB — 2025-06-11T21:30:55Z
-  - (description pending)
+  - Description unavailable (1832.0 KB @ 2025-06-11T21:30:55Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2434.HEIC — 893.1 KB — 2025-06-11T21:30:55Z
-  - (description pending)
+  - Description unavailable (893.1 KB @ 2025-06-11T21:30:55Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2447.HEIC — 644.8 KB — 2025-06-11T21:30:44Z
-  - (description pending)
+  - Description unavailable (644.8 KB @ 2025-06-11T21:30:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2496.HEIC — 2493.0 KB — 2025-06-11T21:29:40Z
-  - (description pending)
+  - Description unavailable (2493.0 KB @ 2025-06-11T21:29:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2533.HEIC — 1193.5 KB — 2025-06-11T21:28:41Z
-  - (description pending)
+  - Description unavailable (1193.5 KB @ 2025-06-11T21:28:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2534.HEIC — 1505.9 KB — 2025-06-11T21:28:38Z
-  - (description pending)
+  - Description unavailable (1505.9 KB @ 2025-06-11T21:28:38Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2543.HEIC — 1512.5 KB — 2025-06-11T21:28:26Z
-  - (description pending)
+  - Description unavailable (1512.5 KB @ 2025-06-11T21:28:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2640.HEIC — 3537.6 KB — 2025-06-11T21:26:45Z
-  - (description pending)
+  - Description unavailable (3537.6 KB @ 2025-06-11T21:26:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2646.HEIC — 1923.8 KB — 2025-06-11T21:26:40Z
-  - (description pending)
+  - Description unavailable (1923.8 KB @ 2025-06-11T21:26:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2648.HEIC — 1437.0 KB — 2025-06-11T21:26:36Z
-  - (description pending)
+  - Description unavailable (1437.0 KB @ 2025-06-11T21:26:36Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2713.HEIC — 2734.0 KB — 2025-06-11T21:32:27Z
-  - (description pending)
+  - Description unavailable (2734.0 KB @ 2025-06-11T21:32:27Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2733.HEIC — 976.5 KB — 2025-06-11T21:32:24Z
-  - (description pending)
+  - Description unavailable (976.5 KB @ 2025-06-11T21:32:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2734.HEIC — 1001.0 KB — 2025-06-11T21:32:24Z
-  - (description pending)
+  - Description unavailable (1001.0 KB @ 2025-06-11T21:32:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2748.HEIC — 3682.9 KB — 2025-06-11T21:32:24Z
-  - (description pending)
+  - Description unavailable (3682.9 KB @ 2025-06-11T21:32:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2749.HEIC — 3608.2 KB — 2025-06-11T21:32:24Z
-  - (description pending)
+  - Description unavailable (3608.2 KB @ 2025-06-11T21:32:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2750.HEIC — 3641.9 KB — 2025-06-11T21:32:24Z
-  - (description pending)
+  - Description unavailable (3641.9 KB @ 2025-06-11T21:32:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2818.HEIC — 1474.1 KB — 2025-06-11T21:41:03Z
-  - (description pending)
+  - Description unavailable (1474.1 KB @ 2025-06-11T21:41:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2831.HEIC — 1605.8 KB — 2025-06-11T21:40:56Z
-  - (description pending)
+  - Description unavailable (1605.8 KB @ 2025-06-11T21:40:56Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2832.HEIC — 638.7 KB — 2025-06-11T21:40:55Z
-  - (description pending)
+  - Description unavailable (638.7 KB @ 2025-06-11T21:40:55Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2834.HEIC — 558.4 KB — 2025-06-11T21:40:55Z
-  - (description pending)
+  - Description unavailable (558.4 KB @ 2025-06-11T21:40:55Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2835.HEIC — 587.1 KB — 2025-06-11T21:40:55Z
-  - (description pending)
+  - Description unavailable (587.1 KB @ 2025-06-11T21:40:55Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2837.HEIC — 1091.8 KB — 2025-06-11T21:40:55Z
-  - (description pending)
+  - Description unavailable (1091.8 KB @ 2025-06-11T21:40:55Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2839.HEIC — 2523.9 KB — 2025-06-11T21:40:54Z
-  - (description pending)
+  - Description unavailable (2523.9 KB @ 2025-06-11T21:40:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2840.HEIC — 2514.3 KB — 2025-06-11T21:40:54Z
-  - (description pending)
+  - Description unavailable (2514.3 KB @ 2025-06-11T21:40:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2842.HEIC — 2798.6 KB — 2025-06-11T21:40:54Z
-  - (description pending)
+  - Description unavailable (2798.6 KB @ 2025-06-11T21:40:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2857.HEIC — 1572.7 KB — 2025-06-11T21:40:51Z
-  - (description pending)
+  - Description unavailable (1572.7 KB @ 2025-06-11T21:40:51Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2912.HEIC — 3535.4 KB — 2025-06-11T21:40:33Z
-  - (description pending)
+  - Description unavailable (3535.4 KB @ 2025-06-11T21:40:33Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2913.HEIC — 2904.8 KB — 2025-06-11T21:40:33Z
-  - (description pending)
+  - Description unavailable (2904.8 KB @ 2025-06-11T21:40:33Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2914.HEIC — 2172.6 KB — 2025-06-11T21:40:33Z
-  - (description pending)
+  - Description unavailable (2172.6 KB @ 2025-06-11T21:40:33Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2916.HEIC — 1797.7 KB — 2025-06-11T21:40:31Z
-  - (description pending)
+  - Description unavailable (1797.7 KB @ 2025-06-11T21:40:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2917.HEIC — 1856.4 KB — 2025-06-11T21:40:31Z
-  - (description pending)
+  - Description unavailable (1856.4 KB @ 2025-06-11T21:40:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2925.HEIC — 1232.0 KB — 2025-06-11T21:40:29Z
-  - (description pending)
+  - Description unavailable (1232.0 KB @ 2025-06-11T21:40:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2926.HEIC — 1269.8 KB — 2025-06-11T21:40:28Z
-  - (description pending)
+  - Description unavailable (1269.8 KB @ 2025-06-11T21:40:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2927.HEIC — 1230.9 KB — 2025-06-11T21:40:28Z
-  - (description pending)
+  - Description unavailable (1230.9 KB @ 2025-06-11T21:40:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2949.HEIC — 2739.3 KB — 2025-06-11T21:40:21Z
-  - (description pending)
+  - Description unavailable (2739.3 KB @ 2025-06-11T21:40:21Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2950.HEIC — 2848.5 KB — 2025-06-11T21:40:21Z
-  - (description pending)
+  - Description unavailable (2848.5 KB @ 2025-06-11T21:40:21Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2960.HEIC — 3335.7 KB — 2025-06-11T21:40:16Z
-  - (description pending)
+  - Description unavailable (3335.7 KB @ 2025-06-11T21:40:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_2961.HEIC — 2799.2 KB — 2025-06-11T21:40:16Z
-  - (description pending)
+  - Description unavailable (2799.2 KB @ 2025-06-11T21:40:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3045.HEIC — 3100.7 KB — 2025-06-11T21:40:54Z
-  - (description pending)
+  - Description unavailable (3100.7 KB @ 2025-06-11T21:40:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3047.HEIC — 2805.4 KB — 2025-06-11T21:40:54Z
-  - (description pending)
+  - Description unavailable (2805.4 KB @ 2025-06-11T21:40:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3048.HEIC — 861.0 KB — 2025-06-11T21:40:54Z
-  - (description pending)
+  - Description unavailable (861.0 KB @ 2025-06-11T21:40:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3055.HEIC — 1169.3 KB — 2025-06-11T21:40:52Z
-  - (description pending)
+  - Description unavailable (1169.3 KB @ 2025-06-11T21:40:52Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3056.HEIC — 1146.2 KB — 2025-06-11T21:40:52Z
-  - (description pending)
+  - Description unavailable (1146.2 KB @ 2025-06-11T21:40:52Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3057.HEIC — 1502.0 KB — 2025-06-11T21:40:51Z
-  - (description pending)
+  - Description unavailable (1502.0 KB @ 2025-06-11T21:40:51Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3058.HEIC — 1530.0 KB — 2025-06-11T21:40:51Z
-  - (description pending)
+  - Description unavailable (1530.0 KB @ 2025-06-11T21:40:51Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3081.HEIC — 3020.9 KB — 2025-06-11T21:40:46Z
-  - (description pending)
+  - Description unavailable (3020.9 KB @ 2025-06-11T21:40:46Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3208.HEIC — 1074.7 KB — 2025-06-11T21:40:06Z
-  - (description pending)
+  - Description unavailable (1074.7 KB @ 2025-06-11T21:40:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3241.HEIC — 1434.1 KB — 2025-06-11T21:40:03Z
-  - (description pending)
+  - Description unavailable (1434.1 KB @ 2025-06-11T21:40:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3242.HEIC — 3091.9 KB — 2025-06-11T21:40:03Z
-  - (description pending)
+  - Description unavailable (3091.9 KB @ 2025-06-11T21:40:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3243.HEIC — 2492.6 KB — 2025-06-11T21:40:02Z
-  - (description pending)
+  - Description unavailable (2492.6 KB @ 2025-06-11T21:40:02Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3252.HEIC — 1546.4 KB — 2025-06-11T21:40:02Z
-  - (description pending)
+  - Description unavailable (1546.4 KB @ 2025-06-11T21:40:02Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3253.HEIC — 1681.9 KB — 2025-06-11T21:40:01Z
-  - (description pending)
+  - Description unavailable (1681.9 KB @ 2025-06-11T21:40:01Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3257.HEIC — 2672.5 KB — 2025-06-11T21:40:01Z
-  - (description pending)
+  - Description unavailable (2672.5 KB @ 2025-06-11T21:40:01Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3258.HEIC — 2835.5 KB — 2025-06-11T21:40:00Z
-  - (description pending)
+  - Description unavailable (2835.5 KB @ 2025-06-11T21:40:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3259.HEIC — 2864.9 KB — 2025-08-29T22:01:35Z
-  - (description pending)
+  - Description unavailable (2864.9 KB @ 2025-08-29T22:01:35Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3260.HEIC — 3162.3 KB — 2025-06-11T21:40:00Z
-  - (description pending)
+  - Description unavailable (3162.3 KB @ 2025-06-11T21:40:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3261.HEIC — 1802.1 KB — 2025-06-11T21:40:00Z
-  - (description pending)
+  - Description unavailable (1802.1 KB @ 2025-06-11T21:40:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3263.HEIC — 2147.7 KB — 2025-06-11T21:40:00Z
-  - (description pending)
+  - Description unavailable (2147.7 KB @ 2025-06-11T21:40:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3264.HEIC — 1818.2 KB — 2025-06-11T21:40:00Z
-  - (description pending)
+  - Description unavailable (1818.2 KB @ 2025-06-11T21:40:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3265.HEIC — 1947.5 KB — 2025-06-11T21:40:00Z
-  - (description pending)
+  - Description unavailable (1947.5 KB @ 2025-06-11T21:40:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3268.HEIC — 4679.5 KB — 2025-06-11T21:39:59Z
-  - (description pending)
+  - Description unavailable (4679.5 KB @ 2025-06-11T21:39:59Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3279.HEIC — 2243.2 KB — 2025-06-11T21:39:58Z
-  - (description pending)
+  - Description unavailable (2243.2 KB @ 2025-06-11T21:39:58Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3280.HEIC — 2453.4 KB — 2025-06-11T21:39:58Z
-  - (description pending)
+  - Description unavailable (2453.4 KB @ 2025-06-11T21:39:58Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3281.HEIC — 2623.2 KB — 2025-06-11T21:39:58Z
-  - (description pending)
+  - Description unavailable (2623.2 KB @ 2025-06-11T21:39:58Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3284.HEIC — 2722.9 KB — 2025-06-11T21:39:57Z
-  - (description pending)
+  - Description unavailable (2722.9 KB @ 2025-06-11T21:39:57Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3345.HEIC — 1124.2 KB — 2025-06-11T21:39:49Z
-  - (description pending)
+  - Description unavailable (1124.2 KB @ 2025-06-11T21:39:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3346.HEIC — 1886.9 KB — 2025-06-11T21:39:49Z
-  - (description pending)
+  - Description unavailable (1886.9 KB @ 2025-06-11T21:39:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3347.HEIC — 991.6 KB — 2025-06-11T21:39:49Z
-  - (description pending)
+  - Description unavailable (991.6 KB @ 2025-06-11T21:39:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3348.HEIC — 1795.8 KB — 2025-06-11T21:39:48Z
-  - (description pending)
+  - Description unavailable (1795.8 KB @ 2025-06-11T21:39:48Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3350.HEIC — 1646.7 KB — 2025-06-11T21:39:48Z
-  - (description pending)
+  - Description unavailable (1646.7 KB @ 2025-06-11T21:39:48Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3352.HEIC — 2407.4 KB — 2025-06-11T21:39:47Z
-  - (description pending)
+  - Description unavailable (2407.4 KB @ 2025-06-11T21:39:47Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3371.HEIC — 3390.6 KB — 2025-06-11T21:39:44Z
-  - (description pending)
+  - Description unavailable (3390.6 KB @ 2025-06-11T21:39:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3372.HEIC — 1867.5 KB — 2025-06-11T21:39:44Z
-  - (description pending)
+  - Description unavailable (1867.5 KB @ 2025-06-11T21:39:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3373.HEIC — 2459.9 KB — 2025-06-11T21:39:43Z
-  - (description pending)
+  - Description unavailable (2459.9 KB @ 2025-06-11T21:39:43Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3377.HEIC — 1902.7 KB — 2025-06-11T21:39:43Z
-  - (description pending)
+  - Description unavailable (1902.7 KB @ 2025-06-11T21:39:43Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3378.HEIC — 1682.3 KB — 2025-06-11T21:39:42Z
-  - (description pending)
+  - Description unavailable (1682.3 KB @ 2025-06-11T21:39:42Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3379.HEIC — 1027.6 KB — 2025-06-11T21:39:42Z
-  - (description pending)
+  - Description unavailable (1027.6 KB @ 2025-06-11T21:39:42Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3380.HEIC — 1618.4 KB — 2025-06-11T21:39:42Z
-  - (description pending)
+  - Description unavailable (1618.4 KB @ 2025-06-11T21:39:42Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3381.HEIC — 1589.2 KB — 2025-06-11T21:39:42Z
-  - (description pending)
+  - Description unavailable (1589.2 KB @ 2025-06-11T21:39:42Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3391.HEIC — 1172.6 KB — 2025-06-11T21:39:41Z
-  - (description pending)
+  - Description unavailable (1172.6 KB @ 2025-06-11T21:39:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3392.HEIC — 1115.2 KB — 2025-06-11T21:39:41Z
-  - (description pending)
+  - Description unavailable (1115.2 KB @ 2025-06-11T21:39:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3393.HEIC — 1154.6 KB — 2025-06-11T21:39:41Z
-  - (description pending)
+  - Description unavailable (1154.6 KB @ 2025-06-11T21:39:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3443.HEIC — 3131.7 KB — 2025-06-11T21:39:35Z
-  - (description pending)
+  - Description unavailable (3131.7 KB @ 2025-06-11T21:39:35Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3444.HEIC — 2545.1 KB — 2025-06-11T21:39:34Z
-  - (description pending)
+  - Description unavailable (2545.1 KB @ 2025-06-11T21:39:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3447.HEIC — 1134.2 KB — 2025-06-11T21:39:34Z
-  - (description pending)
+  - Description unavailable (1134.2 KB @ 2025-06-11T21:39:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3448.HEIC — 902.0 KB — 2025-06-11T21:39:34Z
-  - (description pending)
+  - Description unavailable (902.0 KB @ 2025-06-11T21:39:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3449.HEIC — 1527.1 KB — 2025-06-11T21:39:34Z
-  - (description pending)
+  - Description unavailable (1527.1 KB @ 2025-06-11T21:39:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3484.HEIC — 2793.6 KB — 2025-06-11T21:39:30Z
-  - (description pending)
+  - Description unavailable (2793.6 KB @ 2025-06-11T21:39:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3485.HEIC — 2179.4 KB — 2025-06-11T21:39:30Z
-  - (description pending)
+  - Description unavailable (2179.4 KB @ 2025-06-11T21:39:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3486.HEIC — 3313.5 KB — 2025-06-11T21:39:30Z
-  - (description pending)
+  - Description unavailable (3313.5 KB @ 2025-06-11T21:39:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3494.HEIC — 1270.0 KB — 2025-06-11T21:39:29Z
-  - (description pending)
+  - Description unavailable (1270.0 KB @ 2025-06-11T21:39:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3509.HEIC — 3437.9 KB — 2025-06-11T21:39:29Z
-  - (description pending)
+  - Description unavailable (3437.9 KB @ 2025-06-11T21:39:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3510.HEIC — 2689.0 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (2689.0 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3511.HEIC — 2837.3 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (2837.3 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3512.HEIC — 3927.6 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (3927.6 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3514.HEIC — 2968.1 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (2968.1 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3518.HEIC — 1999.4 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (1999.4 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3519.HEIC — 2979.2 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (2979.2 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3520.HEIC — 3041.4 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (3041.4 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3521.HEIC — 2739.3 KB — 2025-06-11T21:39:28Z
-  - (description pending)
+  - Description unavailable (2739.3 KB @ 2025-06-11T21:39:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3522.HEIC — 2765.7 KB — 2025-06-11T22:14:16Z
-  - (description pending)
+  - Description unavailable (2765.7 KB @ 2025-06-11T22:14:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3523.HEIC — 2836.6 KB — 2025-06-11T22:14:16Z
-  - (description pending)
+  - Description unavailable (2836.6 KB @ 2025-06-11T22:14:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3524.HEIC — 2852.6 KB — 2025-06-11T22:14:15Z
-  - (description pending)
+  - Description unavailable (2852.6 KB @ 2025-06-11T22:14:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3525.HEIC — 2634.3 KB — 2025-06-11T22:14:15Z
-  - (description pending)
+  - Description unavailable (2634.3 KB @ 2025-06-11T22:14:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3528.HEIC — 3378.3 KB — 2025-06-11T22:14:15Z
-  - (description pending)
+  - Description unavailable (3378.3 KB @ 2025-06-11T22:14:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3541.HEIC — 2618.3 KB — 2025-06-11T22:14:11Z
-  - (description pending)
+  - Description unavailable (2618.3 KB @ 2025-06-11T22:14:11Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3542.HEIC — 3497.5 KB — 2025-06-11T22:14:11Z
-  - (description pending)
+  - Description unavailable (3497.5 KB @ 2025-06-11T22:14:11Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3543.HEIC — 3422.9 KB — 2025-06-11T22:14:08Z
-  - (description pending)
+  - Description unavailable (3422.9 KB @ 2025-06-11T22:14:08Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3544.HEIC — 3651.4 KB — 2025-06-11T22:14:08Z
-  - (description pending)
+  - Description unavailable (3651.4 KB @ 2025-06-11T22:14:08Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3545.HEIC — 3600.1 KB — 2025-06-11T22:14:08Z
-  - (description pending)
+  - Description unavailable (3600.1 KB @ 2025-06-11T22:14:08Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3561.HEIC — 3550.5 KB — 2025-06-11T22:14:01Z
-  - (description pending)
+  - Description unavailable (3550.5 KB @ 2025-06-11T22:14:01Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3573.HEIC — 2253.7 KB — 2025-06-11T21:35:06Z
-  - (description pending)
+  - Description unavailable (2253.7 KB @ 2025-06-11T21:35:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3574.HEIC — 1467.2 KB — 2025-06-11T21:35:05Z
-  - (description pending)
+  - Description unavailable (1467.2 KB @ 2025-06-11T21:35:05Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3821.HEIC — 2099.0 KB — 2025-06-11T21:29:57Z
-  - (description pending)
+  - Description unavailable (2099.0 KB @ 2025-06-11T21:29:57Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3822.HEIC — 1608.6 KB — 2025-06-11T21:29:56Z
-  - (description pending)
+  - Description unavailable (1608.6 KB @ 2025-06-11T21:29:56Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3823.HEIC — 2815.9 KB — 2025-06-11T21:29:54Z
-  - (description pending)
+  - Description unavailable (2815.9 KB @ 2025-06-11T21:29:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3826.HEIC — 2375.6 KB — 2025-06-11T21:29:50Z
-  - (description pending)
+  - Description unavailable (2375.6 KB @ 2025-06-11T21:29:50Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3827.HEIC — 1502.2 KB — 2025-06-11T21:29:49Z
-  - (description pending)
+  - Description unavailable (1502.2 KB @ 2025-06-11T21:29:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3829.HEIC — 2510.0 KB — 2025-06-11T21:29:48Z
-  - (description pending)
+  - Description unavailable (2510.0 KB @ 2025-06-11T21:29:48Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_3835.HEIC — 2342.7 KB — 2025-06-11T21:29:39Z
-  - (description pending)
+  - Description unavailable (2342.7 KB @ 2025-06-11T21:29:39Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_4017.HEIC — 2429.8 KB — 2025-06-11T21:27:40Z
-  - (description pending)
+  - Description unavailable (2429.8 KB @ 2025-06-11T21:27:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_4044.HEIC — 1147.2 KB — 2025-06-11T21:27:24Z
-  - (description pending)
+  - Description unavailable (1147.2 KB @ 2025-06-11T21:27:24Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_4078.HEIC — 1225.4 KB — 2025-08-29T21:57:06Z
-  - (description pending)
+  - Description unavailable (1225.4 KB @ 2025-08-29T21:57:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_4091.HEIC — 2194.3 KB — 2025-06-11T21:26:47Z
-  - (description pending)
+  - Description unavailable (2194.3 KB @ 2025-06-11T21:26:47Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_4149.HEIC — 1106.6 KB — 2025-06-11T21:25:52Z
-  - (description pending)
+  - Description unavailable (1106.6 KB @ 2025-06-11T21:25:52Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_7702.HEIC — 2237.9 KB — 2025-08-29T06:02:06Z
-  - (description pending)
+  - Description unavailable (2237.9 KB @ 2025-08-29T06:02:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_7961.HEIC — 1089.4 KB — 2025-06-11T21:50:00Z
-  - (description pending)
+  - Description unavailable (1089.4 KB @ 2025-06-11T21:50:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_7962.HEIC — 2347.2 KB — 2025-06-11T21:50:00Z
-  - (description pending)
+  - Description unavailable (2347.2 KB @ 2025-06-11T21:50:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_7978.HEIC — 2616.4 KB — 2025-08-29T06:04:06Z
-  - (description pending)
+  - Description unavailable (2616.4 KB @ 2025-08-29T06:04:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8012.HEIC — 2125.0 KB — 2025-06-11T21:49:54Z
-  - (description pending)
+  - Description unavailable (2125.0 KB @ 2025-06-11T21:49:54Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8015.HEIC — 2633.2 KB — 2025-06-11T21:49:53Z
-  - (description pending)
+  - Description unavailable (2633.2 KB @ 2025-06-11T21:49:53Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8016.HEIC — 2667.0 KB — 2025-06-11T21:49:53Z
-  - (description pending)
+  - Description unavailable (2667.0 KB @ 2025-06-11T21:49:53Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8018.HEIC — 1944.8 KB — 2025-08-29T06:09:17Z
-  - (description pending)
+  - Description unavailable (1944.8 KB @ 2025-08-29T06:09:17Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8019.HEIC — 2432.9 KB — 2025-06-11T21:49:53Z
-  - (description pending)
+  - Description unavailable (2432.9 KB @ 2025-06-11T21:49:53Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8021.HEIC — 2442.4 KB — 2025-06-11T21:49:53Z
-  - (description pending)
+  - Description unavailable (2442.4 KB @ 2025-06-11T21:49:53Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8074.HEIC — 2780.6 KB — 2025-06-11T21:49:45Z
-  - (description pending)
+  - Description unavailable (2780.6 KB @ 2025-06-11T21:49:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8075.HEIC — 3077.0 KB — 2025-06-11T21:49:45Z
-  - (description pending)
+  - Description unavailable (3077.0 KB @ 2025-06-11T21:49:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8080.HEIC — 2470.2 KB — 2025-06-11T21:49:45Z
-  - (description pending)
+  - Description unavailable (2470.2 KB @ 2025-06-11T21:49:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8081.HEIC — 2351.0 KB — 2025-06-11T21:49:45Z
-  - (description pending)
+  - Description unavailable (2351.0 KB @ 2025-06-11T21:49:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8082.HEIC — 2389.5 KB — 2025-06-11T21:49:45Z
-  - (description pending)
+  - Description unavailable (2389.5 KB @ 2025-06-11T21:49:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8083.HEIC — 1976.2 KB — 2025-06-11T21:49:45Z
-  - (description pending)
+  - Description unavailable (1976.2 KB @ 2025-06-11T21:49:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8084.HEIC — 2223.8 KB — 2025-06-11T21:49:44Z
-  - (description pending)
+  - Description unavailable (2223.8 KB @ 2025-06-11T21:49:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8085.HEIC — 2221.5 KB — 2025-06-11T21:49:44Z
-  - (description pending)
+  - Description unavailable (2221.5 KB @ 2025-06-11T21:49:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8086.HEIC — 1199.9 KB — 2025-06-11T21:49:44Z
-  - (description pending)
+  - Description unavailable (1199.9 KB @ 2025-06-11T21:49:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8088.HEIC — 1922.8 KB — 2025-06-11T21:49:44Z
-  - (description pending)
+  - Description unavailable (1922.8 KB @ 2025-06-11T21:49:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8090.HEIC — 1623.8 KB — 2025-06-11T21:49:43Z
-  - (description pending)
+  - Description unavailable (1623.8 KB @ 2025-06-11T21:49:43Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8091.HEIC — 2366.0 KB — 2025-06-11T21:49:44Z
-  - (description pending)
+  - Description unavailable (2366.0 KB @ 2025-06-11T21:49:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8092.HEIC — 2147.2 KB — 2025-06-11T21:49:43Z
-  - (description pending)
+  - Description unavailable (2147.2 KB @ 2025-06-11T21:49:43Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8095.HEIC — 2305.8 KB — 2025-06-11T21:49:43Z
-  - (description pending)
+  - Description unavailable (2305.8 KB @ 2025-06-11T21:49:43Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8105.HEIC — 2264.5 KB — 2025-06-11T21:49:42Z
-  - (description pending)
+  - Description unavailable (2264.5 KB @ 2025-06-11T21:49:42Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8144.HEIC — 1219.9 KB — 2025-06-11T21:49:38Z
-  - (description pending)
+  - Description unavailable (1219.9 KB @ 2025-06-11T21:49:38Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8147.HEIC — 2962.7 KB — 2025-06-11T21:49:37Z
-  - (description pending)
+  - Description unavailable (2962.7 KB @ 2025-06-11T21:49:37Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8148.HEIC — 552.0 KB — 2025-06-11T21:49:37Z
-  - (description pending)
+  - Description unavailable (552.0 KB @ 2025-06-11T21:49:37Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8149.HEIC — 1268.4 KB — 2025-06-11T21:49:37Z
-  - (description pending)
+  - Description unavailable (1268.4 KB @ 2025-06-11T21:49:37Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8173.HEIC — 2477.6 KB — 2025-06-11T21:49:36Z
-  - (description pending)
+  - Description unavailable (2477.6 KB @ 2025-06-11T21:49:36Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8175.HEIC — 2417.6 KB — 2025-06-11T21:49:36Z
-  - (description pending)
+  - Description unavailable (2417.6 KB @ 2025-06-11T21:49:36Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8176.HEIC — 686.8 KB — 2025-06-11T21:49:36Z
-  - (description pending)
+  - Description unavailable (686.8 KB @ 2025-06-11T21:49:36Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8181.HEIC — 1407.9 KB — 2025-06-11T21:49:36Z
-  - (description pending)
+  - Description unavailable (1407.9 KB @ 2025-06-11T21:49:36Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8203.HEIC — 2482.6 KB — 2025-06-11T21:49:34Z
-  - (description pending)
+  - Description unavailable (2482.6 KB @ 2025-06-11T21:49:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8239.HEIC — 2568.5 KB — 2025-06-11T21:49:32Z
-  - (description pending)
+  - Description unavailable (2568.5 KB @ 2025-06-11T21:49:32Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8242.HEIC — 1298.6 KB — 2025-06-11T21:49:31Z
-  - (description pending)
+  - Description unavailable (1298.6 KB @ 2025-06-11T21:49:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8243.HEIC — 2665.8 KB — 2025-06-11T21:49:31Z
-  - (description pending)
+  - Description unavailable (2665.8 KB @ 2025-06-11T21:49:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8244.HEIC — 2076.3 KB — 2025-06-11T21:49:31Z
-  - (description pending)
+  - Description unavailable (2076.3 KB @ 2025-06-11T21:49:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8245.HEIC — 2059.2 KB — 2025-06-11T21:49:31Z
-  - (description pending)
+  - Description unavailable (2059.2 KB @ 2025-06-11T21:49:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8246.HEIC — 1964.6 KB — 2025-08-29T06:19:47Z
-  - (description pending)
+  - Description unavailable (1964.6 KB @ 2025-08-29T06:19:47Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8247.HEIC — 3152.4 KB — 2025-06-11T21:49:31Z
-  - (description pending)
+  - Description unavailable (3152.4 KB @ 2025-06-11T21:49:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8250.HEIC — 1424.8 KB — 2025-06-11T21:49:31Z
-  - (description pending)
+  - Description unavailable (1424.8 KB @ 2025-06-11T21:49:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8267.HEIC — 3553.9 KB — 2025-06-11T21:49:30Z
-  - (description pending)
+  - Description unavailable (3553.9 KB @ 2025-06-11T21:49:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8268.HEIC — 1268.4 KB — 2025-06-11T21:49:30Z
-  - (description pending)
+  - Description unavailable (1268.4 KB @ 2025-06-11T21:49:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8271.HEIC — 2189.2 KB — 2025-06-11T21:49:30Z
-  - (description pending)
+  - Description unavailable (2189.2 KB @ 2025-06-11T21:49:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8272.HEIC — 1948.8 KB — 2025-06-11T21:49:30Z
-  - (description pending)
+  - Description unavailable (1948.8 KB @ 2025-06-11T21:49:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8297.HEIC — 2499.6 KB — 2025-06-11T21:49:29Z
-  - (description pending)
+  - Description unavailable (2499.6 KB @ 2025-06-11T21:49:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8307.HEIC — 1084.7 KB — 2025-06-11T21:49:28Z
-  - (description pending)
+  - Description unavailable (1084.7 KB @ 2025-06-11T21:49:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8308.HEIC — 1078.6 KB — 2025-06-11T21:49:28Z
-  - (description pending)
+  - Description unavailable (1078.6 KB @ 2025-06-11T21:49:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8309.HEIC — 1409.1 KB — 2025-06-11T21:49:28Z
-  - (description pending)
+  - Description unavailable (1409.1 KB @ 2025-06-11T21:49:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8310.HEIC — 1564.7 KB — 2025-06-11T21:49:28Z
-  - (description pending)
+  - Description unavailable (1564.7 KB @ 2025-06-11T21:49:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8311.HEIC — 1368.1 KB — 2025-06-11T21:49:28Z
-  - (description pending)
+  - Description unavailable (1368.1 KB @ 2025-06-11T21:49:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8312.HEIC — 1519.0 KB — 2025-06-11T21:49:28Z
-  - (description pending)
+  - Description unavailable (1519.0 KB @ 2025-06-11T21:49:28Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8508.HEIC — 2401.5 KB — 2025-06-11T21:32:19Z
-  - (description pending)
+  - Description unavailable (2401.5 KB @ 2025-06-11T21:32:19Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8509.HEIC — 1972.0 KB — 2025-06-11T21:32:19Z
-  - (description pending)
+  - Description unavailable (1972.0 KB @ 2025-06-11T21:32:19Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8510.HEIC — 2149.0 KB — 2025-06-11T21:32:18Z
-  - (description pending)
+  - Description unavailable (2149.0 KB @ 2025-06-11T21:32:18Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8511.HEIC — 2239.2 KB — 2025-06-11T21:32:18Z
-  - (description pending)
+  - Description unavailable (2239.2 KB @ 2025-06-11T21:32:18Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8526.HEIC — 1590.2 KB — 2025-06-11T21:32:11Z
-  - (description pending)
+  - Description unavailable (1590.2 KB @ 2025-06-11T21:32:11Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8529.HEIC — 2568.2 KB — 2025-06-11T21:32:08Z
-  - (description pending)
+  - Description unavailable (2568.2 KB @ 2025-06-11T21:32:08Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8531.HEIC — 3016.2 KB — 2025-06-11T21:32:06Z
-  - (description pending)
+  - Description unavailable (3016.2 KB @ 2025-06-11T21:32:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8532.HEIC — 2633.3 KB — 2025-06-11T21:32:06Z
-  - (description pending)
+  - Description unavailable (2633.3 KB @ 2025-06-11T21:32:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8533.HEIC — 2667.4 KB — 2025-06-11T21:32:05Z
-  - (description pending)
+  - Description unavailable (2667.4 KB @ 2025-06-11T21:32:05Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8534.HEIC — 1994.6 KB — 2025-06-11T21:32:04Z
-  - (description pending)
+  - Description unavailable (1994.6 KB @ 2025-06-11T21:32:04Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8536.JPG — 156.0 KB — 2025-06-11T21:32:03Z
-  - (description pending)
+  - Description unavailable (156.0 KB @ 2025-06-11T21:32:03Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8542.HEIC — 950.1 KB — 2025-06-11T21:32:00Z
-  - (description pending)
+  - Description unavailable (950.1 KB @ 2025-06-11T21:32:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8543.HEIC — 2279.2 KB — 2025-06-11T21:31:59Z
-  - (description pending)
+  - Description unavailable (2279.2 KB @ 2025-06-11T21:31:59Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8557.JPG — 523.1 KB — 2025-06-11T21:31:51Z
-  - (description pending)
+  - Description unavailable (523.1 KB @ 2025-06-11T21:31:51Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8586.HEIC — 2890.0 KB — 2025-06-11T21:31:34Z
-  - (description pending)
+  - Description unavailable (2890.0 KB @ 2025-06-11T21:31:34Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8704.HEIC — 1289.0 KB — 2025-06-11T21:29:18Z
-  - (description pending)
+  - Description unavailable (1289.0 KB @ 2025-06-11T21:29:18Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8705.HEIC — 1076.8 KB — 2025-06-11T21:29:16Z
-  - (description pending)
+  - Description unavailable (1076.8 KB @ 2025-06-11T21:29:16Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8706.HEIC — 781.4 KB — 2025-06-11T21:29:15Z
-  - (description pending)
+  - Description unavailable (781.4 KB @ 2025-06-11T21:29:15Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8802.HEIC — 846.4 KB — 2025-06-11T21:27:31Z
-  - (description pending)
+  - Description unavailable (846.4 KB @ 2025-06-11T21:27:31Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8900.HEIC — 1139.0 KB — 2025-06-11T21:26:11Z
-  - (description pending)
+  - Description unavailable (1139.0 KB @ 2025-06-11T21:26:11Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8917.HEIC — 1403.7 KB — 2025-06-11T21:25:52Z
-  - (description pending)
+  - Description unavailable (1403.7 KB @ 2025-06-11T21:25:52Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8918.HEIC — 1363.7 KB — 2025-06-11T21:25:51Z
-  - (description pending)
+  - Description unavailable (1363.7 KB @ 2025-06-11T21:25:51Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8935.HEIC — 3026.6 KB — 2025-06-11T21:25:41Z
-  - (description pending)
+  - Description unavailable (3026.6 KB @ 2025-06-11T21:25:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8959.HEIC — 802.8 KB — 2025-06-11T21:47:51Z
-  - (description pending)
+  - Description unavailable (802.8 KB @ 2025-06-11T21:47:51Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8960.HEIC — 1031.9 KB — 2025-06-11T21:47:50Z
-  - (description pending)
+  - Description unavailable (1031.9 KB @ 2025-06-11T21:47:50Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8961.HEIC — 1124.1 KB — 2025-06-11T21:47:50Z
-  - (description pending)
+  - Description unavailable (1124.1 KB @ 2025-06-11T21:47:50Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_8962.HEIC — 1083.5 KB — 2025-06-11T21:47:50Z
-  - (description pending)
+  - Description unavailable (1083.5 KB @ 2025-06-11T21:47:50Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9004.HEIC — 2620.8 KB — 2025-06-11T21:47:46Z
-  - (description pending)
+  - Description unavailable (2620.8 KB @ 2025-06-11T21:47:46Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9006.HEIC — 1555.3 KB — 2025-06-11T21:47:45Z
-  - (description pending)
+  - Description unavailable (1555.3 KB @ 2025-06-11T21:47:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9007.HEIC — 2512.5 KB — 2025-06-11T21:47:45Z
-  - (description pending)
+  - Description unavailable (2512.5 KB @ 2025-06-11T21:47:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9008.HEIC — 2387.4 KB — 2025-06-11T21:47:45Z
-  - (description pending)
+  - Description unavailable (2387.4 KB @ 2025-06-11T21:47:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9009.HEIC — 614.4 KB — 2025-06-11T21:47:45Z
-  - (description pending)
+  - Description unavailable (614.4 KB @ 2025-06-11T21:47:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9010.HEIC — 716.1 KB — 2025-06-11T21:47:45Z
-  - (description pending)
+  - Description unavailable (716.1 KB @ 2025-06-11T21:47:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9011.HEIC — 568.7 KB — 2025-06-11T21:47:45Z
-  - (description pending)
+  - Description unavailable (568.7 KB @ 2025-06-11T21:47:45Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9012.HEIC — 481.0 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (481.0 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9013.HEIC — 729.7 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (729.7 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9014.HEIC — 736.0 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (736.0 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9015.HEIC — 1037.0 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (1037.0 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9016.HEIC — 953.6 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (953.6 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9017.HEIC — 1059.8 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (1059.8 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9018.HEIC — 1946.6 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (1946.6 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9019.HEIC — 1983.3 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (1983.3 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9021.HEIC — 3688.0 KB — 2025-06-11T21:47:44Z
-  - (description pending)
+  - Description unavailable (3688.0 KB @ 2025-06-11T21:47:44Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9025.HEIC — 1170.3 KB — 2025-08-29T06:37:35Z
-  - (description pending)
+  - Description unavailable (1170.3 KB @ 2025-08-29T06:37:35Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9045.HEIC — 2951.1 KB — 2025-08-29T06:37:47Z
-  - (description pending)
+  - Description unavailable (2951.1 KB @ 2025-08-29T06:37:47Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9046.HEIC — 2352.9 KB — 2025-06-11T21:47:41Z
-  - (description pending)
+  - Description unavailable (2352.9 KB @ 2025-06-11T21:47:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9047.HEIC — 2353.9 KB — 2025-06-11T21:47:41Z
-  - (description pending)
+  - Description unavailable (2353.9 KB @ 2025-06-11T21:47:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9048.HEIC — 1228.1 KB — 2025-06-11T21:47:41Z
-  - (description pending)
+  - Description unavailable (1228.1 KB @ 2025-06-11T21:47:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9049.HEIC — 1398.7 KB — 2025-06-11T21:47:41Z
-  - (description pending)
+  - Description unavailable (1398.7 KB @ 2025-06-11T21:47:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9050.HEIC — 1379.2 KB — 2025-08-29T06:39:06Z
-  - (description pending)
+  - Description unavailable (1379.2 KB @ 2025-08-29T06:39:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9052.HEIC — 538.7 KB — 2025-06-11T21:47:40Z
-  - (description pending)
+  - Description unavailable (538.7 KB @ 2025-06-11T21:47:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9057.HEIC — 2485.7 KB — 2025-06-11T21:47:40Z
-  - (description pending)
+  - Description unavailable (2485.7 KB @ 2025-06-11T21:47:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9058.HEIC — 1126.2 KB — 2025-06-11T21:47:40Z
-  - (description pending)
+  - Description unavailable (1126.2 KB @ 2025-06-11T21:47:40Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9059.HEIC — 1116.5 KB — 2025-06-11T21:47:39Z
-  - (description pending)
+  - Description unavailable (1116.5 KB @ 2025-06-11T21:47:39Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9060.HEIC — 1103.4 KB — 2025-06-11T21:47:39Z
-  - (description pending)
+  - Description unavailable (1103.4 KB @ 2025-06-11T21:47:39Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9061.HEIC — 1115.7 KB — 2025-06-11T21:47:39Z
-  - (description pending)
+  - Description unavailable (1115.7 KB @ 2025-06-11T21:47:39Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9075.HEIC — 2500.4 KB — 2025-06-11T21:47:32Z
-  - (description pending)
+  - Description unavailable (2500.4 KB @ 2025-06-11T21:47:32Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9076.HEIC — 2399.3 KB — 2025-06-11T21:47:32Z
-  - (description pending)
+  - Description unavailable (2399.3 KB @ 2025-06-11T21:47:32Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9093.HEIC — 2609.7 KB — 2025-06-11T21:47:30Z
-  - (description pending)
+  - Description unavailable (2609.7 KB @ 2025-06-11T21:47:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9095.HEIC — 1031.7 KB — 2025-06-11T21:47:30Z
-  - (description pending)
+  - Description unavailable (1031.7 KB @ 2025-06-11T21:47:30Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9096.HEIC — 471.8 KB — 2025-06-11T21:47:29Z
-  - (description pending)
+  - Description unavailable (471.8 KB @ 2025-06-11T21:47:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9097.HEIC — 462.9 KB — 2025-06-11T21:47:29Z
-  - (description pending)
+  - Description unavailable (462.9 KB @ 2025-06-11T21:47:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9122.HEIC — 1377.5 KB — 2025-06-11T21:47:26Z
-  - (description pending)
+  - Description unavailable (1377.5 KB @ 2025-06-11T21:47:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9123.HEIC — 1366.2 KB — 2025-06-11T21:47:26Z
-  - (description pending)
+  - Description unavailable (1366.2 KB @ 2025-06-11T21:47:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9137.HEIC — 2926.6 KB — 2025-06-11T21:48:00Z
-  - (description pending)
+  - Description unavailable (2926.6 KB @ 2025-06-11T21:48:00Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9146.HEIC — 2510.6 KB — 2025-06-11T21:47:59Z
-  - (description pending)
+  - Description unavailable (2510.6 KB @ 2025-06-11T21:47:59Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9148.HEIC — 2460.3 KB — 2025-06-11T21:47:58Z
-  - (description pending)
+  - Description unavailable (2460.3 KB @ 2025-06-11T21:47:58Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9149.HEIC — 2442.3 KB — 2025-06-11T21:47:58Z
-  - (description pending)
+  - Description unavailable (2442.3 KB @ 2025-06-11T21:47:58Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9150.HEIC — 2480.9 KB — 2025-06-11T21:47:59Z
-  - (description pending)
+  - Description unavailable (2480.9 KB @ 2025-06-11T21:47:59Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9191.HEIC — 1771.7 KB — 2025-06-11T21:47:56Z
-  - (description pending)
+  - Description unavailable (1771.7 KB @ 2025-06-11T21:47:56Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9285.HEIC — 3099.6 KB — 2025-06-11T21:47:49Z
-  - (description pending)
+  - Description unavailable (3099.6 KB @ 2025-06-11T21:47:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9286.HEIC — 789.1 KB — 2025-06-11T21:47:49Z
-  - (description pending)
+  - Description unavailable (789.1 KB @ 2025-06-11T21:47:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9287.HEIC — 852.8 KB — 2025-06-11T21:47:49Z
-  - (description pending)
+  - Description unavailable (852.8 KB @ 2025-06-11T21:47:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9288.HEIC — 863.3 KB — 2025-06-11T21:47:49Z
-  - (description pending)
+  - Description unavailable (863.3 KB @ 2025-06-11T21:47:49Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9300.HEIC — 663.2 KB — 2025-06-11T21:47:47Z
-  - (description pending)
+  - Description unavailable (663.2 KB @ 2025-06-11T21:47:47Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9309.HEIC — 3033.5 KB — 2025-06-11T21:47:46Z
-  - (description pending)
+  - Description unavailable (3033.5 KB @ 2025-06-11T21:47:46Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9337.HEIC — 1794.6 KB — 2025-06-11T21:47:43Z
-  - (description pending)
+  - Description unavailable (1794.6 KB @ 2025-06-11T21:47:43Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9340.HEIC — 943.6 KB — 2025-06-11T21:47:42Z
-  - (description pending)
+  - Description unavailable (943.6 KB @ 2025-06-11T21:47:42Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9341.HEIC — 1117.7 KB — 2025-06-11T21:47:42Z
-  - (description pending)
+  - Description unavailable (1117.7 KB @ 2025-06-11T21:47:42Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9355.HEIC — 1648.5 KB — 2025-06-11T21:47:41Z
-  - (description pending)
+  - Description unavailable (1648.5 KB @ 2025-06-11T21:47:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9356.HEIC — 2046.1 KB — 2025-06-11T21:47:41Z
-  - (description pending)
+  - Description unavailable (2046.1 KB @ 2025-06-11T21:47:41Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9406.HEIC — 2976.4 KB — 2025-06-11T21:47:29Z
-  - (description pending)
+  - Description unavailable (2976.4 KB @ 2025-06-11T21:47:29Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9426.JPG — 2520.1 KB — 2025-06-11T21:47:26Z
-  - (description pending)
+  - Description unavailable (2520.1 KB @ 2025-06-11T21:47:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9427.JPG — 2525.6 KB — 2025-06-11T21:47:26Z
-  - (description pending)
+  - Description unavailable (2525.6 KB @ 2025-06-11T21:47:26Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9713.HEIC — 3305.7 KB — 2025-06-11T21:47:06Z
-  - (description pending)
+  - Description unavailable (3305.7 KB @ 2025-06-11T21:47:06Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9714.HEIC — 2400.6 KB — 2025-06-11T21:47:05Z
-  - (description pending)
+  - Description unavailable (2400.6 KB @ 2025-06-11T21:47:05Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9715.HEIC — 2624.2 KB — 2025-06-11T21:47:05Z
-  - (description pending)
+  - Description unavailable (2624.2 KB @ 2025-06-11T21:47:05Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9716.HEIC — 2602.8 KB — 2025-06-11T21:47:05Z
-  - (description pending)
+  - Description unavailable (2602.8 KB @ 2025-06-11T21:47:05Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9719.HEIC — 2213.7 KB — 2025-06-11T21:47:04Z
-  - (description pending)
+  - Description unavailable (2213.7 KB @ 2025-06-11T21:47:04Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9743.HEIC — 2325.0 KB — 2025-06-11T21:46:59Z
-  - (description pending)
+  - Description unavailable (2325.0 KB @ 2025-06-11T21:46:59Z). Run `make describe_images` locally.
 - footage/20251001_indoor-aquariums-tour/originals/IMG_9746.HEIC — 2279.6 KB — 2025-06-11T21:46:59Z
-  - (description pending)
+  - Description unavailable (2279.6 KB @ 2025-06-11T21:46:59Z). Run `make describe_images` locally.

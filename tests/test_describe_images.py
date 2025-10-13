@@ -2,7 +2,7 @@ import pathlib
 
 from PIL import Image
 
-from src.describe_images import describe_images, is_image
+from src.describe_images import describe_images, is_image, write_markdown
 
 
 def test_is_image_detection():
@@ -29,3 +29,17 @@ def test_describe_images_generates_summary(tmp_path):
     assert "40x20" in description
     assert "pending" not in description
     assert all(not p.endswith(".mp4") for p in paths)
+
+
+def test_write_markdown_fallback_populates_placeholder(tmp_path):
+    out = tmp_path / "image_descriptions.md"
+    entry = {
+        "path": "footage/demo/frame.heic",
+        "size": 2048,
+        "mtime": "2025-10-12T15:04:05Z",
+        "description": "",
+    }
+    write_markdown([entry], out)
+    text = out.read_text()
+    assert "Description unavailable" in text
+    assert "(description pending)" not in text

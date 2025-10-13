@@ -155,12 +155,26 @@ def describe_images(root: pathlib.Path) -> list[dict]:
     return entries
 
 
+def _format_description(entry: dict) -> str:
+    description = str(entry.get("description", "")).strip()
+    if description:
+        return description
+    size = float(entry.get("size", 0)) / 1024.0
+    mtime = str(entry.get("mtime", "unknown"))
+    return (
+        f"Description unavailable ({size:.1f} KB @ {mtime}). "
+        "Run `make describe_images` locally."
+    )
+
+
 def write_markdown(entries: list[dict], out_path: pathlib.Path) -> None:
     lines = ["# Image Descriptions", ""]
-    for e in entries:
-        size_kb = e["size"] / 1024.0
-        desc = e["description"] or "(description pending)"
-        lines.append(f"- {e['path']} — {size_kb:.1f} KB — {e['mtime']}\n  - {desc}")
+    for entry in entries:
+        size_kb = float(entry.get("size", 0)) / 1024.0
+        description = _format_description(entry)
+        lines.append(
+            f"- {entry['path']} — {size_kb:.1f} KB — {entry['mtime']}\n  - {description}"
+        )
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
