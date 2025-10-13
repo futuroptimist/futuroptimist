@@ -1,4 +1,6 @@
 ## Unreleased
+- feat: print funnel coverage stats and ratios in `report_funnel` output.
+- test: assert the funnel CLI emits coverage metrics and persists ratios.
 - fix: classify unknown report_funnel selects as `other` so manifests stay faithful.
 - test: cover fallback classification for report_funnel selects.
 - fix: normalise Windows-style report_funnel selects to canonical repo paths.
