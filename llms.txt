@@ -71,6 +71,10 @@ Script format:
   each `metadata.json` with an `analytics` block and writes
   `analytics/report.json`; see `tests/test_analytics_ingester.py` for
   coverage.
+- Run `streamlit run src/analytics_dashboard.py` to browse those metrics with
+  sortable tables, headline stats, and quick charts. Data preparation helpers
+  are regression-tested in `tests/test_analytics_dashboard.py` so the
+  dashboard stays stable as analytics fields evolve.
 
 Run tests with:
 ```bash

@@ -1,4 +1,9 @@
 ## Unreleased
+- feat: ship a Streamlit analytics dashboard fed by metadata analytics blocks.
+- test: cover analytics dashboard data loading, dataframe shaping, and summary
+  metrics.
+- docs: document the analytics dashboard in INSTRUCTIONS, llms.txt, and the
+  repo feature summary.
 - feat: add analytics_ingester CLI to persist YouTube Analytics metrics into
   metadata `analytics` blocks.
 - test: cover analytics ingestion parsing, metadata updates, and CLI summary

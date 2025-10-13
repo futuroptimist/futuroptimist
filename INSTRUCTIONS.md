@@ -202,6 +202,12 @@ helper updates each `metadata.json` with an `analytics` object (including an
 `--dry-run` to preview metrics without writing files. Regression coverage
 lives in `tests/test_analytics_ingester.py`.
 
+Explore the captured metrics with `streamlit run src/analytics_dashboard.py`
+to surface headline stats, sortable tables, and quick charts for views, watch
+time, and click-through rate. The dashboard helpers stay regression-tested in
+`tests/test_analytics_dashboard.py` so data reshaping remains deterministic as
+the analytics schema evolves.
+
 Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
 `schemas/assets_manifest.schema.json` to declare which `footage/` directories
 belong to that script, optional label files (`labels.json`), capture date, tags,
@@ -259,7 +265,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | 2️⃣  Metadata Automation | • YouTube Data API sync to enrich markdown front-matter (title, publish date, views, tags).<br>• Slug auto-generation + filename rename helper (`src/rename_video_slug.py`). | Less manual bookkeeping |
 | 3️⃣  Script Intelligence | • SRT → Markdown converter that preserves timing blocks.<br>• Semantic chunker + embeddings (OpenAI / local) into `data/index` for RAG. | Opens door to AI-assisted new scripts |
 | 4️⃣  Creative Toolkit | • ✅ Prompt library for hook/headline generation trained on past hits.<br>• ✅ Thumbnail text predictor (CTR estimation) using small vision model via `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png` (see `tests/test_thumbnail_text_predictor.py`). | Higher audience retention |
-| 5️⃣  Distribution Insights | • Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
+| 5️⃣  Distribution Insights | • ✅ Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• ✅ Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
 | 6️⃣  Community | • GitHub Discussions integration for crowdsourced fact-checks.<br>• ✅ Scheduled newsletter builder that stitches new scripts + links (`python src/newsletter_builder.py`; see `tests/test_newsletter_builder.py`). | Audience feedback loop |
 | 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders.<br>• FFmpeg rendering scripts for rough-cut assembly and caption burn-in.<br>• CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
 | 8️⃣  Publish Orchestration | • YouTube Data API V3 upload endpoint (draft/private).<br>• Automatic thumbnail + metadata attach from repo files.<br>• Post-publish annotation back into metadata.json (video url, processing times). | One-command release |
