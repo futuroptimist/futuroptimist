@@ -1,5 +1,9 @@
 """Report funnel stats and write a selections.json manifest for a slug.
 
+The CLI prints totals and coverage percentages (converted/originals,
+selected/converted) and the manifest stores ``converted_coverage`` and
+``selected_coverage`` ratios for downstream automation.
+
 Usage:
   python src/report_funnel.py --slug YYYYMMDD_slug [--selects-file selects.txt] [-o selections.json]
 
@@ -23,6 +27,18 @@ from typing import Iterable
 IMAGE_EXTS = {".png", ".jpg", ".jpeg"}
 VIDEO_EXTS = {".mp4"}
 AUDIO_EXTS = {".wav", ".mp3", ".aac", ".m4a", ".flac", ".ogg"}
+
+
+def _coverage(numerator: int, denominator: int) -> float | None:
+    if denominator <= 0:
+        return None
+    return numerator / denominator
+
+
+def _percent(value: float | None) -> str:
+    if value is None:
+        return "n/a"
+    return f"{value * 100:.1f}%"
 
 
 def _utc_now_iso() -> str:
@@ -196,12 +212,17 @@ def build_manifest(
                 kind = "other"
             selected_assets.append({"path": display_path, "kind": kind})
 
+    converted_coverage = _coverage(converted_total, originals_total)
+    selected_coverage = _coverage(len(selected_assets), converted_total)
+
     manifest = {
         "slug": slug,
         "generated_at": _utc_now_iso(),
         "originals_total": originals_total,
         "converted_total": converted_total,
+        "converted_coverage": converted_coverage,
         "selected_count": len(selected_assets),
+        "selected_coverage": selected_coverage,
         "selected_assets": selected_assets,
     }
     return manifest
@@ -220,6 +241,32 @@ def main(argv: list[str] | None = None) -> int:
     root = pathlib.Path(args.root)
     selects = pathlib.Path(args.selects_file) if args.selects_file else None
     manifest = build_manifest(root, args.slug, selects)
+    summary_lines = [
+        f"Originals: {manifest['originals_total']}",
+        (
+            "Converted: {total} ({coverage} of originals)".format(
+                total=manifest["converted_total"],
+                coverage=_percent(manifest["converted_coverage"]),
+            )
+        ),
+        (
+            "Selected: {count} ({coverage} of converted)".format(
+                count=manifest["selected_count"],
+                coverage=_percent(manifest["selected_coverage"]),
+            )
+        ),
+    ]
+    if manifest["selected_assets"]:
+        kind_counts: dict[str, int] = {}
+        for asset in manifest["selected_assets"]:
+            kind = asset.get("kind") or "other"
+            kind_counts[kind] = kind_counts.get(kind, 0) + 1
+        breakdown = ", ".join(
+            f"{kind}={kind_counts[kind]}" for kind in sorted(kind_counts)
+        )
+        summary_lines.append(f"Selected breakdown: {breakdown}")
+    print("\n".join(summary_lines))
+
     out = pathlib.Path(args.output or (root / args.slug / "selections.json"))
     out.write_text(json.dumps(manifest, indent=2) + "\n")
     print(f"Wrote {out}")

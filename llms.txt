@@ -48,6 +48,12 @@ Script format:
   files or folders. Running the helper from inside `footage/` now works without
   extra arguments; it auto-detects the repo root so the default output lands beside
   your media (see `tests/test_index_local_media.py::test_main_defaults_inside_footage_dir`).
+- Run `python src/report_funnel.py --slug <slug>` (optionally add
+  `--selects-file selects.txt`) to print funnel stats. The CLI surfaces totals
+  and coverage percentages for converted and selected assets, plus a kind
+  breakdown, and writes a manifest recording `converted_coverage` and
+  `selected_coverage` ratios (see
+  `tests/test_report_funnel.py::test_main_reports_stats`).
 - Run `python src/enrich_metadata.py` to sync `metadata.json` title,
   publish date, duration, the highest-resolution thumbnail URL, and current
   view count from the YouTube Data v3 API whenever `YOUTUBE_API_KEY` is
