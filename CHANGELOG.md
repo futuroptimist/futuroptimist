@@ -1,7 +1,9 @@
 ## Unreleased
-- feat: derive newsletter summaries from scripts when metadata lacks copy.
-- test: assert newsletter builder promotes script narration into summaries.
-- docs: note the script-summary fallback in INSTRUCTIONS and llms.txt.
+- feat: ship a Streamlit analytics dashboard fed by metadata analytics blocks.
+- test: cover analytics dashboard data loading, dataframe shaping, and summary
+  metrics.
+- docs: document the analytics dashboard in INSTRUCTIONS, llms.txt, and the
+  repo feature summary.
 - feat: add analytics_ingester CLI to persist YouTube Analytics metrics into
   metadata `analytics` blocks.
 - test: cover analytics ingestion parsing, metadata updates, and CLI summary
@@ -103,6 +105,4 @@
 - test: require outage entries to reference schema and fix missing pointer.
 - chore: set up Python before installing dependencies in test workflow.
 - fix: install dependencies in uv-managed venv to avoid permission errors.
-
-## 2025-08-22
 - chore: skip Codecov upload when token is missing to prevent CI failures.

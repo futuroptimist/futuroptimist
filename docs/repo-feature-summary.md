@@ -11,6 +11,7 @@ related projects that share the same tooling foundations.
 | Credential scanning | ✅ | `scan-secrets.py` and the pre-commit wrapper block credential patterns. |
 | Asset pipeline | ✅ | Conversion, verification, and funnel scripts keep footage reproducible. |
 | Docs hygiene | ✅ | scripts/checks.sh runs docs-lint (see tests/test_checks_script.py). |
+| Analytics dashboard | ✅ | Streamlit dashboard renders metrics captured by analytics_ingester (see tests/test_analytics_dashboard.py). |
 
 ## Companion projects quick scan
 | Repo | Focus | Automation highlights |
