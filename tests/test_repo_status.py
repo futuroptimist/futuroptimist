@@ -100,7 +100,9 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     ]
 
 
-def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_repo_status_no_runs_returns_unknown(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     calls: list[str] = []
 
     def fake_get(url: str, headers: dict, timeout: int):
@@ -130,7 +132,7 @@ def test_fetch_repo_status_no_runs(monkeypatch: pytest.MonkeyPatch) -> None:
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
-    assert repo_status.fetch_repo_status("user/repo") == "❌"
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
     assert calls == [
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",

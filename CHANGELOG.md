@@ -1,4 +1,7 @@
 ## Unreleased
+- fix: return `❓` when repositories have no completed workflow runs in repo_status.
+- test: assert repo_status reports unknown status for branches without completed runs.
+- docs: note the repo_status unknown-state test beside the README status legend.
 - feat: print funnel coverage stats and ratios in `report_funnel` output.
 - test: assert the funnel CLI emits coverage metrics and persists ratios.
 - fix: classify unknown report_funnel selects as `other` so manifests stay faithful.
