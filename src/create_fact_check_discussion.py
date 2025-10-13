@@ -222,7 +222,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    video_root = args.video_root.resolve()
+    video_root = pathlib.Path(args.video_root).resolve()
     metadata = load_metadata(video_root, args.slug)
     token = github_auth.get_github_token()
     title = build_title(args.slug, metadata)
