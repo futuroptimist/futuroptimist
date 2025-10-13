@@ -136,9 +136,7 @@ def test_main_uses_default_video_root(tmp_path, monkeypatch, capsys):
             {
                 "data": {
                     "createDiscussion": {
-                        "discussion": {
-                            "url": "https://example.test/discussions/99"
-                        }
+                        "discussion": {"url": "https://example.test/discussions/99"}
                     }
                 }
             }
