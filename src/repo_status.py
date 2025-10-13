@@ -181,7 +181,7 @@ def fetch_repo_status(
                 return _evaluate_runs(commit_runs)
             if _should_skip_commit(commit):
                 continue
-            return "failure"
+            return None
         return None
 
     conclusions = [_fetch() for _ in range(attempts)]
