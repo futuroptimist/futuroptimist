@@ -128,8 +128,12 @@ Markdown digest of recent videos. The helper defaults to `--status live`,
 accepts `--since YYYY-MM-DD` to filter by publish date, and honours `--limit`
 and `--output` when you want to cap the list or write to disk. Each entry links
 back to the script and its YouTube watch URL so the update can drop straight
-into a newsletter platform. See `tests/test_newsletter_builder.py` for
-regression coverage of summary fallbacks, ordering, and Markdown formatting.
+into a newsletter platform. When metadata lacks a summary or description the
+builder now lifts the first `[NARRATOR]` line from `script.md` before falling
+back to the placeholder copy (see
+`tests/test_newsletter_builder.py::test_collect_items_orders_and_summarises`).
+See `tests/test_newsletter_builder.py` for regression coverage of summary
+fallbacks, ordering, and Markdown formatting.
 
 Some helper scripts require a GitHub token to access the GraphQL API. Export
 `GH_TOKEN` (or `GITHUB_TOKEN`) with a personal access token that includes `repo`

@@ -9,11 +9,14 @@ import pytest
 from src import newsletter_builder
 
 
-def _write_metadata(folder: Path, data: dict) -> None:
+def _write_metadata(
+    folder: Path, data: dict, *, script_text: str | None = None
+) -> None:
     (folder / "metadata.json").write_text(
         json.dumps(data, indent=2) + "\n", encoding="utf-8"
     )
-    (folder / "script.md").write_text("# Script\n", encoding="utf-8")
+    script_body = script_text if script_text is not None else "# Script\n"
+    (folder / "script.md").write_text(script_body, encoding="utf-8")
 
 
 def test_collect_items_orders_and_summarises(tmp_path: Path) -> None:
@@ -56,6 +59,13 @@ def test_collect_items_orders_and_summarises(tmp_path: Path) -> None:
             "publish_date": "2024-03-01",
             "status": "live",
         },
+        script_text=(
+            "# Gamma Sneak Peek\n\n"
+            "> Video ID: demo\n\n"
+            "## Script\n\n"
+            "[NARRATOR]: Gamma preview mission hits lab benches this week.\n"
+            "[VISUAL]: Lab montage.\n"
+        ),
     )
 
     items = newsletter_builder.collect_items(video_root, statuses={"live"})
@@ -65,7 +75,7 @@ def test_collect_items_orders_and_summarises(tmp_path: Path) -> None:
         "20240101_alpha",
     ]
 
-    assert items[0].summary == "Summary coming soon."
+    assert items[0].summary == "Gamma preview mission hits lab benches this week."
     assert "Beta description first line." in items[1].summary
     assert "Alpha summary with extra detail" in items[2].summary
     assert items[2].tags == ["rockets", "launch"]
@@ -76,7 +86,7 @@ def test_collect_items_orders_and_summarises(tmp_path: Path) -> None:
     assert markdown.startswith("# Futuroptimist Newsletter — 2025-10-12\n")
     assert "Watch on YouTube" in markdown
     assert "(tags: rockets, launch)" in markdown
-    assert "Summary coming soon." in markdown
+    assert "Gamma preview mission hits lab benches this week." in markdown
 
     limited = newsletter_builder.collect_items(video_root, statuses={"live"}, limit=2)
     assert [item.slug for item in limited] == ["20240301_gamma", "20240201_beta"]
@@ -87,6 +97,29 @@ def test_collect_items_orders_and_summarises(tmp_path: Path) -> None:
         since=date(2024, 2, 1),
     )
     assert [item.slug for item in filtered] == ["20240301_gamma", "20240201_beta"]
+
+
+def test_collect_items_falls_back_to_placeholder_when_script_missing(
+    tmp_path: Path,
+) -> None:
+    video_root = tmp_path / "video_scripts"
+    video_root.mkdir()
+
+    epsilon = video_root / "20240401_epsilon"
+    epsilon.mkdir()
+    _write_metadata(
+        epsilon,
+        {
+            "title": "Epsilon Update",
+            "publish_date": "2024-04-01",
+            "status": "live",
+        },
+        script_text="# Epsilon\n",
+    )
+    (epsilon / "script.md").unlink()
+
+    items = newsletter_builder.collect_items(video_root)
+    assert items[0].summary == "Summary coming soon."
 
 
 def test_main_writes_output(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:

@@ -16,6 +16,7 @@ from typing import Iterable, Sequence
 
 DEFAULT_STATUSES = {"live"}
 _SUMMARY_LIMIT = 200
+_NARRATOR_PREFIX = "[NARRATOR]:"
 
 
 @dataclass(slots=True)
@@ -55,13 +56,40 @@ def _clean_summary(text: str) -> str:
     return f"{truncated}…"
 
 
-def _summary_from_metadata(data: dict) -> str:
+def _summary_from_metadata(data: dict, script_path: pathlib.Path | None) -> str:
     for key in ("summary", "description"):
         value = data.get(key)
         if isinstance(value, str) and value.strip():
             first_line = value.strip().splitlines()[0]
             return _clean_summary(first_line)
+    summary_from_script = _summary_from_script(script_path)
+    if summary_from_script:
+        return summary_from_script
     return "Summary coming soon."
+
+
+def _summary_from_script(script_path: pathlib.Path | None) -> str | None:
+    if script_path is None or not script_path.exists():
+        return None
+    try:
+        text = script_path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or line.startswith(">"):
+            continue
+        if line.lower().startswith("[visual]") or line.lower().startswith("[sfx]"):
+            continue
+        if line.startswith(_NARRATOR_PREFIX):
+            candidate = line[len(_NARRATOR_PREFIX) :].strip()
+            if candidate:
+                return _clean_summary(candidate)
+        if line.startswith("["):
+            continue
+        return _clean_summary(line)
+    return None
 
 
 def _parse_tags(data: dict) -> list[str]:
@@ -105,15 +133,17 @@ def collect_items(
         publish_date = _parse_date(data.get("publish_date"))
         if since and publish_date and publish_date < since:
             continue
+        script_fs_path = folder / "script.md"
         title = data.get("title") or folder.name
-        summary = _summary_from_metadata(data)
+        summary = _summary_from_metadata(
+            data, script_fs_path if script_fs_path.exists() else None
+        )
         youtube_id = data.get("youtube_id")
         youtube_url = (
             f"https://www.youtube.com/watch?v={youtube_id}"
             if isinstance(youtube_id, str) and youtube_id.strip()
             else None
         )
-        script_fs_path = folder / "script.md"
         script_path: pathlib.Path | None = None
         if script_fs_path.exists():
             try:
