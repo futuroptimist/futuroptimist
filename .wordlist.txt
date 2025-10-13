@@ -115,6 +115,7 @@ npm
 npx
 ol
 openai
+oauth
 opentimelineio
 optimised
 pathlib
