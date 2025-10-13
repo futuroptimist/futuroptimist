@@ -118,6 +118,10 @@ for the guaranteed `footage/<slug>/converted/...` prefix even when selects
 reference absolute paths. Windows-style selects with backslashes or drive
 letters are normalised the same way so cross-platform selects files stay
 compatible (see `tests/test_report_funnel.py::test_build_manifest_handles_windows_paths`).
+The CLI prints totals and coverage percentages for converted and selected
+assets, plus a kind breakdown, while the manifest records
+`converted_coverage` and `selected_coverage` ratios for downstream tooling
+(see `tests/test_report_funnel.py::test_main_reports_stats`).
 
 Use `python src/newsletter_builder.py` (or `make newsletter`) to assemble a
 Markdown digest of recent videos. The helper defaults to `--status live`,

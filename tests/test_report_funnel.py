@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
+import pytest
+
+from src import report_funnel
 from src.report_funnel import build_manifest
 
 
@@ -198,3 +202,44 @@ def test_build_manifest_handles_windows_paths_with_repo_prefix(tmp_path: Path) -
         {"path": f"footage/{slug}/converted/clip.png", "kind": "image"}
     ]
     assert manifest["selected_count"] == 1
+
+
+def test_main_reports_stats(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    root = tmp_path / "footage"
+    slug = "20251225_demo"
+    originals = root / slug / "originals"
+    converted = root / slug / "converted"
+    originals.mkdir(parents=True)
+    converted.mkdir()
+
+    for name in ["a.heic", "b.mov", "c.jpg"]:
+        (originals / name).write_text("x", encoding="utf-8")
+    for name in ["a.png", "b.mp4"]:
+        (converted / name).write_text("y", encoding="utf-8")
+
+    selects = tmp_path / "selects.txt"
+    selects.write_text("converted/a.png\n", encoding="utf-8")
+    output = tmp_path / "selections.json"
+
+    exit_code = report_funnel.main(
+        [
+            "--slug",
+            slug,
+            "--root",
+            str(root),
+            "--selects-file",
+            str(selects),
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert "Originals: 3" in captured.out
+    assert "Converted: 2" in captured.out
+    assert "Selected: 1" in captured.out
+
+    data = json.loads(output.read_text(encoding="utf-8"))
+    assert data["converted_coverage"] == pytest.approx(2 / 3, rel=1e-6)
+    assert data["selected_coverage"] == pytest.approx(0.5, rel=1e-6)
