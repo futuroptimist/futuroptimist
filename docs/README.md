@@ -2,21 +2,26 @@
 
 ## Prompt docs (Codex)
 
-All Codex-ready prompts live under `docs/prompts/codex/`:
+All Codex-ready prompts live under `docs/prompts/codex/` with filenames that already omit the
+redundant words “prompt” and “codex.” Quick reference:
 
-- [automation.md](prompts/codex/automation.md) — Standard automation workflow kickoff.
-- [cad.md](prompts/codex/cad.md) — Guidance for CAD-focused build prompts.
-- [ci-fix.md](prompts/codex/ci-fix.md) — Recover from CI failures with targeted fixes.
-- [cleanup.md](prompts/codex/cleanup.md) — Streamline and tidy existing changes.
-- [fuzzing.md](prompts/codex/fuzzing.md) — Drive fuzzing experiments and document findings.
-- [implement.md](prompts/codex/implement.md) — Primary implementation work prompt.
-- [physics.md](prompts/codex/physics.md) — Physics explainer and validation helper.
-- [polish.md](prompts/codex/polish.md) — Evergreen polish and structure prompt.
-- [propagate.md](prompts/codex/propagate.md) — Share updates across sibling repos.
-- [spellcheck.md](prompts/codex/spellcheck.md) — Run focused spelling and style passes.
-- [video-script-ideas.md](prompts/codex/video-script-ideas.md) — Brainstorm future episode outlines.
+| File | Purpose |
+|------|---------|
+| [automation.md](prompts/codex/automation.md) | Standard automation workflow kickoff. |
+| [cad.md](prompts/codex/cad.md) | Guidance for CAD-focused build prompts. |
+| [ci-fix.md](prompts/codex/ci-fix.md) | Recover from CI failures with targeted fixes. |
+| [cleanup.md](prompts/codex/cleanup.md) | Streamline and tidy existing changes. |
+| [fuzzing.md](prompts/codex/fuzzing.md) | Drive fuzzing experiments and document findings. |
+| [implement.md](prompts/codex/implement.md) | Primary implementation work prompt. |
+| [physics.md](prompts/codex/physics.md) | Physics explainer and validation helper. |
+| [polish.md](prompts/codex/polish.md) | Evergreen polish and structure prompt. |
+| [propagate.md](prompts/codex/propagate.md) | Share updates across sibling repos. |
+| [spellcheck.md](prompts/codex/spellcheck.md) | Focused spelling and style passes. |
+| [video-script-ideas.md](prompts/codex/video-script-ideas.md) | Outline future episodes. |
 
-For a cross-repo inventory, see [prompt-docs-summary.md](prompt-docs-summary.md).
+For a cross-repo inventory, see [prompt-docs-summary.md](prompt-docs-summary.md). If new prompt
+guides are added, place them alongside these canonical names or introduce missing counterparts
+such as `agents.md` or `playbook.md`.
 
 ## Prompt doc maintenance
 
@@ -26,9 +31,10 @@ Use the migration helper to keep prompt docs consolidated and consistently named
 ./scripts/migrate-prompt-docs.sh
 ```
 
-The script is idempotent, so re-running it after edits is safe.
+The script is idempotent: it prints “Prompt docs already consolidated…” when no moves are
+required and can be re-run after any doc edits.
 
 ## Prompt strategy tracker
 
-- [prompt-saturation-rubric.md](prompt-saturation-rubric.md) — Checklist for deciding when to
-  pivot from implementation prompts toward polish-focused passes as variants converge.
+- [prompt-saturation-rubric.md](prompt-saturation-rubric.md) — Checklist with collision
+  checkboxes for deciding when to pivot from implementation prompts toward polish-focused passes.

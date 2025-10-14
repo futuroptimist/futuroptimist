@@ -61,7 +61,7 @@ Perform a holistic polish pass that improves structure, clarity, maintainability
    - If the repo renders any dashboards/readmes from scripts, add a “dry-run” flag and document it.
 
 6) **Orthogonality & saturation tracker**
-   - Append a tiny rubric to `docs/` that explains when to pivot from `implement.md` to polish tasks (e.g., when variant PRs begin to collide, or delta per variant diminishes).
+   - Append or update `docs/prompt-saturation-rubric.md` with guidance on when to pivot from `implement.md` to polish tasks (e.g., when variant PRs begin to collide, or delta per variant diminishes).
    - Include a simple checkbox list to record observed collisions and PR overlap.
 
 **File edits to stage**
