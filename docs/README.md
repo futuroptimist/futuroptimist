@@ -2,7 +2,7 @@
 
 ## Prompt docs (Codex)
 
-All Codex-ready prompts live under `docs/prompts/codex/` with filenames that already omit the
+All Codex-ready prompts live under `docs/prompts/codex/`, and filenames already omit the
 redundant words “prompt” and “codex.” Quick reference:
 
 | File | Purpose |
@@ -25,14 +25,15 @@ such as `agents.md` or `playbook.md`.
 
 ## Prompt doc maintenance
 
-Use the migration helper to keep prompt docs consolidated and consistently named:
+Use the migration helper to keep prompt docs consolidated, renamed, and idempotent:
 
 ```sh
 ./scripts/migrate-prompt-docs.sh
 ```
 
-The script is idempotent: it prints “Prompt docs already consolidated…” when no moves are
-required and can be re-run after any doc edits.
+The script moves any markdown file in `docs/` whose path contains “prompt” or “codex” into the
+canonical folder, normalises the filename (for example `cad-prompt.md` → `cad.md`), and prints
+`Prompt docs already consolidated at …` when re-runs have no work to do.
 
 ## Prompt strategy tracker
 
