@@ -15,6 +15,7 @@ br
 budynas
 canonicalizes
 changelog
+checkboxes
 chunker
 cli
 codebase
@@ -175,6 +176,7 @@ urllib
 urlopen
 urls
 uv
+uvx
 venv
 venv's
 verifier
