@@ -11,7 +11,7 @@ Use this prompt to ask Codex to seed missing `docs/prompts/codex/*.md` files acr
 
 **Human set-up steps:**
 
-1. Ensure `dict/prompt-doc-repos.txt` lists the target repositories:
+1. Ensure `data/prompt-docs/prompt-doc-repos.txt` lists the target repositories:
 
    ```text
    futuroptimist
@@ -24,11 +24,11 @@ Use this prompt to ask Codex to seed missing `docs/prompts/codex/*.md` files acr
 
   ```bash
   python scripts/update_prompt_docs_summary.py \
-    --repos-from dict/prompt-doc-repos.txt \
+    --repos-from data/prompt-docs/prompt-doc-repos.txt \
     --out docs/prompt-docs-summary.md
   ```
    The updater now fetches each repo's automation prompt and linked guides from the list in
-   `dict/prompt-doc-repos.txt`, so the summary highlights cross-repo gaps automatically (see
+   `data/prompt-docs/prompt-doc-repos.txt`, so the summary highlights cross-repo gaps automatically (see
    `tests/test_update_prompt_docs_summary.py`).
 2. Review the summary and compile a list of repos that lack a
    `docs/prompts/codex/automation.md` baseline.
@@ -85,7 +85,7 @@ Keep this propagation prompt accurate for seeding prompt docs.
  - Run `bash scripts/checks.sh`.
  - Regenerate `docs/prompt-docs-summary.md` with
    `python scripts/update_prompt_docs_summary.py --repos-from \
-  dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  data/prompt-docs/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Review this file for outdated repository lists or steps.

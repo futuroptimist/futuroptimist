@@ -32,7 +32,7 @@ CONTEXT:
   - `npm run test:ci` (if `package.json` exists)
   - `bash scripts/checks.sh`
 - Regenerate `docs/prompt-docs-summary.md` with:
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  `python scripts/update_prompt_docs_summary.py --repos-from data/prompt-docs/prompt-doc-repos.txt \
   --out docs/prompt-docs-summary.md`.
 
 REQUEST:
@@ -76,7 +76,7 @@ Regenerate the prompt summary:
 
 ```bash
 python scripts/update_prompt_docs_summary.py \
-  --repos-from dict/prompt-doc-repos.txt \
+  --repos-from data/prompt-docs/prompt-doc-repos.txt \
   --out docs/prompt-docs-summary.md
 ```
 
@@ -91,7 +91,7 @@ bash scripts/checks.sh
 git diff --cached | ./scripts/scan-secrets.py
 ```
 
-Ensure `dict/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repos stay
+Ensure `data/prompt-docs/prompt-doc-repos.txt` matches `docs/repo_list.txt` so downstream repos stay
 connected. Regression coverage lives in `tests/test_repo_list_sync.py` to prevent the lists
 from drifting.
 
@@ -157,8 +157,8 @@ Keep this CI-fix prompt aligned with current workflow patterns.
     `git diff --cached | ./scripts/scan-secrets.py`.
   - Regenerate `docs/prompt-docs-summary.md` with
     `python scripts/update_prompt_docs_summary.py --repos-from \
-    dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
-  - Keep `dict/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
+    data/prompt-docs/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  - Keep `data/prompt-docs/prompt-doc-repos.txt` in sync with `docs/repo_list.txt`. These
     repositories are tightly coupled to this codebase—if the summary
     script drops any, fix the repo or integration instead of removing it.
 

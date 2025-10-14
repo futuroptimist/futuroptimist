@@ -19,6 +19,32 @@ The canonical Codex prompt for automated contributions is in
 The automated tests run via GitHub Actions on each push and pull request and currently
 reach **100%** coverage.
 
+## Map of the repo
+
+**Navigate in three hops:**
+
+1. **Setup** – Follow [INSTRUCTIONS.md](INSTRUCTIONS.md) for `uv` environment steps and
+   contributor onboarding.
+2. **Run** – Explore the [Makefile](Makefile) targets for day-to-day automation; CLI helpers
+   live in [`src/`](src).
+3. **Test** – Execute `make test` (documented in `INSTRUCTIONS.md`) to run the full pytest
+   suite with coverage.
+
+| Category  | Path / resource                              | Notes |
+|-----------|----------------------------------------------|-------|
+| Packages  | [`src/`](src)                                | Shared Python modules and CLI entry points.
+| Scripts   | [`scripts/`](scripts)                        | Operational helpers (e.g., prompt migrations, scans).
+| Data      | [`data/prompt-docs/`](data/prompt-docs)      | Lightweight reference lists synced with docs.
+| Docs      | [`docs/`](docs)                              | Prompts, playbooks, and supporting guides.
+| Tests     | [`tests/`](tests)                            | Pytest suite mirroring production helpers.
+| Pipelines | [`outages/`](outages)                        | Incident logs and schema describing stability.
+| Infra     | [`.github/workflows/`](.github/workflows)    | CI pipelines for lint, tests, docs, and status updates.
+
+Prompt templates stay grouped under
+[`docs/prompts/codex/`](docs/prompts/codex) with an index in
+[`docs/README.md`](docs/README.md). Video narration lives in [`video_scripts/`](video_scripts),
+and multimedia assets are catalogued via the Makefile targets above.
+
 ## Related Projects
 _Last updated: 2025-10-14 03:15 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.

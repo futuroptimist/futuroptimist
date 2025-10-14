@@ -93,7 +93,7 @@ CONTEXT:
   - `npm run test:ci`
   - `bash scripts/checks.sh`
 - Regenerate the prompt summary with
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  `python scripts/update_prompt_docs_summary.py --repos-from data/prompt-docs/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 - Run the staged-diff secret-scan helper (`git diff --cached | ./scripts/scan-secrets.py`) before
   committing.
 

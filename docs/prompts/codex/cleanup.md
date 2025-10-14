@@ -18,10 +18,10 @@ CONTEXT:
 - Scan `docs/prompts/codex/` for `Type: one-off` prompts whose features now exist in the codebase.
 - Delete each obsolete prompt file or section and remove any lingering references.
 - Regenerate `docs/prompt-docs-summary.md` with:
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  `python scripts/update_prompt_docs_summary.py --repos-from data/prompt-docs/prompt-doc-repos.txt \
   --out docs/prompt-docs-summary.md`.
   This command now pulls the automation prompt (and linked guides) for every repository listed
-  in `dict/prompt-doc-repos.txt`, so cross-repo prompt inventories stay current. Regression
+  in `data/prompt-docs/prompt-doc-repos.txt`, so cross-repo prompt inventories stay current. Regression
   coverage lives in `tests/test_update_prompt_docs_summary.py`.
 - Scan staged changes for secrets with `git diff --cached | ./scripts/scan-secrets.py`.
 - Run checks:
@@ -64,7 +64,7 @@ CONTEXT:
   - `npm run test:ci` (if `package.json` exists)
   - `bash scripts/checks.sh`
 - Regenerate `docs/prompt-docs-summary.md` with:
-  `python scripts/update_prompt_docs_summary.py --repos-from dict/prompt-doc-repos.txt \
+  `python scripts/update_prompt_docs_summary.py --repos-from data/prompt-docs/prompt-doc-repos.txt \
   --out docs/prompt-docs-summary.md`.
 
 REQUEST:

@@ -95,7 +95,7 @@ CONTEXT:
   and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
-  dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  data/prompt-docs/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 
 REQUEST:
 1. Review this file for outdated or missing fuzzing guidance.
