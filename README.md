@@ -51,7 +51,7 @@ and multimedia assets are catalogued via the Makefile targets above.
 > polluting the virtual environment.
 
 ## Related Projects
-_Last updated: 2025-10-14 05:02 UTC; checks hourly_
+_Last updated: 2025-10-14 06:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 The unknown state is enforced by
 `tests/test_repo_status.py::test_fetch_repo_status_no_runs_returns_unknown`, ensuring repositories
@@ -69,14 +69,14 @@ without completed workflows render `❓` instead of failing the dashboard.
 - ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
   lint, tests, docs, and release automation with LLM agents so solo builders ship like a
   team
-- ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
+- ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
   LLM that learns your environment and delivers local, actionable security coaching
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex
   task pages, grabs failing GitHub logs, and pipes concise reports straight to your
   clipboard to speed debugging
 - ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that
   analyzes your repos and curates next steps to keep side projects moving
-- ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with
+- ❌ **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with
   push-to-talk voice control, running speech-to-text, LLM, and TTS in a 3D-printed case so
   commands stay local
 - ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turns your GitHub
