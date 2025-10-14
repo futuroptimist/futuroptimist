@@ -30,20 +30,25 @@ reach **100%** coverage.
 3. **Test** – Execute `make test` (documented in `INSTRUCTIONS.md`) to run the full pytest
    suite with coverage.
 
-| Category  | Path / resource                              | Notes |
-|-----------|----------------------------------------------|-------|
-| Packages  | [`src/`](src)                                | Shared Python modules and CLI entry points.
-| Scripts   | [`scripts/`](scripts)                        | Operational helpers (e.g., prompt migrations, scans).
-| Data      | [`data/prompt-docs/`](data/prompt-docs)      | Lightweight reference lists synced with docs.
-| Docs      | [`docs/`](docs)                              | Prompts, playbooks, and supporting guides.
-| Tests     | [`tests/`](tests)                            | Pytest suite mirroring production helpers.
-| Pipelines | [`outages/`](outages)                        | Incident logs and schema describing stability.
-| Infra     | [`.github/workflows/`](.github/workflows)    | CI pipelines for lint, tests, docs, and status updates.
+| Category | Path / resource | Notes |
+|----------|----------------|-------|
+| Apps | _n/a_ | Entry points live in `src/`; no standalone services yet. |
+| Packages | [`src/`](src) | Shared Python modules and CLI entry points. |
+| Scripts | [`scripts/`](scripts) | Operational helpers (e.g., prompt migrations, scans). |
+| Data | [`data/prompt-docs/`](data/prompt-docs) | Lightweight reference lists synced with docs. |
+| Docs | [`docs/`](docs) | Prompts, playbooks, and supporting guides. |
+| Tests | [`tests/`](tests) | Pytest suite mirroring production helpers. |
+| Pipelines | [`outages/`](outages) | Incident logs and schema describing stability. |
+| Infra | [`.github/workflows/`](.github/workflows) | CI for lint, tests, docs, status updates. |
 
 Prompt templates stay grouped under
 [`docs/prompts/codex/`](docs/prompts/codex) with an index in
 [`docs/README.md`](docs/README.md). Video narration lives in [`video_scripts/`](video_scripts),
 and multimedia assets are catalogued via the Makefile targets above.
+
+> **uv cheat sheet**: `uv sync` installs dependencies from `requirements.txt`,
+> `uv run pytest` mirrors `make test`, and `uvx <tool>` launches one-off binaries without
+> polluting the virtual environment.
 
 ## Related Projects
 _Last updated: 2025-10-14 04:02 UTC; checks hourly_
