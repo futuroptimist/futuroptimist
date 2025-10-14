@@ -27,3 +27,8 @@ Use the migration helper to keep prompt docs consolidated and consistently named
 ```
 
 The script is idempotent, so re-running it after edits is safe.
+
+## Prompt strategy tracker
+
+- [prompt-saturation-rubric.md](prompt-saturation-rubric.md) — Checklist for deciding when to
+  pivot from implementation prompts toward polish-focused passes as variants converge.

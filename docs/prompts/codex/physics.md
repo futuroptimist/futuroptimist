@@ -66,7 +66,7 @@ CONTEXT:
   and `bash scripts/checks.sh` pass.
 - Regenerate `docs/prompt-docs-summary.md` with
   `python scripts/update_prompt_docs_summary.py --repos-from \
-  dict/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
+  data/prompt-docs/prompt-doc-repos.txt --out docs/prompt-docs-summary.md`.
 - Confirm any referenced equations—such as rotational kinetic energy `E = 1/2 I ω^2`,
    torque `τ = I α`, moment of inertia for an annular disk `I = 1/2 m (r_o^2 + r_i^2)`,
    and maximum hoop stress `σ_max = ((3 + ν)/8) ρ ω^2 r_o^2`—match standard physics

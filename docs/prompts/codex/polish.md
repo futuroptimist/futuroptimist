@@ -32,6 +32,7 @@ Perform a holistic polish pass that improves structure, clarity, maintainability
    - Keep (if present) canonical names: `automation.md`, `implement.md`, `polish.md`, `agents.md`, `playbook.md`.
    - Update internal links (README, docs) accordingly.
    - Add a tiny idempotent script: `scripts/migrate-prompt-docs.sh` that performs these moves/renames safely (no-op if repeated). Include usage in `docs/README.md`.
+   - The migration script should exit cleanly when no moves are required so reruns stay a no-op.
 
 3) **Directory hygiene & layout recommendations (central hub repo)**
    - Reduce **root** clutter. Recommend/introduce a shallow, legible layout:
