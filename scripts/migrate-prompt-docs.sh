@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-# Normalize to repo root
+# Consolidate Codex prompt docs under docs/prompts/codex/ while normalising filenames.
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 REPO_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 TARGET_DIR="$REPO_ROOT/docs/prompts/codex"
@@ -9,112 +9,87 @@ TARGET_DIR="$REPO_ROOT/docs/prompts/codex"
 mkdir -p "$TARGET_DIR"
 
 changed=0
-cleanup_files()
-{
-  [ -z "${TMP_FILES:-}" ] || {
-    # shellcheck disable=SC2086 # intentional splitting on spaces between temp files
-    rm -f $TMP_FILES
-  }
-}
-trap cleanup_files EXIT INT HUP TERM
 
-queue_find_results()
-{
-  search_path=$1
-  shift
-  tmp_file=$(mktemp)
-  TMP_FILES=${TMP_FILES:-}
-  TMP_FILES="$TMP_FILES $tmp_file"
-  find "$search_path" "$@" >"$tmp_file"
-  printf '%s' "$tmp_file"
+sanitize_stem() {
+  stem=$1
+  printf '%s' "$stem" |
+    sed -e 's/[Pp][Rr][Oo][Mm][Pp][Tt][Ss]\?//g' \
+        -e 's/[Cc][Oo][Dd][Ee][Xx]//g' \
+        -e 's/[ _]/-/g' \
+        -e 's/-\{2,\}/-/g' \
+        -e 's/^-\|-$//g'
 }
 
-# Gather candidate markdown files that look like prompt docs outside the target dir.
-# We consider files within docs/ whose path or filename contains "prompt" or "codex".
-# Skip the canonical directory to keep idempotency on repeated runs.
-candidate_tmp=$(queue_find_results "$REPO_ROOT/docs" -type f -name '*.md' ! -path "$TARGET_DIR/*" -print)
-while IFS= read -r source_path; do
-  case "$source_path" in
-    *prompts/codex/*) continue ;;
-  esac
-
-  base_name=$(basename "$source_path")
-  case "$base_name" in
-    prompt-docs-summary.md|prompt-saturation-rubric.md) continue ;;
-  esac
-  dir_name=$(dirname "$source_path")
-
-  # Determine whether the file is a prompt doc based on its directory or filename.
-  case "$dir_name/$base_name" in
-    *prompts/*|*prompt*|*codex*) : ;;
-    *) continue ;;
-  esac
-
-  # Remove redundant terms from the filename while keeping the extension intact.
-  stem=${base_name%.*}
-  ext=${base_name##*.}
-  sanitized_stem=$(printf '%s' "$stem" \
-    | sed -e 's/[Pp][Rr][Oo][Mm][Pp][Tt][Ss]\?//g' \
-          -e 's/[Cc][Oo][Dd][Ee][Xx]//g' \
-          -e 's/--*/-/g' \
-          -e 's/^-\|-$//g')
-
-  # Fallback to the original stem if the sanitization removed everything meaningful.
-  if [ -z "$sanitized_stem" ]; then
-    sanitized_stem="$stem"
-  fi
-
-  destination="$TARGET_DIR/$sanitized_stem.$ext"
-
-  # If the destination already contains identical content, remove the duplicate source.
-  if [ -f "$destination" ] && cmp -s "$source_path" "$destination"; then
-    rm -f "$source_path"
-    changed=1
-    continue
-  fi
-
-  # If a file already exists at the destination with different content, keep both by
-  # appending a numeric suffix to avoid destructive overwrites.
-  if [ -f "$destination" ] && ! cmp -s "$source_path" "$destination"; then
-    i=2
-    while [ -f "$TARGET_DIR/$sanitized_stem-$i.$ext" ]; do
-      i=$((i + 1))
-    done
-    destination="$TARGET_DIR/$sanitized_stem-$i.$ext"
-  fi
-
-  # Ensure parent directory exists and move the file.
-  mkdir -p "$(dirname "$destination")"
-  mv "$source_path" "$destination"
-  changed=1
-done <"$candidate_tmp"
-
-# Finally, ensure filenames within the target directory drop redundant segments even if they
-# were already placed there manually.
-existing_tmp=$(queue_find_results "$TARGET_DIR" -maxdepth 1 -type f -name '*.md' -print)
-while IFS= read -r existing; do
-  base=$(basename "$existing")
+move_doc() {
+  src=$1
+  base=$(basename "$src")
   stem=${base%.*}
   ext=${base##*.}
-  sanitized=$(printf '%s' "$stem" \
-    | sed -e 's/[Pp][Rr][Oo][Mm][Pp][Tt][Ss]\?//g' \
-          -e 's/[Cc][Oo][Dd][Ee][Xx]//g' \
-          -e 's/--*/-/g' \
-          -e 's/^-\|-$//g')
-  [ -n "$sanitized" ] || sanitized="$stem"
-  new_path="$TARGET_DIR/$sanitized.$ext"
-  if [ "$existing" != "$new_path" ]; then
-    if [ -f "$new_path" ] && ! cmp -s "$existing" "$new_path"; then
-      i=2
-      while [ -f "$TARGET_DIR/$sanitized-$i.$ext" ]; do
-        i=$((i + 1))
-      done
-      new_path="$TARGET_DIR/$sanitized-$i.$ext"
-    fi
-    mv "$existing" "$new_path"
-    changed=1
+  sanitized=$(sanitize_stem "$stem")
+  [ -n "$sanitized" ] || sanitized=$stem
+  dest="$TARGET_DIR/$sanitized.$ext"
+
+  # Avoid redundant moves.
+  if [ "$src" = "$dest" ]; then
+    return
   fi
-done <"$existing_tmp"
+
+  if [ -f "$dest" ]; then
+    if cmp -s "$src" "$dest"; then
+      rm -f "$src"
+      changed=1
+      return
+    fi
+    i=2
+    while [ -f "$TARGET_DIR/$sanitized-$i.$ext" ]; do
+      i=$((i + 1))
+    done
+    dest="$TARGET_DIR/$sanitized-$i.$ext"
+  fi
+
+  mv "$src" "$dest"
+  changed=1
+}
+
+find "$REPO_ROOT/docs" -type f -name '*.md' ! -path "$TARGET_DIR/*" \
+  | while IFS= read -r file; do
+      case "$file" in
+        *prompts/codex/*) continue ;;
+        *prompt-docs-summary.md|*prompt-saturation-rubric.md) continue ;;
+      esac
+
+      case "$file" in
+        *prompts/*|*prompt*|*codex*) move_doc "$file" ;;
+      esac
+    done
+
+# Second pass: ensure files already inside the target directory follow the naming rules.
+find "$TARGET_DIR" -maxdepth 1 -type f -name '*.md' \
+  | while IFS= read -r file; do
+      base=$(basename "$file")
+      stem=${base%.*}
+      ext=${base##*.}
+      sanitized=$(sanitize_stem "$stem")
+      [ -n "$sanitized" ] || sanitized=$stem
+      new_path="$TARGET_DIR/$sanitized.$ext"
+      if [ "$file" = "$new_path" ]; then
+        continue
+      fi
+      if [ -f "$new_path" ]; then
+        if cmp -s "$file" "$new_path"; then
+          rm -f "$file"
+          changed=1
+          continue
+        fi
+        i=2
+        while [ -f "$TARGET_DIR/$sanitized-$i.$ext" ]; do
+          i=$((i + 1))
+        done
+        new_path="$TARGET_DIR/$sanitized-$i.$ext"
+      fi
+      mv "$file" "$new_path"
+      changed=1
+    done
 
 if [ "$changed" -eq 0 ]; then
   printf 'Prompt docs already consolidated at %s\n' "$TARGET_DIR"

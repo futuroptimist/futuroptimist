@@ -31,7 +31,7 @@ Perform a holistic polish pass that improves structure, clarity, maintainability
    - Move any existing prompt docs there; **rename** to drop `prompt(s)`/`codex` from filenames since those are implied by the path.
    - Keep (if present) canonical names: `automation.md`, `implement.md`, `polish.md`, `agents.md`, `playbook.md`.
    - Update internal links (README, docs) accordingly.
-   - Add a tiny idempotent script: `scripts/migrate-prompt-docs.sh` that performs these moves/renames safely (no-op if repeated). Include usage in `docs/README.md`.
+   - Add a tiny idempotent script: `scripts/migrate-prompt-docs.sh` that performs these moves/renames safely (no-op if repeated) and prints a clear consolidation message when nothing changes. Include usage in `docs/README.md`.
    - The migration script should exit cleanly when no moves are required so reruns stay a no-op.
 
 3) **Directory hygiene & layout recommendations (central hub repo)**
