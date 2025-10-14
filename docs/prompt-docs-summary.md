@@ -8,6 +8,7 @@
 | [prompts/codex/cleanup.md](prompts/codex/cleanup.md) | Codex Prompt Cleanup |
 | [prompts/codex/fuzzing.md](prompts/codex/fuzzing.md) | Codex Fuzzing Prompt |
 | [prompts/codex/implement.md](prompts/codex/implement.md) | Codex Implement Prompt |
+| [prompts/codex/polish.md](prompts/codex/polish.md) | Codex Polish Prompt |
 | [prompts/codex/physics.md](prompts/codex/physics.md) | Codex Physics Explainer Prompt |
 | [prompts/codex/propagate.md](prompts/codex/propagate.md) | Codex Prompt Propagation Prompt |
 | [prompts/codex/spellcheck.md](prompts/codex/spellcheck.md) | Codex Spellcheck Prompt |
