@@ -79,9 +79,11 @@ Script format:
   `analytics/report.json`; see `tests/test_analytics_ingester.py` for
   coverage.
 - Run `streamlit run src/analytics_dashboard.py` to browse those metrics with
-  sortable tables, headline stats, and quick charts. Data preparation helpers
-  are regression-tested in `tests/test_analytics_dashboard.py` so the
-  dashboard stays stable as analytics fields evolve.
+  sortable tables, headline stats, and quick charts for views, watch time, and
+  click-through rate. Regression coverage in `tests/test_analytics_dashboard.py`
+  now includes `test_render_dashboard_displays_watch_time_and_ctr_charts`
+  so the Streamlit UI keeps surfacing the promised watch time and CTR charts as
+  the analytics fields evolve.
 
 Run tests with:
 ```bash

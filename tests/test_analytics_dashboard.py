@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -133,3 +134,104 @@ def test_summarize_dataframe_empty() -> None:
         "average_view_duration_seconds": 0.0,
         "average_ctr": 0.0,
     }
+
+
+def test_render_dashboard_displays_watch_time_and_ctr_charts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    video_root = tmp_path / "video_scripts"
+    video_root.mkdir()
+    payload = {
+        "youtube_id": "chart123",
+        "title": "Chart Feature",
+        "status": "live",
+        "publish_date": "2025-02-01",
+        "view_count": 1234,
+        "analytics": {
+            "views": 1200,
+            "watch_time_minutes": 345.6,
+            "average_view_duration_seconds": 210.0,
+            "impressions": 5678,
+            "impressions_click_through_rate": 6.5,
+        },
+    }
+    _write_metadata(video_root, "20250201_chart-feature", payload)
+
+    class DummyStreamlit:
+        def __init__(self) -> None:
+            self.metrics: list[tuple[str, object]] = []
+            self.line_chart_data: list[object] = []
+            self.bar_chart_data: list[object] = []
+            self.subheaders: list[str] = []
+            self.dataframes: list[object] = []
+            self.selectboxes: list[tuple[str, list[str], int]] = []
+            self.columns_count: int | None = None
+            self.sidebar = self.Sidebar(self)
+
+        class Sidebar:
+            def __init__(self, parent: "DummyStreamlit") -> None:
+                self._parent = parent
+
+            def selectbox(self, label: str, options: list[str], index: int = 0) -> str:
+                self._parent.selectboxes.append((label, options, index))
+                return options[index]
+
+        class Column:
+            def __init__(self, parent: "DummyStreamlit") -> None:
+                self._parent = parent
+
+            def metric(self, label: str, value: object, *args, **kwargs) -> None:
+                self._parent.metrics.append((label, value))
+
+        @staticmethod
+        def _snapshot(data: object) -> object:
+            if hasattr(data, "copy"):
+                try:
+                    return data.copy()  # type: ignore[call-arg]
+                except TypeError:
+                    return data
+            return data
+
+        def set_page_config(self, **_kwargs) -> None:  # pragma: no cover - trivial stub
+            return None
+
+        def title(self, _text: str) -> None:  # pragma: no cover - trivial stub
+            return None
+
+        def caption(self, _text: str) -> None:  # pragma: no cover - trivial stub
+            return None
+
+        def columns(self, count: int) -> list["DummyStreamlit.Column"]:
+            self.columns_count = count
+            return [self.Column(self) for _ in range(count)]
+
+        def dataframe(self, data, use_container_width: bool = False) -> None:
+            self.dataframes.append(self._snapshot(data))
+
+        def line_chart(self, data) -> None:
+            self.line_chart_data.append(self._snapshot(data))
+
+        def bar_chart(self, data) -> None:
+            self.bar_chart_data.append(self._snapshot(data))
+
+        def subheader(self, text: str) -> None:
+            self.subheaders.append(text)
+
+    stub = DummyStreamlit()
+    monkeypatch.setitem(sys.modules, "streamlit", stub)
+
+    dashboard.render_dashboard(video_root=video_root)
+
+    assert stub.columns_count == 5
+    metric_labels = [label for label, _ in stub.metrics]
+    assert "Average CTR (%)" in metric_labels
+    assert any(
+        "watch_time_minutes" in getattr(data, "columns", [])
+        for data in stub.line_chart_data
+    )
+    assert any(
+        "impressions_click_through_rate" in getattr(data, "columns", [])
+        for data in stub.line_chart_data
+    )
+    assert "Watch time (minutes)" in stub.subheaders
+    assert "Click-through rate (%)" in stub.subheaders

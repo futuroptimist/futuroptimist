@@ -208,9 +208,12 @@ lives in `tests/test_analytics_ingester.py`.
 
 Explore the captured metrics with `streamlit run src/analytics_dashboard.py`
 to surface headline stats, sortable tables, and quick charts for views, watch
-time, and click-through rate. The dashboard helpers stay regression-tested in
-`tests/test_analytics_dashboard.py` so data reshaping remains deterministic as
-the analytics schema evolves.
+time, and click-through rate. Regression coverage in
+`tests/test_analytics_dashboard.py` now includes
+`::test_render_dashboard_displays_watch_time_and_ctr_charts`, ensuring the
+Streamlit dashboard surfaces the promised watch time and CTR charts alongside
+the headline stats while keeping data reshaping deterministic as the analytics
+schema evolves.
 
 Per‑video manifests: add `video_scripts/<folder>/assets.json` conforming to
 `schemas/assets_manifest.schema.json` to declare which `footage/` directories

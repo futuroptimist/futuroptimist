@@ -135,7 +135,7 @@ def render_dashboard(video_root: pathlib.Path = VIDEO_ROOT) -> None:
     frame = build_dataframe(records)
     summary = summarize_dataframe(frame)
 
-    metric_cols = st.columns(4)
+    metric_cols = st.columns(5)
     metric_cols[0].metric("Videos", summary["videos"])
     metric_cols[1].metric("Total views", f"{summary['total_views']:,}")
     metric_cols[2].metric(
@@ -144,6 +144,7 @@ def render_dashboard(video_root: pathlib.Path = VIDEO_ROOT) -> None:
     metric_cols[3].metric(
         "Average view duration (s)", f"{summary['average_view_duration_seconds']:.1f}"
     )
+    metric_cols[4].metric("Average CTR (%)", f"{summary['average_ctr']:.2f}")
 
     display_frame = frame.copy()
     if not display_frame.empty:
@@ -168,8 +169,27 @@ def render_dashboard(video_root: pathlib.Path = VIDEO_ROOT) -> None:
         if not chart_data.empty:
             st.subheader("Performance over time")
             st.line_chart(chart_data[["views", "impressions"]])
-            st.subheader("Average view duration")
-            st.bar_chart(chart_data[["average_view_duration_seconds"]])
+
+            if (
+                "watch_time_minutes" in chart_data.columns
+                and not chart_data["watch_time_minutes"].dropna().empty
+            ):
+                st.subheader("Watch time (minutes)")
+                st.line_chart(chart_data[["watch_time_minutes"]])
+
+            if (
+                "impressions_click_through_rate" in chart_data.columns
+                and not chart_data["impressions_click_through_rate"].dropna().empty
+            ):
+                st.subheader("Click-through rate (%)")
+                st.line_chart(chart_data[["impressions_click_through_rate"]])
+
+            if (
+                "average_view_duration_seconds" in chart_data.columns
+                and not chart_data["average_view_duration_seconds"].dropna().empty
+            ):
+                st.subheader("Average view duration")
+                st.bar_chart(chart_data[["average_view_duration_seconds"]])
 
 
 def _as_int(value: object) -> int | None:
