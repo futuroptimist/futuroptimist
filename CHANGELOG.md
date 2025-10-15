@@ -2,6 +2,10 @@
 - feat: ship a Streamlit analytics dashboard fed by metadata analytics blocks.
 - test: cover analytics dashboard data loading, dataframe shaping, and summary
   metrics.
+- feat: render watch time and click-through rate charts in the analytics dashboard
+  to match the documented behaviour.
+- test: assert the dashboard surfaces watch time and CTR charts via
+  `tests/test_analytics_dashboard.py::test_render_dashboard_displays_watch_time_and_ctr_charts`.
 - docs: document the analytics dashboard in INSTRUCTIONS, llms.txt, and the
   repo feature summary.
 - feat: add analytics_ingester CLI to persist YouTube Analytics metrics into
