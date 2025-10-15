@@ -38,6 +38,10 @@ Script format:
   falling back to the placeholder text (see
   `tests/test_newsletter_builder.py::test_collect_items_orders_and_summarises`). See
   `tests/test_newsletter_builder.py`.
+- `fact_check_discussions.py` exports the Futuroptimist GitHub Discussions threads in the
+  "Fact Check" category to `data/fact_check_discussions.json`, filtering closed topics by
+  default and reporting author, reaction totals, comment counts, and timestamps (see
+  `tests/test_fact_check_discussions.py`).
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.
