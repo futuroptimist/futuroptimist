@@ -29,7 +29,7 @@ def test_load_video_metadata_includes_analytics(tmp_path: Path) -> None:
             "watch_time_minutes": 1350.5,
             "average_view_duration_seconds": 240.2,
             "impressions": 120000,
-            "impressions_click_through_rate": 4.2,
+            "impressions_click_through_rate": 0.042,
         },
     }
     _write_metadata(video_root, "20250115_orbital-hydroponics", payload)
@@ -47,7 +47,7 @@ def test_load_video_metadata_includes_analytics(tmp_path: Path) -> None:
     assert record["watch_time_minutes"] == 1350.5
     assert record["average_view_duration_seconds"] == 240.2
     assert record["impressions"] == 120000
-    assert record["impressions_click_through_rate"] == 4.2
+    assert record["impressions_click_through_rate"] == 0.042
 
 
 def test_build_dataframe_sorts_and_casts() -> None:
@@ -62,7 +62,7 @@ def test_build_dataframe_sorts_and_casts() -> None:
             "watch_time_minutes": 50.0,
             "average_view_duration_seconds": 220.0,
             "impressions": 900,
-            "impressions_click_through_rate": 5.0,
+            "impressions_click_through_rate": 0.05,
         },
         {
             "slug": "20250101_first-video",
@@ -74,7 +74,7 @@ def test_build_dataframe_sorts_and_casts() -> None:
             "watch_time_minutes": 25.0,
             "average_view_duration_seconds": 180.0,
             "impressions": 500,
-            "impressions_click_through_rate": 4.0,
+            "impressions_click_through_rate": 0.04,
         },
     ]
 
@@ -97,7 +97,7 @@ def test_summarize_dataframe_handles_metrics() -> None:
             "watch_time_minutes": 40.0,
             "average_view_duration_seconds": 200.0,
             "impressions": 1000,
-            "impressions_click_through_rate": 5.0,
+            "impressions_click_through_rate": 0.05,
         },
         {
             "slug": "b",
@@ -108,7 +108,7 @@ def test_summarize_dataframe_handles_metrics() -> None:
             "watch_time_minutes": 60.0,
             "average_view_duration_seconds": 260.0,
             "impressions": 2000,
-            "impressions_click_through_rate": 6.0,
+            "impressions_click_through_rate": 0.06,
         },
     ]
     df = dashboard.build_dataframe(records)
@@ -152,7 +152,7 @@ def test_render_dashboard_displays_watch_time_and_ctr_charts(
             "watch_time_minutes": 345.6,
             "average_view_duration_seconds": 210.0,
             "impressions": 5678,
-            "impressions_click_through_rate": 6.5,
+            "impressions_click_through_rate": 0.065,
         },
     }
     _write_metadata(video_root, "20250201_chart-feature", payload)
@@ -229,9 +229,17 @@ def test_render_dashboard_displays_watch_time_and_ctr_charts(
         "watch_time_minutes" in getattr(data, "columns", [])
         for data in stub.line_chart_data
     )
-    assert any(
-        "impressions_click_through_rate" in getattr(data, "columns", [])
+    ctr_chart_frames = [
+        data
         for data in stub.line_chart_data
+        if "impressions_click_through_rate" in getattr(data, "columns", [])
+    ]
+    assert ctr_chart_frames
+    ctr_metric_value = next(
+        value for label, value in stub.metrics if label == "Average CTR (%)"
     )
+    assert ctr_metric_value == "6.50"
+    ctr_values = ctr_chart_frames[0]["impressions_click_through_rate"].tolist()
+    assert all(value == pytest.approx(6.5) for value in ctr_values)
     assert "Watch time (minutes)" in stub.subheaders
     assert "Click-through rate (%)" in stub.subheaders

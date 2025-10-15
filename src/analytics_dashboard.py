@@ -102,10 +102,11 @@ def summarize_dataframe(frame: pd.DataFrame) -> dict[str, float | int]:
     average_duration = float(
         frame.get("average_view_duration_seconds", pd.Series(dtype=float)).mean() or 0.0
     )
-    average_ctr = float(
+    average_ctr_fraction = float(
         frame.get("impressions_click_through_rate", pd.Series(dtype=float)).mean()
         or 0.0
     )
+    average_ctr = average_ctr_fraction * 100
     return {
         "videos": int(len(frame)),
         "total_views": int(round(views)),
@@ -149,6 +150,10 @@ def render_dashboard(video_root: pathlib.Path = VIDEO_ROOT) -> None:
     display_frame = frame.copy()
     if not display_frame.empty:
         display_frame["publish_date"] = display_frame["publish_date"].dt.date
+        if "impressions_click_through_rate" in display_frame.columns:
+            display_frame.loc[:, "impressions_click_through_rate"] = (
+                display_frame["impressions_click_through_rate"] * 100
+            )
     st.dataframe(
         display_frame[
             [
@@ -182,7 +187,8 @@ def render_dashboard(video_root: pathlib.Path = VIDEO_ROOT) -> None:
                 and not chart_data["impressions_click_through_rate"].dropna().empty
             ):
                 st.subheader("Click-through rate (%)")
-                st.line_chart(chart_data[["impressions_click_through_rate"]])
+                ctr_chart = chart_data[["impressions_click_through_rate"]].mul(100)
+                st.line_chart(ctr_chart)
 
             if (
                 "average_view_duration_seconds" in chart_data.columns
