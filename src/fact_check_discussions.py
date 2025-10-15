@@ -94,11 +94,13 @@ def build_fact_check_index(
 
     category_normalised = category.strip().lower()
     records: list[dict[str, Any]] = []
+    state = "all" if include_closed else "open"
     for discussion in fetch_discussions(
         repo=repo,
         token=token,
         per_page=per_page,
         max_pages=max_pages,
+        state=state,
     ):
         raw_category = (
             (discussion.get("category") or {}).get("name")

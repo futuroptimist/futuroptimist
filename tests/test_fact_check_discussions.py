@@ -157,9 +157,12 @@ def test_build_fact_check_index_includes_closed_when_requested(
         [],
     ]
 
+    seen_states: set[str | None] = set()
+
     def fake_get(
         url: str, *, headers: dict[str, str], params: dict[str, Any], timeout: int
     ) -> DummyResponse:
+        seen_states.add(params.get("state"))
         return DummyResponse(payloads[params["page"] - 1])
 
     monkeypatch.setattr("requests.get", fake_get)
@@ -175,6 +178,7 @@ def test_build_fact_check_index_includes_closed_when_requested(
 
     numbers = {r["number"] for r in records}
     assert numbers == {10, 11}
+    assert seen_states == {"all"}
 
 
 def test_fetch_discussions_raises_for_http_error(
