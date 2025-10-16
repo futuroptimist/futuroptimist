@@ -30,11 +30,11 @@ help:
 	@echo "  convert_missing Convert only missing items from verify_report.json"
 	@echo "  scripts_from_subtitles Generate script.md files from subtitles"
 	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
-        @echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
-        @echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
-        @echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
-        @echo "  render       Assemble dist/<slug>.mp4 (VIDEO=slug [SELECTS=path] [CAPTIONS=path])"
-        @echo "  process       One-command: convert+verify+report (requires SLUG=...)"
+	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
+	@echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
+	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
+	@echo "  render       Assemble dist/<slug>.mp4 (VIDEO=slug [SELECTS=path] [CAPTIONS=path])"
+	@echo "  process       One-command: convert+verify+report (requires SLUG=...)"
 
 setup:
 	python -m venv $(VENV)
