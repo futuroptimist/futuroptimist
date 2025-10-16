@@ -236,6 +236,15 @@ are normalised to repo-relative strings even when manifests use relative or
 absolute references (see
 `tests/test_index_assets.py::test_build_index_normalizes_notes_file`).
 
+When manifests are missing, scaffold them automatically with
+`python src/generate_assets_manifest.py --slug SLUG --overwrite` (or
+`make assets_manifest SLUG=YYYYMMDD_slug OVERWRITE=1`). The helper inspects
+`footage/<slug>/` for files, records each populated directory, pulls in
+`labels.json` paths, and links the nearest `notes.md` or `notes.txt` so
+downstream tooling immediately knows where footage lives. Regression coverage
+in `tests/test_generate_assets_manifest.py` keeps directory detection, label
+discovery, and dry-run behaviour predictable.
+
 Asset conversion (Premiere compatibility): run `make convert_assets` to scan
 `footage/<slug>/originals/` for formats like HEIC/HEIF, DNG, WEBP and convert
 them to Premiere-friendly JPG/PNG under `footage/<slug>/converted/` with the
@@ -287,7 +296,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | 4️⃣  Creative Toolkit | • ✅ Prompt library for hook/headline generation trained on past hits.<br>• ✅ Thumbnail text predictor (CTR estimation) using small vision model via `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png` (see `tests/test_thumbnail_text_predictor.py`). | Higher audience retention |
 | 5️⃣  Distribution Insights | • ✅ Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• ✅ Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
 | 6️⃣  Community | • ✅ GitHub Discussions integration for crowdsourced fact-checks (`python src/fact_check_discussions.py`; see `tests/test_fact_check_discussions.py`).<br>• ✅ Scheduled newsletter builder that stitches new scripts + links (`python src/newsletter_builder.py`; see `tests/test_newsletter_builder.py`). | Audience feedback loop |
-| 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders.<br>• FFmpeg rendering scripts for rough-cut assembly and caption burn-in.<br>• CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
+| 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• ✅ Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders via `src/generate_assets_manifest.py`.<br>• FFmpeg rendering scripts for rough-cut assembly and caption burn-in.<br>• CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
 | 8️⃣  Publish Orchestration | • YouTube Data API V3 upload endpoint (draft/private).<br>• Automatic thumbnail + metadata attach from repo files.<br>• Post-publish annotation back into metadata.json (video url, processing times). | One-command release |
 | 9️⃣  Source Archival | • `collect_sources.py` downloads HTML/mp4 references from each `sources.txt` into `video_scripts/<slug>/sources/` folders and reads the root `source_urls.txt` into `/sources/` with a manifest (`sources.json`).<br>• Friendly `User-Agent`; see `tests/test_collect_sources.py::test_process_global_sources`. | Reliable citation & reproducibility |
 

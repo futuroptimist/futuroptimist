@@ -59,6 +59,12 @@ Script format:
   now fills metadata-based fallback text when footage is unavailable so the
   Markdown never regresses to `(description pending)` (see
   `tests/test_describe_images.py::test_write_markdown_fallback_populates_placeholder`).
+- Run `python src/generate_assets_manifest.py --slug SLUG --overwrite` (or
+  `make assets_manifest SLUG=YYYYMMDD_slug OVERWRITE=1`) to scaffold
+  `video_scripts/<slug>/assets.json` from the footage tree. The helper records
+  each populated directory, discovers `labels.json`, and links nearby shoot
+  notes so `index_assets` has rich metadata to ingest (see
+  `tests/test_generate_assets_manifest.py`).
 - Run `python src/report_funnel.py --slug <slug>` (optionally add
   `--selects-file selects.txt`) to print funnel stats. The CLI surfaces totals
   and coverage percentages for converted and selected assets, plus a kind

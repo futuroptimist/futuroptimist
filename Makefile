@@ -13,7 +13,9 @@ endif
 PIP := uv pip
 
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
-.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel newsletter process update_metadata scripts_from_subtitles
+.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images \
+        convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
+        process update_metadata scripts_from_subtitles assets_manifest
 
 help:
 	@echo "Targets:"
@@ -29,9 +31,10 @@ help:
 	@echo "  verify_assets  Verify converted/ matches originals/ dimensions/aspect"
 	@echo "  convert_missing Convert only missing items from verify_report.json"
 	@echo "  scripts_from_subtitles Generate script.md files from subtitles"
-	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
-	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
-	@echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
+        @echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
+        @echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
+        @echo "  assets_manifest Generate assets.json from footage (SLUG=... OVERWRITE=1)"
+        @echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
 	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
 	@echo "  process       One-command: convert+verify+report (requires SLUG=...)"
 
@@ -84,13 +87,20 @@ update_metadata:
 	$(PY) src/update_video_metadata.py $(if $(SLUG),--slug $(SLUG),)
 
 report_funnel:
-	@if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
-	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+        @if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
+        $(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+
+assets_manifest:
+        $(PY) src/generate_assets_manifest.py \
+                $(if $(SLUG),--slug $(SLUG),) \
+                $(if $(FOOTAGE),--footage-root $(FOOTAGE),) \
+                $(if $(OVERWRITE),--overwrite,) \
+                $(if $(DRY_RUN),--dry-run,)
 
 newsletter:
-	$(PY) src/newsletter_builder.py \
-		$(if $(OUTPUT),--output $(OUTPUT),) \
-		$(if $(SINCE),--since $(SINCE),) \
+        $(PY) src/newsletter_builder.py \
+                $(if $(OUTPUT),--output $(OUTPUT),) \
+                $(if $(SINCE),--since $(SINCE),) \
 		$(if $(STATUS),--status $(STATUS),) \
 		$(if $(LIMIT),--limit $(LIMIT),) \
 		$(if $(DATE),--date $(DATE),)
