@@ -136,7 +136,7 @@ See `tests/test_newsletter_builder.py` for regression coverage of summary
 fallbacks, ordering, and Markdown formatting.
 
 Surface community fact-checks with `python src/fact_check_discussions.py`.
-The CLI fetches the "Fact Check" category from Futuroptimist's GitHub
+The CLI fetches the "Fact Check" category from the Futuroptimist GitHub
 Discussions, filters out closed threads by default, and writes a
 `data/fact_check_discussions.json` index with metadata such as author, updated
 timestamp, comment count, and reaction totals. Pagination keeps API usage
