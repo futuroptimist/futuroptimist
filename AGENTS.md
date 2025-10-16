@@ -32,6 +32,7 @@ Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
 | `/src/index_local_media.py` | Build a flat `footage_index.json` of local media under `footage/`. |
 | `/src/index_assets.py` | Build a rich `assets_index.json` from per-video manifests (labels + optional notes paths). |
 | `/src/index_script_segments.py` | Export `[NARRATOR]` segments to JSON for embeddings and retrieval. |
+| `/src/index_script_embeddings.py` | Hash `[NARRATOR]` segments into deterministic vectors for local RAG tests. |
 | `/src/update_video_metadata.py` | Refresh video metadata (title/date/duration) via YouTube API. |
 | `/sources/` | Reference files fetched via `collect_sources.py`. |
 | `video_ids.txt` | Canonical list of YouTube IDs referenced by helper scripts; lines starting with `#` are comments. |

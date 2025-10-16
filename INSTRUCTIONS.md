@@ -270,10 +270,11 @@ fallback text rather than `(description pending)` (see
 * ~~Build a lightweight RAG pipeline that indexes past scripts for rapid outline generation of future videos.~~
   ✅ Run `python src/index_script_segments.py` to export `[NARRATOR]` lines into JSON chunks ready for embeddings
   (see `tests/test_index_script_segments.py`).
-  ✅ Capture hook inspiration for prompts with `python src/index_script_hooks.py`. The helper
-  collects the first `[NARRATOR]` line from each script along with metadata and writes
-  `data/script_hooks.json`, providing a ready-made dataset for headline generation tools (see
-  `tests/test_index_script_hooks.py`).
+  ✅ Run `python src/index_script_embeddings.py` to hash each segment into deterministic vectors under
+  `data/index/` so retrieval prototypes have ready-made test data (see `tests/test_index_script_embeddings.py`).
+  ✅ Capture hook inspiration for prompts with `python src/index_script_hooks.py`. The helper collects the first
+  `[NARRATOR]` line from each script along with metadata and writes `data/script_hooks.json`, providing a
+  ready-made dataset for headline generation tools (see `tests/test_index_script_hooks.py`).
 
 ## 🌱 Roadmap / Flywheel Enhancements
 The goal: turn this repo into a self-reinforcing engine that **accelerates Futuroptimist content velocity**.
@@ -282,7 +283,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 |-------|---------|--------|
 | 1️⃣  Plumbing | • **CI action now runs tests with coverage** on every push.<br>• Pre-commit hooks (black, ruff) | Confidence & code quality |
 | 2️⃣  Metadata Automation | • YouTube Data API sync to enrich markdown front-matter (title, publish date, views, tags).<br>• Slug auto-generation + filename rename helper (`src/rename_video_slug.py`). | Less manual bookkeeping |
-| 3️⃣  Script Intelligence | • SRT → Markdown converter that preserves timing blocks.<br>• Semantic chunker + embeddings (OpenAI / local) into `data/index` for RAG. | Opens door to AI-assisted new scripts |
+| 3️⃣  Script Intelligence | • ✅ SRT → Markdown converter that preserves timing blocks.<br>• ✅ Semantic chunker + embeddings (OpenAI / local) into `data/index` via `python src/index_script_embeddings.py`. | Opens door to AI-assisted new scripts |
 | 4️⃣  Creative Toolkit | • ✅ Prompt library for hook/headline generation trained on past hits.<br>• ✅ Thumbnail text predictor (CTR estimation) using small vision model via `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png` (see `tests/test_thumbnail_text_predictor.py`). | Higher audience retention |
 | 5️⃣  Distribution Insights | • ✅ Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• ✅ Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
 | 6️⃣  Community | • ✅ GitHub Discussions integration for crowdsourced fact-checks (`python src/fact_check_discussions.py`; see `tests/test_fact_check_discussions.py`).<br>• ✅ Scheduled newsletter builder that stitches new scripts + links (`python src/newsletter_builder.py`; see `tests/test_newsletter_builder.py`). | Audience feedback loop |
