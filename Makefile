@@ -13,7 +13,7 @@ endif
 PIP := uv pip
 
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
-.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel newsletter process update_metadata scripts_from_subtitles
+.PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images convert_assets verify_assets convert_missing convert_all report_funnel newsletter process update_metadata scripts_from_subtitles render
 
 help:
 	@echo "Targets:"
@@ -30,10 +30,11 @@ help:
 	@echo "  convert_missing Convert only missing items from verify_report.json"
 	@echo "  scripts_from_subtitles Generate script.md files from subtitles"
 	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
-	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
-	@echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
-	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
-	@echo "  process       One-command: convert+verify+report (requires SLUG=...)"
+        @echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
+        @echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
+        @echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
+        @echo "  render       Assemble dist/<slug>.mp4 (VIDEO=slug [SELECTS=path] [CAPTIONS=path])"
+        @echo "  process       One-command: convert+verify+report (requires SLUG=...)"
 
 setup:
 	python -m venv $(VENV)
@@ -84,8 +85,16 @@ update_metadata:
 	$(PY) src/update_video_metadata.py $(if $(SLUG),--slug $(SLUG),)
 
 report_funnel:
-	@if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
-	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+        @if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
+        $(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+
+render:
+        @if [ -z "$(VIDEO)" ]; then echo "Usage: make render VIDEO=YYYYMMDD_slug [SELECTS=path] [CAPTIONS=path] [OUTPUT=path]"; exit 1; fi
+        $(PY) src/render_video.py $(VIDEO) \
+                $(if $(SELECTS),--selects-file $(SELECTS),) \
+                $(if $(CAPTIONS),--captions $(CAPTIONS),) \
+                $(if $(OUTPUT),--output $(OUTPUT),) \
+                --overwrite
 
 newsletter:
 	$(PY) src/newsletter_builder.py \

@@ -86,6 +86,7 @@ make convert_all SLUG=<slug>
 make verify_assets
 make describe_images  # refresh heuristic image captions
 make index_assets
+make render VIDEO=<slug> [SELECTS=path] [CAPTIONS=path]  # rough-cut render (tests/test_render_video.py)
 ```
 
 Keep this playbook evolving—PRs welcome with techniques that improve clarity, pacing, or repeatability.

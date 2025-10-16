@@ -274,6 +274,9 @@ fallback text rather than `(description pending)` (see
   collects the first `[NARRATOR]` line from each script along with metadata and writes
   `data/script_hooks.json`, providing a ready-made dataset for headline generation tools (see
   `tests/test_index_script_hooks.py`).
+* ✅ Rough-cut rendering CLI: `python src/render_video.py SLUG` (or `make render VIDEO=SLUG`) stitches
+  `footage/<slug>/converted/*.mp4`, honours selects ordering, and can burn in captions inferred from
+  `metadata.json`. Regression coverage lives in `tests/test_render_video.py`.
 
 ## 🌱 Roadmap / Flywheel Enhancements
 The goal: turn this repo into a self-reinforcing engine that **accelerates Futuroptimist content velocity**.
@@ -286,7 +289,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | 4️⃣  Creative Toolkit | • ✅ Prompt library for hook/headline generation trained on past hits.<br>• ✅ Thumbnail text predictor (CTR estimation) using small vision model via `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png` (see `tests/test_thumbnail_text_predictor.py`). | Higher audience retention |
 | 5️⃣  Distribution Insights | • ✅ Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• ✅ Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
 | 6️⃣  Community | • ✅ GitHub Discussions integration for crowdsourced fact-checks (`python src/fact_check_discussions.py`; see `tests/test_fact_check_discussions.py`).<br>• ✅ Scheduled newsletter builder that stitches new scripts + links (`python src/newsletter_builder.py`; see `tests/test_newsletter_builder.py`). | Audience feedback loop |
-| 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders.<br>• FFmpeg rendering scripts for rough-cut assembly and caption burn-in.<br>• CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
+| 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders.<br>• ✅ FFmpeg rendering scripts for rough-cut assembly and caption burn-in (see `tests/test_render_video.py`).<br>• ✅ CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
 | 8️⃣  Publish Orchestration | • YouTube Data API V3 upload endpoint (draft/private).<br>• Automatic thumbnail + metadata attach from repo files.<br>• Post-publish annotation back into metadata.json (video url, processing times). | One-command release |
 | 9️⃣  Source Archival | • `collect_sources.py` downloads HTML/mp4 references from each `sources.txt` into `video_scripts/<slug>/sources/` folders and reads the root `source_urls.txt` into `/sources/` with a manifest (`sources.json`).<br>• Friendly `User-Agent`; see `tests/test_collect_sources.py::test_process_global_sources`. | Reliable citation & reproducibility |
 
