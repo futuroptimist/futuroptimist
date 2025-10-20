@@ -51,7 +51,7 @@ and multimedia assets are catalogued via the Makefile targets above.
 > polluting the virtual environment.
 
 ## Related Projects
-_Last updated: 2025-10-19 23:02 UTC; checks hourly_
+_Last updated: 2025-10-20 00:08 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 The unknown state is enforced by
 `tests/test_repo_status.py::test_fetch_repo_status_no_runs_returns_unknown`, ensuring repositories
@@ -91,7 +91,7 @@ without completed workflows render `❓` instead of failing the dashboard.
   your own stale pull requests in bulk with a safe dry-run
 - ✅ **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js
   playground for an orthographic, keyboard-navigable portfolio scene
-- ❓ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job search copilot
+- ✅ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job search copilot
   sharing the same automation scaffold as this repo
 
 ## Values
