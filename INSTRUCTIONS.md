@@ -70,6 +70,7 @@ make verify_assets    # verify converted assets match originals
 make report_funnel SLUG=<slug> [SELECTS=path]  # write selections.json for the slug
 make newsletter [STATUS=live] [SINCE=YYYY-MM-DD] [OUTPUT=path]  # assemble newsletter markdown
 make process SLUG=<slug> [SELECTS=path]        # one-command: convert+verify+report
+make render VIDEO=<slug> [CAPTIONS=path]       # rough-cut MP4 renderer (src/render_video.py)
 make scripts_from_subtitles  # regenerate script.md files from subtitles
 make clean      # remove the virtualenv and caches
 make fmt       # format code with black & ruff
@@ -122,6 +123,15 @@ The CLI prints totals and coverage percentages for converted and selected
 assets, plus a kind breakdown, while the manifest records
 `converted_coverage` and `selected_coverage` ratios for downstream tooling
 (see `tests/test_report_funnel.py::test_main_reports_stats`).
+
+Assemble a rough cut with `python src/render_video.py --slug SLUG`
+(or `make render VIDEO=SLUG`). The helper concatenates `.mp4` clips
+under `footage/<slug>/converted`, writes a temporary concat list for
+ffmpeg, and optionally burns in subtitles by resolving the
+`transcript_file` or `youtube_id` recorded in `metadata.json`. Regression
+coverage in `tests/test_render_video.py` exercises clip discovery,
+ffmpeg command construction, caption resolution, CLI dry-run behaviour,
+and empty-directory guards.
 
 Use `python src/newsletter_builder.py` (or `make newsletter`) to assemble a
 Markdown digest of recent videos. The helper defaults to `--status live`,
@@ -296,7 +306,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | 4️⃣  Creative Toolkit | • ✅ Prompt library for hook/headline generation trained on past hits.<br>• ✅ Thumbnail text predictor (CTR estimation) using small vision model via `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png` (see `tests/test_thumbnail_text_predictor.py`). | Higher audience retention |
 | 5️⃣  Distribution Insights | • ✅ Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• ✅ Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
 | 6️⃣  Community | • ✅ GitHub Discussions integration for crowdsourced fact-checks (`python src/fact_check_discussions.py`; see `tests/test_fact_check_discussions.py`).<br>• ✅ Scheduled newsletter builder that stitches new scripts + links (`python src/newsletter_builder.py`; see `tests/test_newsletter_builder.py`). | Audience feedback loop |
-| 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• ✅ Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders via `src/generate_assets_manifest.py`.<br>• FFmpeg rendering scripts for rough-cut assembly and caption burn-in.<br>• CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
+| 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• ✅ Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders via `src/generate_assets_manifest.py`.<br>• ✅ FFmpeg rough-cut renderer via `src/render_video.py` (burns in subtitles when available; see `tests/test_render_video.py`).<br>• ✅ CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
 | 8️⃣  Publish Orchestration | • YouTube Data API V3 upload endpoint (draft/private).<br>• Automatic thumbnail + metadata attach from repo files.<br>• Post-publish annotation back into metadata.json (video url, processing times). | One-command release |
 | 9️⃣  Source Archival | • `collect_sources.py` downloads HTML/mp4 references from each `sources.txt` into `video_scripts/<slug>/sources/` folders and reads the root `source_urls.txt` into `/sources/` with a manifest (`sources.json`).<br>• Friendly `User-Agent`; see `tests/test_collect_sources.py::test_process_global_sources`. | Reliable citation & reproducibility |
 

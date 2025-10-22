@@ -71,6 +71,12 @@ Script format:
   breakdown, and writes a manifest recording `converted_coverage` and
   `selected_coverage` ratios (see
   `tests/test_report_funnel.py::test_main_reports_stats`).
+- Run `python src/render_video.py --slug SLUG` (or `make render VIDEO=SLUG`)
+  to concatenate `.mp4` clips under `footage/<slug>/converted` and optionally
+  burn in subtitles discovered via metadata. Regression coverage in
+  `tests/test_render_video.py` exercises clip discovery, ffmpeg command
+  construction, caption resolution, CLI dry-run behaviour, and empty-directory
+  guards.
 - Run `python src/enrich_metadata.py` to sync `metadata.json` title,
   publish date, duration, the highest-resolution thumbnail URL, and current
   view count from the YouTube Data v3 API whenever `YOUTUBE_API_KEY` is

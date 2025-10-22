@@ -1,4 +1,10 @@
 ## Unreleased
+- feat: add `render_video` CLI to assemble rough-cut MP4s with optional subtitle
+  burn-in from `footage/<slug>/converted` clips.
+- test: cover render_video clip discovery, ffmpeg command construction,
+  caption resolution, dry-run behaviour, and empty directory guards.
+- docs: document the render workflow in INSTRUCTIONS, llms.txt, the Makefile,
+  and mark the roadmap's render milestone complete.
 - feat: ship a Streamlit analytics dashboard fed by metadata analytics blocks.
 - test: cover analytics dashboard data loading, dataframe shaping, and summary
   metrics.
