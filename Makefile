@@ -15,7 +15,7 @@ PIP := uv pip
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
 .PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images \
         convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
-        process update_metadata scripts_from_subtitles assets_manifest
+        process update_metadata scripts_from_subtitles assets_manifest render
 
 help:
 	@echo "Targets:"
@@ -87,8 +87,8 @@ update_metadata:
 	$(PY) src/update_video_metadata.py $(if $(SLUG),--slug $(SLUG),)
 
 report_funnel:
-        @if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
-        $(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+	@if [ -z "$(SLUG)" ]; then echo "Usage: make report_funnel SLUG=YYYYMMDD_slug [SELECTS=path]"; exit 1; fi
+	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
 
 assets_manifest:
         $(PY) src/generate_assets_manifest.py \
@@ -112,3 +112,11 @@ process:
 	$(PY) src/verify_converted_assets.py footage --slug $(SLUG) --report verify_report.json || true
 	$(PY) src/convert_missing.py --report verify_report.json || true
 	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
+
+render:
+	@if [ -z "$(VIDEO)" ]; then echo "Usage: make render VIDEO=YYYYMMDD_slug [CAPTIONS=path]"; exit 1; fi
+	$(PY) src/render_video.py \
+                --slug $(VIDEO) \
+                $(if $(FOOTAGE),--footage-root $(FOOTAGE),) \
+                $(if $(OUTPUT),--output-dir $(OUTPUT),) \
+                $(if $(CAPTIONS),--captions $(CAPTIONS),)

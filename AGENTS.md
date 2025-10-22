@@ -109,9 +109,12 @@ The long-term goal is to make video creation as repeatable as writing code. Ever
 
 LoRA adapters, reinforcement learning, or retrieval‑augmented generation may all play a part as we refine the channel's voice. Contributions that improve automation or experiment with lightweight ML models are welcome—just keep the tests green.
 
-## Render & Publish (Future-Phase)
+## Render & Publish
 
-When Phase 7 hits (see the roadmap in INSTRUCTIONS.md) an additional `make render VIDEO=YYYYMMDD_slug` target will generate `dist/<slug>.mp4`. Subsequent automation will call YouTube Data API for upload.
+Use `make render VIDEO=YYYYMMDD_slug` (optionally `CAPTIONS=path`) to concatenate converted
+clips with `src/render_video.py` and write `dist/<slug>.mp4`. The workflow burns in subtitles when
+available and mirrors the tests in `tests/test_render_video.py`. Future automation will call the
+YouTube Data API for upload.
 
 ## Contribution Quick-Start
 
