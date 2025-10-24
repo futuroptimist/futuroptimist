@@ -21,6 +21,7 @@ cli
 codebase
 codecov
 colour
+concat
 config
 contrib
 contribs
@@ -119,6 +120,7 @@ ol
 onboarding
 openai
 opentimelineio
+otio
 optimised
 pathlib
 png
@@ -134,6 +136,7 @@ rainlight
 readme
 readme's
 reframe
+renderer
 repo
 repos
 reproducibility
