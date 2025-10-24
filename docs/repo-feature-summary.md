@@ -9,7 +9,7 @@ related projects that share the same tooling foundations.
 | Prompt library | ✅ | Automation, CI fix, cleanup, spellcheck, and CAD prompts ship in-tree. |
 | Testing guardrails | ✅ | Pytest keeps 100% coverage for subtitles, assets, metadata, prompts. |
 | Credential scanning | ✅ | `scan-secrets.py` and the pre-commit wrapper block credential patterns. |
-| Asset pipeline | ✅ | Conversion, verification, manifest generation, and funnel scripts keep footage reproducible. |
+| Asset pipeline | ✅ | Conversion, verification, manifest generation, OTIO timeline export (`src/create_otio_timeline.py` + `tests/test_create_otio_timeline.py`), and funnel scripts keep footage reproducible. |
 | Docs hygiene | ✅ | scripts/checks.sh runs docs-lint (see tests/test_checks_script.py). |
 | Analytics dashboard | ✅ | Streamlit dashboard renders metrics captured by analytics_ingester (see tests/test_analytics_dashboard.py). |
 

@@ -133,6 +133,12 @@ coverage in `tests/test_render_video.py` exercises clip discovery,
 ffmpeg command construction, caption resolution, CLI dry-run behaviour,
 and empty-directory guards.
 
+Create shareable edit timelines with `python src/create_otio_timeline.py --slug SLUG`
+to emit `<slug>.otio` files listing each converted clip in sorted order.
+The exporter stores placeholder durations and Futuroptimist metadata with
+repo-relative paths so the timelines stay portable across editing suites.
+Regression coverage lives in `tests/test_create_otio_timeline.py`.
+
 Use `python src/newsletter_builder.py` (or `make newsletter`) to assemble a
 Markdown digest of recent videos. The helper defaults to `--status live`,
 accepts `--since YYYY-MM-DD` to filter by publish date, and honours `--limit`
@@ -306,7 +312,7 @@ The goal: turn this repo into a self-reinforcing engine that **accelerates Futur
 | 4️⃣  Creative Toolkit | • ✅ Prompt library for hook/headline generation trained on past hits.<br>• ✅ Thumbnail text predictor (CTR estimation) using small vision model via `python src/thumbnail_text_predictor.py --text "HOOK" thumbnail.png` (see `tests/test_thumbnail_text_predictor.py`). | Higher audience retention |
 | 5️⃣  Distribution Insights | • ✅ Analytics ingester (YouTube Analytics API) to pull watch-time & click-through data.<br>• ✅ Dashboards (Streamlit) to visualise topic performance vs retention. | Data-driven ideation |
 | 6️⃣  Community | • ✅ GitHub Discussions integration for crowdsourced fact-checks (`python src/fact_check_discussions.py`; see `tests/test_fact_check_discussions.py`).<br>• ✅ Scheduled newsletter builder that stitches new scripts + links (`python src/newsletter_builder.py`; see `tests/test_newsletter_builder.py`). | Audience feedback loop |
-| 7️⃣  Production Pipeline | • Adopt OpenTimelineIO as canonical timeline format.<br>• ✅ Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders via `src/generate_assets_manifest.py`.<br>• ✅ FFmpeg rough-cut renderer via `src/render_video.py` (burns in subtitles when available; see `tests/test_render_video.py`).<br>• ✅ CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
+| 7️⃣  Production Pipeline | • ✅ Adopt OpenTimelineIO as the canonical timeline format via `src/create_otio_timeline.py`, which emits `<slug>.otio` files with Futuroptimist metadata (see `tests/test_create_otio_timeline.py`).<br>• ✅ Asset manifest (audio, b-roll, gfx) auto-generated from `videos/<id>` folders via `src/generate_assets_manifest.py`.<br>• ✅ FFmpeg rough-cut renderer via `src/render_video.py` (burns in subtitles when available; see `tests/test_render_video.py`).<br>• ✅ CLI wrapper `make render VIDEO=xyz` → `dist/xyz.mp4`. | End-to-end reproducible builds |
 | 8️⃣  Publish Orchestration | • YouTube Data API V3 upload endpoint (draft/private).<br>• Automatic thumbnail + metadata attach from repo files.<br>• Post-publish annotation back into metadata.json (video url, processing times). | One-command release |
 | 9️⃣  Source Archival | • `collect_sources.py` downloads HTML/mp4 references from each `sources.txt` into `video_scripts/<slug>/sources/` folders and reads the root `source_urls.txt` into `/sources/` with a manifest (`sources.json`).<br>• Friendly `User-Agent`; see `tests/test_collect_sources.py::test_process_global_sources`. | Reliable citation & reproducibility |
 
