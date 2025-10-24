@@ -120,8 +120,8 @@ ol
 onboarding
 openai
 opentimelineio
-otio
 optimised
+otio
 pathlib
 png
 poisson
