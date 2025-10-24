@@ -22,6 +22,15 @@
     "transcript_file": {"type": "string"},
     "summary": {"type": "string"},
     "view_count": {"type": "integer", "minimum": 0},
+    "video_url": {"type": "string", "format": "uri"},
+    "processing": {
+      "type": "object",
+      "properties": {
+        "started_at": {"type": "string", "format": "date-time"},
+        "completed_at": {"type": "string", "format": "date-time"},
+        "duration_seconds": {"type": "integer", "minimum": 0}
+      }
+    },
     "analytics": {
       "type": "object",
       "properties": {
