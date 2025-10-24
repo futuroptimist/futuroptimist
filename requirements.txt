@@ -16,3 +16,4 @@ rawpy==0.25.1
 imageio>=2.34.0
 streamlit>=1.38.0
 pandas>=2.2.0
+OpenTimelineIO>=0.16.0
