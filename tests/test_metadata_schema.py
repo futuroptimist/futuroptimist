@@ -54,19 +54,22 @@ def test_live_metadata_includes_publish_details():
         keywords = data.get("keywords") or []
         thumbnail = str(data.get("thumbnail", "")).strip()
         view_count = data.get("view_count")
+        video_url = str(data.get("video_url", "")).strip()
         if (
             not publish_date
             or not keywords
             or not thumbnail
             or not isinstance(view_count, int)
             or view_count <= 0
+            or not video_url
+            or not video_url.startswith("https://")
         ):
             failures.append(str(meta_path))
 
     assert not failures, (
-        "Published metadata must include publish_date, keywords, thumbnail, and"
-        " a positive view_count as documented in docs/video-editing-playbook.md: "
-        + ", ".join(failures)
+        "Published metadata must include publish_date, keywords, thumbnail,"
+        " a positive view_count, and the final video_url as documented in"
+        " INSTRUCTIONS.md Phase 8: " + ", ".join(failures)
     )
 
 
