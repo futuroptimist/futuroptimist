@@ -64,6 +64,7 @@ def _find_notes_file(
 ) -> str | None:
     for candidate in (
         footage_dir / "notes.md",
+        footage_dir / "notes.txt",
         slug_dir / "notes.md",
         slug_dir / "notes.txt",
     ):
