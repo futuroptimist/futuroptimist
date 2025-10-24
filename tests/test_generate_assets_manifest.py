@@ -65,6 +65,34 @@ def test_generate_manifest_writes_assets_json(tmp_path: pathlib.Path) -> None:
     ]
 
 
+def test_generate_manifest_detects_notes_txt_in_footage(
+    tmp_path: pathlib.Path,
+) -> None:
+    repo = tmp_path
+    video_root = repo / "video_scripts"
+    footage_root = repo / "footage"
+    slug = "20260101_future-build"
+
+    (video_root / slug).mkdir(parents=True)
+
+    converted = footage_root / slug / "converted"
+    converted.mkdir(parents=True)
+    (converted / "clip.mp4").write_bytes(b"video")
+
+    notes_txt = footage_root / slug / "notes.txt"
+    notes_txt.write_text("shot notes", encoding="utf-8")
+
+    gam.generate_manifests(
+        video_root=video_root,
+        footage_root=footage_root,
+        slugs=[slug],
+        overwrite=True,
+    )
+
+    manifest = _read_manifest(video_root / slug / "assets.json")
+    assert manifest["notes_file"] == f"footage/{slug}/notes.txt"
+
+
 def test_generate_manifest_skips_existing(
     tmp_path: pathlib.Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

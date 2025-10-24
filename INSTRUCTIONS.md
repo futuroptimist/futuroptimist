@@ -253,7 +253,8 @@ When manifests are missing, scaffold them automatically with
 `labels.json` paths, and links the nearest `notes.md` or `notes.txt` so
 downstream tooling immediately knows where footage lives. Regression coverage
 in `tests/test_generate_assets_manifest.py` keeps directory detection, label
-discovery, and dry-run behaviour predictable.
+discovery, dry-run behaviour, and footage-level `notes.txt` discovery
+predictable via `::test_generate_manifest_detects_notes_txt_in_footage`.
 
 Asset conversion (Premiere compatibility): run `make convert_assets` to scan
 `footage/<slug>/originals/` for formats like HEIC/HEIF, DNG, WEBP and convert
