@@ -102,6 +102,32 @@ def test_build_upload_package_respects_privacy_override(tmp_path: Path) -> None:
     assert package["status"]["privacyStatus"] == "unlisted"
 
 
+def test_build_upload_package_only_schedules_private_videos(tmp_path: Path) -> None:
+    slug = "20250106_schedule"
+    metadata = {
+        "title": "Schedule",
+        "description": "Scheduling rules",
+        "keywords": [],
+        "status": "scheduled",
+        "thumbnail": "thumbnails/schedule.jpg",
+        "publish_date": "2025-05-01T10:00:00Z",
+    }
+    _write_metadata(tmp_path, slug, metadata)
+    _ensure_thumbnail(tmp_path, "thumbnails/schedule.jpg")
+
+    package = uploader.build_upload_package(slug, repo_root=tmp_path)
+
+    assert package["status"]["privacyStatus"] == "private"
+    assert package["status"]["publishAt"] == metadata["publish_date"]
+
+    overridden = uploader.build_upload_package(
+        slug, repo_root=tmp_path, privacy_override="unlisted"
+    )
+
+    assert overridden["status"]["privacyStatus"] == "unlisted"
+    assert "publishAt" not in overridden["status"]
+
+
 def test_main_writes_output(tmp_path: Path) -> None:
     slug = "20250105_cli"
     thumbnail_rel = "thumbnails/cli.jpg"

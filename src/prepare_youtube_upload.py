@@ -130,7 +130,7 @@ def build_upload_package(
         "snippet": snippet,
         "status": {"privacyStatus": privacy},
     }
-    if metadata.get("publish_date") and privacy != "public":
+    if metadata.get("publish_date") and privacy == "private":
         payload["status"]["publishAt"] = metadata["publish_date"]
     if thumbnail_path:
         payload["thumbnail_path"] = thumbnail_path
