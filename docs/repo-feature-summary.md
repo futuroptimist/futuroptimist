@@ -12,6 +12,7 @@ related projects that share the same tooling foundations.
 | Asset pipeline | ✅ | Conversion, verification, manifest generation, OTIO timeline export (`src/create_otio_timeline.py` + `tests/test_create_otio_timeline.py`), and funnel scripts keep footage reproducible. |
 | Docs hygiene | ✅ | scripts/checks.sh runs docs-lint (see tests/test_checks_script.py). |
 | Analytics dashboard | ✅ | Streamlit dashboard renders metrics captured by analytics_ingester (see tests/test_analytics_dashboard.py). |
+| Upload packaging | ✅ | `src/prepare_youtube_upload.py` builds YouTube payloads with repo thumbnails (see `tests/test_prepare_youtube_upload.py`). |
 
 ## Companion projects quick scan
 | Repo | Focus | Automation highlights |

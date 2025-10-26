@@ -42,6 +42,9 @@ Script format:
   "Fact Check" category to `data/fact_check_discussions.json`, filtering closed topics by
   default and reporting author, reaction totals, comment counts, and timestamps (see
   `tests/test_fact_check_discussions.py`).
+- `prepare_youtube_upload.py` builds a YouTube-ready payload by resolving local thumbnails and
+  mapping Futuroptimist metadata onto upload snippets (see
+  `tests/test_prepare_youtube_upload.py`).
 - `[NARRATOR]:` spoken lines.
 - `[VISUAL]:` cues right after the dialogue they support.
 - Leave a blank line between narration and visuals.
