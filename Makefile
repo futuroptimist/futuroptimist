@@ -15,7 +15,7 @@ PIP := uv pip
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
 .PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images \
         convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
-        process update_metadata scripts_from_subtitles assets_manifest render
+        process update_metadata scripts_from_subtitles assets_manifest render upload_video
 
 help:
 	@echo "Targets:"
@@ -114,9 +114,17 @@ process:
 	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
 
 render:
-	@if [ -z "$(VIDEO)" ]; then echo "Usage: make render VIDEO=YYYYMMDD_slug [CAPTIONS=path]"; exit 1; fi
-	$(PY) src/render_video.py \
+        @if [ -z "$(VIDEO)" ]; then echo "Usage: make render VIDEO=YYYYMMDD_slug [CAPTIONS=path]"; exit 1; fi
+        $(PY) src/render_video.py \
                 --slug $(VIDEO) \
                 $(if $(FOOTAGE),--footage-root $(FOOTAGE),) \
                 $(if $(OUTPUT),--output-dir $(OUTPUT),) \
                 $(if $(CAPTIONS),--captions $(CAPTIONS),)
+
+upload_video:
+        @if [ -z "$(SLUG)" ]; then echo "Usage: make upload_video SLUG=YYYYMMDD_slug [VIDEO=path] [CLIENT=client.json] [TOKEN=token.json]"; exit 1; fi
+        $(PY) src/upload_to_youtube.py \
+                --slug $(SLUG) \
+                $(if $(VIDEO),--video $(VIDEO),) \
+                $(if $(CLIENT),--client-secrets $(CLIENT),) \
+                $(if $(TOKEN),--credentials $(TOKEN),)

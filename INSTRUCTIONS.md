@@ -239,6 +239,14 @@ to store the final `video_url` and optional processing timings inside
 timestamps, and can derive `duration_seconds` automatically from start/end
 values. Regression coverage lives in `tests/test_annotate_publish.py`.
 
+Upload private drafts directly from the repo with
+`python src/upload_to_youtube.py --slug SLUG --client-secrets client_secret.json`
+(optionally `--video dist/<slug>.mp4 --credentials token.json`). The helper
+reuses `prepare_youtube_upload` metadata so snippet/status settings stay in sync
+with existing automation, caches OAuth credentials for reuse, and attaches the
+prepared thumbnail when present. See `tests/test_upload_to_youtube.py` for
+coverage of credential reuse, OAuth prompts, and the thumbnail upload path.
+
 Explore the captured metrics with `streamlit run src/analytics_dashboard.py`
 to surface headline stats, sortable tables, and quick charts for views, watch
 time, and click-through rate. Regression coverage in

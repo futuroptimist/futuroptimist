@@ -42,6 +42,9 @@
 - feat: ship newsletter_builder CLI to generate Markdown digests from video metadata.
 - test: cover newsletter builder filtering, summary fallbacks, and CLI output.
 - docs: document the newsletter builder workflow in INSTRUCTIONS and llms.txt.
+- feat: add `upload_to_youtube` CLI to push draft videos via the YouTube Data API.
+- test: cover YouTube upload credential caching and thumbnail handling.
+- docs: note the upload helper in INSTRUCTIONS, llms.txt, and the repo feature summary.
 
 - feat: store HTTPS YouTube thumbnail URLs in live metadata files.
 - test: enforce live thumbnails point at YouTube via metadata schema tests.
