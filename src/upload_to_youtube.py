@@ -14,11 +14,11 @@ import mimetypes
 import pathlib
 from typing import Any
 
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 from src import prepare_youtube_upload
 
@@ -30,6 +30,7 @@ DEFAULT_CLIENT_SECRETS = REPO_ROOT / "client_secrets.json"
 DEFAULT_CREDENTIALS = (
     pathlib.Path.home() / ".config" / "futuroptimist" / "youtube-upload.json"
 )
+UPLOAD_CHUNK_SIZE = 8 * 1024 * 1024  # 8 MiB to balance throughput and retries
 
 
 def load_credentials(
@@ -93,8 +94,8 @@ def upload_video(
     video_media = MediaFileUpload(
         str(video_path),
         mimetype=_guess_mimetype(video_path, "video/mp4"),
-        chunksize=-1,
-        resumable=False,
+        chunksize=UPLOAD_CHUNK_SIZE,
+        resumable=True,
     )
     response = (
         service.videos()

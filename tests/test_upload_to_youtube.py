@@ -72,12 +72,12 @@ def test_upload_video_uses_prepare_payload_and_sets_thumbnail(tmp_path, monkeypa
         lambda *a, **k: payload,
     )
 
-    media_calls: list[tuple[str, str, bool]] = []
+    media_calls: list[tuple[str, str, int, bool]] = []
 
     def fake_media_file_upload(
         path: str, mimetype: str, chunksize: int = -1, resumable: bool = False
     ):
-        media_calls.append((path, mimetype, resumable))
+        media_calls.append((path, mimetype, chunksize, resumable))
         return f"MEDIA:{path}"
 
     monkeypatch.setattr(uploader, "MediaFileUpload", fake_media_file_upload)
@@ -102,6 +102,8 @@ def test_upload_video_uses_prepare_payload_and_sets_thumbnail(tmp_path, monkeypa
     }
     assert media_calls[0][0] == str(video_path)
     assert media_calls[0][1] == "video/mp4"
+    assert media_calls[0][2] == uploader.UPLOAD_CHUNK_SIZE
+    assert media_calls[0][3] is True
     assert dummy_service.thumbnails_resource.calls[0][0] == "video123"
     assert dummy_service.thumbnails_resource.calls[0][1] == f"MEDIA:{thumbnail}"
 
