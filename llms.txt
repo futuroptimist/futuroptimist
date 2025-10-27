@@ -106,6 +106,12 @@ Script format:
   `video_scripts/<slug>/metadata.json`. The helper defaults to
   `https://youtu.be/<youtube_id>` and computes `duration_seconds` when both
   timestamps are supplied (see `tests/test_annotate_publish.py`).
+- Run `python src/upload_to_youtube.py --slug SLUG --client-secrets client_secret.json`
+  (optionally passing `--video dist/<slug>.mp4` and `--credentials token.json`)
+  to upload a draft/private video via the YouTube Data API. The helper reuses
+  `prepare_youtube_upload` metadata, caches OAuth credentials for future runs,
+  and uploads the resolved thumbnail when available (see
+  `tests/test_upload_to_youtube.py`).
 - Run `streamlit run src/analytics_dashboard.py` to browse those metrics with
   sortable tables, headline stats, and quick charts for views, watch time, and
   click-through rate. Regression coverage in `tests/test_analytics_dashboard.py`

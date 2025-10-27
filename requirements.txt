@@ -17,3 +17,5 @@ imageio>=2.34.0
 streamlit>=1.38.0
 pandas>=2.2.0
 OpenTimelineIO>=0.16.0
+google-api-python-client>=2.130.0
+google-auth-oauthlib>=1.2.0
