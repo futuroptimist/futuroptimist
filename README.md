@@ -51,13 +51,13 @@ and multimedia assets are catalogued via the Makefile targets above.
 > polluting the virtual environment.
 
 ## Related Projects
-_Last updated: 2025-10-31 12:04 UTC; checks hourly_
+_Last updated: 2025-10-31 13:11 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 The unknown state is enforced by
 `tests/test_repo_status.py::test_fetch_repo_status_no_runs_returns_unknown`, ensuring repositories
 without completed workflows render `❓` instead of failing the dashboard.
 
-- ❌ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
+- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
   reproducible scripts, data pipelines, and tests that turn maker experiments into
   polished YouTube episodes
 - ✅ **[token.place](https://token.place)** – secure peer-to-peer generative AI network that
