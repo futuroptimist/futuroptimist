@@ -44,13 +44,16 @@ def test_status_to_emoji_failure_variants() -> None:
 
 
 class DummyResp:
-    def __init__(self, data: dict):
+    def __init__(self, data, *, json_error: Exception | None = None):
         self._data = data
+        self._json_error = json_error
 
     def raise_for_status(self) -> None:  # pragma: no cover - no error path
         pass
 
     def json(self) -> dict:
+        if self._json_error is not None:
+            raise self._json_error
         return self._data
 
 
@@ -183,6 +186,30 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
         "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=dev",
     ]
+
+
+def test_fetch_repo_status_request_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        raise repo_status.requests.exceptions.ConnectionError("boom")
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
+
+
+def test_fetch_repo_status_invalid_commit_payload(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(None, json_error=ValueError("bad json"))
+        raise AssertionError("runs API should not be queried when commits fail")
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
 
 
 def test_fetch_repo_status_nondeterministic(monkeypatch: pytest.MonkeyPatch) -> None:
