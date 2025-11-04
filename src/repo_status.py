@@ -10,11 +10,14 @@ from __future__ import annotations
 
 import os
 import re
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
 import requests
+
+LOGGER = logging.getLogger(__name__)
 
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
 SKIP_COMMIT_RE = re.compile(
@@ -73,11 +76,21 @@ def fetch_repo_status(
         headers["Authorization"] = f"Bearer {token}"
 
     if branch is None:
-        repo_resp = requests.get(
-            f"https://api.github.com/repos/{repo}", headers=headers, timeout=10
-        )
-        repo_resp.raise_for_status()
-        branch = repo_resp.json().get("default_branch")
+        try:
+            repo_resp = requests.get(
+                f"https://api.github.com/repos/{repo}", headers=headers, timeout=10
+            )
+            repo_resp.raise_for_status()
+            repo_data = repo_resp.json()
+        except (requests.exceptions.RequestException, ValueError) as exc:
+            LOGGER.warning("Unable to fetch default branch for %s: %s", repo, exc)
+            return status_to_emoji(None)
+        if not isinstance(repo_data, dict):
+            LOGGER.warning(
+                "Unexpected repository payload for %s: %r", repo, type(repo_data)
+            )
+            return status_to_emoji(None)
+        branch = repo_data.get("default_branch")
 
     url = "https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed".format(
         repo=repo
@@ -148,17 +161,54 @@ def fetch_repo_status(
         return "failure"
 
     def _fetch() -> str | None:
-        commits_resp = requests.get(
-            f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
-            headers=headers,
-            timeout=10,
-        )
-        commits_resp.raise_for_status()
-        commits = commits_resp.json()
+        try:
+            commits_resp = requests.get(
+                f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
+                headers=headers,
+                timeout=10,
+            )
+            commits_resp.raise_for_status()
+            commits_data = commits_resp.json()
+        except (requests.exceptions.RequestException, ValueError) as exc:
+            LOGGER.warning("Unable to fetch commits for %s@%s: %s", repo, branch, exc)
+            return None
+        if not isinstance(commits_data, list):
+            LOGGER.warning(
+                "Unexpected commits payload for %s@%s: %r",
+                repo,
+                branch,
+                type(commits_data),
+            )
+            return None
+        commits = commits_data
 
-        resp = requests.get(url, headers=headers, timeout=10)
-        resp.raise_for_status()
-        runs = resp.json().get("workflow_runs", [])
+        try:
+            resp = requests.get(url, headers=headers, timeout=10)
+            resp.raise_for_status()
+            runs_data = resp.json()
+        except (requests.exceptions.RequestException, ValueError) as exc:
+            LOGGER.warning(
+                "Unable to fetch workflow runs for %s@%s: %s", repo, branch, exc
+            )
+            return None
+        if not isinstance(runs_data, dict):
+            LOGGER.warning(
+                "Unexpected workflow payload for %s@%s: %r",
+                repo,
+                branch,
+                type(runs_data),
+            )
+            return None
+
+        runs = runs_data.get("workflow_runs", [])
+        if not isinstance(runs, list):
+            LOGGER.warning(
+                "Unexpected workflow run list for %s@%s: %r",
+                repo,
+                branch,
+                type(runs),
+            )
+            return None
 
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
