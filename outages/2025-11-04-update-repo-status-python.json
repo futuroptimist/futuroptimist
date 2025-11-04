@@ -1,0 +1,8 @@
+{
+    "$schema": "./schema.json",
+    "date": "2025-11-04",
+    "workflow": "update-repo-status",
+    "run_url": "https://github.com/futuroptimist/futuroptimist/actions/runs/19053271543",
+    "root_cause": "python-version 3.x resolved to 3.13 where rawpy 0.25.1 has no wheels, so uv pip install errored",
+    "resolution": "Pin actions/setup-python to Python 3.12 in update-repo-status.yml"
+}

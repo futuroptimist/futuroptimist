@@ -30,3 +30,17 @@ def test_run_checks_invokes_actionlint() -> None:
     assert (
         "createLinter" in script
     ), "run-checks.mjs should load actionlint's WASM linter"
+
+
+def test_update_repo_status_pins_python_version() -> None:
+    path = WORKFLOWS_DIR / "update-repo-status.yml"
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    steps = data["jobs"]["update"]["steps"]
+    versions = [
+        step["with"]["python-version"]
+        for step in steps
+        if step.get("uses") == "actions/setup-python@v5"
+    ]
+    assert versions == [
+        "3.12"
+    ], "update-repo-status workflow must pin Python 3.12 to keep rawpy wheels available"
