@@ -46,6 +46,60 @@ Prompt templates stay grouped under
 [`docs/README.md`](docs/README.md). Video narration lives in [`video_scripts/`](video_scripts),
 and multimedia assets are catalogued via the Makefile targets above.
 
+## YouTube Transcript MCP Service
+
+The repository now ships a small, self-contained transcript service designed for MCP tools,
+local microservice use, and CLI workflows. The service normalizes captions fetched from
+`youtube_transcript_api`, chunks them into RAG-ready windows with provenance links, and caches
+responses on disk for 14 days by default.
+
+**Run modes**
+
+- HTTP: `python -m tools.youtube_mcp --host 127.0.0.1 --port 8765`
+- MCP (stdio): `python tools/youtube_mcp/mcp_server.py`
+- CLI: `python -m tools.youtube_mcp.cli transcript --url https://www.youtube.com/watch?v=VIDEOID`
+
+**HTTP endpoints**
+
+- `GET /health` – service health
+- `GET /transcript` – query params: `url`, optional `lang`, `prefer_auto`
+- `GET /tracks` – available caption tracks (manual first)
+- `GET /metadata` – lightweight metadata (title/channel when available)
+
+**CLI usage**
+
+```bash
+python -m tools.youtube_mcp.cli transcript --url https://youtu.be/VIDEOID
+python -m tools.youtube_mcp.cli tracks --url VIDEOID
+python -m tools.youtube_mcp.cli metadata --url VIDEOID
+```
+
+**Caching & settings**
+
+| Environment variable | Default | Purpose |
+|----------------------|---------|---------|
+| `YTMCP_CACHE_DIR` | `.ytmcp_cache` | Cache directory (sqlite backing) |
+| `YTMCP_CACHE_TTL_DAYS` | `14` | Cache TTL in days |
+| `YTMCP_ALLOW_AUTO` | `true` | Permit auto-generated captions when manual tracks missing |
+| `YTMCP_REJECT_PRIVATE_OR_UNLISTED` | `true` | Reject private or unlisted videos |
+| `YTMCP_HTTP_HOST` | `127.0.0.1` | Default HTTP bind host |
+| `YTMCP_HTTP_PORT` | `8765` | Default HTTP port |
+
+**Error codes**
+
+| Code | Meaning |
+|------|---------|
+| `InvalidArgument` | Input validation failed |
+| `VideoUnavailable` | Video cannot be accessed |
+| `NoCaptionsAvailable` | No captions provided by YouTube |
+| `PolicyRejected` | Private/unlisted or disallowed content |
+| `NetworkError` | Upstream network failure |
+| `RateLimited` | Rate limiting encountered |
+
+Policy reminder: the service respects YouTube ToS by using official caption endpoints, avoiding
+HTML scraping, and refusing private or unlisted videos when configured (default `true`). Metadata
+requests rely on the oEmbed endpoint only and do not attempt authenticated or prohibited access.
+
 > **uv cheat sheet**: `uv sync` installs dependencies from `requirements.txt`,
 > `uv run pytest` mirrors `make test`, and `uvx <tool>` launches one-off binaries without
 > polluting the virtual environment.

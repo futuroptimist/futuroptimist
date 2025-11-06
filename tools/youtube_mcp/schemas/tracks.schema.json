@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "url": {
+      "title": "Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "url"
+  ],
+  "title": "TracksRequest",
+  "type": "object"
+}

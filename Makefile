@@ -15,7 +15,8 @@ PIP := uv pip
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
 .PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images \
         convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
-        process update_metadata scripts_from_subtitles assets_manifest render upload_video
+        process update_metadata scripts_from_subtitles assets_manifest render upload_video \
+        format lint typecheck serve serve-http
 
 help:
 	@echo "Targets:"
@@ -43,7 +44,21 @@ setup:
 	$(PIP) install -r requirements.txt
 
 test:
-	$(PY) -m pytest -q
+        $(PY) -m pytest -q
+
+format: fmt
+
+lint:
+        $(PY) -m ruff check tools/youtube_mcp tests
+
+typecheck:
+        $(PY) -m mypy tools/youtube_mcp
+
+serve:
+        $(PY) -m tools.youtube_mcp --host $(if $(HOST),$(HOST),127.0.0.1) --port $(if $(PORT),$(PORT),8765)
+
+serve-http:
+        $(PY) -m uvicorn tools.youtube_mcp.http_server:app --host $(if $(HOST),$(HOST),127.0.0.1) --port $(if $(PORT),$(PORT),8765)
 
 subtitles:
 	$(PY) src/fetch_subtitles.py
