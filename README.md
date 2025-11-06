@@ -50,7 +50,34 @@ and multimedia assets are catalogued via the Makefile targets above.
 > `uv run pytest` mirrors `make test`, and `uvx <tool>` launches one-off binaries without
 > polluting the virtual environment.
 
+## YouTube Transcript MCP Service
+
+`tools/youtube_mcp/` packages a transcript fetcher that powers a CLI, FastAPI microservice, and
+MCP-compatible stdio tool. It normalises captions for retrieval, stores 14-day cached payloads in
+SQLite, and preserves provenance via timestamped cite URLs.
+
+- **HTTP**: `python -m tools.youtube_mcp --host 127.0.0.1 --port 8765`
+- **CLI**: `python -m tools.youtube_mcp.cli transcript --url https://youtu.be/VIDEOID`
+- **MCP**: `python tools/youtube_mcp/mcp_server.py`
+
+Example HTTP call:
+
+```bash
+curl "http://127.0.0.1:8765/transcript?url=https://youtu.be/VIDEOID"
+```
+
+**Policy notes**: the service only uses `youtube_transcript_api` and the public oEmbed endpoint,
+rejecting private/unlisted videos when signals are available. It never scrapes HTML or bypasses
+authentication walls.
+
+**Caching**: responses are keyed by video ID, language, and track type with a default 14-day TTL;
+expired rows are purged automatically when accessed.
+
+**Error codes**: `InvalidArgument`, `VideoUnavailable`, `NoCaptionsAvailable`, `PolicyRejected`,
+`RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
+
 ## Related Projects
+
 _Last updated: 2025-11-06 08:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 The unknown state is enforced by

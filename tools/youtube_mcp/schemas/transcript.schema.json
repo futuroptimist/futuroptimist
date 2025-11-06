@@ -1,0 +1,265 @@
+{
+  "description": "Fetch and normalise YouTube transcripts.",
+  "input": {
+    "additionalProperties": false,
+    "description": "Input model for transcript fetch requests.",
+    "properties": {
+      "url": {
+        "title": "Url",
+        "type": "string"
+      },
+      "lang": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Preferred BCP47 language code.",
+        "title": "Lang"
+      },
+      "prefer_auto": {
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "If true, prefer auto-generated captions when available.",
+        "title": "Prefer Auto"
+      }
+    },
+    "required": [
+      "url"
+    ],
+    "title": "TranscriptRequest",
+    "type": "object"
+  },
+  "output": {
+    "$defs": {
+      "CaptionTrackInfo": {
+        "additionalProperties": false,
+        "description": "Details about an available caption track.",
+        "properties": {
+          "lang": {
+            "title": "Lang",
+            "type": "string"
+          },
+          "is_auto": {
+            "description": "Whether the captions were auto-generated.",
+            "title": "Is Auto",
+            "type": "boolean"
+          },
+          "track_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Human-readable track name when supplied by YouTube.",
+            "title": "Track Name"
+          }
+        },
+        "required": [
+          "lang",
+          "is_auto"
+        ],
+        "title": "CaptionTrackInfo",
+        "type": "object"
+      },
+      "Chunk": {
+        "additionalProperties": false,
+        "description": "Normalized chunk suitable for retrieval workflows.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "start": {
+            "title": "Start",
+            "type": "number"
+          },
+          "end": {
+            "title": "End",
+            "type": "number"
+          },
+          "segment_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Segment Ids",
+            "type": "array"
+          },
+          "cite_url": {
+            "description": "URL anchored to the chunk start time.",
+            "title": "Cite Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "start",
+          "end",
+          "segment_ids",
+          "cite_url"
+        ],
+        "title": "Chunk",
+        "type": "object"
+      },
+      "Segment": {
+        "additionalProperties": false,
+        "description": "Single caption segment as returned by YouTube.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "start": {
+            "title": "Start",
+            "type": "number"
+          },
+          "dur": {
+            "title": "Dur",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "start",
+          "dur"
+        ],
+        "title": "Segment",
+        "type": "object"
+      },
+      "VideoInfo": {
+        "additionalProperties": false,
+        "description": "Basic metadata about a YouTube video.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Channel or author name",
+            "title": "Channel"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ISO-8601 timestamp when the video was published, if available.",
+            "title": "Published At"
+          },
+          "duration": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Approximate video duration in seconds, if available.",
+            "title": "Duration"
+          }
+        },
+        "required": [
+          "id",
+          "url"
+        ],
+        "title": "VideoInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Full transcript payload returned by the service.",
+    "properties": {
+      "video": {
+        "$ref": "#/$defs/VideoInfo"
+      },
+      "captions": {
+        "$ref": "#/$defs/CaptionTrackInfo"
+      },
+      "segments": {
+        "items": {
+          "$ref": "#/$defs/Segment"
+        },
+        "title": "Segments",
+        "type": "array"
+      },
+      "chunks": {
+        "items": {
+          "$ref": "#/$defs/Chunk"
+        },
+        "title": "Chunks",
+        "type": "array"
+      },
+      "hash": {
+        "description": "Stable sha256 hash of metadata and transcript text.",
+        "title": "Hash",
+        "type": "string"
+      }
+    },
+    "required": [
+      "video",
+      "captions",
+      "segments",
+      "chunks",
+      "hash"
+    ],
+    "title": "TranscriptResponse",
+    "type": "object"
+  }
+}

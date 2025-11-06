@@ -25,9 +25,13 @@ def test_build_hooks_index_extracts_first_narrator(tmp_path: pathlib.Path) -> No
     script_dir = video_root / slug
     script_dir.mkdir(parents=True)
 
+    comment = "<!-- 00:00:00,000 -> 00:00:02,000 -->"
     _write_script(
         script_dir,
-        """# Title\n\n> Draft script\n\n## Script\n\n[NARRATOR]: First hook  <!-- 00:00:00,000 -> 00:00:02,000 -->\n\n[NARRATOR]: Second line\n""",
+        (
+            """# Title\n\n> Draft script\n\n## Script\n\n[NARRATOR]: First hook  """
+            f"{comment}\n\n[NARRATOR]: Second line\n"
+        ),
     )
     _write_metadata(
         script_dir,

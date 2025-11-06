@@ -1,0 +1,86 @@
+{
+  "description": "Fetch lightweight metadata for a YouTube video.",
+  "input": {
+    "additionalProperties": false,
+    "description": "Input model for metadata fetch requests.",
+    "properties": {
+      "url": {
+        "title": "Url",
+        "type": "string"
+      }
+    },
+    "required": [
+      "url"
+    ],
+    "title": "MetadataRequest",
+    "type": "object"
+  },
+  "output": {
+    "additionalProperties": false,
+    "description": "Video metadata response.",
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "url": {
+        "title": "Url",
+        "type": "string"
+      },
+      "title": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Title"
+      },
+      "channel": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Channel"
+      },
+      "published_at": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Published At"
+      },
+      "duration": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Duration"
+      }
+    },
+    "required": [
+      "id",
+      "url"
+    ],
+    "title": "MetadataResponse",
+    "type": "object"
+  }
+}

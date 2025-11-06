@@ -28,12 +28,17 @@ class DummyThumbnailRequest:
     def __init__(self) -> None:
         self.calls: list[tuple[str, object]] = []
 
-    def set(self, videoId: str, media_body: object) -> SimpleNamespace:
-        self.calls.append((videoId, media_body))
+    def set(self, **kwargs) -> SimpleNamespace:
+        video_id = kwargs.get("video_id") or kwargs.get("videoId")
+        media_body = kwargs.get("media_body")
+        if video_id is None or media_body is None:
+            msg = "video_id and media_body are required"
+            raise TypeError(msg)
+        self.calls.append((video_id, media_body))
 
         class _Exec:
-            def execute(self_inner) -> dict[str, str]:
-                return {"videoId": videoId}
+            def execute(self) -> dict[str, str]:
+                return {"videoId": video_id}
 
         return _Exec()
 
@@ -134,7 +139,7 @@ def test_load_credentials_runs_flow_when_missing(tmp_path, monkeypatch):
     )
 
     class DummyFlow:
-        def run_console(self_inner):
+        def run_console(self):
             return SimpleNamespace(to_json=lambda: '{"token": 1}', valid=True)
 
     monkeypatch.setattr(

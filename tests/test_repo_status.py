@@ -1,3 +1,4 @@
+from datetime import UTC
 from pathlib import Path
 
 import pytest
@@ -479,9 +480,9 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         return {"user/repo": "✅", "other/repo": "❌"}[repo]
 
     monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    now = datetime(2020, 1, 2, 3, 4, tzinfo=timezone.utc)
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
     repo_status.update_readme(readme, now=now)
 
     lines = readme.read_text().splitlines()
@@ -508,7 +509,7 @@ def test_update_readme_uses_current_time(
     class DummyDatetime(datetime):
         @classmethod
         def now(cls, tz: timezone | None = None) -> datetime:
-            return datetime(2020, 1, 2, 3, 4, tzinfo=timezone.utc)
+            return datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
 
     monkeypatch.setattr(repo_status, "datetime", DummyDatetime)
     repo_status.update_readme(readme)
@@ -536,9 +537,9 @@ def test_update_readme_existing_timestamp(
 
     monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
 
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    now = datetime(2020, 1, 2, 3, 4, tzinfo=timezone.utc)
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
     repo_status.update_readme(readme, now=now)
 
     lines = readme.read_text().splitlines()

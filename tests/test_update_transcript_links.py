@@ -1,7 +1,9 @@
 import json
 import runpy
-import pytest
 import warnings
+
+import pytest
+
 import src.update_transcript_links as utl
 
 

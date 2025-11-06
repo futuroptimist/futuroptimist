@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import re
 from datetime import date
 from pathlib import Path
-import re
 
 
 def test_changelog_entries_are_not_future_dated() -> None:

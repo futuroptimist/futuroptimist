@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import io
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -16,10 +16,10 @@ class DummyResponse(io.BytesIO):
         data = json.dumps(payload).encode("utf-8")
         super().__init__(data)
 
-    def __enter__(self) -> "DummyResponse":
+    def __enter__(self) -> DummyResponse:
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:  # noqa: D401 - standard context API
+    def __exit__(self, exc_type, exc, tb) -> None:
         return False
 
 
@@ -123,7 +123,7 @@ def test_ingest_updates_metadata_and_summary(
     assert analytics["impressions_click_through_rate"] == pytest.approx(0.083)
     # updated_at should be an ISO timestamp without microseconds
     updated_at = datetime.fromisoformat(analytics["updated_at"].replace("Z", "+00:00"))
-    assert updated_at.tzinfo == timezone.utc
+    assert updated_at.tzinfo == UTC
     assert updated_at.microsecond == 0
 
     assert summary == [

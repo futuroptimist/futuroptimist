@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import io
 import json
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 
@@ -15,7 +15,7 @@ import src.enrich_metadata as em
 class DummyResponse(io.BytesIO):
     """Simple context manager wrapper for urlopen stubs."""
 
-    def __enter__(self) -> "DummyResponse":
+    def __enter__(self) -> DummyResponse:
         return self
 
     def __exit__(self, *exc_info) -> bool:

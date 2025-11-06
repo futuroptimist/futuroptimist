@@ -2,6 +2,7 @@ import json
 import runpy
 import urllib.error
 import urllib.request
+
 import pytest
 
 
@@ -184,7 +185,6 @@ def test_fetch_metadata_defaults_missing_view_count(monkeypatch):
 
 def test_entrypoint_runs(monkeypatch, tmp_path):
     import src.update_video_metadata  # noqa: F401
-
     import src.update_video_metadata as updater
 
     monkeypatch.setattr(updater, "BASE_DIR", tmp_path)
@@ -261,7 +261,7 @@ def test_main_returns_error_on_partial_failures(monkeypatch, tmp_path):
         None,
     ]
 
-    def fake_fetch(video_id, youtube_key, timeout=10):  # noqa: ARG001
+    def fake_fetch(video_id, youtube_key, timeout=10):
         return responses.pop(0)
 
     monkeypatch.setattr(updater, "fetch_metadata", fake_fetch)

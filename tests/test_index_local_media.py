@@ -1,10 +1,10 @@
 import json
-import runpy
-import sys
-from datetime import datetime, timezone
 import os
 import pathlib
+import runpy
+import sys
 import warnings
+from datetime import UTC, datetime
 
 import pytest
 
@@ -74,7 +74,7 @@ def test_scan_directory_utc_mtime(tmp_path):
     result = ilm.scan_directory(tmp_path)
     ts = result[0]["mtime"].replace("Z", "+00:00")
     mtime = datetime.fromisoformat(ts)
-    assert mtime.tzinfo == timezone.utc
+    assert mtime.tzinfo == UTC
 
 
 def test_scan_directory_truncates_microseconds(tmp_path):

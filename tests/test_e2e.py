@@ -1,14 +1,13 @@
 import json
 import pathlib
+import subprocess
 import tempfile
 import types
-import subprocess
 
 import pytest
 
-import src.scaffold_videos as scaffold
 import src.fetch_subtitles as fs
-
+import src.scaffold_videos as scaffold
 
 pytestmark = pytest.mark.e2e
 

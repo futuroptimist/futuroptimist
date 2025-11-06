@@ -1,11 +1,13 @@
-import tempfile
-import pathlib
 import json
+import pathlib
 import runpy
 import sys
+import tempfile
 import warnings
-import src.scaffold_videos as sv
+
 import pytest
+
+import src.scaffold_videos as sv
 
 
 def test_scaffold_creates_files(monkeypatch):
