@@ -1,0 +1,91 @@
+{
+  "input": {
+    "additionalProperties": false,
+    "description": "Input payload for metadata retrieval.",
+    "properties": {
+      "url": {
+        "title": "Url",
+        "type": "string"
+      }
+    },
+    "required": [
+      "url"
+    ],
+    "title": "MetadataRequest",
+    "type": "object"
+  },
+  "output": {
+    "additionalProperties": false,
+    "description": "Alias for returning video metadata via HTTP/MCP.",
+    "properties": {
+      "id": {
+        "description": "Canonical YouTube video identifier.",
+        "title": "Id",
+        "type": "string"
+      },
+      "url": {
+        "description": "Public watch URL for the video.",
+        "title": "Url",
+        "type": "string"
+      },
+      "title": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Video title, if known.",
+        "title": "Title"
+      },
+      "channel": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Channel/author name for the video, if known.",
+        "title": "Channel"
+      },
+      "published_at": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "ISO 8601 publication date, if available.",
+        "title": "Published At"
+      },
+      "duration": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Duration of the video in seconds, if available without extra auth.",
+        "title": "Duration"
+      }
+    },
+    "required": [
+      "id",
+      "url"
+    ],
+    "title": "MetadataResponse",
+    "type": "object"
+  }
+}

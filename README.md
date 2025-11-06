@@ -50,6 +50,34 @@ and multimedia assets are catalogued via the Makefile targets above.
 > `uv run pytest` mirrors `make test`, and `uvx <tool>` launches one-off binaries without
 > polluting the virtual environment.
 
+## YouTube Transcript MCP Tool
+
+`tools/youtube_mcp/` adds a self-contained caption service that surfaces YouTube transcripts
+for retrieval workloads while respecting platform policies.
+
+- **Run HTTP API**: `python -m tools.youtube_mcp --host 127.0.0.1 --port 8765`
+- **Run MCP stdio**: `python tools/youtube_mcp/mcp_server.py`
+- **Run CLI**: `python -m tools.youtube_mcp.cli transcript --url https://www.youtube.com/watch?v=VIDEOID`
+
+Example calls:
+
+```bash
+# HTTP
+curl 'http://127.0.0.1:8765/transcript?url=https://www.youtube.com/watch?v=VIDEOID'
+
+# CLI
+python -m tools.youtube_mcp.cli tracks --url https://youtu.be/VIDEOID
+```
+
+Policy highlights: the client only uses `youtube_transcript_api` plus public oEmbed metadata,
+rejects private/unlisted videos when indicated, and never scrapes HTML or bypasses consent.
+
+Caching: normalized transcripts are stored in `.ytmcp_cache/transcripts.sqlite3` with a default
+14-day TTL keyed by video + track metadata to speed up repeated retrieval.
+
+Error codes: `VideoUnavailable`, `NoCaptionsAvailable`, `PolicyRejected`, `NetworkError`,
+`RateLimited`, and `InvalidArgument` map cleanly across MCP, HTTP, and CLI surfaces.
+
 ## Related Projects
 _Last updated: 2025-11-06 06:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.

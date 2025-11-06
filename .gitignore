@@ -56,3 +56,5 @@ Peak Files/
 *.pek
 *.ims
 *.prmdc
+# YouTube MCP cache
+.ytmcp_cache/
