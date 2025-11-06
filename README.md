@@ -50,6 +50,30 @@ and multimedia assets are catalogued via the Makefile targets above.
 > `uv run pytest` mirrors `make test`, and `uvx <tool>` launches one-off binaries without
 > polluting the virtual environment.
 
+
+## YouTube transcript MCP service
+
+A new package under `tools/youtube_mcp/` exposes YouTube caption retrieval for local RAG.
+The tooling ships three entry points:
+
+- **MCP tool** – `python tools/youtube_mcp/mcp_server.py` implements `tools.list`/`tools.call` with
+  JSON-RPC over stdio. Invoke via `python tools/youtube_mcp/mcp_server.py` and send MCP messages.
+- **HTTP API** – `python -m tools.youtube_mcp --host 127.0.0.1 --port 8765` starts a FastAPI app
+  with `/transcript`, `/tracks`, and `/metadata` endpoints that mirror the MCP shapes.
+- **CLI** – `python -m tools.youtube_mcp.cli transcript --url https://youtu.be/VIDEOID` prints a
+  normalised payload with segments, provenance, and chunking.
+
+Captions are fetched via `youtube_transcript_api`, normalised, and chunked with 1000-character
+windows and 100-character overlap. Responses include deterministic segment IDs, citation-ready
+`https://www.youtube.com/watch?v=<id>&t=<seconds>s` URLs, and a SHA-256 hash so downstream
+pipelines can detect drift.
+
+Caching uses SQLite in `.ytmcp_cache/` with a 14-day TTL (configurable via env vars documented in
+`tools/youtube_mcp/settings.py`). Metadata is sourced via the official oEmbed endpoint; the service
+rejects private or unlisted videos when policy checks fail and never scrapes HTML. Error payloads
+surface typed codes such as `NoCaptionsAvailable`, `VideoUnavailable`, or `PolicyRejected` so
+automation can respond deterministically.
+
 ## Related Projects
 _Last updated: 2025-11-06 06:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.

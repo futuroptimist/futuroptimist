@@ -1,0 +1,216 @@
+{
+  "$defs": {
+    "CaptionTrack": {
+      "properties": {
+        "lang": {
+          "title": "Lang",
+          "type": "string"
+        },
+        "is_auto": {
+          "default": false,
+          "title": "Is Auto",
+          "type": "boolean"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "track_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Track Id"
+        }
+      },
+      "required": [
+        "lang"
+      ],
+      "title": "CaptionTrack",
+      "type": "object"
+    },
+    "TranscriptChunk": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "type": "number"
+        },
+        "end": {
+          "title": "End",
+          "type": "number"
+        },
+        "segment_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Segment Ids",
+          "type": "array"
+        },
+        "cite_url": {
+          "title": "Cite Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "start",
+        "end",
+        "segment_ids",
+        "cite_url"
+      ],
+      "title": "TranscriptChunk",
+      "type": "object"
+    },
+    "TranscriptSegment": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "type": "number"
+        },
+        "dur": {
+          "title": "Dur",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "start",
+        "dur"
+      ],
+      "title": "TranscriptSegment",
+      "type": "object"
+    },
+    "VideoMetadata": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        },
+        "channel": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Channel"
+        },
+        "published_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Published At"
+        },
+        "duration": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration"
+        }
+      },
+      "required": [
+        "id",
+        "url"
+      ],
+      "title": "VideoMetadata",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "video": {
+      "$ref": "#/$defs/VideoMetadata"
+    },
+    "captions": {
+      "$ref": "#/$defs/CaptionTrack"
+    },
+    "segments": {
+      "items": {
+        "$ref": "#/$defs/TranscriptSegment"
+      },
+      "title": "Segments",
+      "type": "array"
+    },
+    "chunks": {
+      "items": {
+        "$ref": "#/$defs/TranscriptChunk"
+      },
+      "title": "Chunks",
+      "type": "array"
+    },
+    "hash": {
+      "title": "Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "video",
+    "captions",
+    "segments",
+    "chunks",
+    "hash"
+  ],
+  "title": "TranscriptResponse",
+  "type": "object"
+}

@@ -34,6 +34,9 @@ video_scripts/*/sources/
 htmlcov/
 cov.json
 
+# youtube transcript cache
+.ytmcp_cache/
+
 # spellcheck artifacts
 dictionary.dic
 

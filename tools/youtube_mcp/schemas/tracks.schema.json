@@ -1,0 +1,60 @@
+{
+  "$defs": {
+    "CaptionTrack": {
+      "properties": {
+        "lang": {
+          "title": "Lang",
+          "type": "string"
+        },
+        "is_auto": {
+          "default": false,
+          "title": "Is Auto",
+          "type": "boolean"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "track_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Track Id"
+        }
+      },
+      "required": [
+        "lang"
+      ],
+      "title": "CaptionTrack",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "tracks": {
+      "items": {
+        "$ref": "#/$defs/CaptionTrack"
+      },
+      "title": "Tracks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "tracks"
+  ],
+  "title": "TracksResponse",
+  "type": "object"
+}

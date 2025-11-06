@@ -1,0 +1,49 @@
+name: youtube-mcp-ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install .[dev]
+      - name: Ruff
+        run: >-
+          ruff check tools/youtube_mcp \
+            tests/test_cache.py \
+            tests/test_chunking.py \
+            tests/test_http_api.py \
+            tests/test_mcp_server.py \
+            tests/test_youtube_client.py
+      - name: Mypy
+        run: mypy tools/youtube_mcp
+      - name: Pytest
+        run: pytest --cov=tools.youtube_mcp --cov=tests --cov-report=term-missing --cov-report=xml
+      - name: Coverage summary
+        run: |
+          coverage json
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          summary = json.loads(Path('coverage.json').read_text())
+          percent = summary['totals']['percent_covered']
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as fh:
+              fh.write(f'## Coverage\n\nTotal: {percent:.2f}%\n')
+          PY
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
