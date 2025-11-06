@@ -44,6 +44,16 @@ from .utils import (
 )
 
 
+def _create_retry() -> Retrying:
+    """Build a retry configuration shared across HTTP and transcript calls."""
+
+    return Retrying(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=0.5, min=0.5, max=4),
+        reraise=True,
+    )
+
+
 class YouTubeTranscriptService:
     """High-level service orchestrating transcripts, metadata, and caching."""
 
@@ -59,16 +69,8 @@ class YouTubeTranscriptService:
         self.cache = cache or TranscriptCache(settings.cache_dir)
         self._api = transcript_api or YouTubeTranscriptApi
         self._metadata_fetcher = metadata_fetcher or self._default_metadata_fetcher
-        self._transcript_retry = Retrying(
-            stop=stop_after_attempt(3),
-            wait=wait_exponential(multiplier=0.5, min=0.5, max=4),
-            reraise=True,
-        )
-        self._http_retry = Retrying(
-            stop=stop_after_attempt(3),
-            wait=wait_exponential(multiplier=0.5, min=0.5, max=4),
-            reraise=True,
-        )
+        self._transcript_retry = _create_retry()
+        self._http_retry = _create_retry()
 
     def get_transcript(
         self,
@@ -190,9 +192,11 @@ class YouTubeTranscriptService:
             return None
 
         if prefer_auto and self.settings.allow_auto:
-            candidate = _match_language(auto) or (auto[0] if auto else None)
+            candidate = _match_language(auto)
             if candidate:
                 return candidate
+            if lang is None and auto:
+                return auto[0]
 
         candidate = _match_language(manual)
         if candidate:
@@ -202,9 +206,11 @@ class YouTubeTranscriptService:
             return manual[0]
 
         if self.settings.allow_auto:
-            candidate = _match_language(auto) or (auto[0] if auto else None)
+            candidate = _match_language(auto)
             if candidate:
                 return candidate
+            if lang is None and auto:
+                return auto[0]
 
         raise NoCaptionsAvailable()
 

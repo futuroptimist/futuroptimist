@@ -65,3 +65,9 @@ source = ["tools/youtube_mcp"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"tools.youtube_mcp" = ["schemas/*.json"]

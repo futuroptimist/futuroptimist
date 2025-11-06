@@ -59,7 +59,7 @@ def parse_video_id(url_or_id: str) -> str:
     else:
         video_id = candidate
 
-    if not re.fullmatch(r"[0-9A-Za-z_-]{6,15}", video_id):
+    if not re.fullmatch(r"[0-9A-Za-z_-]{11}", video_id):
         raise InvalidVideoId(f"Invalid YouTube video identifier: {video_id}")
 
     return video_id

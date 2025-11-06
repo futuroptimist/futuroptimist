@@ -77,7 +77,7 @@ expired rows are purged automatically when accessed.
 `RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
 
 ## Related Projects
-_Last updated: 2025-11-06 06:02 UTC; checks hourly_
+_Last updated: 2024-11-06 06:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
 The unknown state is enforced by
 `tests/test_repo_status.py::test_fetch_repo_status_no_runs_returns_unknown`, ensuring repositories
