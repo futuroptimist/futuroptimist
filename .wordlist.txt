@@ -32,6 +32,7 @@ csv
 cta
 danielsmith
 daphnia
+ddthh
 democratizedspace
 deps
 dirs
@@ -51,6 +52,7 @@ explainer
 externalities
 extruder
 fallbacks
+fastapi
 ffmpeg
 fi
 finalise
@@ -79,6 +81,7 @@ https
 ideation
 img
 ingester
+invalidargument
 io
 irl
 jobbot
@@ -101,21 +104,26 @@ lora
 lt
 lufs
 makefile
+mcp
 md
 meta's
 metaverse
 microcontroller
+microservice
 mjs
 mpa
 mtime
 nas
+networkerror
 nisbett
+nocaptionsavailable
 nonfinite
 npc
 npcs
 npm
 npx
 oauth
+oembed
 ol
 onboarding
 openai
@@ -125,6 +133,7 @@ otio
 pathlib
 png
 poisson
+policyrejected
 pre
 prs
 ps
@@ -133,6 +142,7 @@ py
 pyspelling
 pytest
 rainlight
+ratelimited
 readme
 readme's
 reframe
@@ -156,6 +166,7 @@ spacex
 src
 srcset
 srt
+ssz
 stackable
 stl
 streamlit
@@ -168,6 +179,7 @@ tfrac
 tiktok
 timelapse
 tos
+ttl
 tts
 txt
 uca
@@ -184,6 +196,7 @@ venv
 venv's
 verifier
 videoid
+videounavailable
 virtualenv
 visualise
 vite
