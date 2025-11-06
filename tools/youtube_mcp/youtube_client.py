@@ -106,9 +106,10 @@ class YouTubeTranscriptService:
             }
         )
 
-        cached = self.cache.get(cache_key)
-        if cached:
-            return TranscriptResponse(**cached)
+        cached_raw = self.cache.get(cache_key)
+        if cached_raw is not None:
+            cached_payload = cast(dict[str, Any], cached_raw)
+            return TranscriptResponse.model_validate(cached_payload)
 
         try:
             segments_raw = self._transcript_retry(self._fetch_track_segments, track)

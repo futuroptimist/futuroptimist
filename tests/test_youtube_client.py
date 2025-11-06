@@ -23,6 +23,11 @@ from tools.youtube_mcp.settings import Settings
 from tools.youtube_mcp.utils import InvalidVideoId
 from tools.youtube_mcp.youtube_client import YouTubeTranscriptService
 
+MANUAL_VIDEO_ID = "vid123abcde"
+AUTO_VIDEO_ID = "vid456abcde"
+RAW_VIDEO_ID = "vid789abcde"
+AUTO_ONLY_ID = "auto123abcd"
+
 
 class FakeTranscript:
     def __init__(
@@ -96,12 +101,12 @@ def service(tmp_path):
 
 def test_get_transcript_prefers_manual(service):
     svc, manual, _ = service
-    response = svc.get_transcript("https://www.youtube.com/watch?v=video123")
+    response = svc.get_transcript(f"https://www.youtube.com/watch?v={MANUAL_VIDEO_ID}")
     assert response.captions.is_auto is False
     assert response.video.title == "Test"
     assert response.segments[0].text == "hello"
 
-    cached = svc.get_transcript("https://www.youtube.com/watch?v=video123")
+    cached = svc.get_transcript(f"https://www.youtube.com/watch?v={MANUAL_VIDEO_ID}")
     assert cached.hash == response.hash
     assert manual.fetch_count == 1
 
@@ -122,7 +127,7 @@ def test_auto_fallback(tmp_path):
         transcript_api=api,
         metadata_fetcher=metadata_stub,
     )
-    response = service.get_transcript("https://youtu.be/video456", prefer_auto=True)
+    response = service.get_transcript(f"https://youtu.be/{AUTO_VIDEO_ID}", prefer_auto=True)
     assert response.captions.is_auto is True
 
 
@@ -137,12 +142,12 @@ def test_no_captions(tmp_path):
         metadata_fetcher=metadata_stub,
     )
     with pytest.raises(NoCaptionsAvailable):
-        service.get_transcript("video789")
+        service.get_transcript(RAW_VIDEO_ID)
 
 
 def test_search_tracks_orders_manual_first(service):
     svc, _, _ = service
-    tracks = svc.search_captions("video123")
+    tracks = svc.search_captions(MANUAL_VIDEO_ID)
     assert tracks.tracks[0].is_auto is False
     assert tracks.tracks[1].is_auto is True
 
@@ -267,7 +272,9 @@ def test_search_captions_invalid_argument(tmp_path):
 
 def test_language_preference_selects_manual(service):
     svc, _, _ = service
-    response = svc.get_transcript("https://www.youtube.com/watch?v=video123", lang="EN")
+    response = svc.get_transcript(
+        f"https://www.youtube.com/watch?v={MANUAL_VIDEO_ID}", lang="EN"
+    )
     assert response.captions.is_auto is False
 
 
@@ -288,7 +295,7 @@ def test_allow_auto_false_blocks_auto(tmp_path):
         metadata_fetcher=metadata_stub,
     )
     with pytest.raises(NoCaptionsAvailable):
-        service.get_transcript("https://youtu.be/auto123")
+        service.get_transcript(f"https://youtu.be/{AUTO_ONLY_ID}")
 
 
 def test_auto_selected_when_manual_missing(tmp_path):
@@ -307,7 +314,7 @@ def test_auto_selected_when_manual_missing(tmp_path):
         transcript_api=api,
         metadata_fetcher=metadata_stub,
     )
-    response = service.get_transcript("https://youtu.be/auto123")
+    response = service.get_transcript(f"https://youtu.be/{AUTO_ONLY_ID}")
     assert response.captions.is_auto is True
 
 

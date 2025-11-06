@@ -92,15 +92,25 @@ class MCPServer:
                 lang=transcript_request.lang,
                 prefer_auto=transcript_request.prefer_auto,
             )
-            return response.model_dump()
+            payload: dict[str, Any] = response.model_dump()
+            return payload
         if name == "youtube.search_captions":
             tracks_request = TracksRequest(**arguments)
-            return self.service.search_captions(tracks_request.url).model_dump()
+            tracks_payload: dict[str, Any] = (
+                self.service.search_captions(tracks_request.url).model_dump()
+            )
+            return tracks_payload
         if name == "youtube.get_metadata":
             metadata_request = MetadataRequest(**arguments)
-            return self.service.get_metadata(metadata_request.url).model_dump()
+            metadata_payload: dict[str, Any] = (
+                self.service.get_metadata(metadata_request.url).model_dump()
+            )
+            return metadata_payload
         if name == "youtube.healthcheck":
-            return HealthResponse(ok=True, version="0.1.0").model_dump()
+            health_payload: dict[str, Any] = HealthResponse(
+                ok=True, version="0.1.0"
+            ).model_dump()
+            return health_payload
         raise InvalidArgument(f"Unknown tool: {name}")
 
     def serve_forever(self) -> None:
