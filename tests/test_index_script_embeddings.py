@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-import src.index_script_segments as segments
 import src.index_script_embeddings as embeddings
+import src.index_script_segments as segments
 
 
 @pytest.fixture()

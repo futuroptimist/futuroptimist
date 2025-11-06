@@ -2,7 +2,6 @@ import json
 import pathlib
 import warnings
 
-
 from src.index_assets import _load_schema
 
 

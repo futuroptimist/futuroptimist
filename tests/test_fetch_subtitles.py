@@ -1,8 +1,10 @@
-import types
-import src.fetch_subtitles as fs
-import subprocess
-import pytest
 import shutil
+import subprocess
+import types
+
+import pytest
+
+import src.fetch_subtitles as fs
 
 
 def test_read_video_ids(tmp_path, monkeypatch):

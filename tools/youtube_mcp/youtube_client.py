@@ -33,7 +33,13 @@ from .errors import (
     RateLimited,
     VideoUnavailable,
 )
-from .models import CaptionTrackInfo, MetadataResponse, Segment, TracksResponse, TranscriptResponse
+from .models import (
+    CaptionTrackInfo,
+    MetadataResponse,
+    Segment,
+    TracksResponse,
+    TranscriptResponse,
+)
 from .settings import Settings
 from .utils import (
     InvalidVideoId,
@@ -96,7 +102,9 @@ class YouTubeTranscriptService:
             raise PolicyRejected("Video is private or unlisted")
 
         track = self._select_track(video_id, lang=lang, prefer_auto=prefer_auto_final)
-        track_identifier = getattr(track, "id", None) or getattr(track, "language_code", "")
+        track_identifier = getattr(track, "id", None) or getattr(
+            track, "language_code", ""
+        )
         cache_key = hash_content(
             {
                 "video": video_id,
@@ -118,7 +126,9 @@ class YouTubeTranscriptService:
             if isinstance(last_exc, BaseYtMcpError):
                 raise last_exc from exc
             if isinstance(last_exc, Exception):
-                raise NetworkError("Failed to fetch transcript after retries") from last_exc
+                raise NetworkError(
+                    "Failed to fetch transcript after retries"
+                ) from last_exc
             raise NetworkError("Failed to fetch transcript after retries") from exc
 
         segments = self._normalise_segments(video_id, segments_raw)
@@ -217,7 +227,9 @@ class YouTubeTranscriptService:
 
     def _list_transcripts(self, video_id: str) -> list[Any]:
         try:
-            transcripts_obj = self._transcript_retry(self._api.list_transcripts, video_id)
+            transcripts_obj = self._transcript_retry(
+                self._api.list_transcripts, video_id
+            )
         except RetryError as exc:  # pragma: no cover
             last_exc = exc.last_attempt.exception()
             if isinstance(last_exc, Exception):
@@ -309,7 +321,9 @@ class YouTubeTranscriptService:
             if isinstance(last_exc, BaseYtMcpError):
                 raise last_exc from exc
             if isinstance(last_exc, Exception):
-                raise NetworkError("Failed to fetch metadata after retries") from last_exc
+                raise NetworkError(
+                    "Failed to fetch metadata after retries"
+                ) from last_exc
             raise NetworkError("Failed to fetch metadata after retries") from exc
 
     def _map_transcript_error(self, exc: Exception) -> BaseYtMcpError:

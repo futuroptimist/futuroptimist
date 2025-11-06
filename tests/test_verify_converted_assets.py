@@ -1,5 +1,6 @@
-from src.verify_converted_assets import verify_slug
 from PIL import Image
+
+from src.verify_converted_assets import verify_slug
 
 
 def test_verify_slug_detects_mismatch(tmp_path):

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+
 import jsonschema
 from jsonschema import validate
 

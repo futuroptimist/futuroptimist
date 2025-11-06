@@ -6,9 +6,15 @@ from tools.youtube_mcp import utils
 
 
 def test_parse_video_id_variants():
-    assert utils.parse_video_id("https://www.youtube.com/watch?v=abc123def45") == "abc123def45"
+    assert (
+        utils.parse_video_id("https://www.youtube.com/watch?v=abc123def45")
+        == "abc123def45"
+    )
     assert utils.parse_video_id("https://youtu.be/abc123def45?t=10") == "abc123def45"
-    assert utils.parse_video_id("https://www.youtube.com/embed/abc123def45") == "abc123def45"
+    assert (
+        utils.parse_video_id("https://www.youtube.com/embed/abc123def45")
+        == "abc123def45"
+    )
     assert utils.parse_video_id("abc123def45") == "abc123def45"
 
 

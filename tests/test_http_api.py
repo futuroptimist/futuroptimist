@@ -17,7 +17,9 @@ class StubService:
     def __init__(self) -> None:
         self.transcript_called = 0
 
-    def get_transcript(self, url: str, *, lang=None, prefer_auto=None) -> TranscriptResponse:
+    def get_transcript(
+        self, url: str, *, lang=None, prefer_auto=None
+    ) -> TranscriptResponse:
         self.transcript_called += 1
         return TranscriptResponse(
             video=VideoInfo(id="abc", url=url, title="Example", channel="Channel"),
@@ -46,7 +48,9 @@ class StubService:
 
 
 class ErrorService(StubService):
-    def get_transcript(self, url: str, *, lang=None, prefer_auto=None) -> TranscriptResponse:
+    def get_transcript(
+        self, url: str, *, lang=None, prefer_auto=None
+    ) -> TranscriptResponse:
         raise NoCaptionsAvailable()
 
 

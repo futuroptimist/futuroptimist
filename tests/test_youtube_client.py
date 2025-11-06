@@ -127,7 +127,9 @@ def test_auto_fallback(tmp_path):
         transcript_api=api,
         metadata_fetcher=metadata_stub,
     )
-    response = service.get_transcript(f"https://youtu.be/{AUTO_VIDEO_ID}", prefer_auto=True)
+    response = service.get_transcript(
+        f"https://youtu.be/{AUTO_VIDEO_ID}", prefer_auto=True
+    )
     assert response.captions.is_auto is True
 
 
@@ -156,7 +158,9 @@ def test_default_metadata_fetcher(monkeypatch, tmp_path):
     settings = Settings(cache_dir=tmp_path / "cache")
     cache = TranscriptCache(settings.cache_dir)
     api = FakeApi([])
-    service = YouTubeTranscriptService(settings=settings, cache=cache, transcript_api=api)
+    service = YouTubeTranscriptService(
+        settings=settings, cache=cache, transcript_api=api
+    )
 
     class DummyResponse:
         status_code = 200
@@ -176,7 +180,9 @@ def test_metadata_rate_limited(monkeypatch, tmp_path):
     settings = Settings(cache_dir=tmp_path / "cache")
     cache = TranscriptCache(settings.cache_dir)
     api = FakeApi([])
-    service = YouTubeTranscriptService(settings=settings, cache=cache, transcript_api=api)
+    service = YouTubeTranscriptService(
+        settings=settings, cache=cache, transcript_api=api
+    )
 
     def raising_get(*args, **kwargs):
         request = httpx.Request("GET", "https://www.youtube.com/oembed")
@@ -416,10 +422,14 @@ def test_metadata_fetcher_403(monkeypatch, tmp_path):
 def test_metadata_fetcher_network_error(monkeypatch, tmp_path):
     settings = Settings(cache_dir=tmp_path / "cache")
     cache = TranscriptCache(settings.cache_dir)
-    service = YouTubeTranscriptService(settings=settings, cache=cache, transcript_api=FakeApi([]))
+    service = YouTubeTranscriptService(
+        settings=settings, cache=cache, transcript_api=FakeApi([])
+    )
 
     def raising_get(*args, **kwargs):
-        raise httpx.RequestError("boom", request=httpx.Request("GET", "https://example.com"))
+        raise httpx.RequestError(
+            "boom", request=httpx.Request("GET", "https://example.com")
+        )
 
     monkeypatch.setattr(httpx, "get", raising_get)
     with pytest.raises(NetworkError):
@@ -429,13 +439,17 @@ def test_metadata_fetcher_network_error(monkeypatch, tmp_path):
 def test_metadata_fetcher_http_error(monkeypatch, tmp_path):
     settings = Settings(cache_dir=tmp_path / "cache")
     cache = TranscriptCache(settings.cache_dir)
-    service = YouTubeTranscriptService(settings=settings, cache=cache, transcript_api=FakeApi([]))
+    service = YouTubeTranscriptService(
+        settings=settings, cache=cache, transcript_api=FakeApi([])
+    )
 
     class Response:
         status_code = 200
 
         def raise_for_status(self):
-            resp = httpx.Response(500, request=httpx.Request("GET", "https://youtube.com"))
+            resp = httpx.Response(
+                500, request=httpx.Request("GET", "https://youtube.com")
+            )
             raise httpx.HTTPStatusError("500", request=resp.request, response=resp)
 
         def json(self):
@@ -458,11 +472,15 @@ def test_map_transcript_error_mappings(tmp_path):
     assert isinstance(
         service._map_transcript_error(YTVideoUnavailable("err")), VideoUnavailable
     )
-    assert isinstance(service._map_transcript_error(InvalidVideoId("err")), InvalidArgument)
+    assert isinstance(
+        service._map_transcript_error(InvalidVideoId("err")), InvalidArgument
+    )
     assert isinstance(
         service._map_transcript_error(TranscriptsDisabled("err")), NoCaptionsAvailable
     )
-    assert isinstance(service._map_transcript_error(TooManyRequests("err")), RateLimited)
+    assert isinstance(
+        service._map_transcript_error(TooManyRequests("err")), RateLimited
+    )
     assert isinstance(
         service._map_transcript_error(CouldNotRetrieveTranscript("err")), NetworkError
     )

@@ -41,9 +41,7 @@ def create_app(
     def _handle_error(exc: BaseYtMcpError) -> HTTPException:
         return HTTPException(status_code=exc.http_status.value, detail=exc.to_dict())
 
-    async def _run_sync(
-        func: Callable[..., T], *args: Any, **kwargs: Any
-    ) -> T:
+    async def _run_sync(func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         if anyio is None:
             return func(*args, **kwargs)
 

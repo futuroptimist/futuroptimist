@@ -18,8 +18,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="YouTube transcript helper CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    transcript_parser = subparsers.add_parser("transcript", help="Fetch transcript JSON")
-    transcript_parser.add_argument("--url", required=True, help="YouTube video URL or ID")
+    transcript_parser = subparsers.add_parser(
+        "transcript", help="Fetch transcript JSON"
+    )
+    transcript_parser.add_argument(
+        "--url", required=True, help="YouTube video URL or ID"
+    )
     transcript_parser.add_argument("--lang", help="Preferred language code")
     transcript_parser.add_argument(
         "--prefer-auto",
@@ -27,7 +31,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Prefer auto-generated captions when available",
     )
 
-    tracks_parser = subparsers.add_parser("tracks", help="List available caption tracks")
+    tracks_parser = subparsers.add_parser(
+        "tracks", help="List available caption tracks"
+    )
     tracks_parser.add_argument("--url", required=True, help="YouTube video URL or ID")
 
     metadata_parser = subparsers.add_parser("metadata", help="Fetch video metadata")

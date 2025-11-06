@@ -12,7 +12,9 @@ from .settings import Settings
 def main() -> None:
     parser = argparse.ArgumentParser(description="YouTube MCP HTTP server")
     parser.add_argument("--host", default=None, help="Bind host (overrides settings)")
-    parser.add_argument("--port", type=int, default=None, help="Bind port (overrides settings)")
+    parser.add_argument(
+        "--port", type=int, default=None, help="Bind port (overrides settings)"
+    )
     args = parser.parse_args()
 
     settings = Settings.from_env()

@@ -1,7 +1,8 @@
 import json
 import pathlib
-from jsonschema import validate, ValidationError
+
 import pytest
+from jsonschema import ValidationError, validate
 
 SCHEMA_PATH = pathlib.Path("schemas/video_metadata.schema.json")
 SCHEMA = json.loads(SCHEMA_PATH.read_text())
@@ -23,7 +24,9 @@ def test_metadata_files_validate():
         try:
             validate(instance=data, schema=SCHEMA)
         except ValidationError as e:
-            raise AssertionError(f"{meta_path} failed schema validation: {e.message}")
+            raise AssertionError(
+                f"{meta_path} failed schema validation: {e.message}"
+            ) from e
 
 
 def test_invalid_metadata_fails():

@@ -20,7 +20,9 @@ class StubService:
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         pass
 
-    def get_transcript(self, url: str, *, lang=None, prefer_auto=None) -> TranscriptResponse:
+    def get_transcript(
+        self, url: str, *, lang=None, prefer_auto=None
+    ) -> TranscriptResponse:
         return TranscriptResponse(
             video=VideoInfo(id="abc", url=url, title="Example", channel="Channel"),
             captions=CaptionTrackInfo(lang="en", is_auto=False, track_name="English"),
@@ -48,7 +50,9 @@ class StubService:
 
 
 class ErrorService(StubService):
-    def get_transcript(self, url: str, *, lang=None, prefer_auto=None) -> TranscriptResponse:
+    def get_transcript(
+        self, url: str, *, lang=None, prefer_auto=None
+    ) -> TranscriptResponse:
         raise InvalidArgument("bad url")
 
 
@@ -58,11 +62,13 @@ def patch_service(monkeypatch):
 
 
 def test_cli_transcript_success(monkeypatch, capsys):
-    exit_code = cli.main([
-        "transcript",
-        "--url",
-        "https://youtu.be/abc",
-    ])
+    exit_code = cli.main(
+        [
+            "transcript",
+            "--url",
+            "https://youtu.be/abc",
+        ]
+    )
     assert exit_code == 0
     output = json.loads(capsys.readouterr().out)
     assert output["video"]["id"] == "abc"

@@ -94,11 +94,12 @@ def test_main_handles_multiple_external_codex(tmp_path, monkeypatch):
     prompts_text = "## Related prompt guides\n\n- [Item](items.md)\n"
     item_text = "---\ntitle: Item\n---\n# Item"
 
+    raw_base = "https://raw.githubusercontent.com"
     mapping = {
-        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/automation.md": prompts_text,
-        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/items.md": item_text,
-        "https://raw.githubusercontent.com/foo/baz/main/docs/prompts/codex/automation.md": prompts_text,
-        "https://raw.githubusercontent.com/foo/baz/main/docs/prompts/codex/items.md": item_text,
+        f"{raw_base}/foo/bar/main/docs/prompts/codex/automation.md": prompts_text,
+        f"{raw_base}/foo/bar/main/docs/prompts/codex/items.md": item_text,
+        f"{raw_base}/foo/baz/main/docs/prompts/codex/automation.md": prompts_text,
+        f"{raw_base}/foo/baz/main/docs/prompts/codex/items.md": item_text,
     }
 
     def fake_urlopen(url):
@@ -134,9 +135,10 @@ def test_main_uses_repos_from_file(tmp_path, monkeypatch):
     prompts_text = "## Related prompt guides\n\n- [Item](items.md)\n"
     item_text = "---\ntitle: Item\n---\n# Item"
 
+    raw_base = "https://raw.githubusercontent.com"
     mapping = {
-        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/automation.md": prompts_text,
-        "https://raw.githubusercontent.com/foo/bar/main/docs/prompts/codex/items.md": item_text,
+        f"{raw_base}/foo/bar/main/docs/prompts/codex/automation.md": prompts_text,
+        f"{raw_base}/foo/bar/main/docs/prompts/codex/items.md": item_text,
     }
 
     def fake_urlopen(url):

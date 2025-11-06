@@ -14,7 +14,9 @@ from .utils import ensure_utf8
 from .youtube_client import YouTubeTranscriptService
 
 _SCHEMAS = {
-    "youtube.get_transcript": Path(__file__).parent / "schemas" / "transcript.schema.json",
+    "youtube.get_transcript": Path(__file__).parent
+    / "schemas"
+    / "transcript.schema.json",
     "youtube.search_captions": Path(__file__).parent / "schemas" / "tracks.schema.json",
     "youtube.get_metadata": Path(__file__).parent / "schemas" / "metadata.schema.json",
     "youtube.healthcheck": Path(__file__).parent / "schemas" / "health.schema.json",
@@ -96,15 +98,15 @@ class MCPServer:
             return payload
         if name == "youtube.search_captions":
             tracks_request = TracksRequest(**arguments)
-            tracks_payload: dict[str, Any] = (
-                self.service.search_captions(tracks_request.url).model_dump()
-            )
+            tracks_payload: dict[str, Any] = self.service.search_captions(
+                tracks_request.url
+            ).model_dump()
             return tracks_payload
         if name == "youtube.get_metadata":
             metadata_request = MetadataRequest(**arguments)
-            metadata_payload: dict[str, Any] = (
-                self.service.get_metadata(metadata_request.url).model_dump()
-            )
+            metadata_payload: dict[str, Any] = self.service.get_metadata(
+                metadata_request.url
+            ).model_dump()
             return metadata_payload
         if name == "youtube.healthcheck":
             health_payload: dict[str, Any] = HealthResponse(

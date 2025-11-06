@@ -31,6 +31,19 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+extend-exclude = [
+    "assets",
+    "data",
+    "docs",
+    "ideas",
+    "image_descriptions.md",
+    "outages",
+    "premiere",
+    "schemas",
+    "scripts",
+    "src",
+    "video_scripts",
+]
 
 [tool.ruff.lint]
 select = [

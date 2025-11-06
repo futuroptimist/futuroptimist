@@ -92,7 +92,11 @@ def is_unlisted_or_private(metadata: Any) -> bool:
         lowered = {str(key).lower(): value for key, value in metadata.items()}
         for key in ("is_unlisted", "is_private", "privacy_status"):
             value = lowered.get(key)
-            if isinstance(value, str) and value.lower() in {"true", "private", "unlisted"}:
+            if isinstance(value, str) and value.lower() in {
+                "true",
+                "private",
+                "unlisted",
+            }:
                 return True
             if isinstance(value, bool) and value:
                 return True

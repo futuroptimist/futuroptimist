@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PIL import Image, ImageDraw
-
 import pytest
+from PIL import Image, ImageDraw
 
 
 @pytest.fixture(name="thumbnail_paths")

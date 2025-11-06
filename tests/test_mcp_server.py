@@ -12,7 +12,9 @@ from tools.youtube_mcp.models import (
 
 
 class StubService:
-    def get_transcript(self, url: str, *, lang=None, prefer_auto=None) -> TranscriptResponse:
+    def get_transcript(
+        self, url: str, *, lang=None, prefer_auto=None
+    ) -> TranscriptResponse:
         return TranscriptResponse(
             video=VideoInfo(id="abc", url=url, title="Example", channel="Channel"),
             captions=CaptionTrackInfo(lang="en", is_auto=False, track_name="English"),
@@ -41,7 +43,9 @@ class StubService:
 
 def test_tools_list_includes_expected_methods():
     server = MCPServer(StubService())
-    response = server.handle_request({"jsonrpc": "2.0", "id": 1, "method": "tools.list"})
+    response = server.handle_request(
+        {"jsonrpc": "2.0", "id": 1, "method": "tools.list"}
+    )
     names = {tool["name"] for tool in response["result"]["tools"]}
     assert "youtube.get_transcript" in names
     assert "youtube.get_metadata" in names
@@ -77,7 +81,9 @@ def test_tools_call_unknown_tool():
 
 def test_tools_call_error_response():
     class ErrorService(StubService):
-        def get_transcript(self, url: str, *, lang=None, prefer_auto=None) -> TranscriptResponse:
+        def get_transcript(
+            self, url: str, *, lang=None, prefer_auto=None
+        ) -> TranscriptResponse:
             raise NoCaptionsAvailable()
 
     server = MCPServer(ErrorService())
@@ -96,5 +102,7 @@ def test_tools_call_error_response():
 
 def test_method_not_found():
     server = MCPServer(StubService())
-    response = server.handle_request({"jsonrpc": "2.0", "id": 1, "method": "does.not.exist"})
+    response = server.handle_request(
+        {"jsonrpc": "2.0", "id": 1, "method": "does.not.exist"}
+    )
     assert response["error"]["code"] == -32601
