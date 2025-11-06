@@ -1,0 +1,72 @@
+{
+  "description": "List caption tracks available for a YouTube video.",
+  "input": {
+    "additionalProperties": false,
+    "description": "Input model for caption track discovery.",
+    "properties": {
+      "url": {
+        "title": "Url",
+        "type": "string"
+      }
+    },
+    "required": [
+      "url"
+    ],
+    "title": "TracksRequest",
+    "type": "object"
+  },
+  "output": {
+    "$defs": {
+      "CaptionTrackInfo": {
+        "additionalProperties": false,
+        "description": "Details about an available caption track.",
+        "properties": {
+          "lang": {
+            "title": "Lang",
+            "type": "string"
+          },
+          "is_auto": {
+            "description": "Whether the captions were auto-generated.",
+            "title": "Is Auto",
+            "type": "boolean"
+          },
+          "track_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Human-readable track name when supplied by YouTube.",
+            "title": "Track Name"
+          }
+        },
+        "required": [
+          "lang",
+          "is_auto"
+        ],
+        "title": "CaptionTrackInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Caption track listing response.",
+    "properties": {
+      "tracks": {
+        "items": {
+          "$ref": "#/$defs/CaptionTrackInfo"
+        },
+        "title": "Tracks",
+        "type": "array"
+      }
+    },
+    "required": [
+      "tracks"
+    ],
+    "title": "TracksResponse",
+    "type": "object"
+  }
+}

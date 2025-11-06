@@ -1,0 +1,29 @@
+{
+  "description": "Healthcheck endpoint for the YouTube MCP service.",
+  "input": {
+    "additionalProperties": false,
+    "properties": {},
+    "title": "HealthRequest",
+    "type": "object"
+  },
+  "output": {
+    "additionalProperties": false,
+    "description": "Healthcheck payload.",
+    "properties": {
+      "ok": {
+        "title": "Ok",
+        "type": "boolean"
+      },
+      "version": {
+        "title": "Version",
+        "type": "string"
+      }
+    },
+    "required": [
+      "ok",
+      "version"
+    ],
+    "title": "HealthResponse",
+    "type": "object"
+  }
+}

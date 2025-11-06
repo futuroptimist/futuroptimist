@@ -15,7 +15,8 @@ PIP := uv pip
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
 .PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images \
         convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
-        process update_metadata scripts_from_subtitles assets_manifest render upload_video
+        process update_metadata scripts_from_subtitles assets_manifest render upload_video \
+        format lint typecheck serve serve-http
 
 help:
 	@echo "Targets:"
@@ -49,8 +50,16 @@ subtitles:
 	$(PY) src/fetch_subtitles.py
 
 fmt:
-	$(PY) -m black .
-	$(PY) -m ruff check --fix .
+        $(PY) -m black .
+        $(PY) -m ruff check --fix .
+
+format: fmt
+
+lint:
+        $(PY) -m ruff check tools/youtube_mcp tests
+
+typecheck:
+        $(PY) -m mypy tools/youtube_mcp
 
 clean:
 	@$(REMOVE) $(VENV) 2>/dev/null || true
@@ -128,3 +137,9 @@ upload_video:
                 $(if $(VIDEO),--video $(VIDEO),) \
                 $(if $(CLIENT),--client-secrets $(CLIENT),) \
                 $(if $(TOKEN),--credentials $(TOKEN),)
+
+serve:
+        $(PY) tools/youtube_mcp/mcp_server.py
+
+serve-http:
+        $(PY) -m tools.youtube_mcp $(if $(HOST),--host $(HOST),) $(if $(PORT),--port $(PORT),)

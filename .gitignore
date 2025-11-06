@@ -33,6 +33,16 @@ video_scripts/*/sources/
 # coverage reports
 htmlcov/
 cov.json
+.coverage
+
+# local caches
+.ytmcp_cache/
+
+# package artifacts
+*.egg-info/
+
+# node dependencies
+node_modules/
 
 # spellcheck artifacts
 dictionary.dic
