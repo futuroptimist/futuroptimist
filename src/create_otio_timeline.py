@@ -14,8 +14,9 @@ from __future__ import annotations
 import argparse
 import pathlib
 import sys
+from collections.abc import Iterable
 from types import ModuleType
-from typing import Iterable, TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 _loaded_otio: ModuleType | None = None
 try:  # pragma: no cover - exercised indirectly via importorskip in tests
@@ -105,7 +106,9 @@ def build_timeline(
         }
     )
 
-    track = otio_module.schema.Track(name="Video", kind=otio_module.schema.TrackKind.Video)
+    track = otio_module.schema.Track(
+        name="Video", kind=otio_module.schema.TrackKind.Video
+    )
     timeline.tracks.append(track)
 
     for clip_path in clips:
@@ -117,7 +120,7 @@ def build_timeline(
         clip.metadata["futuroptimist"] = {
             "relative_path": _relative_repo_path(clip_path, repo_root),
         }
-        duration_frames = max(1, int(round(default_duration * frame_rate)))
+        duration_frames = max(1, round(default_duration * frame_rate))
         clip.source_range = otio_module.opentime.TimeRange(
             duration=otio_module.opentime.RationalTime(duration_frames, frame_rate)
         )

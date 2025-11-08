@@ -120,4 +120,6 @@ def test_create_timeline_requires_opentimelineio(tmp_path: pathlib.Path) -> None
     (converted / "clip.mp4").write_bytes(b"stub")
 
     with pytest.raises(RuntimeError, match="OpenTimelineIO is required"):
-        cot.create_timeline(slug, footage_root=tmp_path / "footage", output_dir=tmp_path / "out")
+        cot.create_timeline(
+            slug, footage_root=tmp_path / "footage", output_dir=tmp_path / "out"
+        )
