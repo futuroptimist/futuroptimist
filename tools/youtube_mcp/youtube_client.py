@@ -21,21 +21,6 @@ from youtube_transcript_api._errors import (
     VideoUnavailable as YtVideoUnavailable,
 )
 
-try:  # youtube-transcript-api < 1.2.3
-    from youtube_transcript_api._errors import TooManyRequests
-except ImportError:  # youtube-transcript-api >= 1.2.3
-    TooManyRequests = None  # type: ignore[assignment]
-
-try:
-    from youtube_transcript_api._errors import IpBlocked
-except ImportError:  # pragma: no cover - historic versions only
-    IpBlocked = None  # type: ignore[assignment]
-
-try:
-    from youtube_transcript_api._errors import RequestBlocked
-except ImportError:  # pragma: no cover - historic versions only
-    RequestBlocked = None  # type: ignore[assignment]
-
 from .cache import TranscriptCache
 from .chunking import chunk_segments
 from .errors import (
@@ -62,6 +47,30 @@ from .utils import (
     is_unlisted_or_private,
     parse_video_id,
 )
+
+TooManyRequests: type[Exception] | None
+try:  # youtube-transcript-api < 1.2.3
+    from youtube_transcript_api._errors import TooManyRequests as _TooManyRequests
+except ImportError:  # youtube-transcript-api >= 1.2.3
+    TooManyRequests = None
+else:
+    TooManyRequests = _TooManyRequests
+
+IpBlocked: type[Exception] | None
+try:
+    from youtube_transcript_api._errors import IpBlocked as _IpBlocked
+except ImportError:  # pragma: no cover - historic versions only
+    IpBlocked = None
+else:
+    IpBlocked = _IpBlocked
+
+RequestBlocked: type[Exception] | None
+try:
+    from youtube_transcript_api._errors import RequestBlocked as _RequestBlocked
+except ImportError:  # pragma: no cover - historic versions only
+    RequestBlocked = None
+else:
+    RequestBlocked = _RequestBlocked
 
 _RATE_LIMIT_ERRORS: tuple[type[Exception], ...] = tuple(
     exc for exc in (TooManyRequests, IpBlocked, RequestBlocked) if isinstance(exc, type)
@@ -135,7 +144,10 @@ class YouTubeTranscriptService:
         cached_raw = self.cache.get(cache_key)
         if cached_raw is not None:
             cached_payload = cast(dict[str, Any], cached_raw)
-            return TranscriptResponse.model_validate(cached_payload)
+            return cast(
+                TranscriptResponse,
+                TranscriptResponse.model_validate(cached_payload),
+            )
 
         try:
             segments_raw = self._transcript_retry(self._fetch_track_segments, track)
@@ -165,7 +177,7 @@ class YouTubeTranscriptService:
         }
         payload_hash = hash_content(payload)
         payload["hash"] = payload_hash
-        response = TranscriptResponse.model_validate(payload)
+        response = cast(TranscriptResponse, TranscriptResponse.model_validate(payload))
         self.cache.set(cache_key, response.model_dump(), self.settings.cache_ttl_days)
         return response
 
