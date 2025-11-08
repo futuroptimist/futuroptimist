@@ -99,6 +99,47 @@ def test_collect_items_orders_and_summarises(tmp_path: Path) -> None:
     assert [item.slug for item in filtered] == ["20240301_gamma", "20240201_beta"]
 
 
+def test_collect_items_since_excludes_missing_publish_date(tmp_path: Path) -> None:
+    video_root = tmp_path / "video_scripts"
+    video_root.mkdir()
+
+    dated = video_root / "20240102_beta"
+    dated.mkdir()
+    _write_metadata(
+        dated,
+        {
+            "title": "Beta Update",
+            "publish_date": "2024-01-02",
+            "status": "live",
+            "youtube_id": "BBB222",
+        },
+    )
+
+    missing = video_root / "20240103_gamma"
+    missing.mkdir()
+    _write_metadata(
+        missing,
+        {
+            "title": "Gamma Sneak Peek",
+            "status": "live",
+            "youtube_id": "CCC333",
+        },
+    )
+
+    all_items = newsletter_builder.collect_items(video_root, statuses={"live"})
+    assert [item.slug for item in all_items] == [
+        "20240102_beta",
+        "20240103_gamma",
+    ]
+
+    filtered = newsletter_builder.collect_items(
+        video_root,
+        statuses={"live"},
+        since=date(2024, 1, 1),
+    )
+    assert [item.slug for item in filtered] == ["20240102_beta"]
+
+
 def test_collect_items_falls_back_to_placeholder_when_script_missing(
     tmp_path: Path,
 ) -> None:

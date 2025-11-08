@@ -12,7 +12,6 @@ from youtube_transcript_api._errors import (
     CouldNotRetrieveTranscript,
     NoTranscriptFound,
     NotTranslatable,
-    TooManyRequests,
     TranscriptsDisabled,
 )
 from youtube_transcript_api._errors import (
@@ -21,6 +20,21 @@ from youtube_transcript_api._errors import (
 from youtube_transcript_api._errors import (
     VideoUnavailable as YtVideoUnavailable,
 )
+
+try:  # youtube-transcript-api < 1.2.3
+    from youtube_transcript_api._errors import TooManyRequests
+except ImportError:  # youtube-transcript-api >= 1.2.3
+    TooManyRequests = None  # type: ignore[assignment]
+
+try:
+    from youtube_transcript_api._errors import IpBlocked
+except ImportError:  # pragma: no cover - historic versions only
+    IpBlocked = None  # type: ignore[assignment]
+
+try:
+    from youtube_transcript_api._errors import RequestBlocked
+except ImportError:  # pragma: no cover - historic versions only
+    RequestBlocked = None  # type: ignore[assignment]
 
 from .cache import TranscriptCache
 from .chunking import chunk_segments
@@ -47,6 +61,10 @@ from .utils import (
     hash_content,
     is_unlisted_or_private,
     parse_video_id,
+)
+
+_RATE_LIMIT_ERRORS: tuple[type[Exception], ...] = tuple(
+    exc for exc in (TooManyRequests, IpBlocked, RequestBlocked) if isinstance(exc, type)
 )
 
 
@@ -248,7 +266,7 @@ class YouTubeTranscriptService:
     def _fetch_track_segments(self, track: Any) -> list[dict[str, Any]]:
         try:
             data = track.fetch()
-        except TooManyRequests as exc:
+        except _RATE_LIMIT_ERRORS as exc:
             raise RateLimited(str(exc)) from exc
         except (CouldNotRetrieveTranscript, NotTranslatable) as exc:
             raise NoCaptionsAvailable(str(exc)) from exc
@@ -333,7 +351,7 @@ class YouTubeTranscriptService:
             return VideoUnavailable(str(exc))
         if isinstance(exc, TranscriptsDisabled | NoTranscriptFound):
             return NoCaptionsAvailable(str(exc))
-        if isinstance(exc, TooManyRequests):
+        if isinstance(exc, _RATE_LIMIT_ERRORS):
             return RateLimited(str(exc))
         if isinstance(exc, CouldNotRetrieveTranscript):
             return NetworkError(str(exc))

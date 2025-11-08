@@ -64,9 +64,8 @@ def _make_discussion(
 def test_build_fact_check_index_filters_and_serialises(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from src import (
-        fact_check_discussions,
-    )  # imported lazily so module exists when implemented
+    # imported lazily so module exists when implemented
+    from src import fact_check_discussions
 
     payloads = [
         [

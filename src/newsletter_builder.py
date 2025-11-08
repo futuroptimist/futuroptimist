@@ -131,8 +131,9 @@ def collect_items(
         if status_filter and status not in status_filter:
             continue
         publish_date = _parse_date(data.get("publish_date"))
-        if since and publish_date and publish_date < since:
-            continue
+        if since:
+            if publish_date is None or publish_date < since:
+                continue
         script_fs_path = folder / "script.md"
         title = data.get("title") or folder.name
         summary = _summary_from_metadata(

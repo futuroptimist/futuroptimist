@@ -1,13 +1,6 @@
 import httpx
 import pytest
-from youtube_transcript_api._errors import (
-    CouldNotRetrieveTranscript,
-    TooManyRequests,
-    TranscriptsDisabled,
-)
-from youtube_transcript_api._errors import (
-    VideoUnavailable as YTVideoUnavailable,
-)
+from youtube_transcript_api import _errors as yt_errors
 
 from tools.youtube_mcp.cache import TranscriptCache
 from tools.youtube_mcp.errors import (
@@ -22,6 +15,20 @@ from tools.youtube_mcp.models import MetadataResponse
 from tools.youtube_mcp.settings import Settings
 from tools.youtube_mcp.utils import InvalidVideoId
 from tools.youtube_mcp.youtube_client import YouTubeTranscriptService
+
+CouldNotRetrieveTranscript = yt_errors.CouldNotRetrieveTranscript
+TranscriptsDisabled = yt_errors.TranscriptsDisabled
+YTVideoUnavailable = yt_errors.VideoUnavailable
+
+_RATE_LIMIT_EXCEPTION_TYPES = [
+    exc
+    for exc in (
+        getattr(yt_errors, "TooManyRequests", None),
+        getattr(yt_errors, "IpBlocked", None),
+        getattr(yt_errors, "RequestBlocked", None),
+    )
+    if exc is not None
+]
 
 MANUAL_VIDEO_ID = "vid123abcde"
 AUTO_VIDEO_ID = "vid456abcde"
@@ -194,10 +201,22 @@ def test_metadata_rate_limited(monkeypatch, tmp_path):
         service.get_metadata("https://youtu.be/abc123def45")
 
 
-def test_map_transcript_error_rate_limited(tmp_path):
+@pytest.mark.parametrize(
+    "rate_limit_exc",
+    _RATE_LIMIT_EXCEPTION_TYPES,
+    ids=lambda exc: exc.__name__,
+)
+def test_map_transcript_error_rate_limited(tmp_path, rate_limit_exc):
     settings = Settings(cache_dir=tmp_path / "cache")
     cache = TranscriptCache(settings.cache_dir)
-    transcript = FakeTranscript("en", False, "English", [], exc=TooManyRequests("429"))
+    try:
+        error_instance = rate_limit_exc("abc123def45")
+    except TypeError:
+        try:
+            error_instance = rate_limit_exc("abc123def45", None)
+        except TypeError:
+            error_instance = rate_limit_exc("rate limited")
+    transcript = FakeTranscript("en", False, "English", [], exc=error_instance)
     api = FakeApi([transcript])
     service = YouTubeTranscriptService(
         settings=settings,
@@ -478,9 +497,18 @@ def test_map_transcript_error_mappings(tmp_path):
     assert isinstance(
         service._map_transcript_error(TranscriptsDisabled("err")), NoCaptionsAvailable
     )
-    assert isinstance(
-        service._map_transcript_error(TooManyRequests("err")), RateLimited
-    )
+    assert (
+        _RATE_LIMIT_EXCEPTION_TYPES
+    ), "Expected youtube_transcript_api to expose rate limit errors"
+    rate_limit_exc = _RATE_LIMIT_EXCEPTION_TYPES[0]
+    try:
+        rate_limit_error = rate_limit_exc("err")
+    except TypeError:
+        try:
+            rate_limit_error = rate_limit_exc("err", None)
+        except TypeError:
+            rate_limit_error = rate_limit_exc("429")
+    assert isinstance(service._map_transcript_error(rate_limit_error), RateLimited)
     assert isinstance(
         service._map_transcript_error(CouldNotRetrieveTranscript("err")), NetworkError
     )

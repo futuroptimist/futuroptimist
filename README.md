@@ -74,7 +74,11 @@ authentication walls.
 expired rows are purged automatically when accessed.
 
 **Error codes**: `InvalidArgument`, `VideoUnavailable`, `NoCaptionsAvailable`, `PolicyRejected`,
-`RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
+`RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads. Rate
+limit detection now covers both legacy `TooManyRequests` responses and the newer
+`IpBlocked`/`RequestBlocked` exceptions surfaced by `youtube_transcript_api`, which keeps
+`tests/test_youtube_client.py::test_map_transcript_error_rate_limited` green across dependency
+upgrades.
 
 ## Related Projects
 
