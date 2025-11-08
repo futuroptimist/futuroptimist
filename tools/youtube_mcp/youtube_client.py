@@ -73,9 +73,14 @@ else:
     RequestBlocked = _RequestBlocked
 
 _RATE_LIMIT_ERRORS: tuple[type[Exception], ...] = tuple(
-    exc for exc in (TooManyRequests, IpBlocked, RequestBlocked) if isinstance(exc, type)
+    exc
+    for exc in (
+        getattr(yt_errors, "TooManyRequests", None),
+        getattr(yt_errors, "IpBlocked", None),
+        getattr(yt_errors, "RequestBlocked", None),
+    )
+    if isinstance(exc, type)
 )
-
 
 def _create_retry() -> Retrying:
     """Build a retry configuration shared across HTTP and transcript calls."""
