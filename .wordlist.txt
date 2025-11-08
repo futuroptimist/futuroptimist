@@ -85,6 +85,7 @@ img
 ingester
 invalidargument
 io
+ipblocked
 irl
 jobbot
 jobbot3000
@@ -152,6 +153,7 @@ renderer
 repo
 repos
 reproducibility
+requestblocked
 roadmap
 rrggbb
 runbook
@@ -181,6 +183,7 @@ svgwrite
 tfrac
 tiktok
 timelapse
+toomanyrequests
 tos
 ttl
 tts
@@ -219,6 +222,7 @@ www
 xyz
 yaml
 yml
+youtu
 youtube
 yt
 yyyy

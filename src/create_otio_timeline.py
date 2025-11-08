@@ -14,9 +14,33 @@ from __future__ import annotations
 import argparse
 import pathlib
 import sys
-from typing import Iterable
+from types import ModuleType
+from typing import Iterable, TYPE_CHECKING, Any, cast
 
-import opentimelineio as otio
+try:  # pragma: no cover - exercised indirectly via importorskip in tests
+    import opentimelineio as _loaded_otio
+except ModuleNotFoundError as exc:  # pragma: no cover - handled in _require_otio
+    _OTIO_IMPORT_ERROR = exc
+    _loaded_otio: ModuleType | None = None
+else:  # pragma: no cover - behaviour validated by tests when dependency is available
+    _OTIO_IMPORT_ERROR = None
+
+if TYPE_CHECKING:  # pragma: no cover - typing helper only
+    import opentimelineio as otio
+else:
+    otio = cast(ModuleType | None, _loaded_otio)
+
+
+def _require_otio() -> ModuleType:
+    """Return the OpenTimelineIO module or raise a helpful error."""
+
+    if otio is None:
+        raise RuntimeError(
+            "OpenTimelineIO is required to build timelines. Install the `OpenTimelineIO`"
+            " package (Python 3.11 wheels are available) or use a Python version with"
+            " binary wheels before running this helper."
+        ) from _OTIO_IMPORT_ERROR
+    return otio
 
 
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".m4v"}
@@ -57,7 +81,7 @@ def build_timeline(
     repo_root: pathlib.Path,
     frame_rate: float = DEFAULT_FRAME_RATE,
     default_duration: float = DEFAULT_DURATION_SECONDS,
-) -> otio.schema.Timeline:
+) -> Any:
     """Return an OpenTimelineIO timeline for ``slug``."""
 
     if frame_rate <= 0:
@@ -65,7 +89,9 @@ def build_timeline(
     if default_duration <= 0:
         raise ValueError("default_duration must be positive")
 
-    timeline = otio.schema.Timeline(name=slug)
+    module = _require_otio()
+
+    timeline = module.schema.Timeline(name=slug)
     meta = timeline.metadata.setdefault("futuroptimist", {})
     meta.update(
         {
@@ -76,21 +102,21 @@ def build_timeline(
         }
     )
 
-    track = otio.schema.Track(name="Video", kind=otio.schema.TrackKind.Video)
+    track = module.schema.Track(name="Video", kind=module.schema.TrackKind.Video)
     timeline.tracks.append(track)
 
     for clip_path in clips:
         rel_converted = clip_path.relative_to(converted_dir).as_posix()
-        clip = otio.schema.Clip(name=f"converted/{rel_converted}")
-        clip.media_reference = otio.schema.ExternalReference(
+        clip = module.schema.Clip(name=f"converted/{rel_converted}")
+        clip.media_reference = module.schema.ExternalReference(
             target_url=clip_path.as_uri()
         )
         clip.metadata["futuroptimist"] = {
             "relative_path": _relative_repo_path(clip_path, repo_root),
         }
         duration_frames = max(1, int(round(default_duration * frame_rate)))
-        clip.source_range = otio.opentime.TimeRange(
-            duration=otio.opentime.RationalTime(duration_frames, frame_rate)
+        clip.source_range = module.opentime.TimeRange(
+            duration=module.opentime.RationalTime(duration_frames, frame_rate)
         )
         track.append(clip)
         meta["clip_count"] += 1
@@ -128,7 +154,8 @@ def create_timeline(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{slug}.otio"
-    otio.adapters.write_to_file(timeline, str(output_path))
+    module = _require_otio()
+    module.adapters.write_to_file(timeline, str(output_path))
     return output_path
 
 

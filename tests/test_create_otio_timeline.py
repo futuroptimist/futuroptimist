@@ -1,10 +1,16 @@
 import pathlib
 from collections.abc import Iterable
 
-import opentimelineio as otio
 import pytest
 
+try:
+    import opentimelineio as otio
+except ModuleNotFoundError:  # pragma: no cover - exercised in fallback test
+    otio = None  # type: ignore[assignment]
+
 import src.create_otio_timeline as cot
+
+OTIO_MISSING = otio is None
 
 
 def _touch_files(root: pathlib.Path, names: Iterable[str]) -> None:
@@ -14,6 +20,7 @@ def _touch_files(root: pathlib.Path, names: Iterable[str]) -> None:
         path.write_bytes(b"clip")
 
 
+@pytest.mark.skipif(OTIO_MISSING, reason="OpenTimelineIO not installed")
 def test_create_timeline_writes_otio_with_relative_metadata(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -63,6 +70,7 @@ def test_create_timeline_writes_otio_with_relative_metadata(
     assert first.media_reference.target_url == (converted / "a.mp4").resolve().as_uri()
 
 
+@pytest.mark.skipif(OTIO_MISSING, reason="OpenTimelineIO not installed")
 def test_create_timeline_raises_when_no_video(tmp_path: pathlib.Path) -> None:
     slug = "20251201_empty"
     footage_root = tmp_path / "footage"
@@ -74,6 +82,7 @@ def test_create_timeline_raises_when_no_video(tmp_path: pathlib.Path) -> None:
         )
 
 
+@pytest.mark.skipif(OTIO_MISSING, reason="OpenTimelineIO not installed")
 def test_main_writes_timeline_and_prints_path(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -101,3 +110,14 @@ def test_main_writes_timeline_and_prints_path(
     assert timeline_path.exists()
     captured = capsys.readouterr()
     assert str(timeline_path) in captured.out
+
+
+@pytest.mark.skipif(not OTIO_MISSING, reason="OpenTimelineIO is available")
+def test_create_timeline_requires_opentimelineio(tmp_path: pathlib.Path) -> None:
+    slug = "20251231_missing"
+    converted = tmp_path / "footage" / slug / "converted"
+    converted.mkdir(parents=True)
+    (converted / "clip.mp4").write_bytes(b"stub")
+
+    with pytest.raises(RuntimeError, match="OpenTimelineIO is required"):
+        cot.create_timeline(slug, footage_root=tmp_path / "footage", output_dir=tmp_path / "out")
