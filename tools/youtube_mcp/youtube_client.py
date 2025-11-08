@@ -8,33 +8,7 @@ from typing import Any, cast
 import httpx
 from tenacity import RetryError, Retrying, stop_after_attempt, wait_exponential
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._errors import (
-    CouldNotRetrieveTranscript,
-    NoTranscriptFound,
-    NotTranslatable,
-    TranscriptsDisabled,
-)
-from youtube_transcript_api._errors import (
-    InvalidVideoId as YtInvalidVideoId,
-)
-from youtube_transcript_api._errors import (
-    VideoUnavailable as YtVideoUnavailable,
-)
-
-try:  # youtube-transcript-api < 1.2.3
-    from youtube_transcript_api._errors import TooManyRequests
-except ImportError:  # youtube-transcript-api >= 1.2.3
-    TooManyRequests = None  # type: ignore[assignment]
-
-try:
-    from youtube_transcript_api._errors import IpBlocked
-except ImportError:  # pragma: no cover - historic versions only
-    IpBlocked = None  # type: ignore[assignment]
-
-try:
-    from youtube_transcript_api._errors import RequestBlocked
-except ImportError:  # pragma: no cover - historic versions only
-    RequestBlocked = None  # type: ignore[assignment]
+from youtube_transcript_api import _errors as yt_errors
 
 from .cache import TranscriptCache
 from .chunking import chunk_segments
@@ -63,8 +37,22 @@ from .utils import (
     parse_video_id,
 )
 
+CouldNotRetrieveTranscript = yt_errors.CouldNotRetrieveTranscript
+NoTranscriptFound = yt_errors.NoTranscriptFound
+NotTranslatable = yt_errors.NotTranslatable
+TranscriptsDisabled = yt_errors.TranscriptsDisabled
+YtInvalidVideoId = yt_errors.InvalidVideoId
+YtVideoUnavailable = yt_errors.VideoUnavailable
+
+
 _RATE_LIMIT_ERRORS: tuple[type[Exception], ...] = tuple(
-    exc for exc in (TooManyRequests, IpBlocked, RequestBlocked) if isinstance(exc, type)
+    exc
+    for exc in (
+        getattr(yt_errors, "TooManyRequests", None),
+        getattr(yt_errors, "IpBlocked", None),
+        getattr(yt_errors, "RequestBlocked", None),
+    )
+    if isinstance(exc, type)
 )
 
 
