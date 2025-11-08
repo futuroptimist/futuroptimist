@@ -138,12 +138,13 @@ def collect_items(
         summary = _summary_from_metadata(
             data, script_fs_path if script_fs_path.exists() else None
         )
+        video_url_raw = data.get("video_url")
         youtube_id = data.get("youtube_id")
-        youtube_url = (
-            f"https://www.youtube.com/watch?v={youtube_id}"
-            if isinstance(youtube_id, str) and youtube_id.strip()
-            else None
-        )
+        youtube_url: str | None = None
+        if isinstance(video_url_raw, str) and video_url_raw.strip():
+            youtube_url = video_url_raw.strip()
+        elif isinstance(youtube_id, str) and youtube_id.strip():
+            youtube_url = f"https://www.youtube.com/watch?v={youtube_id.strip()}"
         script_path: pathlib.Path | None = None
         if script_fs_path.exists():
             try:

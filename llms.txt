@@ -33,7 +33,10 @@ Script format:
   `data/script_segments.json` for lightweight RAG indexing. Regression coverage lives in
   `tests/test_index_script_segments.py`.
 - `newsletter_builder.py` assembles Markdown digests of recent videos filtered by status,
-  publish date and optional limits so updates slot straight into newsletters. When
+  publish date and optional limits so updates slot straight into newsletters. Annotated
+  `video_url` values take priority over `youtube_id` links, ensuring mailers point at the
+  final watch URL (see
+  `tests/test_newsletter_builder.py::test_collect_items_prefers_annotated_video_url`). When
   metadata lacks copy it promotes the first `[NARRATOR]` line from `script.md` before
   falling back to the placeholder text (see
   `tests/test_newsletter_builder.py::test_collect_items_orders_and_summarises`). See

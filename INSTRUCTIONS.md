@@ -143,13 +143,15 @@ Use `python src/newsletter_builder.py` (or `make newsletter`) to assemble a
 Markdown digest of recent videos. The helper defaults to `--status live`,
 accepts `--since YYYY-MM-DD` to filter by publish date, and honours `--limit`
 and `--output` when you want to cap the list or write to disk. Each entry links
-back to the script and its YouTube watch URL so the update can drop straight
-into a newsletter platform. When metadata lacks a summary or description the
-builder now lifts the first `[NARRATOR]` line from `script.md` before falling
-back to the placeholder copy (see
-`tests/test_newsletter_builder.py::test_collect_items_orders_and_summarises`).
+back to the script and prioritises the annotated `video_url` (falling back to a
+`youtube_id` share link) so updates drop straight into a newsletter platform
+with the final watch URL (see
+`tests/test_newsletter_builder.py::test_collect_items_prefers_annotated_video_url`).
+When metadata lacks a summary or description the builder now lifts the first
+`[NARRATOR]` line from `script.md` before falling back to the placeholder copy
+(see `tests/test_newsletter_builder.py::test_collect_items_orders_and_summarises`).
 See `tests/test_newsletter_builder.py` for regression coverage of summary
-fallbacks, ordering, and Markdown formatting.
+fallbacks, ordering, Markdown formatting, and watch-link selection.
 
 Surface community fact-checks with `python src/fact_check_discussions.py`.
 The CLI fetches the "Fact Check" category from the Futuroptimist GitHub

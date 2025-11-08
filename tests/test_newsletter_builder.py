@@ -122,6 +122,31 @@ def test_collect_items_falls_back_to_placeholder_when_script_missing(
     assert items[0].summary == "Summary coming soon."
 
 
+def test_collect_items_prefers_annotated_video_url(tmp_path: Path) -> None:
+    video_root = tmp_path / "video_scripts"
+    video_root.mkdir()
+
+    folder = video_root / "20240601_zeta"
+    folder.mkdir()
+    _write_metadata(
+        folder,
+        {
+            "title": "Zeta Launch",
+            "publish_date": "2024-06-01",
+            "status": "live",
+            "video_url": "https://youtu.be/annotated123",
+            "youtube_id": "SHOULD_NOT_BE_USED",
+        },
+        script_text=(
+            "# Zeta\n\n"
+            "[NARRATOR]: Zeta launch clears the pad with reusable boosters.\n"
+        ),
+    )
+
+    items = newsletter_builder.collect_items(video_root)
+    assert items[0].youtube_url == "https://youtu.be/annotated123"
+
+
 def test_main_writes_output(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     video_root = tmp_path / "video_scripts"
     video_root.mkdir()
