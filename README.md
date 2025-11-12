@@ -77,7 +77,7 @@ expired rows are purged automatically when accessed.
 `RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
 
 ## Related Projects
-_Last updated: 2025-11-12 01:29 UTC; checks hourly_
+_Last updated: 2025-11-12 02:31 UTC; checks hourly_
 
 _Last updated: 2025-11-06 08:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
@@ -94,7 +94,7 @@ without completed workflows render `❓` instead of failing the dashboard.
 - ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach
   real-world hobbies with NPC guides; offline-first so your space-base thrives without a
   signal ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ❓ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
+- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
   lint, tests, docs, and release automation with LLM agents so solo builders ship like a
   team
 - ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
@@ -102,7 +102,7 @@ without completed workflows render `❓` instead of failing the dashboard.
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex
   task pages, grabs failing GitHub logs, and pipes concise reports straight to your
   clipboard to speed debugging
-- ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that
+- ❌ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that
   analyzes your repos and curates next steps to keep side projects moving
 - ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with
   push-to-talk voice control, running speech-to-text, LLM, and TTS in a 3D-printed case so
