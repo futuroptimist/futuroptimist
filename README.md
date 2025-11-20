@@ -77,7 +77,7 @@ expired rows are purged automatically when accessed.
 `RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
 
 ## Related Projects
-_Last updated: 2025-11-20 00:07 UTC; checks hourly_
+_Last updated: 2025-11-20 01:30 UTC; checks hourly_
 
 _Last updated: 2025-11-06 08:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
@@ -94,7 +94,7 @@ without completed workflows render `❓` instead of failing the dashboard.
 - ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach
   real-world hobbies with NPC guides; offline-first so your space-base thrives without a
   signal ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ✅ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
+- ❓ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles
   lint, tests, docs, and release automation with LLM agents so solo builders ship like a
   team
 - ✅ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
