@@ -216,6 +216,7 @@ www
 xyz
 yaml
 yml
+youtu
 youtube
 yt
 yyyy
