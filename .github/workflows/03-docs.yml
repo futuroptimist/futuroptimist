@@ -29,5 +29,5 @@ jobs:
       # - uses: astral-sh/setup-uv@v1
       - run: |
           uv venv
-          uv pip install --python .venv/bin/python linkchecker
-          uv run --python .venv/bin/python linkchecker README.md docs/ || true
+          uv pip install linkchecker
+          uv run linkchecker README.md docs/ || true
