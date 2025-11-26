@@ -77,7 +77,7 @@ expired rows are purged automatically when accessed.
 `RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
 
 ## Related Projects
-_Last updated: 2025-11-26 00:07 UTC; checks hourly_
+_Last updated: 2025-11-26 02:32 UTC; checks hourly_
 
 _Last updated: 2025-11-06 08:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
@@ -85,7 +85,7 @@ The unknown state is enforced by
 `tests/test_repo_status.py::test_fetch_repo_status_no_runs_returns_unknown`, ensuring repositories
 without completed workflows render `❓` instead of failing the dashboard.
 
-- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
+- ❌ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – central hub for
   reproducible scripts, data pipelines, and tests that turn maker experiments into
   polished YouTube episodes
 - ✅ **[token.place](https://token.place)** – secure peer-to-peer generative AI network that
