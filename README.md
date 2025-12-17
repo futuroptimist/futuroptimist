@@ -77,7 +77,7 @@ expired rows are purged automatically when accessed.
 `RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
 
 ## Related Projects
-_Last updated: 2025-12-17 05:03 UTC; checks hourly_
+_Last updated: 2025-12-17 06:02 UTC; checks hourly_
 
 _Last updated: 2025-11-06 08:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
@@ -117,7 +117,7 @@ without completed workflows render `❓` instead of failing the dashboard.
   plug-and-play
 - ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that closes
   your own stale pull requests in bulk with a safe dry-run
-- ❓ **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js
+- ✅ **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js
   playground for an orthographic, keyboard-navigable portfolio scene
 - ✅ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job search copilot
   sharing the same automation scaffold as this repo
