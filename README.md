@@ -77,7 +77,7 @@ expired rows are purged automatically when accessed.
 `RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
 
 ## Related Projects
-_Last updated: 2026-03-19 14:17 UTC; checks hourly_
+_Last updated: 2026-03-19 15:14 UTC; checks hourly_
 
 _Last updated: 2025-11-06 08:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
@@ -99,7 +99,7 @@ without completed workflows render `❓` instead of failing the dashboard.
   team
 - ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first "guardian angel"
   LLM that learns your environment and delivers local, actionable security coaching
-- ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex
+- ❓ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex
   task pages, grabs failing GitHub logs, and pipes concise reports straight to your
   clipboard to speed debugging
 - ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that
