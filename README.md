@@ -77,7 +77,7 @@ expired rows are purged automatically when accessed.
 `RateLimited`, and `NetworkError` map to consistent HTTP responses and MCP error payloads.
 
 ## Related Projects
-_Last updated: 2026-03-28 04:36 UTC; checks hourly_
+_Last updated: 2026-03-28 05:26 UTC; checks hourly_
 
 _Last updated: 2025-11-06 08:02 UTC; checks hourly_
 Status icons: ✅ latest run succeeded, ❌ failed or cancelled, ❓ no completed runs.
