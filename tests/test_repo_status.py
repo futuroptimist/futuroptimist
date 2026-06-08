@@ -475,11 +475,13 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     def fake_status(
         repo: str, token: str | None = None, branch: str | None = None
-    ) -> str:
+    ) -> repo_status.RepoStatusDetails:
         calls.append((repo, branch))
-        return {"user/repo": "✅", "other/repo": "❌"}[repo]
+        return repo_status.RepoStatusDetails(
+            {"user/repo": "✅", "other/repo": "❌"}[repo]
+        )
 
-    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+    monkeypatch.setattr(repo_status, "fetch_repo_status_details", fake_status)
     from datetime import datetime
 
     now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
@@ -499,10 +501,10 @@ def test_update_readme_uses_current_time(
 
     def fake_status(
         repo: str, token: str | None = None, branch: str | None = None
-    ) -> str:
-        return "✅"
+    ) -> repo_status.RepoStatusDetails:
+        return repo_status.RepoStatusDetails("✅")
 
-    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+    monkeypatch.setattr(repo_status, "fetch_repo_status_details", fake_status)
 
     from datetime import datetime, timezone
 
@@ -532,10 +534,10 @@ def test_update_readme_existing_timestamp(
 
     def fake_status(
         repo: str, token: str | None = None, branch: str | None = None
-    ) -> str:
-        return "✅"
+    ) -> repo_status.RepoStatusDetails:
+        return repo_status.RepoStatusDetails("✅")
 
-    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+    monkeypatch.setattr(repo_status, "fetch_repo_status_details", fake_status)
 
     from datetime import datetime
 
@@ -545,3 +547,93 @@ def test_update_readme_existing_timestamp(
     lines = readme.read_text().splitlines()
     assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
     assert lines[4] == "- ✅ https://github.com/user/repo"
+
+
+def test_fetch_repo_status_details_includes_failure_links(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "failure",
+                        "head_sha": "abc",
+                        "name": "tests",
+                        "html_url": "https://github.com/user/repo/actions/runs/1",
+                    },
+                    {
+                        "conclusion": "cancelled",
+                        "head_sha": "abc",
+                        "name": "lint",
+                        "artifacts_url": "https://api.github.com/repos/user/repo/actions/runs/2/artifacts",
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo"
+    ) == repo_status.RepoStatusDetails(
+        "❌",
+        (
+            "https://github.com/user/repo/actions/runs/1",
+            "https://api.github.com/repos/user/repo/actions/runs/2/artifacts",
+        ),
+    )
+
+
+def test_update_readme_appends_and_replaces_failure_links(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    content = (
+        "## Related Projects\n"
+        "_Last updated: 1999-01-01 00:00 UTC; checks hourly_\n"
+        "- ❌ https://github.com/user/repo — failing checks: [failure 1](old)\n"
+    )
+    readme = tmp_path / "README.md"
+    readme.write_text(content)
+
+    def fake_status(
+        repo: str, token: str | None = None, branch: str | None = None
+    ) -> repo_status.RepoStatusDetails:
+        return repo_status.RepoStatusDetails(
+            "❌",
+            (
+                "https://github.com/user/repo/actions/runs/1",
+                "https://api.github.com/repos/user/repo/actions/runs/1/artifacts",
+            ),
+        )
+
+    monkeypatch.setattr(repo_status, "fetch_repo_status_details", fake_status)
+
+    from datetime import datetime
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert readme.read_text().splitlines()[2] == (
+        "- ❌ https://github.com/user/repo — failing checks: "
+        "[failure 1](https://github.com/user/repo/actions/runs/1), "
+        "[failure 2](https://api.github.com/repos/user/repo/actions/runs/1/artifacts)"
+    )
