@@ -5,7 +5,8 @@
 Every commit is public training data—write informative commit messages.
 
 ## Docs
-- [README](README.md)
+- [README](README.md): GitHub profile-oriented overview
+- [Repository guide](docs/repository-guide.md): repo internals, setup pointers, automation, subtitles, metadata, and YouTube Transcript MCP details
 - [AGENTS guide](AGENTS.md)
 - [INSTRUCTIONS](INSTRUCTIONS.md)
 - [RUNBOOK](RUNBOOK.md)

@@ -8,16 +8,26 @@ completed successfully, failed, or hasn't completed.
 
 from __future__ import annotations
 
+import logging
 import os
 import re
-import logging
-from datetime import datetime, timezone
+from collections.abc import Iterable
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 import requests
 
 LOGGER = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class RepoStatus:
+    """Summary of a repository's workflow status for README rendering."""
+
+    emoji: str
+    failure_links: tuple[str, ...] = ()
+
 
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
 SKIP_COMMIT_RE = re.compile(
@@ -63,7 +73,18 @@ def fetch_repo_status(
     branch: str | None = None,
     attempts: int = 2,
 ) -> str:
-    """Fetch the latest workflow run conclusion for ``repo`` and return an emoji.
+    """Fetch the latest workflow run conclusion for ``repo`` and return an emoji."""
+
+    return fetch_repo_status_details(repo, token, branch, attempts).emoji
+
+
+def fetch_repo_status_details(
+    repo: str,
+    token: str | None = None,
+    branch: str | None = None,
+    attempts: int = 2,
+) -> RepoStatus:
+    """Fetch the latest workflow run conclusion for ``repo`` and failure links.
 
     The GitHub API occasionally returns inconsistent data if a workflow is
     updating while we query it. To catch this non-determinism we fetch the
@@ -84,17 +105,15 @@ def fetch_repo_status(
             repo_data = repo_resp.json()
         except (requests.exceptions.RequestException, ValueError) as exc:
             LOGGER.warning("Unable to fetch default branch for %s: %s", repo, exc)
-            return status_to_emoji(None)
+            return RepoStatus(status_to_emoji(None))
         if not isinstance(repo_data, dict):
             LOGGER.warning(
                 "Unexpected repository payload for %s: %r", repo, type(repo_data)
             )
-            return status_to_emoji(None)
+            return RepoStatus(status_to_emoji(None))
         branch = repo_data.get("default_branch")
 
-    url = "https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed".format(
-        repo=repo
-    )
+    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
     if branch:
         url += f"&branch={branch}"
 
@@ -126,8 +145,15 @@ def fetch_repo_status(
                 return True
         return False
 
-    def _evaluate_runs(runs: Iterable[dict]) -> str:
-        """Return the overall conclusion for the most recent attempt of each workflow."""
+    def _failure_link(run: dict) -> str | None:
+        for key in ("html_url", "logs_url", "artifacts_url", "url"):
+            value = run.get(key)
+            if isinstance(value, str) and value:
+                return value
+        return None
+
+    def _evaluate_runs(runs: Iterable[dict]) -> tuple[str, tuple[str, ...]]:
+        """Return the overall conclusion and failing workflow links."""
 
         latest_runs: dict[tuple[object, object, object], dict] = {}
 
@@ -150,17 +176,25 @@ def fetch_repo_status(
             if current is None or _attempt_key(run) > _attempt_key(current):
                 latest_runs[key] = run
 
-        conclusions = {
-            _normalize_conclusion(r.get("conclusion")) for r in latest_runs.values()
-        }
+        latest = tuple(latest_runs.values())
+        conclusions = {_normalize_conclusion(r.get("conclusion")) for r in latest}
         if any(c in failures for c in conclusions):
-            return "failure"
+            links = tuple(
+                dict.fromkeys(
+                    link
+                    for run in latest
+                    if _normalize_conclusion(run.get("conclusion")) in failures
+                    for link in [_failure_link(run)]
+                    if link
+                )
+            )
+            return "failure", links
         if "success" in conclusions:
-            return "success"
+            return "success", ()
         # Default to failure so lack of CI coverage surfaces as ❌
-        return "failure"
+        return "failure", ()
 
-    def _fetch() -> str | None:
+    def _fetch() -> tuple[str | None, tuple[str, ...]]:
         try:
             commits_resp = requests.get(
                 f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
@@ -171,7 +205,7 @@ def fetch_repo_status(
             commits_data = commits_resp.json()
         except (requests.exceptions.RequestException, ValueError) as exc:
             LOGGER.warning("Unable to fetch commits for %s@%s: %s", repo, branch, exc)
-            return None
+            return None, ()
         if not isinstance(commits_data, list):
             LOGGER.warning(
                 "Unexpected commits payload for %s@%s: %r",
@@ -179,7 +213,7 @@ def fetch_repo_status(
                 branch,
                 type(commits_data),
             )
-            return None
+            return None, ()
         commits = commits_data
 
         try:
@@ -190,7 +224,7 @@ def fetch_repo_status(
             LOGGER.warning(
                 "Unable to fetch workflow runs for %s@%s: %s", repo, branch, exc
             )
-            return None
+            return None, ()
         if not isinstance(runs_data, dict):
             LOGGER.warning(
                 "Unexpected workflow payload for %s@%s: %r",
@@ -198,7 +232,7 @@ def fetch_repo_status(
                 branch,
                 type(runs_data),
             )
-            return None
+            return None, ()
 
         runs = runs_data.get("workflow_runs", [])
         if not isinstance(runs, list):
@@ -208,7 +242,7 @@ def fetch_repo_status(
                 branch,
                 type(runs),
             )
-            return None
+            return None, ()
 
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
@@ -231,15 +265,35 @@ def fetch_repo_status(
                 return _evaluate_runs(commit_runs)
             if _should_skip_commit(commit):
                 continue
-            return None
-        return None
+            return None, ()
+        return None, ()
 
-    conclusions = [_fetch() for _ in range(attempts)]
+    results = [_fetch() for _ in range(attempts)]
+    conclusions = [result[0] for result in results]
     if len(set(conclusions)) > 1:
         raise RuntimeError(
             f"Non-deterministic workflow conclusion for {repo}: {conclusions}"
         )
-    return status_to_emoji(conclusions[0])
+    failure_links: tuple[str, ...] = ()
+    if conclusions[0] in {
+        "failure",
+        "cancelled",
+        "canceled",
+        "timed_out",
+        "startup_failure",
+        "action_required",
+    }:
+        failure_links = tuple(
+            dict.fromkeys(link for _, links in results for link in links)
+        )
+    return RepoStatus(status_to_emoji(conclusions[0]), failure_links)
+
+
+def _strip_status_markup(line: str) -> str:
+    """Remove status emoji and stale failure links from a README project line."""
+
+    line = re.sub(r"^(-\s*)(?:[✅❌❓]\s*)*", r"\1", line)
+    return re.sub(r"\s+— failures: .*$", "", line)
 
 
 def update_readme(
@@ -247,35 +301,50 @@ def update_readme(
     token: str | None = None,
     now: datetime | None = None,
 ) -> None:
-    """Update README with status emojis and a timestamp."""
+    """Update README with status emojis, failure links, and a timestamp."""
+
     lines = readme_path.read_text(encoding="utf-8").splitlines()
+    output: list[str] = []
     in_section = False
     if now is None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
     timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
-    for i, line in enumerate(lines):
+    ts_line = f"_Last updated: {timestamp}; checks hourly_"
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
         if line.strip() == "## Related Projects":
             in_section = True
-            ts_line = f"_Last updated: {timestamp}; checks hourly_"
-            if i + 1 < len(lines) and lines[i + 1].startswith("_Last updated:"):
-                lines[i + 1] = ts_line
-            else:
-                lines.insert(i + 1, ts_line)
+            output.append(line)
+            output.append(ts_line)
+            i += 1
+            while i < len(lines) and lines[i].startswith("_Last updated:"):
+                i += 1
             continue
         if in_section and line.startswith("## "):
-            break
+            in_section = False
+        if in_section and line.startswith("_Last updated:"):
+            i += 1
+            continue
         if in_section and line.startswith("- "):
             match = GITHUB_RE.search(line)
             if match:
                 repo = f"{match.group(1)}/{match.group(2)}"
                 branch = match.group(3)
-                emoji = fetch_repo_status(repo, token, branch)
-                # remove existing emoji
-                lines[i] = re.sub(r"^(-\s*)(?:[✅❌❓]\s*)*", r"\1", line)
-                # Ensure UTF-8 output; lines later written with utf-8 encoding
-                lines[i] = f"- {emoji} {lines[i][2:].lstrip()}"
-    # Ensure output file encoded as UTF-8 so emoji render correctly on Windows
-    readme_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                status = fetch_repo_status_details(repo, token, branch)
+                base_line = _strip_status_markup(line)
+                rendered = f"- {status.emoji} {base_line[2:].lstrip()}"
+                if status.emoji == "❌" and status.failure_links:
+                    rendered += f" — failures: {', '.join(status.failure_links)}"
+                output.append(rendered)
+                i += 1
+                continue
+        output.append(line)
+        i += 1
+
+    # Ensure output file encoded as UTF-8 so emoji render correctly on Windows.
+    readme_path.write_text("\n".join(output) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":  # pragma: no cover
