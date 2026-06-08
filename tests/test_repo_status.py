@@ -1292,6 +1292,44 @@ def test_update_readme_strips_bracketed_failure_label_idempotently(
     ]
 
 
+def test_update_readme_migrates_legacy_unmarked_failure_links_before_raw_repo(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ❌ ([old tests](https://github.com/user/repo/actions/runs/0)) "
+        "https://github.com/user/repo\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "tests", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        ),
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+    first = readme.read_text()
+    repo_status.update_readme(readme, now=now)
+
+    assert readme.read_text() == first
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
+        "<!-- repo-status:failure-links --> https://github.com/user/repo",
+    ]
+
+
 def test_update_readme_preserves_hand_authored_leading_notes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

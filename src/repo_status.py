@@ -432,6 +432,10 @@ GENERATED_FAILURE_LINKS_RE = re.compile(
 LEGACY_STACKED_FAILURE_LINKS_RE = re.compile(
     rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*(?=[✅❌❓])"
 )
+LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
+    rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
+    r"(?=https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?(?:\s|$))"
+)
 
 
 def _strip_status_prefix(line: str) -> str:
@@ -446,6 +450,9 @@ def _strip_status_prefix(line: str) -> str:
         if match.group(1) == "❌":
             content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
             content = LEGACY_STACKED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
+            content = LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE.sub(
+                "", content, count=1
+            ).lstrip()
 
 
 def update_readme(
