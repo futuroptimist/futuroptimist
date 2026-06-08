@@ -11,7 +11,6 @@ import urllib.request
 from datetime import datetime, timezone
 from typing import Iterable
 
-
 DEFAULT_METRICS = (
     "views",
     "estimatedMinutesWatched",

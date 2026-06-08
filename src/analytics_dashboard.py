@@ -16,7 +16,6 @@ from typing import Iterable
 
 import pandas as pd
 
-
 VIDEO_ROOT = pathlib.Path("video_scripts")
 ANALYTICS_FIELDS = [
     "views",

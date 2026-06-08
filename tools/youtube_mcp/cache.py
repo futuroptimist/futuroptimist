@@ -26,16 +26,14 @@ class TranscriptCache:
 
     def _initialise(self) -> None:
         with self._conn:
-            self._conn.execute(
-                """
+            self._conn.execute("""
                 CREATE TABLE IF NOT EXISTS cache_entries (
                     cache_key TEXT PRIMARY KEY,
                     value TEXT NOT NULL,
                     expires_at REAL NOT NULL,
                     schema_version INTEGER NOT NULL
                 )
-                """
-            )
+                """)
 
     def close(self) -> None:
         with self._lock:

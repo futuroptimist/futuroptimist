@@ -22,7 +22,6 @@ from googleapiclient.http import MediaFileUpload
 
 from src import prepare_youtube_upload
 
-
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent

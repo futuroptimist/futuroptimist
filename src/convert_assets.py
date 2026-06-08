@@ -26,7 +26,6 @@ from dataclasses import dataclass
 from typing import Iterable
 import shutil
 
-
 # Image conversions (library-first)
 EXTENSION_RULES: dict[str, tuple[str, list[str]]] = {
     # Save camera-originated stills as high-quality JPEGs for NLE compatibility

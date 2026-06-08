@@ -5,7 +5,6 @@ import pathlib
 import re
 from typing import List, Tuple
 
-
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 

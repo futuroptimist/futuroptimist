@@ -15,7 +15,6 @@ import pathlib
 import re
 from typing import Iterable
 
-
 SCRIPT_NAME = "script.md"
 METADATA_NAME = "metadata.json"
 DEFAULT_OUTPUT = pathlib.Path("data/script_hooks.json")

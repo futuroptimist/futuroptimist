@@ -23,7 +23,6 @@ from typing import Any, Dict, List
 
 from PIL import Image, ImageFilter, ImageStat
 
-
 ACTION_WORDS = {
     "build",
     "make",

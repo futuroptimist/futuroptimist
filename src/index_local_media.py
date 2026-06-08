@@ -12,7 +12,6 @@ import pathlib
 from collections.abc import Iterable
 from datetime import datetime, timezone
 
-
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 

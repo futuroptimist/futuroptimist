@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 import pathlib
 from typing import Iterable
 
-
 VIDEO_ROOT = pathlib.Path("video_scripts")
 METADATA_NAME = "metadata.json"
 
