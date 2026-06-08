@@ -1,6 +1,6 @@
 # Futuroptimist Repository Guide
 
-This repository is the working production hub for the Futuroptimist YouTube/GitHub project. The public `README.md` stays profile-first; this guide collects the repo-internal map, setup pointers, automation notes, metadata workflow, subtitle tooling, and YouTube Transcript MCP service details.
+This repository is the working production hub for the Futuroptimist YouTube/GitHub project. The public `README.md` stays profile-first; this guide collects the repo-internal map, setup pointers, automation notes, metadata workflow, subtitle tooling, and YouTube Transcript MCP service details at an overview level.
 
 ## Repository purpose
 
@@ -13,7 +13,7 @@ The repo hosts scripts, metadata, prompt docs, test fixtures, and production che
 - maintaining Codex prompt docs and cross-repo automation; and
 - exposing a local YouTube transcript CLI/API/MCP service for retrieval workflows.
 
-For the full contributor workflow and roadmap, see [`INSTRUCTIONS.md`](../INSTRUCTIONS.md). For the production checklist, see [`RUNBOOK.md`](../RUNBOOK.md). AI-agent guidance lives in [`AGENTS.md`](../AGENTS.md), with creative context mirrored in [`llms.txt`](../llms.txt).
+For the full contributor workflow and roadmap, see [`INSTRUCTIONS.md`](../INSTRUCTIONS.md); this guide intentionally summarizes rather than duplicating every setup and release command. For the production checklist, see [`RUNBOOK.md`](../RUNBOOK.md). AI-agent guidance lives in [`AGENTS.md`](../AGENTS.md), with creative context mirrored in [`llms.txt`](../llms.txt).
 
 ## Map of the repo
 
@@ -75,7 +75,7 @@ The repository aims to make video creation as repeatable as software delivery. K
 - `python src/collect_sources.py` – download reference files from configured source URL lists for citation/research workflows.
 - `python src/newsletter_builder.py` or `make newsletter` – assemble Markdown digests of recent videos.
 - `python src/fact_check_discussions.py` – export Futuroptimist GitHub Discussions fact-check threads to JSON.
-- `python src/repo_status.py` – update the parseable `README.md` Related Projects dashboard with check-status emoji, timestamps, and direct failed-run links.
+- `python src/repo_status.py` – update the parseable `README.md` Related Projects dashboard with check-status emoji, one timestamp, and direct failed-run links when relevant.
 
 Run `make help` to see the current target list.
 
