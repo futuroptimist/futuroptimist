@@ -565,8 +565,22 @@ def test_update_readme_existing_timestamp(
     assert lines[4] == "- ✅ https://github.com/user/repo"
 
 
+@pytest.mark.parametrize(
+    ("fallback_key", "fallback_url"),
+    [
+        ("logs_url", "https://api.github.com/repos/user/repo/actions/runs/2/logs"),
+        (
+            "artifacts_url",
+            "https://api.github.com/repos/user/repo/actions/runs/2/artifacts",
+        ),
+        (
+            "check_suite_url",
+            "https://api.github.com/repos/user/repo/check-suites/2",
+        ),
+    ],
+)
 def test_fetch_repo_status_report_includes_failed_run_links(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, fallback_key: str, fallback_url: str
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
         if url == "https://api.github.com/repos/user/repo":
@@ -601,7 +615,7 @@ def test_fetch_repo_status_report_includes_failed_run_links(
                         "conclusion": "cancelled",
                         "head_sha": "abc",
                         "id": 2,
-                        "logs_url": "https://api.github.com/repos/user/repo/actions/runs/2/logs",
+                        fallback_key: fallback_url,
                         "name": "lint",
                     },
                     {
@@ -627,7 +641,7 @@ def test_fetch_repo_status_report_includes_failed_run_links(
         "❌",
         (
             "https://github.com/user/repo/actions/runs/1",
-            "https://api.github.com/repos/user/repo/actions/runs/2/logs",
+            fallback_url,
             "https://github.com/user/repo/actions/runs/4",
         ),
     )

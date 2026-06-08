@@ -34,6 +34,7 @@ FAILURE_LINKS_RE = re.compile(r"\s+\(failing runs: [^)]*\)$")
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
+FAILURE_LINK_FALLBACK_KEYS = ("logs_url", "artifacts_url", "check_suite_url")
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -139,7 +140,7 @@ def fetch_repo_status_report(
         html_url = run.get("html_url")
         if isinstance(html_url, str) and html_url:
             return html_url
-        for key in ("logs_url", "artifacts_url", "check_suite_url"):
+        for key in FAILURE_LINK_FALLBACK_KEYS:
             url_value = run.get(key)
             if isinstance(url_value, str) and url_value:
                 return url_value
