@@ -1,9 +1,10 @@
 """Update README with repo status emojis.
 
-Fetches the latest GitHub Actions run for each repo listed in the README's
+Fetches the latest GitHub Actions runs for each repo listed in the README's
 "Related Projects" section and prepends a green check, red cross, or question
-mark depending on whether the most recent workflow run on the default branch
-completed successfully, failed, or hasn't completed.
+mark depending on whether the most recent relevant workflow runs on the default
+branch completed successfully, failed, or haven't completed. Failed statuses can
+also include direct links to the failing workflow runs.
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+from collections import Counter
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -22,19 +24,45 @@ LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
-class RepoStatusReport:
-    """Rendered status plus optional direct links for failed checks."""
+class StatusLink:
+    """A rendered README status link."""
+
+    label: str
+    url: str
+
+
+@dataclass(frozen=True)
+class RepoStatus:
+    """Structured repository status for README rendering and future metadata."""
 
     emoji: str
-    failure_links: tuple[str, ...] = field(default_factory=tuple)
+    failure_links: tuple[StatusLink, ...] = field(default_factory=tuple)
 
+
+# Backward-compatible name used by earlier tests/callers.
+RepoStatusReport = RepoStatus
 
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
-FAILURE_LINKS_RE = re.compile(r"\s+\(failing runs: [^)]*\)$")
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
-FAILURE_LINK_FALLBACK_KEYS = ("logs_url", "artifacts_url", "check_suite_url")
+FAILURE_CONCLUSIONS = {
+    "failure",
+    "cancelled",
+    "canceled",
+    "timed_out",
+    "startup_failure",
+    "action_required",
+}
+CI_NAME_RE = re.compile(r"(test|lint|build|ci)", re.I)
+TIMESTAMP_RE = re.compile(r"^_Last updated: .*; checks hourly_$")
+OLD_FAILURE_SUFFIX_RE = re.compile(r"\s+\(failing runs: [^)]*\)$")
+
+
+def _normalize_conclusion(value: object) -> str:
+    if not isinstance(value, str):
+        return ""
+    return re.sub(r"[\s-]+", "_", value.strip().lower())
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -51,31 +79,110 @@ def status_to_emoji(conclusion: str | None) -> str:
       ``"startup_failure"``, ``"action_required"`` → ❌
     - anything else (including ``None`` or non-strings) → ❓
     """
-    if not isinstance(conclusion, str) or not conclusion:
-        normalized = ""
-    else:
-        normalized = re.sub(r"[\s-]+", "_", conclusion.strip().lower())
+    normalized = _normalize_conclusion(conclusion)
     if normalized == "success":
         return "✅"
-    if normalized in {
-        "failure",
-        "cancelled",
-        "canceled",
-        "timed_out",
-        "startup_failure",
-        "action_required",
-    }:
+    if normalized in FAILURE_CONCLUSIONS:
         return "❌"
     return "❓"
 
 
-def fetch_repo_status_report(
+def _should_skip_commit(commit: dict) -> bool:
+    message = commit.get("commit", {}).get("message", "")
+    if isinstance(message, str) and SKIP_COMMIT_RE.search(message):
+        return True
+    for key in ("author", "committer"):
+        login = (commit.get(key) or {}).get("login")
+        name = commit.get("commit", {}).get(key, {}).get("name")
+        if isinstance(login, str) and login.endswith("[bot]"):
+            return True
+        if isinstance(name, str) and name.endswith("[bot]"):
+            return True
+    return False
+
+
+def _attempt_key(run: dict) -> tuple[int, str]:
+    raw_attempt = run.get("run_attempt")
+    try:
+        attempt = int(raw_attempt)
+    except (TypeError, ValueError):
+        attempt = 0
+    updated = run.get("updated_at")
+    return (attempt, str(updated) if updated is not None else "")
+
+
+def _run_url(repo: str, run: dict) -> str | None:
+    html_url = run.get("html_url")
+    if isinstance(html_url, str) and html_url:
+        return html_url
+    run_id = run.get("id")
+    if run_id is not None:
+        return f"https://github.com/{repo}/actions/runs/{run_id}"
+    return None
+
+
+def _base_run_label(run: dict) -> str:
+    name = run.get("name") or run.get("display_title") or run.get("workflow_id")
+    return str(name) if name is not None else "workflow run"
+
+
+def _failure_links(repo: str, failed_runs: Iterable[dict]) -> tuple[StatusLink, ...]:
+    runs = list(failed_runs)
+    label_counts = Counter(_base_run_label(run) for run in runs)
+    links: list[StatusLink] = []
+    for run in runs:
+        url = _run_url(repo, run)
+        if not url:
+            continue
+        label = _base_run_label(run)
+        if label_counts[label] > 1:
+            run_number = run.get("run_number")
+            run_attempt = run.get("run_attempt")
+            if run_number is not None:
+                label = f"{label} #{run_number}"
+            if run_attempt not in (None, 1, "1"):
+                label = f"{label} attempt {run_attempt}"
+        links.append(StatusLink(label, url))
+    return tuple(sorted(links, key=lambda link: (link.label.lower(), link.url)))
+
+
+def _evaluate_runs(
+    repo: str, runs: Iterable[dict]
+) -> tuple[str, tuple[StatusLink, ...]]:
+    """Return conclusion and failure links for each workflow latest attempt."""
+
+    latest_runs: dict[tuple[object, object, object], dict] = {}
+    for run in runs:
+        key = (run.get("workflow_id"), run.get("run_number"), run.get("name"))
+        current = latest_runs.get(key)
+        if current is None or _attempt_key(run) > _attempt_key(current):
+            latest_runs[key] = run
+
+    failed_runs = [
+        run
+        for run in latest_runs.values()
+        if _normalize_conclusion(run.get("conclusion")) in FAILURE_CONCLUSIONS
+    ]
+    if failed_runs:
+        return "failure", _failure_links(repo, failed_runs)
+
+    conclusions = {
+        _normalize_conclusion(r.get("conclusion")) for r in latest_runs.values()
+    }
+    if "success" in conclusions:
+        return "success", ()
+    # Preserve existing semantics: a commit with only non-success relevant runs
+    # surfaces as failed rather than silently passing.
+    return "failure", ()
+
+
+def fetch_repo_status_details(
     repo: str,
     token: str | None = None,
     branch: str | None = None,
     attempts: int = 2,
-) -> RepoStatusReport:
-    """Fetch the latest workflow run conclusion and failure links for ``repo``.
+) -> RepoStatus:
+    """Fetch the latest workflow run status and actionable failure links.
 
     The GitHub API occasionally returns inconsistent data if a workflow is
     updating while we query it. To catch this non-determinism we fetch the
@@ -96,101 +203,19 @@ def fetch_repo_status_report(
             repo_data = repo_resp.json()
         except (requests.exceptions.RequestException, ValueError) as exc:
             LOGGER.warning("Unable to fetch default branch for %s: %s", repo, exc)
-            return RepoStatusReport(status_to_emoji(None))
+            return RepoStatus(status_to_emoji(None))
         if not isinstance(repo_data, dict):
             LOGGER.warning(
                 "Unexpected repository payload for %s: %r", repo, type(repo_data)
             )
-            return RepoStatusReport(status_to_emoji(None))
+            return RepoStatus(status_to_emoji(None))
         branch = repo_data.get("default_branch")
 
     url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
     if branch:
         url += f"&branch={branch}"
 
-    keywords = re.compile(r"(test|lint|build|ci)", re.I)
-    failures = {
-        "failure",
-        "cancelled",
-        "canceled",
-        "timed_out",
-        "startup_failure",
-        "action_required",
-    }
-
-    def _normalize_conclusion(value: str | None) -> str:
-        if not isinstance(value, str):
-            return ""
-        return re.sub(r"[\s-]+", "_", value.strip().lower())
-
-    def _should_skip_commit(commit: dict) -> bool:
-        message = commit.get("commit", {}).get("message", "")
-        if SKIP_COMMIT_RE.search(message):
-            return True
-        for key in ("author", "committer"):
-            login = (commit.get(key) or {}).get("login")
-            name = commit.get("commit", {}).get(key, {}).get("name")
-            if isinstance(login, str) and login.endswith("[bot]"):
-                return True
-            if isinstance(name, str) and name.endswith("[bot]"):
-                return True
-        return False
-
-    def _failure_link(run: dict) -> str | None:
-        html_url = run.get("html_url")
-        if isinstance(html_url, str) and html_url:
-            return html_url
-        for key in FAILURE_LINK_FALLBACK_KEYS:
-            url_value = run.get(key)
-            if isinstance(url_value, str) and url_value:
-                return url_value
-        run_id = run.get("id")
-        if run_id is not None:
-            return f"https://github.com/{repo}/actions/runs/{run_id}"
-        return None
-
-    def _evaluate_runs(runs: Iterable[dict]) -> tuple[str, tuple[str, ...]]:
-        """Return conclusion and failure links for each workflow latest attempt."""
-
-        latest_runs: dict[tuple[object, object, object], dict] = {}
-
-        def _attempt_key(run: dict) -> tuple[int, str]:
-            raw_attempt = run.get("run_attempt")
-            try:
-                attempt = int(raw_attempt)
-            except (TypeError, ValueError):
-                attempt = 0
-            updated = run.get("updated_at")
-            return (attempt, str(updated) if updated is not None else "")
-
-        for run in runs:
-            key = (
-                run.get("workflow_id"),
-                run.get("run_number"),
-                run.get("name"),
-            )
-            current = latest_runs.get(key)
-            if current is None or _attempt_key(run) > _attempt_key(current):
-                latest_runs[key] = run
-
-        failed_links = tuple(
-            link
-            for run in latest_runs.values()
-            if _normalize_conclusion(run.get("conclusion")) in failures
-            for link in [_failure_link(run)]
-            if link
-        )
-        conclusions = {
-            _normalize_conclusion(r.get("conclusion")) for r in latest_runs.values()
-        }
-        if any(c in failures for c in conclusions):
-            return "failure", failed_links
-        if "success" in conclusions:
-            return "success", ()
-        # Default to failure so lack of CI coverage surfaces as ❌
-        return "failure", failed_links
-
-    def _fetch() -> tuple[str | None, tuple[str, ...]]:
+    def _fetch() -> tuple[str | None, tuple[StatusLink, ...]]:
         try:
             commits_resp = requests.get(
                 f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
@@ -210,7 +235,6 @@ def fetch_repo_status_report(
                 type(commits_data),
             )
             return None, ()
-        commits = commits_data
 
         try:
             resp = requests.get(url, headers=headers, timeout=10)
@@ -243,22 +267,23 @@ def fetch_repo_status_report(
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
             sha = run.get("head_sha")
-            if not isinstance(sha, str):
-                continue
-            runs_by_sha.setdefault(sha, []).append(run)
+            if isinstance(sha, str):
+                runs_by_sha.setdefault(sha, []).append(run)
 
-        for commit in commits:
+        for commit in commits_data:
             sha = commit.get("sha")
             if not isinstance(sha, str):
                 continue
             commit_runs = runs_by_sha.get(sha, [])
             if commit_runs:
                 important = [
-                    r for r in commit_runs if keywords.search(r.get("name", ""))
+                    run
+                    for run in commit_runs
+                    if CI_NAME_RE.search(str(run.get("name", "")))
                 ]
                 if important:
                     commit_runs = important
-                return _evaluate_runs(commit_runs)
+                return _evaluate_runs(repo, commit_runs)
             if _should_skip_commit(commit):
                 continue
             return None, ()
@@ -270,12 +295,24 @@ def fetch_repo_status_report(
         raise RuntimeError(
             f"Non-deterministic workflow conclusion for {repo}: {conclusions}"
         )
-    failure_links: list[str] = []
+
+    failure_links: list[StatusLink] = []
     for _, links in reports:
         for link in links:
             if link not in failure_links:
                 failure_links.append(link)
-    return RepoStatusReport(status_to_emoji(conclusions[0]), tuple(failure_links))
+    return RepoStatus(status_to_emoji(conclusions[0]), tuple(failure_links))
+
+
+def fetch_repo_status_report(
+    repo: str,
+    token: str | None = None,
+    branch: str | None = None,
+    attempts: int = 2,
+) -> RepoStatus:
+    """Backward-compatible alias for structured repo status details."""
+
+    return fetch_repo_status_details(repo, token, branch, attempts)
 
 
 def fetch_repo_status(
@@ -286,15 +323,49 @@ def fetch_repo_status(
 ) -> str:
     """Fetch the latest workflow run conclusion for ``repo`` and return an emoji."""
 
-    return fetch_repo_status_report(repo, token, branch, attempts).emoji
+    return fetch_repo_status_details(repo, token, branch, attempts).emoji
 
 
-def _format_failure_links(links: tuple[str, ...]) -> str:
-    """Format direct failure URLs for README bullets."""
+def _format_failure_links(links: tuple[StatusLink, ...]) -> str:
+    """Format failed workflow links for README bullets."""
 
     if not links:
         return ""
-    return f" (failing runs: {', '.join(links)})"
+    rendered = ", ".join(f"[{link.label}]({link.url})" for link in links)
+    return f" ({rendered})"
+
+
+def _strip_leading_link_group(text: str) -> str:
+    if not text.startswith("("):
+        return text
+    depth = 0
+    for index, char in enumerate(text):
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return text[index + 1 :].lstrip()
+    return text
+
+
+def _strip_generated_prefix(line: str) -> str:
+    """Remove any previous generated status/link prefixes from a README bullet."""
+
+    if not line.startswith("- "):
+        return OLD_FAILURE_SUFFIX_RE.sub("", line)
+    rest = line[2:].lstrip()
+    changed = True
+    while changed:
+        changed = False
+        while rest[:1] in {"✅", "❌", "❓"}:
+            rest = rest[1:].lstrip()
+            changed = True
+        without_links = _strip_leading_link_group(rest)
+        if without_links != rest:
+            rest = without_links
+            changed = True
+    return OLD_FAILURE_SUFFIX_RE.sub("", f"- {rest}")
 
 
 def update_readme(
@@ -303,6 +374,7 @@ def update_readme(
     now: datetime | None = None,
 ) -> None:
     """Update README with status emojis, failure links, and a timestamp."""
+
     lines = readme_path.read_text(encoding="utf-8").splitlines()
     in_section = False
     if now is None:
@@ -310,6 +382,7 @@ def update_readme(
     timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
     ts_line = f"_Last updated: {timestamp}; checks hourly_"
     output: list[str] = []
+
     for line in lines:
         if line.strip() == "## Related Projects":
             in_section = True
@@ -318,23 +391,19 @@ def update_readme(
             continue
         if in_section and line.startswith("## "):
             in_section = False
-        if in_section and line.startswith("_Last updated:"):
+        if in_section and TIMESTAMP_RE.match(line.strip()):
             continue
         if in_section and line.startswith("- "):
             match = GITHUB_RE.search(line)
             if match:
                 repo = f"{match.group(1)}/{match.group(2)}"
                 branch = match.group(3)
-                report = fetch_repo_status_report(repo, token, branch)
-                # remove existing emoji and generated failure links
-                cleaned = re.sub(r"^(-\s*)(?:[✅❌❓]\s*)*", r"\1", line)
-                cleaned = FAILURE_LINKS_RE.sub("", cleaned)
-                # Ensure UTF-8 output; lines later written with utf-8 encoding
-                link_suffix = _format_failure_links(report.failure_links)
-                line = f"- {report.emoji} {cleaned[2:].lstrip()}{link_suffix}"
+                status = fetch_repo_status_details(repo, token, branch)
+                cleaned = _strip_generated_prefix(line)
+                link_prefix = _format_failure_links(status.failure_links)
+                line = f"- {status.emoji}{link_prefix} {cleaned[2:].lstrip()}"
         output.append(line)
 
-    # Ensure output file encoded as UTF-8 so emoji render correctly on Windows
     readme_path.write_text("\n".join(output) + "\n", encoding="utf-8")
 
 
