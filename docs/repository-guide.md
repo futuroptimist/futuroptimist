@@ -43,9 +43,9 @@ Prompt templates stay grouped under [`docs/prompts/codex/`](prompts/codex/) with
 
 ## Setup and package notes
 
-Python dependencies are managed with [`uv`](https://docs.astral.sh/uv/) and traditional requirement files.
+Python dependencies are managed with [`uv`](https://docs.astral.sh/uv/) and traditional requirement files. This section is an overview for orientation; keep the full contributor workflow, platform fallbacks, and long-form setup steps in [`INSTRUCTIONS.md`](../INSTRUCTIONS.md) so they do not drift across multiple docs.
 
-Common setup and verification commands:
+Common entry points:
 
 ```bash
 make setup      # create/sync the virtual environment
@@ -54,7 +54,7 @@ make fmt        # black + ruff check --fix
 python -m pytest -q
 ```
 
-If `make setup` fails on your platform, use the fallback described in [`INSTRUCTIONS.md`](../INSTRUCTIONS.md): create a Python 3.11+ virtual environment, install `requirements.txt`, then run pytest. The Makefile includes Windows/Unix path detection; if pytest cannot locate venv scripts, prefix commands with the venv `bin`/`Scripts` directory as documented in the instructions.
+If an environment-specific setup path is needed, follow the fallback notes in [`INSTRUCTIONS.md`](../INSTRUCTIONS.md). The Makefile includes Windows/Unix path detection, and the instructions document the venv path prefixes to use when local tooling cannot find pytest or `yt-dlp`.
 
 Node is only used for repository hygiene scripts such as docs linting. The package manager is npm, with scripts defined in [`package.json`](../package.json):
 

@@ -1396,3 +1396,23 @@ def test_update_readme_preserves_hand_authored_run_note_before_raw_repo(
         "- ✅ ([debug run](https://github.com/user/repo/actions/runs/123)) "
         "https://github.com/user/repo - desc",
     ]
+
+
+def test_profile_readme_related_projects_copy_is_parseable() -> None:
+    readme = Path("README.md").read_text(encoding="utf-8")
+    section = readme.split("## Related Projects", 1)[1].split("\n## ", 1)[0]
+
+    assert section.count("_Last updated:") == 1
+    assert "tests/test_" not in section
+    assert "failing runs:" not in section
+    assert "✅ latest relevant run succeeded" in section
+    assert "❌ one or more relevant runs need attention" in section
+    assert (
+        "❓ no completed relevant run was found or GitHub could not be queried"
+        in section
+    )
+    assert readme.count("docs/repository-guide.md") == 1
+
+    project_lines = [line for line in section.splitlines() if line.startswith("- ")]
+    assert project_lines
+    assert all(repo_status.GITHUB_RE.search(line) for line in project_lines)
