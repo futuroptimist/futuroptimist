@@ -43,27 +43,11 @@ Prompt templates stay grouped under [`docs/prompts/codex/`](prompts/codex/) with
 
 ## Setup and package notes
 
-Python dependencies are managed with [`uv`](https://docs.astral.sh/uv/) and traditional requirement files.
+Python dependencies are managed with [`uv`](https://docs.astral.sh/uv/) and traditional requirement files. Treat [`INSTRUCTIONS.md`](../INSTRUCTIONS.md) as the canonical full workflow for environment setup, fallback commands, and contributor onboarding; this guide intentionally stays at overview level so the command list does not drift in multiple places.
 
-Common setup and verification commands:
+For day-to-day work, use the [`Makefile`](../Makefile) targets for setup, formatting, tests, subtitles, asset indexing, and rendering. The Makefile includes Windows/Unix path detection, while [`INSTRUCTIONS.md`](../INSTRUCTIONS.md) records platform-specific fallback steps.
 
-```bash
-make setup      # create/sync the virtual environment
-make test       # run pytest through the Makefile
-make fmt        # black + ruff check --fix
-python -m pytest -q
-```
-
-If `make setup` fails on your platform, use the fallback described in [`INSTRUCTIONS.md`](../INSTRUCTIONS.md): create a Python 3.11+ virtual environment, install `requirements.txt`, then run pytest. The Makefile includes Windows/Unix path detection; if pytest cannot locate venv scripts, prefix commands with the venv `bin`/`Scripts` directory as documented in the instructions.
-
-Node is only used for repository hygiene scripts such as docs linting. The package manager is npm, with scripts defined in [`package.json`](../package.json):
-
-```bash
-npm run lint
-npm run format:check
-npm run test:ci
-npm run docs-lint
-```
+Node is only used for repository hygiene scripts such as docs linting. The package manager is npm, with available scripts defined in [`package.json`](../package.json).
 
 ## Automation and helper scripts
 
