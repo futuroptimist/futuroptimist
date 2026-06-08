@@ -1365,3 +1365,34 @@ def test_update_readme_preserves_hand_authored_leading_notes(
         "- ✅ ([debug run](https://github.com/user/debug-repo/actions/runs/123)) "
         "**[debug-repo](https://github.com/user/debug-repo)** - desc",
     ]
+
+
+def test_update_readme_preserves_hand_authored_run_note_before_raw_repo(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ❌ ([debug run](https://github.com/user/repo/actions/runs/123)) "
+        "https://github.com/user/repo - desc\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus("✅"),
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+    first = readme.read_text()
+    repo_status.update_readme(readme, now=now)
+
+    assert readme.read_text() == first
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "- ✅ ([debug run](https://github.com/user/repo/actions/runs/123)) "
+        "https://github.com/user/repo - desc",
+    ]

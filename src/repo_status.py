@@ -432,9 +432,15 @@ GENERATED_FAILURE_LINKS_RE = re.compile(
 LEGACY_STACKED_FAILURE_LINKS_RE = re.compile(
     rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*(?=[✅❌❓])"
 )
+LEGACY_GENERATED_LABEL_RE = r"(?:\\.|[^\]\\])*?(?:ci|test|lint|build)(?:\\.|[^\]\\])*?"
+LEGACY_GENERATED_ACTION_RUN_LINK_RE = (
+    rf"\[{LEGACY_GENERATED_LABEL_RE}\]"
+    r"\(https://github\.com/[\w.-]+/[\w.-]+/actions/runs/[^)]*\)"
+)
 LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
-    rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
-    r"(?=https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?(?:\s|$))"
+    rf"^\((?:{LEGACY_GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
+    r"(?=https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?(?:\s|$))",
+    re.IGNORECASE,
 )
 
 
