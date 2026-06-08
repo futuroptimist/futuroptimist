@@ -601,7 +601,14 @@ def test_fetch_repo_status_report_includes_failed_run_links(
                         "conclusion": "cancelled",
                         "head_sha": "abc",
                         "id": 2,
+                        "logs_url": "https://api.github.com/repos/user/repo/actions/runs/2/logs",
                         "name": "lint",
+                    },
+                    {
+                        "conclusion": "timed_out",
+                        "head_sha": "abc",
+                        "id": 4,
+                        "name": "ci",
                     },
                     {
                         "conclusion": "success",
@@ -620,7 +627,8 @@ def test_fetch_repo_status_report_includes_failed_run_links(
         "❌",
         (
             "https://github.com/user/repo/actions/runs/1",
-            "https://github.com/user/repo/actions/runs/2",
+            "https://api.github.com/repos/user/repo/actions/runs/2/logs",
+            "https://github.com/user/repo/actions/runs/4",
         ),
     )
 

@@ -139,13 +139,13 @@ def fetch_repo_status_report(
         html_url = run.get("html_url")
         if isinstance(html_url, str) and html_url:
             return html_url
-        run_id = run.get("id")
-        if run_id is not None:
-            return f"https://github.com/{repo}/actions/runs/{run_id}"
         for key in ("logs_url", "artifacts_url", "check_suite_url"):
             url_value = run.get(key)
             if isinstance(url_value, str) and url_value:
                 return url_value
+        run_id = run.get("id")
+        if run_id is not None:
+            return f"https://github.com/{repo}/actions/runs/{run_id}"
         return None
 
     def _evaluate_runs(runs: Iterable[dict]) -> tuple[str, tuple[str, ...]]:
