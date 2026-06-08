@@ -22,19 +22,32 @@ LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
-class RepoStatusReport:
-    """Rendered status plus optional direct links for failed checks."""
+class StatusLink:
+    """A labelled URL explaining a failing repository status."""
+
+    label: str
+    url: str
+
+
+@dataclass(frozen=True)
+class RepoStatus:
+    """Rendered status plus optional direct links for failed checks.
+
+    The structured shape leaves room for future repository metadata without
+    changing the public status-details API again.
+    """
 
     emoji: str
-    failure_links: tuple[str, ...] = field(default_factory=tuple)
+    failure_links: tuple[StatusLink, ...] = field(default_factory=tuple)
+
+
+RepoStatusReport = RepoStatus
 
 
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
-FAILURE_LINKS_RE = re.compile(r"\s+\(failing runs: [^)]*\)$")
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
-FAILURE_LINK_FALLBACK_KEYS = ("logs_url", "artifacts_url", "check_suite_url")
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -69,12 +82,12 @@ def status_to_emoji(conclusion: str | None) -> str:
     return "❓"
 
 
-def fetch_repo_status_report(
+def fetch_repo_status_details(
     repo: str,
     token: str | None = None,
     branch: str | None = None,
     attempts: int = 2,
-) -> RepoStatusReport:
+) -> RepoStatus:
     """Fetch the latest workflow run conclusion and failure links for ``repo``.
 
     The GitHub API occasionally returns inconsistent data if a workflow is
@@ -96,12 +109,12 @@ def fetch_repo_status_report(
             repo_data = repo_resp.json()
         except (requests.exceptions.RequestException, ValueError) as exc:
             LOGGER.warning("Unable to fetch default branch for %s: %s", repo, exc)
-            return RepoStatusReport(status_to_emoji(None))
+            return RepoStatus(status_to_emoji(None))
         if not isinstance(repo_data, dict):
             LOGGER.warning(
                 "Unexpected repository payload for %s: %r", repo, type(repo_data)
             )
-            return RepoStatusReport(status_to_emoji(None))
+            return RepoStatus(status_to_emoji(None))
         branch = repo_data.get("default_branch")
 
     url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
@@ -136,20 +149,53 @@ def fetch_repo_status_report(
                 return True
         return False
 
-    def _failure_link(run: dict) -> str | None:
+    def _failure_url(run: dict) -> str | None:
         html_url = run.get("html_url")
         if isinstance(html_url, str) and html_url:
             return html_url
-        for key in FAILURE_LINK_FALLBACK_KEYS:
-            url_value = run.get(key)
-            if isinstance(url_value, str) and url_value:
-                return url_value
         run_id = run.get("id")
         if run_id is not None:
             return f"https://github.com/{repo}/actions/runs/{run_id}"
         return None
 
-    def _evaluate_runs(runs: Iterable[dict]) -> tuple[str, tuple[str, ...]]:
+    def _run_label(run: dict) -> str:
+        name = run.get("name") or run.get("display_title") or "workflow run"
+        return str(name).strip() or "workflow run"
+
+    def _disambiguated_failure_links(runs: Iterable[dict]) -> tuple[StatusLink, ...]:
+        failed_runs = [
+            run
+            for run in runs
+            if _normalize_conclusion(run.get("conclusion")) in failures
+        ]
+        base_labels = [_run_label(run) for run in failed_runs]
+        duplicate_labels = {
+            label for label in base_labels if base_labels.count(label) > 1
+        }
+        links: list[StatusLink] = []
+        for run, label in zip(failed_runs, base_labels, strict=True):
+            url = _failure_url(run)
+            if not url:
+                continue
+            if label in duplicate_labels:
+                run_number = run.get("run_number")
+                run_attempt = run.get("run_attempt")
+                run_id = run.get("id")
+                if run_number is not None:
+                    label = f"{label} #{run_number}"
+                elif run_attempt is not None:
+                    label = f"{label} attempt {run_attempt}"
+                elif run_id is not None:
+                    label = f"{label} {run_id}"
+            links.append(StatusLink(label, url))
+        return tuple(
+            sorted(
+                links,
+                key=lambda link: (link.label.casefold(), link.url),
+            )
+        )
+
+    def _evaluate_runs(runs: Iterable[dict]) -> tuple[str, tuple[StatusLink, ...]]:
         """Return conclusion and failure links for each workflow latest attempt."""
 
         latest_runs: dict[tuple[object, object, object], dict] = {}
@@ -164,22 +210,28 @@ def fetch_repo_status_report(
             return (attempt, str(updated) if updated is not None else "")
 
         for run in runs:
+            workflow_id = run.get("workflow_id")
+            run_number = run.get("run_number")
             key = (
-                run.get("workflow_id"),
-                run.get("run_number"),
+                workflow_id,
+                run_number,
+                run.get("id") if workflow_id is None or run_number is None else None,
                 run.get("name"),
             )
             current = latest_runs.get(key)
             if current is None or _attempt_key(run) > _attempt_key(current):
                 latest_runs[key] = run
 
-        failed_links = tuple(
-            link
-            for run in latest_runs.values()
-            if _normalize_conclusion(run.get("conclusion")) in failures
-            for link in [_failure_link(run)]
-            if link
+        latest = sorted(
+            latest_runs.values(),
+            key=lambda run: (
+                _run_label(run).casefold(),
+                str(run.get("workflow_id") or ""),
+                str(run.get("run_number") or ""),
+                str(run.get("id") or ""),
+            ),
         )
+        failed_links = _disambiguated_failure_links(latest)
         conclusions = {
             _normalize_conclusion(r.get("conclusion")) for r in latest_runs.values()
         }
@@ -190,7 +242,7 @@ def fetch_repo_status_report(
         # Default to failure so lack of CI coverage surfaces as ❌
         return "failure", failed_links
 
-    def _fetch() -> tuple[str | None, tuple[str, ...]]:
+    def _fetch() -> tuple[str | None, tuple[StatusLink, ...]]:
         try:
             commits_resp = requests.get(
                 f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
@@ -270,12 +322,12 @@ def fetch_repo_status_report(
         raise RuntimeError(
             f"Non-deterministic workflow conclusion for {repo}: {conclusions}"
         )
-    failure_links: list[str] = []
+    failure_links: list[StatusLink] = []
     for _, links in reports:
         for link in links:
             if link not in failure_links:
                 failure_links.append(link)
-    return RepoStatusReport(status_to_emoji(conclusions[0]), tuple(failure_links))
+    return RepoStatus(status_to_emoji(conclusions[0]), tuple(failure_links))
 
 
 def fetch_repo_status(
@@ -286,15 +338,47 @@ def fetch_repo_status(
 ) -> str:
     """Fetch the latest workflow run conclusion for ``repo`` and return an emoji."""
 
-    return fetch_repo_status_report(repo, token, branch, attempts).emoji
+    return fetch_repo_status_details(repo, token, branch, attempts).emoji
 
 
-def _format_failure_links(links: tuple[str, ...]) -> str:
+def fetch_repo_status_report(
+    repo: str,
+    token: str | None = None,
+    branch: str | None = None,
+    attempts: int = 2,
+) -> RepoStatus:
+    """Backward-compatible alias for ``fetch_repo_status_details``."""
+
+    return fetch_repo_status_details(repo, token, branch, attempts)
+
+
+def _escape_markdown_label(label: str) -> str:
+    return label.replace("\\", "\\\\").replace("]", r"\]")
+
+
+def _format_failure_links(links: tuple[StatusLink, ...]) -> str:
     """Format direct failure URLs for README bullets."""
 
     if not links:
         return ""
-    return f" (failing runs: {', '.join(links)})"
+    rendered = ", ".join(
+        f"[{_escape_markdown_label(link.label)}]({link.url})" for link in links
+    )
+    return f" ({rendered})"
+
+
+def _strip_status_prefix(line: str) -> str:
+    """Remove generated status emojis and linked-failure prefixes."""
+
+    content = line[2:].lstrip()
+    while True:
+        updated = re.sub(r"^[✅❌❓]\s*", "", content).lstrip()
+        updated = re.sub(
+            r"^\((?:\[[^\]]+\]\([^)]*\)(?:,\s*)?)+\)\s*", "", updated
+        ).lstrip()
+        if updated == content:
+            return content
+        content = updated
 
 
 def update_readme(
@@ -321,17 +405,15 @@ def update_readme(
         if in_section and line.startswith("_Last updated:"):
             continue
         if in_section and line.startswith("- "):
-            match = GITHUB_RE.search(line)
+            cleaned = _strip_status_prefix(line)
+            cleaned = re.sub(r"\s+\(failing runs: [^)]*\)$", "", cleaned)
+            match = GITHUB_RE.search(cleaned)
             if match:
                 repo = f"{match.group(1)}/{match.group(2)}"
                 branch = match.group(3)
-                report = fetch_repo_status_report(repo, token, branch)
-                # remove existing emoji and generated failure links
-                cleaned = re.sub(r"^(-\s*)(?:[✅❌❓]\s*)*", r"\1", line)
-                cleaned = FAILURE_LINKS_RE.sub("", cleaned)
-                # Ensure UTF-8 output; lines later written with utf-8 encoding
+                report = fetch_repo_status_details(repo, token, branch)
                 link_suffix = _format_failure_links(report.failure_links)
-                line = f"- {report.emoji} {cleaned[2:].lstrip()}{link_suffix}"
+                line = f"- {report.emoji}{link_suffix} {cleaned}"
         output.append(line)
 
     # Ensure output file encoded as UTF-8 so emoji render correctly on Windows
