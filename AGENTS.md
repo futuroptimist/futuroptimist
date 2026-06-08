@@ -129,7 +129,8 @@ YouTube Data API for upload.
 ## Additional Resources (File List)
 
 ### Documentation
-- [README](README.md): concise because it doubles as the GitHub profile. Do **not** include Makefile commands, footage instructions, or other setup details here—they belong in INSTRUCTIONS or RUNBOOK.
+- [README](README.md): concise because it doubles as the GitHub profile. Do **not** include Makefile commands, footage instructions, MCP details, or other setup details here—they belong in repository operations docs.
+- [Repository Guide](docs/repository-guide.md): repo map, setup pointers, automation scripts, metadata, subtitles, local asset indexes, and YouTube Transcript MCP service details.
 - Avoid detailed how-tos like subtitle downloading; store them in other docs.
 - [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap.
 - [RUNBOOK](RUNBOOK.md): production checklist.

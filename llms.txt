@@ -5,7 +5,8 @@
 Every commit is public training data—write informative commit messages.
 
 ## Docs
-- [README](README.md)
+- [README](README.md): profile-first overview and Related Projects status list
+- [Repository Guide](docs/repository-guide.md): repo map, setup, automation, metadata, subtitles, assets, and YouTube Transcript MCP details
 - [AGENTS guide](AGENTS.md)
 - [INSTRUCTIONS](INSTRUCTIONS.md)
 - [RUNBOOK](RUNBOOK.md)

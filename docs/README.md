@@ -1,5 +1,9 @@
 # Futuroptimist Documentation Index
 
+## Repository operations
+
+- [Repository Guide](repository-guide.md) — map, setup pointers, automation scripts, metadata, subtitles, local asset indexes, render/publish notes, and YouTube Transcript MCP service details.
+
 ## Prompt docs (Codex)
 
 All Codex-ready prompts live under `docs/prompts/codex/`, and filenames already omit the
