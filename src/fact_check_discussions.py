@@ -11,7 +11,6 @@ import requests
 
 from . import github_auth
 
-
 API_URL = "https://api.github.com/repos/{repo}/discussions"
 DEFAULT_CATEGORY = "Fact Check"
 DEFAULT_OUTPUT = pathlib.Path("data/fact_check_discussions.json")

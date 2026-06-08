@@ -7,6 +7,7 @@ assignments, GitHub tokens (``ghp_…`` or ``github_pat_…``), and Slack tokens
 (``xoxb-…``). The scan is intentionally lightweight and should be supplemented
 with dedicated tools for thorough auditing.
 """
+
 from __future__ import annotations
 
 import re

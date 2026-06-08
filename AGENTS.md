@@ -6,7 +6,7 @@ Every commit here doubles as both version control and long-term training data. K
 Keep `llms.txt` synchronized with changes to this guide so LLMs stay current.
 
 The main `README.md` is intentionally minimal to maintain a clean GitHub profile.
-Avoid adding setup or asset instructions there; link to INSTRUCTIONS instead.
+Avoid adding setup or asset instructions there; link to `docs/repository-guide.md` or INSTRUCTIONS instead.
 
 ## Key Information
 
@@ -129,7 +129,8 @@ YouTube Data API for upload.
 ## Additional Resources (File List)
 
 ### Documentation
-- [README](README.md): concise because it doubles as the GitHub profile. Do **not** include Makefile commands, footage instructions, or other setup details here—they belong in INSTRUCTIONS or RUNBOOK.
+- [README](README.md): concise because it doubles as the GitHub profile. Do **not** include Makefile commands, footage instructions, or other setup details here—they belong in `docs/repository-guide.md`, INSTRUCTIONS, or RUNBOOK.
+- [Repository guide](docs/repository-guide.md): repo-internal map, setup pointers, automation, metadata, subtitles, assets, CI, and YouTube Transcript MCP service details.
 - Avoid detailed how-tos like subtitle downloading; store them in other docs.
 - [INSTRUCTIONS](INSTRUCTIONS.md): full workflow and roadmap.
 - [RUNBOOK](RUNBOOK.md): production checklist.

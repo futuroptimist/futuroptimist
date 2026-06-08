@@ -18,7 +18,6 @@ from typing import Iterable
 
 import opentimelineio as otio
 
-
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".m4v"}
 DEFAULT_FRAME_RATE = 24.0
 DEFAULT_DURATION_SECONDS = 1.0

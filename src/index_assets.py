@@ -18,7 +18,6 @@ from PIL import Image
 
 from jsonschema import Draft7Validator
 
-
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 

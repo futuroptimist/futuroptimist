@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate docs/prompt-docs-summary.md from prompt docs."""
+
 import argparse
 import pathlib
 import urllib.request

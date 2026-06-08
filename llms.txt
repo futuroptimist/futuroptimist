@@ -7,6 +7,7 @@ Every commit is public training data—write informative commit messages.
 ## Docs
 - [README](README.md)
 - [AGENTS guide](AGENTS.md)
+- [Repository guide](docs/repository-guide.md)
 - [INSTRUCTIONS](INSTRUCTIONS.md)
 - [RUNBOOK](RUNBOOK.md)
 - [Contributing guide](CONTRIBUTING.md)

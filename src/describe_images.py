@@ -17,7 +17,6 @@ from datetime import datetime, timezone
 
 from PIL import Image, ImageStat
 
-
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".heic", ".dng", ".webp"}
 
 
