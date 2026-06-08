@@ -41,7 +41,12 @@ class RepoStatus:
     failure_links: tuple[StatusLink, ...] = field(default_factory=tuple)
 
 
-RepoStatusReport = RepoStatus
+@dataclass(frozen=True)
+class RepoStatusReport:
+    """Backward-compatible status report with URL-only failure links."""
+
+    emoji: str
+    failure_links: tuple[str, ...] = field(default_factory=tuple)
 
 
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
@@ -173,20 +178,32 @@ def fetch_repo_status_details(
             label for label in base_labels if base_labels.count(label) > 1
         }
         links: list[StatusLink] = []
-        for run, label in zip(failed_runs, base_labels, strict=True):
+        used_labels: set[str] = set()
+        for run, base_label in zip(failed_runs, base_labels, strict=True):
             url = _failure_url(run)
             if not url:
                 continue
-            if label in duplicate_labels:
-                run_number = run.get("run_number")
-                run_attempt = run.get("run_attempt")
-                run_id = run.get("id")
-                if run_number is not None:
-                    label = f"{label} #{run_number}"
-                elif run_attempt is not None:
-                    label = f"{label} attempt {run_attempt}"
-                elif run_id is not None:
-                    label = f"{label} {run_id}"
+            labels = [base_label]
+            run_number = run.get("run_number")
+            run_attempt = run.get("run_attempt")
+            run_id = run.get("id")
+            if base_label in duplicate_labels and run_number is not None:
+                labels.append(f"{base_label} #{run_number}")
+            if base_label in duplicate_labels and run_attempt is not None:
+                labels.append(f"{base_label} attempt {run_attempt}")
+            if base_label in duplicate_labels and run_id is not None:
+                labels.append(f"{base_label} run {run_id}")
+            labels.append(f"{base_label} {url}")
+
+            candidates = labels
+            if base_label in duplicate_labels and len(labels) > 1:
+                candidates = labels[1:]
+            label = candidates[-1]
+            for candidate in candidates:
+                if candidate not in used_labels:
+                    label = candidate
+                    break
+            used_labels.add(label)
             links.append(StatusLink(label, url))
         return tuple(
             sorted(
@@ -212,12 +229,13 @@ def fetch_repo_status_details(
         for run in runs:
             workflow_id = run.get("workflow_id")
             run_number = run.get("run_number")
-            key = (
-                workflow_id,
-                run_number,
-                run.get("id") if workflow_id is None or run_number is None else None,
-                run.get("name"),
-            )
+            run_id = run.get("id")
+            if workflow_id is not None and run_number is not None:
+                key = (workflow_id, run_number, None)
+            elif run_id is not None:
+                key = (None, None, run_id)
+            else:
+                key = (None, None, run.get("name"))
             current = latest_runs.get(key)
             if current is None or _attempt_key(run) > _attempt_key(current):
                 latest_runs[key] = run
@@ -346,10 +364,13 @@ def fetch_repo_status_report(
     token: str | None = None,
     branch: str | None = None,
     attempts: int = 2,
-) -> RepoStatus:
-    """Backward-compatible alias for ``fetch_repo_status_details``."""
+) -> RepoStatusReport:
+    """Fetch the old URL-only status report shape for compatibility."""
 
-    return fetch_repo_status_details(repo, token, branch, attempts)
+    details = fetch_repo_status_details(repo, token, branch, attempts)
+    return RepoStatusReport(
+        details.emoji, tuple(link.url for link in details.failure_links)
+    )
 
 
 def _escape_markdown_label(label: str) -> str:
@@ -374,7 +395,9 @@ def _strip_status_prefix(line: str) -> str:
     while True:
         updated = re.sub(r"^[✅❌❓]\s*", "", content).lstrip()
         updated = re.sub(
-            r"^\((?:\[[^\]]+\]\([^)]*\)(?:,\s*)?)+\)\s*", "", updated
+            r"^\((?:\[(?:\\.|[^\]\\])+\]\([^)]*\)(?:,\s*)?)+\)\s*",
+            "",
+            updated,
         ).lstrip()
         if updated == content:
             return content
