@@ -959,7 +959,7 @@ def test_update_readme_includes_failure_links_and_removes_duplicates(
         (
             "- ❌ ([tests](https://github.com/user/repo/actions/runs/1), "
             "[lint](https://github.com/user/repo/actions/runs/2)) "
-            "https://github.com/user/repo"
+            "<!-- repo-status:failure-links --> https://github.com/user/repo"
         ),
     ]
 
@@ -1007,6 +1007,7 @@ def test_update_readme_strips_linked_failure_prefixes_idempotently(
         (
             "- ❌ ([tests](https://github.com/user/repo/actions/runs/1), "
             "[lint](https://github.com/user/repo/actions/runs/2)) "
+            "<!-- repo-status:failure-links --> "
             "**[repo](https://github.com/user/repo)** - description"
         ),
     ]
@@ -1041,7 +1042,7 @@ def test_update_readme_uses_status_details_not_compatibility_report(
 
     assert (
         "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
-        "https://github.com/user/repo"
+        "<!-- repo-status:failure-links --> https://github.com/user/repo"
     ) in readme.read_text().splitlines()
 
 
@@ -1222,7 +1223,7 @@ def test_update_readme_strips_escaped_failure_label_idempotently(
     readme.write_text(
         "## Related Projects\n"
         "- ❌ ([bad\\]name](https://github.com/user/repo/actions/runs/0)) "
-        "https://github.com/user/repo\n"
+        "<!-- repo-status:failure-links --> https://github.com/user/repo\n"
     )
 
     monkeypatch.setattr(
@@ -1249,7 +1250,7 @@ def test_update_readme_strips_escaped_failure_label_idempotently(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([bad\\]name](https://github.com/user/repo/actions/runs/1)) "
-        "https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> https://github.com/user/repo",
     ]
 
 
@@ -1260,7 +1261,7 @@ def test_update_readme_strips_bracketed_failure_label_idempotently(
     readme.write_text(
         "## Related Projects\n"
         "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/0)) "
-        "https://github.com/user/repo\n"
+        "<!-- repo-status:failure-links --> https://github.com/user/repo\n"
     )
 
     monkeypatch.setattr(
@@ -1287,7 +1288,7 @@ def test_update_readme_strips_bracketed_failure_label_idempotently(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/1)) "
-        "https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> https://github.com/user/repo",
     ]
 
 
@@ -1300,6 +1301,8 @@ def test_update_readme_preserves_hand_authored_leading_notes(
         "- ✅ (archived) **[repo](https://github.com/user/repo)** - desc\n"
         "- ([docs](https://example.com)) "
         "**[docs-repo](https://github.com/user/docs-repo)** - desc\n"
+        "- ❌ ([debug run](https://github.com/user/debug-repo/actions/runs/123)) "
+        "**[debug-repo](https://github.com/user/debug-repo)** - desc\n"
     )
 
     monkeypatch.setattr(
@@ -1321,4 +1324,6 @@ def test_update_readme_preserves_hand_authored_leading_notes(
         "- ✅ (archived) **[repo](https://github.com/user/repo)** - desc",
         "- ✅ ([docs](https://example.com)) "
         "**[docs-repo](https://github.com/user/docs-repo)** - desc",
+        "- ✅ ([debug run](https://github.com/user/debug-repo/actions/runs/123)) "
+        "**[debug-repo](https://github.com/user/debug-repo)** - desc",
     ]

@@ -417,20 +417,25 @@ def _format_failure_links(links: tuple[StatusLink, ...]) -> str:
     rendered = ", ".join(
         f"[{_escape_markdown_label(link.label)}]({link.url})" for link in links
     )
-    return f" ({rendered})"
+    return f" ({rendered}) {GENERATED_FAILURE_LINKS_MARKER}"
 
 
 GENERATED_ACTION_RUN_LINK_RE = (
     r"\[(?:\\.|[^\]\\])+\]"
     r"\(https://github\.com/[\w.-]+/[\w.-]+/actions/runs/[^)]*\)"
 )
+GENERATED_FAILURE_LINKS_MARKER = "<!-- repo-status:failure-links -->"
 GENERATED_FAILURE_LINKS_RE = re.compile(
-    rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
+    rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)"
+    rf"\s*{re.escape(GENERATED_FAILURE_LINKS_MARKER)}\s*"
+)
+LEGACY_STACKED_FAILURE_LINKS_RE = re.compile(
+    rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*(?=[✅❌❓])"
 )
 
 
 def _strip_status_prefix(line: str) -> str:
-    """Remove generated status emojis and linked-failure prefixes."""
+    """Remove generated status emojis and marked linked-failure prefixes."""
 
     content = line[2:].lstrip()
     while True:
@@ -440,6 +445,7 @@ def _strip_status_prefix(line: str) -> str:
         content = content[match.end() :].lstrip()
         if match.group(1) == "❌":
             content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
+            content = LEGACY_STACKED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
 
 
 def update_readme(
