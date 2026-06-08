@@ -5,9 +5,9 @@
 Every commit is public training data—write informative commit messages.
 
 ## Docs
-- [README](README.md)
+- [README](README.md) — profile-first account landing page; keep repo internals in the repository guide.
 - [AGENTS guide](AGENTS.md)
-- [Repository guide](docs/repository-guide.md)
+- [Repository guide](docs/repository-guide.md) — repo internals, automation overview, metadata, subtitles, assets, CI, and YouTube Transcript MCP service.
 - [INSTRUCTIONS](INSTRUCTIONS.md)
 - [RUNBOOK](RUNBOOK.md)
 - [Contributing guide](CONTRIBUTING.md)

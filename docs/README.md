@@ -2,7 +2,7 @@
 
 ## Repository guide
 
-- [repository-guide.md](repository-guide.md) — Repo-internal map, setup pointers, automation, scripts, metadata, subtitles, assets, CI, and YouTube Transcript MCP service details.
+- [repository-guide.md](repository-guide.md) — Canonical repo-internal map with setup pointers, automation overview, scripts, metadata, subtitles, assets, CI, and YouTube Transcript MCP service details.
 
 ## Prompt docs (Codex)
 

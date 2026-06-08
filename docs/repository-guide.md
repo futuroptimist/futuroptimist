@@ -43,27 +43,16 @@ Prompt templates stay grouped under [`docs/prompts/codex/`](prompts/codex/) with
 
 ## Setup and package notes
 
-Python dependencies are managed with [`uv`](https://docs.astral.sh/uv/) and traditional requirement files.
+Python dependencies are managed with [`uv`](https://docs.astral.sh/uv/) and traditional requirement files. Treat this page as the stable map; the full onboarding flow, platform fallbacks, and current command details live in [`INSTRUCTIONS.md`](../INSTRUCTIONS.md).
 
-Common setup and verification commands:
-
-```bash
-make setup      # create/sync the virtual environment
-make test       # run pytest through the Makefile
-make fmt        # black + ruff check --fix
-python -m pytest -q
-```
-
-If `make setup` fails on your platform, use the fallback described in [`INSTRUCTIONS.md`](../INSTRUCTIONS.md): create a Python 3.11+ virtual environment, install `requirements.txt`, then run pytest. The Makefile includes Windows/Unix path detection; if pytest cannot locate venv scripts, prefix commands with the venv `bin`/`Scripts` directory as documented in the instructions.
-
-Node is only used for repository hygiene scripts such as docs linting. The package manager is npm, with scripts defined in [`package.json`](../package.json):
+For day-to-day orientation, the shortest path is usually:
 
 ```bash
-npm run lint
-npm run format:check
-npm run test:ci
-npm run docs-lint
+make setup
+make test
 ```
+
+The Makefile handles common Windows/Unix path differences, and `make help` lists the current automation targets. Node is only used for repository hygiene scripts such as docs linting; npm scripts are defined in [`package.json`](../package.json).
 
 ## Automation and helper scripts
 
@@ -77,7 +66,7 @@ The repository aims to make video creation as repeatable as software delivery. K
 - `python src/fact_check_discussions.py` – export Futuroptimist GitHub Discussions fact-check threads to JSON.
 - `python src/repo_status.py` – update the parseable `README.md` Related Projects dashboard with check-status emoji, timestamps, and direct failed-run links.
 
-Run `make help` to see the current target list.
+See [`INSTRUCTIONS.md`](../INSTRUCTIONS.md) for the complete workflow and current command examples.
 
 ## Script, metadata, subtitle, and asset workflow
 
