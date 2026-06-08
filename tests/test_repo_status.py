@@ -479,7 +479,13 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         calls.append((repo, branch))
         return {"user/repo": "✅", "other/repo": "❌"}[repo]
 
-    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_report",
+        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+            fake_status(repo, token, branch)
+        ),
+    )
     from datetime import datetime
 
     now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
@@ -502,7 +508,13 @@ def test_update_readme_uses_current_time(
     ) -> str:
         return "✅"
 
-    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_report",
+        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+            fake_status(repo, token, branch)
+        ),
+    )
 
     from datetime import datetime, timezone
 
@@ -535,7 +547,13 @@ def test_update_readme_existing_timestamp(
     ) -> str:
         return "✅"
 
-    monkeypatch.setattr(repo_status, "fetch_repo_status", fake_status)
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_report",
+        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+            fake_status(repo, token, branch)
+        ),
+    )
 
     from datetime import datetime
 
@@ -545,3 +563,103 @@ def test_update_readme_existing_timestamp(
     lines = readme.read_text().splitlines()
     assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
     assert lines[4] == "- ✅ https://github.com/user/repo"
+
+
+def test_fetch_repo_status_report_includes_failed_run_links(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add failing tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "failure",
+                        "head_sha": "abc",
+                        "html_url": "https://github.com/user/repo/actions/runs/1",
+                        "name": "tests",
+                    },
+                    {
+                        "conclusion": "cancelled",
+                        "head_sha": "abc",
+                        "id": 2,
+                        "name": "lint",
+                    },
+                    {
+                        "conclusion": "success",
+                        "head_sha": "abc",
+                        "html_url": "https://github.com/user/repo/actions/runs/3",
+                        "name": "build",
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    report = repo_status.fetch_repo_status_report("user/repo")
+
+    assert report == repo_status.RepoStatusReport(
+        "❌",
+        (
+            "https://github.com/user/repo/actions/runs/1",
+            "https://github.com/user/repo/actions/runs/2",
+        ),
+    )
+
+
+def test_update_readme_includes_failure_links_and_removes_duplicates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    content = (
+        "## Related Projects\n"
+        "_Last updated: 1999-01-01 00:00 UTC; checks hourly_\n"
+        "_Last updated: 1998-01-01 00:00 UTC; checks hourly_\n"
+        "- ✅ https://github.com/user/repo (failing runs: https://old.example/run)\n"
+    )
+    readme = tmp_path / "README.md"
+    readme.write_text(content)
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_report",
+        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+            "❌",
+            (
+                "https://github.com/user/repo/actions/runs/1",
+                "https://github.com/user/repo/actions/runs/2",
+            ),
+        ),
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+
+    lines = readme.read_text().splitlines()
+    assert lines == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        (
+            "- ❌ https://github.com/user/repo (failing runs: "
+            "https://github.com/user/repo/actions/runs/1, "
+            "https://github.com/user/repo/actions/runs/2)"
+        ),
+    ]
