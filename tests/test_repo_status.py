@@ -1311,7 +1311,10 @@ def test_update_readme_preserves_hand_authored_leading_notes(
 
     now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
     repo_status.update_readme(readme, now=now)
+    first = readme.read_text()
+    repo_status.update_readme(readme, now=now)
 
+    assert readme.read_text() == first
     assert readme.read_text().splitlines() == [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",

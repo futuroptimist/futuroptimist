@@ -420,8 +420,12 @@ def _format_failure_links(links: tuple[StatusLink, ...]) -> str:
     return f" ({rendered})"
 
 
+GENERATED_ACTION_RUN_LINK_RE = (
+    r"\[(?:\\.|[^\]\\])+\]"
+    r"\(https://github\.com/[\w.-]+/[\w.-]+/actions/runs/[^)]*\)"
+)
 GENERATED_FAILURE_LINKS_RE = re.compile(
-    r"^\((?:\[(?:\\.|[^\]\\])+\]\([^)]*\)(?:,\s*)?)+\)\s*"
+    rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
 )
 
 
@@ -430,10 +434,12 @@ def _strip_status_prefix(line: str) -> str:
 
     content = line[2:].lstrip()
     while True:
-        updated = re.sub(r"^[✅❌❓]\s*", "", content, count=1).lstrip()
-        if updated == content:
+        match = re.match(r"^([✅❌❓])\s*", content)
+        if not match:
             return content
-        content = GENERATED_FAILURE_LINKS_RE.sub("", updated, count=1).lstrip()
+        content = content[match.end() :].lstrip()
+        if match.group(1) == "❌":
+            content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
 
 
 def update_readme(
