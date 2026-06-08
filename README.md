@@ -14,21 +14,21 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-06-08 17:03 UTC; checks hourly_
+_Last updated: 2026-06-08 18:45 UTC; checks hourly_
 
 Status legend: ✅ latest completed checks passed, ❌ latest completed checks failed or were cancelled, ❓ no completed checks were found yet.
 
 - ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for turning maker experiments into reproducible scripts, metadata, and polished Futuroptimist episodes
 - ✅ **[token.place](https://token.place)** – secure peer-to-peer generative AI network for sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
-- ✅ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ❌ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles lint, tests, docs, release automation, and LLM-agent workflows for solo builders
-- ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
+- ❓ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/v3))
+- ❌ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template that bundles lint, tests, docs, release automation, and LLM-agent workflows for solo builders (failing runs: https://github.com/futuroptimist/flywheel/actions/runs/27123196602)
+- ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching (failing runs: https://github.com/futuroptimist/gabriel/actions/runs/21579647496, https://github.com/futuroptimist/gabriel/actions/runs/21348015488, https://github.com/futuroptimist/gabriel/actions/runs/21127165452, https://github.com/futuroptimist/gabriel/actions/runs/20909714496, https://github.com/futuroptimist/gabriel/actions/runs/20706713112, https://github.com/futuroptimist/gabriel/actions/runs/20566165837, https://github.com/futuroptimist/gabriel/actions/runs/20423408130, https://github.com/futuroptimist/gabriel/actions/runs/20222249132, https://github.com/futuroptimist/gabriel/actions/runs/20018430344, https://github.com/futuroptimist/gabriel/actions/runs/19421904742)
 - ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI that parses Codex task pages, grabs failing GitHub logs, and copies concise debugging reports
 - ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repos and curates next steps to keep side projects moving
 - ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control in a 3D-printed case
 - ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – turns GitHub contributions into stackable 3D-printable Gridfinity blocks
 - ✅ **[wove](https://github.com/futuroptimist/wove)** – open toolkit for learning knitting and crochet while exploring CAD-to-textile workflows
-- ❌ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
+- ❌ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters (failing runs: https://github.com/futuroptimist/sugarkube/actions/runs/27055466699)
 - ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow that safely closes stale pull requests in bulk with dry-run support
 - ✅ **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
 - ✅ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot sharing the same automation scaffold as this repo
