@@ -6,6 +6,8 @@ import pytest
 from src import repo_status
 from src.repo_status import status_to_emoji
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_status_to_emoji() -> None:
     assert status_to_emoji("success") == "✅"
@@ -1399,7 +1401,7 @@ def test_update_readme_preserves_hand_authored_run_note_before_raw_repo(
 
 
 def test_profile_readme_related_projects_copy_is_parseable() -> None:
-    readme = Path("README.md").read_text(encoding="utf-8")
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     section = readme.split("## Related Projects", 1)[1].split("\n## ", 1)[0]
 
     assert section.count("_Last updated:") == 1
