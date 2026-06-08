@@ -1012,6 +1012,39 @@ def test_update_readme_strips_linked_failure_prefixes_idempotently(
     ]
 
 
+def test_update_readme_uses_status_details_not_compatibility_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text("## Related Projects\n- https://github.com/user/repo\n")
+
+    def fail_report(*args, **kwargs):
+        raise AssertionError("update_readme should use fetch_repo_status_details")
+
+    monkeypatch.setattr(repo_status, "fetch_repo_status_report", fail_report)
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "tests", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        ),
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+
+    assert (
+        "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
+        "https://github.com/user/repo"
+    ) in readme.read_text().splitlines()
+
+
 def test_fetch_repo_status_report_returns_url_strings_for_compatibility(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1170,9 +1203,11 @@ def test_fetch_repo_status_details_disambiguates_same_name_and_run_number(
     report = repo_status.fetch_repo_status_details("user/repo", attempts=1)
 
     assert report.failure_links == (
-        repo_status.StatusLink("CI #42", "https://github.com/user/repo/actions/runs/1"),
         repo_status.StatusLink(
-            "CI run 2", "https://github.com/user/repo/actions/runs/2"
+            "CI #42 workflow 101", "https://github.com/user/repo/actions/runs/1"
+        ),
+        repo_status.StatusLink(
+            "CI #42 workflow 102", "https://github.com/user/repo/actions/runs/2"
         ),
     )
     assert len({link.label for link in report.failure_links}) == len(
@@ -1215,4 +1250,72 @@ def test_update_readme_strips_escaped_failure_label_idempotently(
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([bad\\]name](https://github.com/user/repo/actions/runs/1)) "
         "https://github.com/user/repo",
+    ]
+
+
+def test_update_readme_strips_bracketed_failure_label_idempotently(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/0)) "
+        "https://github.com/user/repo\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "CI [lint]", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        ),
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+    first = readme.read_text()
+    repo_status.update_readme(readme, now=now)
+
+    assert readme.read_text() == first
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/1)) "
+        "https://github.com/user/repo",
+    ]
+
+
+def test_update_readme_preserves_hand_authored_leading_notes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ✅ (archived) **[repo](https://github.com/user/repo)** - desc\n"
+        "- ([docs](https://example.com)) "
+        "**[docs-repo](https://github.com/user/docs-repo)** - desc\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus("✅"),
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "- ✅ (archived) **[repo](https://github.com/user/repo)** - desc",
+        "- ✅ ([docs](https://example.com)) "
+        "**[docs-repo](https://github.com/user/docs-repo)** - desc",
     ]

@@ -169,42 +169,74 @@ def fetch_repo_status_details(
 
     def _disambiguated_failure_links(runs: Iterable[dict]) -> tuple[StatusLink, ...]:
         failed_runs = [
-            run
+            (run, _run_label(run), url)
             for run in runs
             if _normalize_conclusion(run.get("conclusion")) in failures
+            for url in [_failure_url(run)]
+            if url
         ]
-        base_labels = [_run_label(run) for run in failed_runs]
-        duplicate_labels = {
-            label for label in base_labels if base_labels.count(label) > 1
-        }
-        links: list[StatusLink] = []
-        used_labels: set[str] = set()
-        for run, base_label in zip(failed_runs, base_labels, strict=True):
-            url = _failure_url(run)
-            if not url:
-                continue
-            labels = [base_label]
-            run_number = run.get("run_number")
-            run_attempt = run.get("run_attempt")
-            run_id = run.get("id")
-            if base_label in duplicate_labels and run_number is not None:
-                labels.append(f"{base_label} #{run_number}")
-            if base_label in duplicate_labels and run_attempt is not None:
-                labels.append(f"{base_label} attempt {run_attempt}")
-            if base_label in duplicate_labels and run_id is not None:
-                labels.append(f"{base_label} run {run_id}")
-            labels.append(f"{base_label} {url}")
+        labels_by_base: dict[str, list[tuple[dict, str]]] = {}
+        for run, base_label, url in failed_runs:
+            labels_by_base.setdefault(base_label, []).append((run, url))
 
-            candidates = labels
-            if base_label in duplicate_labels and len(labels) > 1:
-                candidates = labels[1:]
-            label = candidates[-1]
-            for candidate in candidates:
-                if candidate not in used_labels:
-                    label = candidate
-                    break
-            used_labels.add(label)
-            links.append(StatusLink(label, url))
+        def _unique_labels(
+            base_label: str, grouped_runs: list[tuple[dict, str]]
+        ) -> list[str]:
+            def run_number_label(run: dict, url: str) -> str | None:
+                run_number = run.get("run_number")
+                if run_number is None:
+                    return None
+                return f"{base_label} #{run_number}"
+
+            def workflow_label(run: dict, url: str) -> str | None:
+                run_number = run.get("run_number")
+                workflow_id = run.get("workflow_id")
+                if run_number is None or workflow_id is None:
+                    return None
+                return f"{base_label} #{run_number} workflow {workflow_id}"
+
+            def workflow_only_label(run: dict, url: str) -> str | None:
+                workflow_id = run.get("workflow_id")
+                if workflow_id is None:
+                    return None
+                return f"{base_label} workflow {workflow_id}"
+
+            def run_id_label(run: dict, url: str) -> str | None:
+                run_number = run.get("run_number")
+                run_id = run.get("id")
+                if run_number is None or run_id is None:
+                    return None
+                return f"{base_label} #{run_number} run {run_id}"
+
+            def run_id_only_label(run: dict, url: str) -> str | None:
+                run_id = run.get("id")
+                if run_id is None:
+                    return None
+                return f"{base_label} run {run_id}"
+
+            for labeler in (
+                run_number_label,
+                workflow_label,
+                workflow_only_label,
+                run_id_label,
+                run_id_only_label,
+            ):
+                labels = [labeler(run, url) for run, url in grouped_runs]
+                if all(label is not None for label in labels) and len(
+                    set(labels)
+                ) == len(labels):
+                    return [str(label) for label in labels]
+            return [f"{base_label} {url}" for _, url in grouped_runs]
+
+        links: list[StatusLink] = []
+        for base_label, grouped_runs in labels_by_base.items():
+            if len(grouped_runs) == 1:
+                run, url = grouped_runs[0]
+                links.append(StatusLink(base_label, url))
+                continue
+            labels = _unique_labels(base_label, grouped_runs)
+            for (_, url), label in zip(grouped_runs, labels, strict=True):
+                links.append(StatusLink(label, url))
         return tuple(
             sorted(
                 links,
@@ -388,20 +420,20 @@ def _format_failure_links(links: tuple[StatusLink, ...]) -> str:
     return f" ({rendered})"
 
 
+GENERATED_FAILURE_LINKS_RE = re.compile(
+    r"^\((?:\[(?:\\.|[^\]\\])+\]\([^)]*\)(?:,\s*)?)+\)\s*"
+)
+
+
 def _strip_status_prefix(line: str) -> str:
     """Remove generated status emojis and linked-failure prefixes."""
 
     content = line[2:].lstrip()
     while True:
-        updated = re.sub(r"^[✅❌❓]\s*", "", content).lstrip()
-        updated = re.sub(
-            r"^\((?:\[(?:\\.|[^\]\\])+\]\([^)]*\)(?:,\s*)?)+\)\s*",
-            "",
-            updated,
-        ).lstrip()
+        updated = re.sub(r"^[✅❌❓]\s*", "", content, count=1).lstrip()
         if updated == content:
             return content
-        content = updated
+        content = GENERATED_FAILURE_LINKS_RE.sub("", updated, count=1).lstrip()
 
 
 def update_readme(
