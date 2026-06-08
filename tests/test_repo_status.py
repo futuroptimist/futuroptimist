@@ -481,8 +481,8 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(
         repo_status,
-        "fetch_repo_status_report",
-        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
             fake_status(repo, token, branch)
         ),
     )
@@ -510,8 +510,8 @@ def test_update_readme_uses_current_time(
 
     monkeypatch.setattr(
         repo_status,
-        "fetch_repo_status_report",
-        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
             fake_status(repo, token, branch)
         ),
     )
@@ -549,8 +549,8 @@ def test_update_readme_existing_timestamp(
 
     monkeypatch.setattr(
         repo_status,
-        "fetch_repo_status_report",
-        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
             fake_status(repo, token, branch)
         ),
     )
@@ -565,22 +565,8 @@ def test_update_readme_existing_timestamp(
     assert lines[4] == "- ✅ https://github.com/user/repo"
 
 
-@pytest.mark.parametrize(
-    ("fallback_key", "fallback_url"),
-    [
-        ("logs_url", "https://api.github.com/repos/user/repo/actions/runs/2/logs"),
-        (
-            "artifacts_url",
-            "https://api.github.com/repos/user/repo/actions/runs/2/artifacts",
-        ),
-        (
-            "check_suite_url",
-            "https://api.github.com/repos/user/repo/check-suites/2",
-        ),
-    ],
-)
-def test_fetch_repo_status_report_includes_failed_run_links(
-    monkeypatch: pytest.MonkeyPatch, fallback_key: str, fallback_url: str
+def test_fetch_repo_status_details_includes_failed_run_html_url(
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
         if url == "https://api.github.com/repos/user/repo":
@@ -611,62 +597,353 @@ def test_fetch_repo_status_report_includes_failed_run_links(
                         "html_url": "https://github.com/user/repo/actions/runs/1",
                         "name": "tests",
                     },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details("user/repo") == repo_status.RepoStatus(
+        "❌",
+        (
+            repo_status.StatusLink(
+                "tests", "https://github.com/user/repo/actions/runs/1"
+            ),
+        ),
+    )
+
+
+def test_fetch_repo_status_details_multiple_failed_runs_are_sorted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
                     {
-                        "conclusion": "cancelled",
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add failing checks",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "failure",
                         "head_sha": "abc",
-                        "id": 2,
-                        fallback_key: fallback_url,
-                        "name": "lint",
+                        "html_url": "https://github.com/user/repo/actions/runs/2",
+                        "name": "tests",
                     },
                     {
                         "conclusion": "timed_out",
                         "head_sha": "abc",
-                        "id": 4,
-                        "name": "ci",
-                    },
-                    {
-                        "conclusion": "success",
-                        "head_sha": "abc",
-                        "html_url": "https://github.com/user/repo/actions/runs/3",
-                        "name": "build",
+                        "id": 1,
+                        "name": "lint",
                     },
                 ]
             }
         )
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
-    report = repo_status.fetch_repo_status_report("user/repo")
 
-    assert report == repo_status.RepoStatusReport(
+    assert repo_status.fetch_repo_status_details("user/repo") == repo_status.RepoStatus(
         "❌",
         (
-            "https://github.com/user/repo/actions/runs/1",
-            fallback_url,
-            "https://github.com/user/repo/actions/runs/4",
+            repo_status.StatusLink(
+                "lint", "https://github.com/user/repo/actions/runs/1"
+            ),
+            repo_status.StatusLink(
+                "tests", "https://github.com/user/repo/actions/runs/2"
+            ),
         ),
     )
 
 
-def test_update_readme_includes_failure_links_and_removes_duplicates(
+def test_fetch_repo_status_details_falls_back_to_actions_run_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add lint",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "cancelled",
+                        "head_sha": "abc",
+                        "id": 42,
+                        "name": "lint",
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details("user/repo") == repo_status.RepoStatus(
+        "❌",
+        (
+            repo_status.StatusLink(
+                "lint", "https://github.com/user/repo/actions/runs/42"
+            ),
+        ),
+    )
+
+
+def test_fetch_repo_status_details_failure_without_url_has_no_empty_link(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add ci",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {"conclusion": "failure", "head_sha": "abc", "name": "ci"},
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details("user/repo") == repo_status.RepoStatus(
+        "❌"
+    )
+
+
+def test_fetch_repo_status_details_success_and_unknown_have_no_failure_links(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    responses = iter(
+        [
+            DummyResp({"default_branch": "main"}),
+            DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            ),
+            DummyResp(
+                {
+                    "workflow_runs": [
+                        {
+                            "conclusion": "success",
+                            "head_sha": "abc",
+                            "html_url": "https://github.com/user/repo/actions/runs/1",
+                            "name": "tests",
+                        }
+                    ]
+                }
+            ),
+        ]
+    )
+    monkeypatch.setattr(
+        repo_status.requests, "get", lambda *args, **kwargs: next(responses)
+    )
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus("✅")
+
+    monkeypatch.setattr(
+        repo_status.requests,
+        "get",
+        lambda *args, **kwargs: DummyResp(
+            {"default_branch": "main"}, json_error=ValueError()
+        ),
+    )
+    assert repo_status.fetch_repo_status_details("user/repo") == repo_status.RepoStatus(
+        "❓"
+    )
+
+
+def test_fetch_repo_status_details_latest_retry_removes_stale_failure_link(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: retry tests",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "failure",
+                        "head_sha": "abc",
+                        "html_url": "https://github.com/user/repo/actions/runs/1",
+                        "name": "tests",
+                        "run_attempt": 1,
+                        "run_number": 7,
+                        "updated_at": "2026-01-01T00:00:00Z",
+                        "workflow_id": 1,
+                    },
+                    {
+                        "conclusion": "success",
+                        "head_sha": "abc",
+                        "html_url": "https://github.com/user/repo/actions/runs/1",
+                        "name": "tests",
+                        "run_attempt": 2,
+                        "run_number": 7,
+                        "updated_at": "2026-01-01T00:05:00Z",
+                        "workflow_id": 1,
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details("user/repo") == repo_status.RepoStatus(
+        "✅"
+    )
+
+
+def test_fetch_repo_status_details_links_only_failed_workflow(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: split checks",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "success",
+                        "head_sha": "abc",
+                        "html_url": "https://github.com/user/repo/actions/runs/1",
+                        "name": "tests",
+                    },
+                    {
+                        "conclusion": "failure",
+                        "head_sha": "abc",
+                        "html_url": "https://github.com/user/repo/actions/runs/2",
+                        "name": "lint",
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details("user/repo") == repo_status.RepoStatus(
+        "❌",
+        (
+            repo_status.StatusLink(
+                "lint", "https://github.com/user/repo/actions/runs/2"
+            ),
+        ),
+    )
+
+
+def test_update_readme_includes_failure_links_and_collapses_timestamps(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     content = (
         "## Related Projects\n"
         "_Last updated: 1999-01-01 00:00 UTC; checks hourly_\n"
         "_Last updated: 1998-01-01 00:00 UTC; checks hourly_\n"
-        "- ✅ https://github.com/user/repo (failing runs: https://old.example/run)\n"
+        "- ❌ ([old](https://old.example/run)) ❌ **[repo](https://github.com/user/repo)** - desc\n"
     )
     readme = tmp_path / "README.md"
     readme.write_text(content)
 
     monkeypatch.setattr(
         repo_status,
-        "fetch_repo_status_report",
-        lambda repo, token=None, branch=None: repo_status.RepoStatusReport(
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
             "❌",
             (
-                "https://github.com/user/repo/actions/runs/1",
-                "https://github.com/user/repo/actions/runs/2",
+                repo_status.StatusLink(
+                    "tests", "https://github.com/user/repo/actions/runs/1"
+                ),
+                repo_status.StatusLink(
+                    "lint", "https://github.com/user/repo/actions/runs/2"
+                ),
             ),
         ),
     )
@@ -675,13 +952,17 @@ def test_update_readme_includes_failure_links_and_removes_duplicates(
     now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
     repo_status.update_readme(readme, now=now)
 
-    lines = readme.read_text().splitlines()
-    assert lines == [
+    expected_lines = [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         (
-            "- ❌ https://github.com/user/repo (failing runs: "
-            "https://github.com/user/repo/actions/runs/1, "
-            "https://github.com/user/repo/actions/runs/2)"
+            "- ❌ ([tests](https://github.com/user/repo/actions/runs/1), "
+            "[lint](https://github.com/user/repo/actions/runs/2)) "
+            "**[repo](https://github.com/user/repo)** - desc"
         ),
     ]
+    assert readme.read_text().splitlines() == expected_lines
+
+    repo_status.update_readme(readme, now=now)
+
+    assert readme.read_text().splitlines() == expected_lines
