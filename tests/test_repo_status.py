@@ -153,6 +153,8 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
 
     def fake_get(url: str, headers: dict, timeout: int):
         calls.append(url)
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main", "stargazers_count": 42})
         if url.startswith(
             "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20"
         ):
@@ -184,6 +186,7 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
     assert calls == [
+        "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=dev",
         "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
@@ -485,7 +488,8 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         repo_status,
         "fetch_repo_status_details",
         lambda repo, token=None, branch=None: repo_status.RepoStatus(
-            fake_status(repo, token, branch)
+            fake_status(repo, token, branch),
+            stars={"user/repo": 2, "other/repo": 1}.get(repo),
         ),
     )
     from datetime import datetime
@@ -495,7 +499,7 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     lines = readme.read_text().splitlines()
     assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
-    assert lines[4] == "- ✅ https://github.com/user/repo"
+    assert lines[4] == "- ✅ ⭐ 2 https://github.com/user/repo"
 
 
 def test_update_readme_uses_current_time(
@@ -529,7 +533,7 @@ def test_update_readme_uses_current_time(
     repo_status.update_readme(readme)
     lines = readme.read_text().splitlines()
     assert lines[1] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
-    assert lines[2] == "- ✅ https://github.com/user/repo"
+    assert lines[2] == "- ✅ ⭐ ? https://github.com/user/repo"
 
 
 def test_update_readme_existing_timestamp(
@@ -564,7 +568,7 @@ def test_update_readme_existing_timestamp(
 
     lines = readme.read_text().splitlines()
     assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
-    assert lines[4] == "- ✅ https://github.com/user/repo"
+    assert lines[4] == "- ✅ ⭐ ? https://github.com/user/repo"
 
 
 def test_fetch_repo_status_details_includes_failed_run_link(
@@ -929,7 +933,7 @@ def test_update_readme_includes_failure_links_and_removes_duplicates(
         "## Related Projects\n"
         "_Last updated: 1999-01-01 00:00 UTC; checks hourly_\n"
         "_Last updated: 1998-01-01 00:00 UTC; checks hourly_\n"
-        "- ✅ https://github.com/user/repo (failing runs: https://old.example/run)\n"
+        "- ✅ ⭐ ? https://github.com/user/repo (failing runs: https://old.example/run)\n"
     )
     readme = tmp_path / "README.md"
     readme.write_text(content)
@@ -961,7 +965,7 @@ def test_update_readme_includes_failure_links_and_removes_duplicates(
         (
             "- ❌ ([tests](https://github.com/user/repo/actions/runs/1), "
             "[lint](https://github.com/user/repo/actions/runs/2)) "
-            "<!-- repo-status:failure-links --> https://github.com/user/repo"
+            "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo"
         ),
     ]
 
@@ -1010,7 +1014,7 @@ def test_update_readme_strips_linked_failure_prefixes_idempotently(
             "- ❌ ([tests](https://github.com/user/repo/actions/runs/1), "
             "[lint](https://github.com/user/repo/actions/runs/2)) "
             "<!-- repo-status:failure-links --> "
-            "**[repo](https://github.com/user/repo)** - description"
+            "⭐ ? **[repo](https://github.com/user/repo)** - description"
         ),
     ]
 
@@ -1044,7 +1048,7 @@ def test_update_readme_uses_status_details_not_compatibility_report(
 
     assert (
         "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> https://github.com/user/repo"
+        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo"
     ) in readme.read_text().splitlines()
 
 
@@ -1225,7 +1229,7 @@ def test_update_readme_strips_escaped_failure_label_idempotently(
     readme.write_text(
         "## Related Projects\n"
         "- ❌ ([bad\\]name](https://github.com/user/repo/actions/runs/0)) "
-        "<!-- repo-status:failure-links --> https://github.com/user/repo\n"
+        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo\n"
     )
 
     monkeypatch.setattr(
@@ -1252,7 +1256,7 @@ def test_update_readme_strips_escaped_failure_label_idempotently(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([bad\\]name](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo",
     ]
 
 
@@ -1263,7 +1267,7 @@ def test_update_readme_strips_bracketed_failure_label_idempotently(
     readme.write_text(
         "## Related Projects\n"
         "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/0)) "
-        "<!-- repo-status:failure-links --> https://github.com/user/repo\n"
+        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo\n"
     )
 
     monkeypatch.setattr(
@@ -1290,7 +1294,7 @@ def test_update_readme_strips_bracketed_failure_label_idempotently(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo",
     ]
 
 
@@ -1328,7 +1332,7 @@ def test_update_readme_migrates_legacy_unmarked_failure_links_before_raw_repo(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo",
     ]
 
 
@@ -1348,7 +1352,10 @@ def test_update_readme_preserves_hand_authored_leading_notes(
     monkeypatch.setattr(
         repo_status,
         "fetch_repo_status_details",
-        lambda repo, token=None, branch=None: repo_status.RepoStatus("✅"),
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "✅",
+            stars={"user/repo": 3, "user/docs-repo": 2, "user/debug-repo": 1}[repo],
+        ),
     )
     from datetime import datetime
 
@@ -1361,10 +1368,10 @@ def test_update_readme_preserves_hand_authored_leading_notes(
     assert readme.read_text().splitlines() == [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
-        "- ✅ (archived) **[repo](https://github.com/user/repo)** - desc",
-        "- ✅ ([docs](https://example.com)) "
+        "- ✅ ⭐ 3 (archived) **[repo](https://github.com/user/repo)** - desc",
+        "- ✅ ⭐ 2 ([docs](https://example.com)) "
         "**[docs-repo](https://github.com/user/docs-repo)** - desc",
-        "- ✅ ([debug run](https://github.com/user/debug-repo/actions/runs/123)) "
+        "- ✅ ⭐ 1 ([debug run](https://github.com/user/debug-repo/actions/runs/123)) "
         "**[debug-repo](https://github.com/user/debug-repo)** - desc",
     ]
 
@@ -1395,7 +1402,7 @@ def test_update_readme_preserves_hand_authored_run_note_before_raw_repo(
     assert readme.read_text().splitlines() == [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
-        "- ✅ ([debug run](https://github.com/user/repo/actions/runs/123)) "
+        "- ✅ ⭐ ? ([debug run](https://github.com/user/repo/actions/runs/123)) "
         "https://github.com/user/repo - desc",
     ]
 
@@ -1413,8 +1420,200 @@ def test_profile_readme_related_projects_copy_is_parseable() -> None:
         "❓ no completed relevant run was found or GitHub could not be queried"
         in section
     )
+    assert "⭐ shows GitHub stars" in section
+    assert "Projects sort by stars descending" in section
     assert readme.count("docs/repository-guide.md") == 1
 
     project_lines = [line for line in section.splitlines() if line.startswith("- ")]
     assert project_lines
     assert all(repo_status.GITHUB_RE.search(line) for line in project_lines)
+    assert all("⭐" in line for line in project_lines)
+
+
+def test_fetch_repo_status_details_includes_star_count(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main", "stargazers_count": 42})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: pass checks",
+                            "author": {"name": "Alice"},
+                            "committer": {"name": "Alice"},
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    }
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {"conclusion": "success", "head_sha": "abc", "name": "tests"}
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus("✅", stars=42)
+
+
+def test_format_star_count_handles_unknowns() -> None:
+    assert repo_status.format_star_count(42) == "⭐ 42"
+    assert repo_status.format_star_count(None) == "⭐ ?"
+
+
+def test_fetch_repo_metadata_invalid_star_count_is_unknown(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        repo_status.requests,
+        "get",
+        lambda url, headers, timeout: DummyResp(
+            {"default_branch": "main", "stargazers_count": "42"}
+        ),
+    )
+
+    assert repo_status.fetch_repo_metadata("user/repo") == repo_status.RepoMetadata(
+        default_branch="main", stars=None
+    )
+
+
+def test_update_readme_sorts_by_stars_then_name_and_unknowns_last(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- **[Zero](https://github.com/user/zero)** - zero stars\n"
+        "- **[Beta](https://github.com/user/beta)** - same stars\n"
+        "- **[alpha](https://github.com/user/alpha)** - same stars\n"
+        "- **[Unknown](https://github.com/user/unknown)** - unknown stars\n"
+    )
+
+    stars = {"user/zero": 0, "user/beta": 5, "user/alpha": 5, "user/unknown": None}
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "✅", stars=stars[repo]
+        ),
+    )
+    from datetime import datetime
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert readme.read_text().splitlines()[2:] == [
+        "- ✅ ⭐ 5 **[alpha](https://github.com/user/alpha)** - same stars",
+        "- ✅ ⭐ 5 **[Beta](https://github.com/user/beta)** - same stars",
+        "- ✅ ⭐ 0 **[Zero](https://github.com/user/zero)** - zero stars",
+        "- ✅ ⭐ ? **[Unknown](https://github.com/user/unknown)** - unknown stars",
+    ]
+
+
+def test_update_readme_star_and_failure_prefix_is_idempotent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ❌ ([old tests](https://github.com/user/repo/actions/runs/0)) "
+        "<!-- repo-status:failure-links --> ⭐ 1 ⭐ 999 "
+        "**[repo](https://github.com/user/repo)** - desc\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "tests", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+            stars=7,
+        ),
+    )
+    from datetime import datetime
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+    first = readme.read_text()
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert readme.read_text() == first
+    assert readme.read_text().splitlines()[2] == (
+        "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
+        "<!-- repo-status:failure-links --> ⭐ 7 "
+        "**[repo](https://github.com/user/repo)** - desc"
+    )
+
+
+def test_update_readme_preserves_multiline_and_external_display_links(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "Intro stays put.\n"
+        "- **[token.place](https://token.place)** - external first "
+        "([repo](https://github.com/futuroptimist/token.place))\n"
+        "  continuation stays with token.place\n"
+        "- **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** - hub\n"
+    )
+
+    stars = {"futuroptimist/token.place": 10, "futuroptimist/futuroptimist": 1}
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "✅", stars=stars[repo]
+        ),
+    )
+    from datetime import datetime
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "Intro stays put.",
+        "- ✅ ⭐ 10 **[token.place](https://token.place)** - external first "
+        "([repo](https://github.com/futuroptimist/token.place))",
+        "  continuation stays with token.place",
+        "- ✅ ⭐ 1 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** - hub",
+    ]
+
+
+def test_update_readme_branch_url_uses_branch_for_status_and_repo_for_stars(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- **[DSPACE](https://democratized.space)** "
+        "([repo](https://github.com/democratizedspace/dspace/tree/v3))\n"
+    )
+    calls: list[tuple[str, str | None]] = []
+
+    def fake_status(repo: str, token=None, branch=None):
+        calls.append((repo, branch))
+        return repo_status.RepoStatus("✅", stars=12)
+
+    monkeypatch.setattr(repo_status, "fetch_repo_status_details", fake_status)
+    from datetime import datetime
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert calls == [("democratizedspace/dspace", "v3")]
+    assert "- ✅ ⭐ 12 **[DSPACE](https://democratized.space)**" in readme.read_text()
