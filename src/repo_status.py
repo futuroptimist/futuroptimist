@@ -117,7 +117,7 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
 
     workflow_name = _normalize_run_name(run.get("workflow_name"))
     if workflow_name:
-        return ("name", workflow_name)
+        return ("workflow_name", workflow_name)
 
     name = _normalize_run_name(run.get("name") or run.get("display_title"))
     if name:
@@ -127,6 +127,29 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
     if run_id is not None:
         return ("run_id", str(run_id))
     return None
+
+
+def _workflow_identity_aliases(run: dict) -> tuple[tuple[str, object], ...]:
+    """Return identity keys that can safely refer to the same workflow.
+
+    ``workflow_name`` is stronger than the fallback run ``name``/``display_title``
+    identity, so it normally lives in its own namespace. GitHub payloads can be
+    inconsistent, though: one run may only include ``name="CI"`` while a newer
+    payload for the same workflow includes both ``workflow_name="CI"`` and
+    ``name="CI"``. In that exact same-name shape, include the weak name as a
+    compatibility alias so newer runs do not leave stale failures behind.
+    """
+
+    identity = _workflow_identity(run)
+    if identity is None:
+        return ()
+
+    aliases = [identity]
+    if identity[0] == "workflow_name":
+        fallback_name = _normalize_run_name(run.get("name") or run.get("display_title"))
+        if fallback_name and fallback_name == identity[1]:
+            aliases.append(("name", fallback_name))
+    return tuple(aliases)
 
 
 def _parse_github_timestamp(value: object) -> tuple[int, str]:
@@ -194,15 +217,23 @@ def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
 
     latest_by_workflow: dict[tuple[str, object], dict] = {}
     for run in latest_attempts.values():
-        identity = _workflow_identity(run)
-        if identity is None:
+        identities = _workflow_identity_aliases(run)
+        if not identities:
             continue
-        current = latest_by_workflow.get(identity)
+        current = next(
+            (
+                latest_by_workflow[identity]
+                for identity in identities
+                if identity in latest_by_workflow
+            ),
+            None,
+        )
         if current is None or _run_recency_key(run) > _run_recency_key(current):
-            latest_by_workflow[identity] = run
+            for identity in identities + _workflow_identity_aliases(current or {}):
+                latest_by_workflow[identity] = run
 
     return sorted(
-        latest_by_workflow.values(),
+        {id(run): run for run in latest_by_workflow.values()}.values(),
         key=lambda run: (
             _normalize_run_name(run.get("name") or run.get("display_title")),
             str(_workflow_identity(run) or ""),

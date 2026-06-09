@@ -721,6 +721,49 @@ def test_fetch_repo_status_mixed_workflow_name_and_name_share_identity(
     )
 
 
+def test_fetch_repo_status_workflow_name_does_not_merge_unrelated_run_title(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="Test Suite",
+                workflow_id=None,
+                path=None,
+                workflow_name="Deploy",
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="Deploy",
+                workflow_id=None,
+                path=None,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
 def test_fetch_repo_status_workflow_name_precedes_run_name_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
