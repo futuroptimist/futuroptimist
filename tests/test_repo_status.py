@@ -1602,7 +1602,7 @@ def test_update_readme_branch_url_uses_branch_for_status_and_repo_for_stars(
     readme.write_text(
         "## Related Projects\n"
         "- **[DSPACE](https://democratized.space)** "
-        "([repo](https://github.com/democratizedspace/dspace/tree/v3))\n"
+        "([repo](https://github.com/democratizedspace/dspace/tree/main))\n"
     )
     calls: list[tuple[str, str | None]] = []
 
@@ -1615,5 +1615,5 @@ def test_update_readme_branch_url_uses_branch_for_status_and_repo_for_stars(
 
     repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
 
-    assert calls == [("democratizedspace/dspace", "v3")]
+    assert calls == [("democratizedspace/dspace", "main")]
     assert "- ✅ ⭐ 12 **[DSPACE](https://democratized.space)**" in readme.read_text()
