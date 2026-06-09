@@ -685,6 +685,42 @@ def test_fetch_repo_status_newer_success_overrides_failed_workflow_name(
     )
 
 
+def test_fetch_repo_status_mixed_workflow_name_and_name_do_not_split_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="CI",
+                workflow_id=None,
+                path=None,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="CI",
+                workflow_id=None,
+                path=None,
+                workflow_name="CI",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
 def test_fetch_repo_status_workflow_name_precedes_run_name_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

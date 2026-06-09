@@ -117,7 +117,9 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
 
     workflow_name = _normalize_run_name(run.get("workflow_name"))
     if workflow_name:
-        return ("workflow_name", workflow_name)
+        # Keep workflow_name in the weak name namespace so mixed payloads that
+        # omit workflow_name do not split the same workflow identity.
+        return ("name", workflow_name)
 
     name = _normalize_run_name(run.get("name") or run.get("display_title"))
     if name:
