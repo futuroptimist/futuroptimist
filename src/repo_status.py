@@ -1,9 +1,9 @@
-"""Update README with repo status emojis.
+"""Update README Related Projects with statuses, star counts, and sorting.
 
-Fetches the latest GitHub Actions run for each repo listed in the README's
-"Related Projects" section and prepends a green check, red cross, or question
-mark depending on whether the most recent workflow run on the default branch
-completed successfully, failed, or hasn't completed.
+Fetches repository metadata and the latest relevant GitHub Actions run for each
+repo listed in the README's "Related Projects" section. Each project bullet gets
+a status emoji, optional failure links, and a GitHub star count before the list is
+sorted by stars descending and alphabetically for ties.
 """
 
 from __future__ import annotations
@@ -30,15 +30,20 @@ class StatusLink:
 
 
 @dataclass(frozen=True)
-class RepoStatus:
-    """Rendered status plus optional direct links for failed checks.
+class RepoMetadata:
+    """Repository metadata used by the README status renderer."""
 
-    The structured shape leaves room for future repository metadata without
-    changing the public status-details API again.
-    """
+    default_branch: str | None = None
+    stars: int | None = None
+
+
+@dataclass(frozen=True)
+class RepoStatus:
+    """Rendered status plus optional direct links and repository metadata."""
 
     emoji: str
     failure_links: tuple[StatusLink, ...] = field(default_factory=tuple)
+    stars: int | None = None
 
 
 @dataclass(frozen=True)
@@ -87,6 +92,58 @@ def status_to_emoji(conclusion: str | None) -> str:
     return "❓"
 
 
+def _github_headers(token: str | None = None) -> dict[str, str]:
+    headers = {"Accept": "application/vnd.github+json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def fetch_repo_metadata(repo: str, token: str | None = None) -> RepoMetadata:
+    """Fetch default branch and stargazer count for ``repo``.
+
+    Errors and malformed payloads are non-fatal so a README rebuild can still
+    refresh status emojis and render an explicit unknown star marker.
+    """
+
+    try:
+        repo_resp = requests.get(
+            f"https://api.github.com/repos/{repo}",
+            headers=_github_headers(token),
+            timeout=10,
+        )
+        repo_resp.raise_for_status()
+        repo_data = repo_resp.json()
+    except (requests.exceptions.RequestException, ValueError) as exc:
+        LOGGER.warning("Unable to fetch repository metadata for %s: %s", repo, exc)
+        return RepoMetadata()
+    if not isinstance(repo_data, dict):
+        LOGGER.warning(
+            "Unexpected repository payload for %s: %r", repo, type(repo_data)
+        )
+        return RepoMetadata()
+
+    default_branch = repo_data.get("default_branch")
+    if not isinstance(default_branch, str) or not default_branch:
+        default_branch = None
+
+    raw_stars = repo_data.get("stargazers_count")
+    stars = (
+        raw_stars
+        if isinstance(raw_stars, int) and not isinstance(raw_stars, bool)
+        else None
+    )
+    if stars is None:
+        LOGGER.warning("Missing or invalid stargazer count for %s: %r", repo, raw_stars)
+    return RepoMetadata(default_branch, stars)
+
+
+def format_star_count(stars: int | None) -> str:
+    """Format a compact star count marker for README bullets."""
+
+    return f"⭐ {stars}" if stars is not None else "⭐ ?"
+
+
 def fetch_repo_status_details(
     repo: str,
     token: str | None = None,
@@ -101,26 +158,10 @@ def fetch_repo_status_details(
     ``RuntimeError`` so the calling workflow fails loudly.
     """
 
-    headers = {"Accept": "application/vnd.github+json"}
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-
+    headers = _github_headers(token)
+    metadata = fetch_repo_metadata(repo, token)
     if branch is None:
-        try:
-            repo_resp = requests.get(
-                f"https://api.github.com/repos/{repo}", headers=headers, timeout=10
-            )
-            repo_resp.raise_for_status()
-            repo_data = repo_resp.json()
-        except (requests.exceptions.RequestException, ValueError) as exc:
-            LOGGER.warning("Unable to fetch default branch for %s: %s", repo, exc)
-            return RepoStatus(status_to_emoji(None))
-        if not isinstance(repo_data, dict):
-            LOGGER.warning(
-                "Unexpected repository payload for %s: %r", repo, type(repo_data)
-            )
-            return RepoStatus(status_to_emoji(None))
-        branch = repo_data.get("default_branch")
+        branch = metadata.default_branch
 
     url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
     if branch:
@@ -377,7 +418,9 @@ def fetch_repo_status_details(
         for link in links:
             if link not in failure_links:
                 failure_links.append(link)
-    return RepoStatus(status_to_emoji(conclusions[0]), tuple(failure_links))
+    return RepoStatus(
+        status_to_emoji(conclusions[0]), tuple(failure_links), metadata.stars
+    )
 
 
 def fetch_repo_status(
@@ -444,21 +487,186 @@ LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
 )
 
 
-def _strip_status_prefix(line: str) -> str:
-    """Remove generated status emojis and marked linked-failure prefixes."""
+STAR_PREFIX_RE = re.compile(r"^⭐\s*(?:\?|\d+)\s*")
+VISIBLE_MARKDOWN_LINK_RE = re.compile(
+    r"\*\*\[([^\]]+)\]\([^)]+\)\*\*|\[([^\]]+)\]\([^)]+\)"
+)
 
-    content = line[2:].lstrip()
+
+@dataclass(frozen=True)
+class RelatedProjectItem:
+    """A parsed Related Projects bullet plus continuation lines."""
+
+    first_line: str
+    continuation_lines: tuple[str, ...] = ()
+    cleaned: str = ""
+    repo: str | None = None
+    branch: str | None = None
+    sort_name: str = ""
+    status: RepoStatus | None = None
+
+
+def strip_project_prefix(line: str) -> str:
+    """Remove generated status, failure-link, and star prefixes idempotently."""
+
+    content = line[2:].lstrip() if line.startswith("- ") else line.lstrip()
     while True:
-        match = re.match(r"^([✅❌❓])\s*", content)
-        if not match:
-            return content
-        content = content[match.end() :].lstrip()
-        if match.group(1) == "❌":
+        original = content
+        emoji_match = re.match(r"^([✅❌❓])\s*", content)
+        if emoji_match:
+            content = content[emoji_match.end() :].lstrip()
             content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
             content = LEGACY_STACKED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
             content = LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE.sub(
                 "", content, count=1
             ).lstrip()
+        content = STAR_PREFIX_RE.sub("", content, count=1).lstrip()
+        content = re.sub(r"\s+\(failing runs: [^)]*\)$", "", content)
+        if content == original:
+            return content
+
+
+# Backward-compatible private name used by earlier tests and callers.
+def _strip_status_prefix(line: str) -> str:
+    """Remove generated project prefixes from a Markdown bullet."""
+
+    return strip_project_prefix(line)
+
+
+def _project_sort_name(cleaned: str, repo: str) -> str:
+    """Return the visible project name, falling back to owner/repo."""
+
+    match = VISIBLE_MARKDOWN_LINK_RE.search(cleaned)
+    if match:
+        return (match.group(1) or match.group(2) or repo).strip() or repo
+    return repo
+
+
+def parse_related_project_items(lines: list[str]) -> list[RelatedProjectItem]:
+    """Parse Markdown project bullets with indented continuation lines."""
+
+    items: list[RelatedProjectItem] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if not line.startswith("- "):
+            index += 1
+            continue
+        continuation: list[str] = []
+        index += 1
+        while index < len(lines) and lines[index].startswith((" ", "\t")):
+            continuation.append(lines[index])
+            index += 1
+        cleaned = strip_project_prefix(line)
+        match = GITHUB_RE.search(cleaned)
+        repo = None
+        branch = None
+        sort_name = ""
+        if match:
+            repo = f"{match.group(1)}/{match.group(2)}"
+            branch = match.group(3)
+            sort_name = _project_sort_name(cleaned, repo)
+        items.append(
+            RelatedProjectItem(
+                first_line=line,
+                continuation_lines=tuple(continuation),
+                cleaned=cleaned,
+                repo=repo,
+                branch=branch,
+                sort_name=sort_name,
+            )
+        )
+    return items
+
+
+def render_project_item(item: RelatedProjectItem, details: RepoStatus) -> list[str]:
+    """Render one project item with a fresh status and star prefix."""
+
+    link_suffix = _format_failure_links(details.failure_links)
+    first_line = (
+        f"- {details.emoji}{link_suffix} {format_star_count(details.stars)} "
+        f"{item.cleaned}"
+    )
+    return [first_line, *item.continuation_lines]
+
+
+def sort_project_items(items: list[RelatedProjectItem]) -> list[RelatedProjectItem]:
+    """Sort project items by stars descending, then name case-insensitively."""
+
+    return sorted(
+        items,
+        key=lambda item: (
+            -(
+                item.status.stars
+                if item.status and item.status.stars is not None
+                else -1
+            ),
+            item.sort_name.casefold(),
+            item.repo or "",
+        ),
+    )
+
+
+def _render_related_project_block(
+    block: list[RelatedProjectItem], token: str | None
+) -> list[str]:
+    hydrated: list[RelatedProjectItem] = []
+    for item in block:
+        if item.repo is None:
+            hydrated.append(item)
+            continue
+        report = fetch_repo_status_details(item.repo, token, item.branch)
+        hydrated.append(
+            RelatedProjectItem(
+                item.first_line,
+                item.continuation_lines,
+                item.cleaned,
+                item.repo,
+                item.branch,
+                item.sort_name,
+                report,
+            )
+        )
+
+    rendered: list[str] = []
+    for item in sort_project_items(hydrated):
+        if item.status is None:
+            rendered.extend([item.first_line, *item.continuation_lines])
+        else:
+            rendered.extend(render_project_item(item, item.status))
+    return rendered
+
+
+def _update_related_section_lines(lines: list[str], token: str | None) -> list[str]:
+    """Refresh and sort project bullet blocks without moving prose."""
+
+    output: list[str] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if not line.startswith("- "):
+            output.append(line)
+            index += 1
+            continue
+
+        raw_block: list[str] = []
+        while index < len(lines):
+            current = lines[index]
+            if current.startswith("- "):
+                raw_block.append(current)
+                index += 1
+                while index < len(lines) and lines[index].startswith((" ", "\t")):
+                    raw_block.append(lines[index])
+                    index += 1
+                continue
+            break
+
+        project_items = parse_related_project_items(raw_block)
+        if project_items and all(item.repo is not None for item in project_items):
+            output.extend(_render_related_project_block(project_items, token))
+        else:
+            output.extend(raw_block)
+    return output
 
 
 def update_readme(
@@ -466,14 +674,26 @@ def update_readme(
     token: str | None = None,
     now: datetime | None = None,
 ) -> None:
-    """Update README with status emojis, failure links, and a timestamp."""
+    """Update README with status emojis, star counts, failure links, and timestamp."""
+
     lines = readme_path.read_text(encoding="utf-8").splitlines()
-    in_section = False
     if now is None:
         now = datetime.now(UTC)
     timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
     ts_line = f"_Last updated: {timestamp}; checks hourly_"
+
     output: list[str] = []
+    section_lines: list[str] = []
+    in_section = False
+
+    def flush_section() -> None:
+        nonlocal section_lines
+        filtered = [
+            line for line in section_lines if not line.startswith("_Last updated:")
+        ]
+        output.extend(_update_related_section_lines(filtered, token))
+        section_lines = []
+
     for line in lines:
         if line.strip() == "## Related Projects":
             in_section = True
@@ -481,20 +701,17 @@ def update_readme(
             output.append(ts_line)
             continue
         if in_section and line.startswith("## "):
+            flush_section()
             in_section = False
-        if in_section and line.startswith("_Last updated:"):
+            output.append(line)
             continue
-        if in_section and line.startswith("- "):
-            cleaned = _strip_status_prefix(line)
-            cleaned = re.sub(r"\s+\(failing runs: [^)]*\)$", "", cleaned)
-            match = GITHUB_RE.search(cleaned)
-            if match:
-                repo = f"{match.group(1)}/{match.group(2)}"
-                branch = match.group(3)
-                report = fetch_repo_status_details(repo, token, branch)
-                link_suffix = _format_failure_links(report.failure_links)
-                line = f"- {report.emoji}{link_suffix} {cleaned}"
-        output.append(line)
+        if in_section:
+            section_lines.append(line)
+        else:
+            output.append(line)
+
+    if in_section:
+        flush_section()
 
     # Ensure output file encoded as UTF-8 so emoji render correctly on Windows
     readme_path.write_text("\n".join(output) + "\n", encoding="utf-8")
