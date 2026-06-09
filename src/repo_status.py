@@ -117,7 +117,7 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
 
     workflow_name = _normalize_run_name(run.get("workflow_name"))
     if workflow_name:
-        return ("workflow_name", workflow_name)
+        return ("name", workflow_name)
 
     name = _normalize_run_name(run.get("name") or run.get("display_title"))
     if name:
