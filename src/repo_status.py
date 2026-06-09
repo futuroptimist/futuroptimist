@@ -129,27 +129,14 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
     return None
 
 
-def _workflow_identity_aliases(run: dict) -> tuple[tuple[str, object], ...]:
-    """Return identity keys that can safely refer to the same workflow.
+def _workflow_name_bridge_identity(run: dict) -> tuple[str, object] | None:
+    """Return the weak name bridge for strong same-name workflow payloads."""
 
-    ``workflow_name`` is stronger than the fallback run ``name``/``display_title``
-    identity, so it normally lives in its own namespace. GitHub payloads can be
-    inconsistent, though: one run may only include ``name="CI"`` while a newer
-    payload for the same workflow includes both ``workflow_name="CI"`` and
-    ``name="CI"``. In that exact same-name shape, include the weak name as a
-    compatibility alias so newer runs do not leave stale failures behind.
-    """
-
-    identity = _workflow_identity(run)
-    if identity is None:
-        return ()
-
-    aliases = [identity]
-    if identity[0] == "workflow_name":
-        fallback_name = _normalize_run_name(run.get("name") or run.get("display_title"))
-        if fallback_name and fallback_name == identity[1]:
-            aliases.append(("name", fallback_name))
-    return tuple(aliases)
+    workflow_name = _normalize_run_name(run.get("workflow_name"))
+    fallback_name = _normalize_run_name(run.get("name") or run.get("display_title"))
+    if workflow_name and workflow_name == fallback_name:
+        return ("name", fallback_name)
+    return None
 
 
 def _parse_github_timestamp(value: object) -> tuple[int, str]:
@@ -217,20 +204,32 @@ def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
 
     latest_by_workflow: dict[tuple[str, object], dict] = {}
     for run in latest_attempts.values():
-        identities = _workflow_identity_aliases(run)
-        if not identities:
+        identity = _workflow_identity(run)
+        if identity is None:
             continue
-        current = next(
-            (
-                latest_by_workflow[identity]
-                for identity in identities
-                if identity in latest_by_workflow
-            ),
-            None,
+
+        current = latest_by_workflow.get(identity)
+        run_is_newer = current is None or _run_recency_key(run) > _run_recency_key(
+            current
         )
-        if current is None or _run_recency_key(run) > _run_recency_key(current):
-            for identity in identities + _workflow_identity_aliases(current or {}):
-                latest_by_workflow[identity] = run
+        if run_is_newer:
+            latest_by_workflow[identity] = run
+
+        bridge_identity = _workflow_name_bridge_identity(run)
+        if bridge_identity is None:
+            continue
+
+        # Bridge only from a strong same-name ``workflow_name`` run to an older
+        # weak title-only identity. Never let a weak title-only run overwrite a
+        # separate strong ``workflow_name`` workflow that happens to share text.
+        bridge_current = latest_by_workflow.get(bridge_identity)
+        bridge_current_identity = _workflow_identity(bridge_current or {})
+        bridge_current_is_weak = bridge_current_identity == bridge_identity
+        if bridge_current is None or (
+            bridge_current_is_weak
+            and _run_recency_key(run) > _run_recency_key(bridge_current)
+        ):
+            latest_by_workflow[bridge_identity] = run
 
     return sorted(
         {id(run): run for run in latest_by_workflow.values()}.values(),
