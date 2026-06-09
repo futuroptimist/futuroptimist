@@ -60,6 +60,49 @@ class DummyResp:
         return self._data
 
 
+def make_commit(sha: str = "abc") -> dict:
+    return {
+        "sha": sha,
+        "commit": {
+            "message": "feat: update checks",
+            "author": {"name": "Alice"},
+            "committer": {"name": "Alice"},
+        },
+        "author": {"login": "alice"},
+        "committer": {"login": "alice"},
+    }
+
+
+def stub_repo_status_api(
+    monkeypatch: pytest.MonkeyPatch,
+    runs: list[dict],
+    *,
+    repo: str = "user/repo",
+    branch: str = "main",
+    commits: list[dict] | None = None,
+    stars: int | None = None,
+) -> None:
+    commit_payload = commits or [make_commit("new"), make_commit("old")]
+    metadata = {"default_branch": branch}
+    if stars is not None:
+        metadata["stargazers_count"] = stars
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == f"https://api.github.com/repos/{repo}":
+            return DummyResp(metadata)
+        if url.startswith(
+            f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20"
+        ):
+            return DummyResp(commit_payload)
+        assert url == (
+            f"https://api.github.com/repos/{repo}/actions/runs?"
+            f"per_page=100&status=completed&branch={branch}"
+        )
+        return DummyResp({"workflow_runs": runs})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+
 def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
 
@@ -369,6 +412,364 @@ def test_fetch_repo_status_prefers_latest_attempt(
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "✅"
+
+
+def test_fetch_repo_status_newer_success_overrides_workflow_id_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_branch": "main",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "CI",
+                "run_number": 1,
+                "workflow_id": 100,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_branch": "main",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "CI",
+                "run_number": 2,
+                "workflow_id": 100,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus("✅")
+
+
+def test_fetch_repo_status_newer_success_overrides_matching_path_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "Tests",
+                "path": ".github/workflows/tests.yml",
+                "run_number": 10,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "Tests",
+                "path": ".github/workflows/tests.yml",
+                "run_number": 11,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus("✅")
+
+
+def test_fetch_repo_status_newer_success_overrides_matching_normalized_name_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "Update  Repo-Statuses",
+                "run_number": 7,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "update repo_statuses",
+                "run_number": 8,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus("✅")
+
+
+def test_fetch_repo_status_unrelated_name_success_does_not_override_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "Build",
+                "run_number": 1,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "CI",
+                "run_number": 2,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus(
+        "❌",
+        (
+            repo_status.StatusLink(
+                "Build", "https://github.com/user/repo/actions/runs/1"
+            ),
+        ),
+    )
+
+
+def test_fetch_repo_status_different_workflow_success_does_not_hide_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "Build",
+                "run_number": 1,
+                "workflow_id": 101,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "CI",
+                "run_number": 2,
+                "workflow_id": 102,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus(
+        "❌",
+        (
+            repo_status.StatusLink(
+                "Build", "https://github.com/user/repo/actions/runs/1"
+            ),
+        ),
+    )
+
+
+def test_fetch_repo_status_different_branch_success_does_not_override_selected_branch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_branch": "main",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "CI",
+                "run_number": 1,
+                "workflow_id": 100,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_branch": "dev",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "CI",
+                "run_number": 2,
+                "workflow_id": 100,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus(
+        "❌",
+        (repo_status.StatusLink("CI", "https://github.com/user/repo/actions/runs/1"),),
+    )
+
+
+def test_fetch_repo_status_latest_failed_run_keeps_latest_failure_link(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "CI",
+                "run_number": 1,
+                "workflow_id": 100,
+            },
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "CI",
+                "run_number": 2,
+                "workflow_id": 100,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus(
+        "❌",
+        (repo_status.StatusLink("CI", "https://github.com/user/repo/actions/runs/2"),),
+    )
+
+
+def test_fetch_repo_status_multiple_workflows_link_only_latest_failures(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/1",
+                "name": "Tests",
+                "workflow_id": 101,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/2",
+                "name": "Tests",
+                "workflow_id": 101,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_sha": "old",
+                "html_url": "https://github.com/user/repo/actions/runs/3",
+                "name": "Build",
+                "workflow_id": 102,
+            },
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/4",
+                "name": "Build",
+                "workflow_id": 102,
+            },
+            {
+                "conclusion": "cancelled",
+                "created_at": "2026-01-03T00:00:00Z",
+                "head_sha": "new",
+                "html_url": "https://github.com/user/repo/actions/runs/5",
+                "name": "Lint",
+                "workflow_id": 103,
+            },
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details(
+        "user/repo", attempts=1
+    ) == repo_status.RepoStatus(
+        "❌",
+        (
+            repo_status.StatusLink(
+                "Build", "https://github.com/user/repo/actions/runs/4"
+            ),
+            repo_status.StatusLink(
+                "Lint", "https://github.com/user/repo/actions/runs/5"
+            ),
+        ),
+    )
+
+
+def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    stale_link = "https://github.com/futuroptimist/flywheel/actions/runs/27123196602"
+    readme.write_text(
+        "## Related Projects\n"
+        f"- ❌ ([Update Repo Statuses]({stale_link})) "
+        "<!-- repo-status:failure-links --> ⭐ 1 "
+        "**[flywheel](https://github.com/futuroptimist/flywheel)** "
+        "- fitness automation\n"
+    )
+    stub_repo_status_api(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "created_at": "2026-01-01T00:00:00Z",
+                "head_branch": "main",
+                "head_sha": "old",
+                "html_url": "https://github.com/futuroptimist/flywheel/actions/runs/27123196602",
+                "name": "Update Repo Statuses",
+                "run_number": 10,
+                "workflow_id": 55,
+            },
+            {
+                "conclusion": "success",
+                "created_at": "2026-01-02T00:00:00Z",
+                "head_branch": "main",
+                "head_sha": "new",
+                "html_url": "https://github.com/futuroptimist/flywheel/actions/runs/27199999999",
+                "name": "Update Repo Statuses",
+                "run_number": 11,
+                "workflow_id": 55,
+            },
+        ],
+        repo="futuroptimist/flywheel",
+        stars=7,
+    )
+    from datetime import datetime
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "- ✅ ⭐ 7 **[flywheel](https://github.com/futuroptimist/flywheel)** - fitness automation",
+    ]
 
 
 def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> None:
