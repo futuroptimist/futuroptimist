@@ -78,7 +78,7 @@ def _workflow_run(
     *,
     sha: str = "abc",
     name: str = "Test Suite",
-    workflow_id: int | None = 123,
+    workflow_id: int | str | None = 123,
     path: str | None = ".github/workflows/tests.yml",
     run_number: int = 1,
     run_attempt: int = 1,
@@ -474,6 +474,105 @@ def test_fetch_repo_status_newer_success_overrides_failed_workflow_id(
 
     assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
         repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_preserves_id_only_failed_run(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            {
+                "conclusion": "failure",
+                "head_sha": "abc",
+                "head_branch": "main",
+                "id": 99,
+                "html_url": "https://github.com/user/repo/actions/runs/99",
+            }
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "workflow run", "https://github.com/user/repo/actions/runs/99"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_mixed_workflow_id_types_share_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                workflow_id=7,
+                run_number=10,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=10,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                workflow_id="7",
+                run_number=11,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=11,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_run_number_beats_later_updated_at(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                workflow_id=7,
+                run_number=10,
+                created_at="2025-09-25T12:00:00Z",
+                updated_at="2025-09-25T14:00:00Z",
+                run_id=10,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                workflow_id=7,
+                run_number=11,
+                created_at="2025-09-25T13:00:00Z",
+                updated_at="2025-09-25T13:05:00Z",
+                run_id=11,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_parse_github_timestamp_treats_naive_iso_as_utc() -> None:
+    assert repo_status._parse_github_timestamp("2025-09-25T12:00:00") == (
+        1,
+        "2025-09-25T12:00:00+00:00",
     )
 
 

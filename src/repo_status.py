@@ -109,7 +109,7 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
 
     workflow_id = run.get("workflow_id")
     if workflow_id is not None:
-        return ("workflow_id", workflow_id)
+        return ("workflow_id", str(workflow_id))
 
     path = run.get("path")
     if isinstance(path, str) and path.strip():
@@ -118,6 +118,10 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
     name = _normalize_run_name(run.get("name") or run.get("display_title"))
     if name:
         return ("name", name)
+
+    run_id = run.get("id")
+    if run_id is not None:
+        return ("run_id", str(run_id))
     return None
 
 
@@ -131,6 +135,8 @@ def _parse_github_timestamp(value: object) -> tuple[int, str]:
         parsed = datetime.fromisoformat(normalized.replace("Z", "+00:00"))
     except ValueError:
         return (0, normalized)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
     return (1, parsed.astimezone(UTC).isoformat())
 
 
@@ -141,17 +147,19 @@ def _coerce_int(value: object) -> int:
         return 0
 
 
-def _run_recency_key(run: dict) -> tuple[tuple[int, str], int, int, int]:
+def _run_recency_key(run: dict) -> tuple[int, int, int, tuple[int, str], int]:
     """Return a deterministic key for comparing completed workflow runs."""
 
     timestamp = max(
         _parse_github_timestamp(run.get("created_at")),
         _parse_github_timestamp(run.get("updated_at")),
     )
+    run_number = run.get("run_number")
     return (
-        timestamp,
-        _coerce_int(run.get("run_number")),
+        int(run_number is not None),
+        _coerce_int(run_number),
         _coerce_int(run.get("run_attempt")),
+        timestamp,
         _coerce_int(run.get("id")),
     )
 
