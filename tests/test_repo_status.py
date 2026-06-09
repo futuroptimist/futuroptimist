@@ -16,7 +16,8 @@ def test_status_to_emoji() -> None:
     assert status_to_emoji("SUCCESS") == "✅"
     assert status_to_emoji("FAILURE") == "❌"
     assert status_to_emoji(None) == "❓"
-    assert status_to_emoji("neutral") == "❓"
+    assert status_to_emoji("neutral") == "✅"
+    assert status_to_emoji("skipped") == "✅"
 
 
 def test_status_to_emoji_strips_whitespace() -> None:
@@ -80,6 +81,7 @@ def _workflow_run(
     name: str = "Test Suite",
     workflow_id: int | str | None = 123,
     path: str | None = ".github/workflows/tests.yml",
+    workflow_name: str | None = None,
     run_number: int = 1,
     run_attempt: int = 1,
     created_at: str = "2025-09-25T12:00:00Z",
@@ -101,6 +103,8 @@ def _workflow_run(
         run["workflow_id"] = workflow_id
     if path is not None:
         run["path"] = path
+    if workflow_name is not None:
+        run["workflow_name"] = workflow_name
     if updated_at is not None:
         run["updated_at"] = updated_at
     if run_id is not None:
@@ -637,6 +641,160 @@ def test_fetch_repo_status_newer_success_overrides_failed_normalized_name(
             ),
         ],
         commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_newer_success_overrides_failed_workflow_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="run title changed",
+                workflow_id=None,
+                path=None,
+                workflow_name=" CI   Checks ",
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="different run title",
+                workflow_id=None,
+                path=None,
+                workflow_name="ci checks",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_workflow_name_precedes_run_name_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="Test Suite",
+                workflow_id=None,
+                path=None,
+                workflow_name="CI",
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="Test Suite",
+                workflow_id=None,
+                path=None,
+                workflow_name="Deploy",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_bot_success_overrides_older_same_workflow_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                workflow_id=7,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="bot",
+                workflow_id=7,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[
+            {
+                "sha": "bot",
+                "commit": {
+                    "message": "chore: automated update",
+                    "author": {"name": "github-actions[bot]"},
+                    "committer": {"name": "github-actions[bot]"},
+                },
+                "author": {"login": "github-actions[bot]"},
+                "committer": {"login": "github-actions[bot]"},
+            },
+            _human_commit("old"),
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_neutral_and_skipped_are_passing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "neutral",
+                sha="abc",
+                workflow_id=7,
+                run_number=1,
+                run_id=1,
+            ),
+            _workflow_run(
+                "skipped",
+                sha="abc",
+                name="Lint Suite",
+                workflow_id=8,
+                path=".github/workflows/lint.yml",
+                run_number=1,
+                run_id=2,
+            ),
+        ],
     )
 
     assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (

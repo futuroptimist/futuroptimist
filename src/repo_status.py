@@ -73,7 +73,7 @@ def status_to_emoji(conclusion: str | None) -> str:
     ``"SUCCESS"``, ``" failure \n"``, or ``"TIMED\tOUT"`` and receive the same
     result.
 
-    - ``"success"`` → ✅
+    - ``"success"``, ``"neutral"``, ``"skipped"`` → ✅
     - ``"failure"``, ``"cancelled"``, ``"canceled"``, ``"timed_out"``,
       ``"startup_failure"``, ``"action_required"`` → ❌
     - anything else (including ``None`` or non-strings) → ❓
@@ -82,7 +82,7 @@ def status_to_emoji(conclusion: str | None) -> str:
         normalized = ""
     else:
         normalized = re.sub(r"[\s-]+", "_", conclusion.strip().lower())
-    if normalized == "success":
+    if normalized in {"success", "neutral", "skipped"}:
         return "✅"
     if normalized in {
         "failure",
@@ -114,6 +114,10 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
     path = run.get("path")
     if isinstance(path, str) and path.strip():
         return ("path", path.strip().casefold())
+
+    workflow_name = _normalize_run_name(run.get("workflow_name"))
+    if workflow_name:
+        return ("workflow_name", workflow_name)
 
     name = _normalize_run_name(run.get("name") or run.get("display_title"))
     if name:
@@ -277,6 +281,7 @@ def fetch_repo_status_details(
         "startup_failure",
         "action_required",
     }
+    passing = {"success", "neutral", "skipped"}
 
     def _normalize_conclusion(value: str | None) -> str:
         if not isinstance(value, str):
@@ -396,7 +401,7 @@ def fetch_repo_status_details(
         conclusions = {_normalize_conclusion(r.get("conclusion")) for r in latest}
         if any(c in failures for c in conclusions):
             return "failure", failed_links
-        if "success" in conclusions:
+        if any(c in passing for c in conclusions):
             return "success", ()
         if conclusions:
             # Completed runs with non-success conclusions still indicate no green CI.
