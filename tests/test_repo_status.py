@@ -60,6 +60,81 @@ class DummyResp:
         return self._data
 
 
+def _human_commit(sha: str, message: str = "feat: update") -> dict:
+    return {
+        "sha": sha,
+        "commit": {
+            "message": message,
+            "author": {"name": "Alice"},
+            "committer": {"name": "Alice"},
+        },
+        "author": {"login": "alice"},
+        "committer": {"login": "alice"},
+    }
+
+
+def _workflow_run(
+    conclusion: str,
+    *,
+    sha: str = "abc",
+    name: str = "Test Suite",
+    workflow_id: int | None = 123,
+    path: str | None = ".github/workflows/tests.yml",
+    run_number: int = 1,
+    run_attempt: int = 1,
+    created_at: str = "2025-09-25T12:00:00Z",
+    updated_at: str | None = None,
+    run_id: int | None = None,
+    branch: str = "main",
+) -> dict:
+    run: dict = {
+        "conclusion": conclusion,
+        "head_sha": sha,
+        "head_branch": branch,
+        "name": name,
+        "run_number": run_number,
+        "run_attempt": run_attempt,
+        "created_at": created_at,
+        "html_url": f"https://github.com/user/repo/actions/runs/{run_id or run_number}",
+    }
+    if workflow_id is not None:
+        run["workflow_id"] = workflow_id
+    if path is not None:
+        run["path"] = path
+    if updated_at is not None:
+        run["updated_at"] = updated_at
+    if run_id is not None:
+        run["id"] = run_id
+    return run
+
+
+def _mock_repo_status_requests(
+    monkeypatch: pytest.MonkeyPatch,
+    runs: list[dict],
+    *,
+    commits: list[dict] | None = None,
+    branch: str = "main",
+    stars: int | None = None,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/user/repo":
+            data: dict = {"default_branch": branch}
+            if stars is not None:
+                data["stargazers_count"] = stars
+            return DummyResp(data)
+        if url.startswith(
+            f"https://api.github.com/repos/user/repo/commits?sha={branch}&per_page=20"
+        ):
+            return DummyResp(commits or [_human_commit("abc")])
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            f"per_page=100&status=completed&branch={branch}"
+        )
+        return DummyResp({"workflow_runs": runs})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+
 def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
 
@@ -369,6 +444,316 @@ def test_fetch_repo_status_prefers_latest_attempt(
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "✅"
+
+
+def test_fetch_repo_status_newer_success_overrides_failed_workflow_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                workflow_id=7,
+                run_number=10,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=10,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                workflow_id=7,
+                run_number=11,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=11,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_newer_success_overrides_failed_workflow_path(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                workflow_id=None,
+                path=".github/workflows/ci.yml",
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                workflow_id=None,
+                path=".github/workflows/ci.yml",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_newer_success_overrides_failed_normalized_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name=" Test   Suite ",
+                workflow_id=None,
+                path=None,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="test suite",
+                workflow_id=None,
+                path=None,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_unrelated_names_do_not_override_each_other(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="Test Suite",
+                workflow_id=None,
+                path=None,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="Lint Suite",
+                workflow_id=None,
+                path=None,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_newer_different_workflow_success_keeps_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="Test Suite",
+                workflow_id=1,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="Lint Suite",
+                workflow_id=2,
+                path=".github/workflows/lint.yml",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_different_branch_success_does_not_override_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                workflow_id=7,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+                branch="main",
+            ),
+            _workflow_run(
+                "success",
+                sha="dev-sha",
+                workflow_id=7,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+                branch="dev",
+            ),
+        ],
+        commits=[_human_commit("main-sha"), _human_commit("dev-sha")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_latest_failed_run_links_latest_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "success",
+                sha="old",
+                workflow_id=7,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "failure",
+                sha="new",
+                workflow_id=7,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/2"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_multiple_workflows_link_only_latest_failures(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="Test Suite",
+                workflow_id=1,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="Test Suite",
+                workflow_id=1,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+            _workflow_run(
+                "failure",
+                sha="new",
+                name="Lint Suite",
+                workflow_id=2,
+                path=".github/workflows/lint.yml",
+                run_number=3,
+                created_at="2025-09-25T13:05:00Z",
+                run_id=3,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Lint Suite", "https://github.com/user/repo/actions/runs/3"
+                ),
+            ),
+        )
+    )
 
 
 def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1405,6 +1790,75 @@ def test_update_readme_preserves_hand_authored_run_note_before_raw_repo(
         "- ✅ ⭐ ? ([debug run](https://github.com/user/repo/actions/runs/123)) "
         "https://github.com/user/repo - desc",
     ]
+
+
+def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from datetime import datetime
+
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "# Futuroptimist\n\n"
+        "## Related Projects\n"
+        "- ❌ [Update Repo Statuses](https://github.com/futuroptimist/flywheel/actions/"
+        "runs/27123196602) "
+        "<!-- repo-status:failure-links --> ⭐ ? "
+        "**[flywheel](https://github.com/futuroptimist/flywheel)** - automate the loop\n",
+        encoding="utf-8",
+    )
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        if url == "https://api.github.com/repos/futuroptimist/flywheel":
+            return DummyResp({"default_branch": "main", "stargazers_count": 9})
+        if url.startswith(
+            "https://api.github.com/repos/futuroptimist/flywheel/commits?sha=main&per_page=20"
+        ):
+            return DummyResp([_human_commit("new"), _human_commit("old")])
+        assert url == (
+            "https://api.github.com/repos/futuroptimist/flywheel/actions/runs?"
+            "per_page=100&status=completed&branch=main"
+        )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "failure",
+                        "head_sha": "old",
+                        "head_branch": "main",
+                        "name": "Update Repo Statuses",
+                        "workflow_id": 99,
+                        "run_number": 20,
+                        "run_attempt": 1,
+                        "created_at": "2025-09-25T12:00:00Z",
+                        "html_url": "https://github.com/futuroptimist/flywheel/actions/runs/27123196602",
+                    },
+                    {
+                        "conclusion": "success",
+                        "head_sha": "new",
+                        "head_branch": "main",
+                        "name": "Update Repo Statuses",
+                        "workflow_id": 99,
+                        "run_number": 21,
+                        "run_attempt": 1,
+                        "created_at": "2025-09-25T13:00:00Z",
+                        "html_url": "https://github.com/futuroptimist/flywheel/actions/runs/27199999999",
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    repo_status.update_readme(readme, now=datetime(2025, 9, 25, 14, 0, tzinfo=UTC))
+
+    rendered = readme.read_text(encoding="utf-8")
+    assert (
+        "- ✅ ⭐ 9 **[flywheel](https://github.com/futuroptimist/flywheel)** - automate the loop"
+        in rendered
+    )
+    assert "27123196602" not in rendered
+    assert "repo-status:failure-links" not in rendered
 
 
 def test_profile_readme_related_projects_copy_is_parseable() -> None:

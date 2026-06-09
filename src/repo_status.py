@@ -96,6 +96,110 @@ def status_to_emoji(conclusion: str | None) -> str:
     return "❓"
 
 
+def _normalize_run_name(value: object) -> str:
+    """Normalize a workflow/run name for weak identity fallback."""
+
+    if not isinstance(value, str):
+        return ""
+    return re.sub(r"\s+", " ", value.strip().casefold())
+
+
+def _workflow_identity(run: dict) -> tuple[str, object] | None:
+    """Return the strongest durable workflow identity available for ``run``."""
+
+    workflow_id = run.get("workflow_id")
+    if workflow_id is not None:
+        return ("workflow_id", workflow_id)
+
+    path = run.get("path")
+    if isinstance(path, str) and path.strip():
+        return ("path", path.strip().casefold())
+
+    name = _normalize_run_name(run.get("name") or run.get("display_title"))
+    if name:
+        return ("name", name)
+    return None
+
+
+def _parse_github_timestamp(value: object) -> tuple[int, str]:
+    """Return a sortable timestamp key without raising for malformed values."""
+
+    if not isinstance(value, str) or not value:
+        return (0, "")
+    normalized = value.strip()
+    try:
+        parsed = datetime.fromisoformat(normalized.replace("Z", "+00:00"))
+    except ValueError:
+        return (0, normalized)
+    return (1, parsed.astimezone(UTC).isoformat())
+
+
+def _coerce_int(value: object) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _run_recency_key(run: dict) -> tuple[tuple[int, str], int, int, int]:
+    """Return a deterministic key for comparing completed workflow runs."""
+
+    timestamp = max(
+        _parse_github_timestamp(run.get("created_at")),
+        _parse_github_timestamp(run.get("updated_at")),
+    )
+    return (
+        timestamp,
+        _coerce_int(run.get("run_number")),
+        _coerce_int(run.get("run_attempt")),
+        _coerce_int(run.get("id")),
+    )
+
+
+def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
+    """Return the latest completed run for each workflow identity."""
+
+    latest_attempts: dict[tuple[object, object, object], dict] = {}
+    for run in runs:
+        if not isinstance(run, dict):
+            continue
+        identity = _workflow_identity(run)
+        if identity is None:
+            continue
+        run_number = run.get("run_number")
+        run_id = run.get("id")
+        if run_id is not None:
+            attempt_key = (identity, None, run_id)
+        elif run_number is not None:
+            attempt_key = (identity, run_number, None)
+        else:
+            attempt_key = (identity, None, None)
+        current_attempt = latest_attempts.get(attempt_key)
+        if current_attempt is None or _run_recency_key(run) > _run_recency_key(
+            current_attempt
+        ):
+            latest_attempts[attempt_key] = run
+
+    latest_by_workflow: dict[tuple[str, object], dict] = {}
+    for run in latest_attempts.values():
+        identity = _workflow_identity(run)
+        if identity is None:
+            continue
+        current = latest_by_workflow.get(identity)
+        if current is None or _run_recency_key(run) > _run_recency_key(current):
+            latest_by_workflow[identity] = run
+
+    return sorted(
+        latest_by_workflow.values(),
+        key=lambda run: (
+            _normalize_run_name(run.get("name") or run.get("display_title")),
+            str(_workflow_identity(run) or ""),
+            _coerce_int(run.get("run_number")),
+            _coerce_int(run.get("id")),
+        ),
+    )
+
+
 def fetch_repo_metadata(repo: str, token: str | None = None) -> RepoMetadata:
     """Fetch default branch and star count for ``repo`` without raising."""
 
@@ -274,53 +378,22 @@ def fetch_repo_status_details(
             )
         )
 
-    def _evaluate_runs(runs: Iterable[dict]) -> tuple[str, tuple[StatusLink, ...]]:
-        """Return conclusion and failure links for each workflow latest attempt."""
+    def _evaluate_runs(
+        runs: Iterable[dict],
+    ) -> tuple[str | None, tuple[StatusLink, ...]]:
+        """Return conclusion and failure links for each workflow's latest run."""
 
-        latest_runs: dict[tuple[object, object, object], dict] = {}
-
-        def _attempt_key(run: dict) -> tuple[int, str]:
-            raw_attempt = run.get("run_attempt")
-            try:
-                attempt = int(raw_attempt)
-            except (TypeError, ValueError):
-                attempt = 0
-            updated = run.get("updated_at")
-            return (attempt, str(updated) if updated is not None else "")
-
-        for run in runs:
-            workflow_id = run.get("workflow_id")
-            run_number = run.get("run_number")
-            run_id = run.get("id")
-            if workflow_id is not None and run_number is not None:
-                key = (workflow_id, run_number, None)
-            elif run_id is not None:
-                key = (None, None, run_id)
-            else:
-                key = (None, None, run.get("name"))
-            current = latest_runs.get(key)
-            if current is None or _attempt_key(run) > _attempt_key(current):
-                latest_runs[key] = run
-
-        latest = sorted(
-            latest_runs.values(),
-            key=lambda run: (
-                _run_label(run).casefold(),
-                str(run.get("workflow_id") or ""),
-                str(run.get("run_number") or ""),
-                str(run.get("id") or ""),
-            ),
-        )
+        latest = _latest_completed_runs_by_workflow(runs)
         failed_links = _disambiguated_failure_links(latest)
-        conclusions = {
-            _normalize_conclusion(r.get("conclusion")) for r in latest_runs.values()
-        }
+        conclusions = {_normalize_conclusion(r.get("conclusion")) for r in latest}
         if any(c in failures for c in conclusions):
             return "failure", failed_links
         if "success" in conclusions:
             return "success", ()
-        # Default to failure so lack of CI coverage surfaces as ❌
-        return "failure", failed_links
+        if conclusions:
+            # Completed runs with non-success conclusions still indicate no green CI.
+            return "failure", failed_links
+        return None, ()
 
     def _fetch() -> tuple[str | None, tuple[StatusLink, ...]]:
         try:
@@ -374,27 +447,33 @@ def fetch_repo_status_details(
 
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
+            run_branch = run.get("head_branch")
+            if isinstance(run_branch, str) and branch and run_branch != branch:
+                continue
             sha = run.get("head_sha")
             if not isinstance(sha, str):
                 continue
             runs_by_sha.setdefault(sha, []).append(run)
 
+        selected_runs: list[dict] = []
         for commit in commits:
             sha = commit.get("sha")
             if not isinstance(sha, str):
                 continue
             commit_runs = runs_by_sha.get(sha, [])
             if commit_runs:
-                important = [
-                    r for r in commit_runs if keywords.search(r.get("name", ""))
-                ]
-                if important:
-                    commit_runs = important
-                return _evaluate_runs(commit_runs)
+                selected_runs.extend(commit_runs)
+                continue
             if _should_skip_commit(commit):
                 continue
+            break
+
+        if not selected_runs:
             return None, ()
-        return None, ()
+        important = [r for r in selected_runs if keywords.search(r.get("name", ""))]
+        if important:
+            selected_runs = important
+        return _evaluate_runs(selected_runs)
 
     reports = [_fetch() for _ in range(attempts)]
     conclusions = [report[0] for report in reports]
@@ -467,6 +546,10 @@ GENERATED_FAILURE_LINKS_RE = re.compile(
     rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)"
     rf"\s*{re.escape(GENERATED_FAILURE_LINKS_MARKER)}\s*"
 )
+GENERATED_LEADING_FAILURE_LINKS_RE = re.compile(
+    rf"^(?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+"
+    rf"\s*{re.escape(GENERATED_FAILURE_LINKS_MARKER)}\s*"
+)
 LEGACY_STACKED_FAILURE_LINKS_RE = re.compile(
     rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*(?=[✅❌❓⭐])"
 )
@@ -509,6 +592,7 @@ def strip_project_prefix(line: str) -> str:
         original = content
         content = re.sub(r"^[✅❌❓]\s*", "", content, count=1).lstrip()
         content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
+        content = GENERATED_LEADING_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
         content = LEGACY_STACKED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
         content = _strip_legacy_failure_links_before_markdown_repo(content)
         content = _strip_keyworded_legacy_failure_links_before_raw_repo(content)
