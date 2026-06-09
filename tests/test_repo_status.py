@@ -807,6 +807,49 @@ def test_fetch_repo_status_workflow_name_and_name_do_not_weak_merge_newer_title_
     )
 
 
+def test_fetch_repo_status_workflow_id_does_not_bridge_to_weak_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="old",
+                name="CI",
+                workflow_id=None,
+                path=None,
+                run_number=1,
+                created_at="2025-09-25T12:00:00Z",
+                run_id=1,
+            ),
+            _workflow_run(
+                "success",
+                sha="new",
+                name="CI",
+                workflow_id=7,
+                path=None,
+                workflow_name="CI",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+            ),
+        ],
+        commits=[_human_commit("new"), _human_commit("old")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "CI", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
 def test_fetch_repo_status_workflow_name_precedes_run_name_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

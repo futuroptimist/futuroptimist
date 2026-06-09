@@ -216,12 +216,14 @@ def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
             latest_by_workflow[identity] = run
 
         bridge_identity = _workflow_name_bridge_identity(run)
-        if bridge_identity is None:
+        if bridge_identity is None or identity[0] != "workflow_name":
             continue
 
-        # Bridge only from a strong same-name ``workflow_name`` run to an older
-        # weak title-only identity. Never let a weak title-only run overwrite a
-        # separate strong ``workflow_name`` workflow that happens to share text.
+        # Bridge only from a same-name ``workflow_name`` run to an older weak
+        # title-only identity. Runs with stronger IDs or paths must not bridge,
+        # because they can be unrelated workflows that happen to share a title.
+        # Never let a weak title-only run overwrite a separate strong
+        # ``workflow_name`` workflow that happens to share text.
         bridge_current = latest_by_workflow.get(bridge_identity)
         bridge_current_identity = _workflow_identity(bridge_current or {})
         bridge_current_is_weak = bridge_current_identity == bridge_identity
