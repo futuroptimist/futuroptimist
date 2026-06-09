@@ -46,6 +46,7 @@ durations
 elon
 embeddings
 entrypoint
+entrypoints
 env
 executables
 explainer
@@ -81,6 +82,7 @@ https
 ideation
 img
 ingester
+inspectable
 invalidargument
 io
 irl
@@ -95,6 +97,7 @@ li
 lifecycle
 lifepo
 lifepo₄
+linkcheck
 livestream
 llm
 llms
@@ -130,6 +133,7 @@ openai
 opentimelineio
 optimised
 otio
+parseable
 pathlib
 png
 poisson

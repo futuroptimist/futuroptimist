@@ -61,7 +61,7 @@ CONTEXT:
 - Record each incident in `outages/YYYY-MM-DD-incident.json` using `outages/schema.json`.
 - Create a companion postmortem in `outages/YYYY-MM-DD-short-title.md`
   summarizing the root cause and fix.
-- Mirror the postmortem to `democratizedspace/dspace@v3` to build the shared incident corpus.
+- Mirror the postmortem to `democratizedspace/dspace@main` to build the shared incident corpus.
 
 REQUEST:
 1. Run `pre-commit run --all-files`, `pytest -q`, `npm run lint`, `npm run test:ci`,
