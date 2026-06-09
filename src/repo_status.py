@@ -55,6 +55,10 @@ class RepoStatusReport:
 
 
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
+GITHUB_URL_RE = re.compile(r"https://github\.com/([\w-]+)/([\w.-]+)(/[^\s)>]*)?")
+GITHUB_MARKDOWN_LINK_RE = re.compile(
+    r"\[([^\]]+)\]\((https://github\.com/[\w-]+/[\w.-]+(?:/[^\s)]*)?)\)"
+)
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
@@ -466,18 +470,18 @@ GENERATED_FAILURE_LINKS_RE = re.compile(
 LEGACY_STACKED_FAILURE_LINKS_RE = re.compile(
     rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*(?=[✅❌❓⭐])"
 )
-LEGACY_GENERATED_LABEL_RE = (
-    r"(?:\\.|[^\]\\])*?"
-    r"(?:ci|test|lint|build|deploy|release|security|scan|docker|update|publish|workflow|action|check)"
-    r"(?:\\.|[^\]\\])*?"
-)
 LEGACY_GENERATED_ACTION_RUN_LINK_RE = (
-    rf"\[{LEGACY_GENERATED_LABEL_RE}\]"
+    r"\[(?:\\.|[^\]\\])+\]"
     r"\(https://github\.com/[\w.-]+/[\w.-]+/actions/runs/[^)]*\)"
 )
 LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
     rf"^\((?:{LEGACY_GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
-    r"(?=(?:⭐\s*(?:\?|[\d,]+)\s*)?(?:https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?|\*\*?\[[^\]]+\]\(|\[[^\]]+\]\())",
+    r"(?=(?:⭐\s*(?:\?|[\d,]+)\s*)?(?:\*\*?\[[^\]]+\]\(|\[[^\]]+\]\())",
+    re.IGNORECASE,
+)
+LEGACY_KEYWORDED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
+    rf"^\((?:{LEGACY_GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
+    r"(?=(?:⭐\s*(?:\?|[\d,]+)\s*)?https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?)",
     re.IGNORECASE,
 )
 STAR_PREFIX_RE = re.compile(r"^⭐\s*(?:\?|[\d,]+)\s*")
@@ -506,12 +510,78 @@ def strip_project_prefix(line: str) -> str:
         content = re.sub(r"^[✅❌❓]\s*", "", content, count=1).lstrip()
         content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
         content = LEGACY_STACKED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
-        content = LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE.sub(
-            "", content, count=1
-        ).lstrip()
+        content = _strip_legacy_failure_links_before_markdown_repo(content)
+        content = _strip_keyworded_legacy_failure_links_before_raw_repo(content)
         content = STAR_PREFIX_RE.sub("", content, count=1).lstrip()
         if content == original:
             return LEGACY_FAILING_RUNS_RE.sub("", content)
+
+
+def _strip_legacy_failure_links_before_markdown_repo(content: str) -> str:
+    """Strip generated action-run links before Markdown repo links."""
+
+    match = LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE.match(content)
+    if not match:
+        return content
+    labels = re.findall(r"\[((?:\\.|[^\]\\])+)\]", match.group(0))
+    if any(label.replace("\\]", "]").casefold() == "debug run" for label in labels):
+        return content
+    return content[match.end() :].lstrip()
+
+
+def _strip_keyworded_legacy_failure_links_before_raw_repo(content: str) -> str:
+    """Strip older generated failure links before raw repo URLs."""
+
+    match = LEGACY_KEYWORDED_FAILURE_LINKS_BEFORE_REPO_RE.match(content)
+    if not match:
+        return content
+    labels = re.findall(r"\[((?:\\.|[^\]\\])+)\]", match.group(0))
+    generated_label_re = re.compile(
+        r"(?:ci|test|lint|build|deploy|release|security|scan|docker|update|"
+        r"publish|workflow|action|check)",
+        re.IGNORECASE,
+    )
+    if not any(generated_label_re.search(label) for label in labels):
+        return content
+    return content[match.end() :].lstrip()
+
+
+def _parse_project_github_url(url: str) -> tuple[str, str | None] | None:
+    """Return repo and optional branch for project repository URLs only."""
+
+    match = GITHUB_URL_RE.fullmatch(url.rstrip(".,;"))
+    if not match:
+        return None
+    owner, repo_name, suffix = match.groups()
+    if suffix in (None, "", "/"):
+        return f"{owner}/{repo_name}", None
+    tree_prefix = "/tree/"
+    if suffix.startswith(tree_prefix) and len(suffix) > len(tree_prefix):
+        return f"{owner}/{repo_name}", suffix[len(tree_prefix) :]
+    return None
+
+
+def select_project_repo_url(markdown: str) -> tuple[str, str | None] | None:
+    """Select the GitHub project repo URL from a Related Projects item."""
+
+    markdown_links = list(GITHUB_MARKDOWN_LINK_RE.finditer(markdown))
+    for link in markdown_links:
+        if link.group(1).strip().casefold() != "repo":
+            continue
+        parsed = _parse_project_github_url(link.group(2))
+        if parsed:
+            return parsed
+
+    for link in markdown_links:
+        parsed = _parse_project_github_url(link.group(2))
+        if parsed:
+            return parsed
+
+    for match in GITHUB_URL_RE.finditer(markdown):
+        parsed = _parse_project_github_url(match.group(0))
+        if parsed:
+            return parsed
+    return None
 
 
 # Backward-compatible private name used by older tests/imports.
@@ -548,16 +618,16 @@ def parse_related_project_items(lines: list[str]) -> list[RelatedProjectItem]:
             block.pop()
         cleaned = strip_project_prefix(line)
         searchable_block = "\n".join([cleaned, *block[1:]])
-        match = GITHUB_RE.search(searchable_block)
-        if not match:
+        selected_repo = select_project_repo_url(searchable_block)
+        if not selected_repo:
             continue
-        repo = f"{match.group(1)}/{match.group(2)}"
+        repo, branch = selected_repo
         items.append(
             RelatedProjectItem(
                 tuple(block),
                 cleaned,
                 repo,
-                match.group(3),
+                branch,
                 _project_name(cleaned, repo),
                 start_index=start_index,
             )

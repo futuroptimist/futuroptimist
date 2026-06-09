@@ -1628,6 +1628,81 @@ def test_update_readme_uses_repo_link_from_continuation_line(
     ]
 
 
+def test_update_readme_ignores_issue_action_and_note_links_before_repo(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ([note](https://github.com/user/notes)) "
+        "([issue](https://github.com/user/issue-tracker/issues/7)) "
+        "([run](https://github.com/user/automation/actions/runs/99)) "
+        "**[Site](https://example.com)** - external display "
+        "([repo](https://github.com/user/site))\n"
+    )
+    calls: list[tuple[str, str | None]] = []
+
+    def fake_status(repo: str, token=None, branch=None):
+        calls.append((repo, branch))
+        return repo_status.RepoStatus("✅", stars=9)
+
+    monkeypatch.setattr(repo_status, "fetch_repo_status_details", fake_status)
+    from datetime import datetime
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert calls == [("user/site", None)]
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "- ✅ ⭐ 9 ([note](https://github.com/user/notes)) "
+        "([issue](https://github.com/user/issue-tracker/issues/7)) "
+        "([run](https://github.com/user/automation/actions/runs/99)) "
+        "**[Site](https://example.com)** - external display "
+        "([repo](https://github.com/user/site))",
+    ]
+
+
+def test_update_readme_strips_arbitrary_label_legacy_failure_link_before_repo(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ❌ ([Production](https://github.com/user/repo/actions/runs/0)) "
+        "**[repo](https://github.com/user/repo)** - desc\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Production", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+            stars=4,
+        ),
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+    first = readme.read_text()
+    repo_status.update_readme(readme, now=now)
+
+    assert readme.read_text() == first
+    assert readme.read_text().splitlines() == [
+        "## Related Projects",
+        "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
+        "- ❌ ([Production](https://github.com/user/repo/actions/runs/1)) "
+        "<!-- repo-status:failure-links --> ⭐ 4 "
+        "**[repo](https://github.com/user/repo)** - desc",
+    ]
+
+
 def test_update_readme_strips_legacy_deploy_failure_link_before_repo(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
