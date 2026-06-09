@@ -31,14 +31,19 @@ class StatusLink:
 
 @dataclass(frozen=True)
 class RepoStatus:
-    """Rendered status plus optional direct links for failed checks.
-
-    The structured shape leaves room for future repository metadata without
-    changing the public status-details API again.
-    """
+    """Rendered status, failure links, and optional repository star count."""
 
     emoji: str
     failure_links: tuple[StatusLink, ...] = field(default_factory=tuple)
+    stars: int | None = None
+
+
+@dataclass(frozen=True)
+class RepoMetadata:
+    """Small subset of GitHub repository metadata used by the updater."""
+
+    default_branch: str | None = None
+    stars: int | None = None
 
 
 @dataclass(frozen=True)
@@ -49,10 +54,65 @@ class RepoStatusReport:
     failure_links: tuple[str, ...] = field(default_factory=tuple)
 
 
+@dataclass(frozen=True)
+class ProjectItem:
+    """A Markdown list item in the Related Projects section."""
+
+    lines: tuple[str, ...]
+    repo: str | None = None
+    branch: str | None = None
+    name: str = ""
+    details: RepoStatus | None = None
+
+
 GITHUB_RE = re.compile(r"https://github.com/([\w-]+)/([\w.-]+)(?:/tree/([\w./-]+))?")
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
+
+
+def _github_headers(token: str | None = None) -> dict[str, str]:
+    headers = {"Accept": "application/vnd.github+json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def _parse_star_count(value: object) -> int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int) and value >= 0:
+        return value
+    return None
+
+
+def fetch_repo_metadata(repo: str, token: str | None = None) -> RepoMetadata:
+    """Fetch default branch and star count for ``repo`` without crashing callers."""
+
+    try:
+        repo_resp = requests.get(
+            f"https://api.github.com/repos/{repo}",
+            headers=_github_headers(token),
+            timeout=10,
+        )
+        repo_resp.raise_for_status()
+        repo_data = repo_resp.json()
+    except (requests.exceptions.RequestException, ValueError) as exc:
+        LOGGER.warning("Unable to fetch repository metadata for %s: %s", repo, exc)
+        return RepoMetadata()
+    if not isinstance(repo_data, dict):
+        LOGGER.warning(
+            "Unexpected repository payload for %s: %r", repo, type(repo_data)
+        )
+        return RepoMetadata()
+
+    default_branch = repo_data.get("default_branch")
+    if not isinstance(default_branch, str) or not default_branch:
+        default_branch = None
+    return RepoMetadata(
+        default_branch=default_branch,
+        stars=_parse_star_count(repo_data.get("stargazers_count")),
+    )
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -101,26 +161,13 @@ def fetch_repo_status_details(
     ``RuntimeError`` so the calling workflow fails loudly.
     """
 
-    headers = {"Accept": "application/vnd.github+json"}
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
+    headers = _github_headers(token)
+    metadata = fetch_repo_metadata(repo, token)
 
     if branch is None:
-        try:
-            repo_resp = requests.get(
-                f"https://api.github.com/repos/{repo}", headers=headers, timeout=10
-            )
-            repo_resp.raise_for_status()
-            repo_data = repo_resp.json()
-        except (requests.exceptions.RequestException, ValueError) as exc:
-            LOGGER.warning("Unable to fetch default branch for %s: %s", repo, exc)
-            return RepoStatus(status_to_emoji(None))
-        if not isinstance(repo_data, dict):
-            LOGGER.warning(
-                "Unexpected repository payload for %s: %r", repo, type(repo_data)
-            )
-            return RepoStatus(status_to_emoji(None))
-        branch = repo_data.get("default_branch")
+        branch = metadata.default_branch
+        if branch is None:
+            return RepoStatus(status_to_emoji(None), stars=metadata.stars)
 
     url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
     if branch:
@@ -377,7 +424,9 @@ def fetch_repo_status_details(
         for link in links:
             if link not in failure_links:
                 failure_links.append(link)
-    return RepoStatus(status_to_emoji(conclusions[0]), tuple(failure_links))
+    return RepoStatus(
+        status_to_emoji(conclusions[0]), tuple(failure_links), metadata.stars
+    )
 
 
 def fetch_repo_status(
@@ -420,6 +469,12 @@ def _format_failure_links(links: tuple[StatusLink, ...]) -> str:
     return f" ({rendered}) {GENERATED_FAILURE_LINKS_MARKER}"
 
 
+def format_star_count(stars: int | None) -> str:
+    """Format a compact README star count marker."""
+
+    return f"⭐ {stars}" if stars is not None else "⭐ ?"
+
+
 GENERATED_ACTION_RUN_LINK_RE = (
     r"\[(?:\\.|[^\]\\])+\]"
     r"\(https://github\.com/[\w.-]+/[\w.-]+/actions/runs/[^)]*\)"
@@ -442,23 +497,145 @@ LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
     r"(?=https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?(?:\s|$))",
     re.IGNORECASE,
 )
+GENERATED_STAR_RE = re.compile(r"^⭐\s*(?:\?|\d+)\s*")
+VISIBLE_PROJECT_LINK_RE = re.compile(
+    r"\*\*\[([^\]]+)\]\([^)]+\)\*\*|\[([^\]]+)\]\([^)]+\)"
+)
 
 
-def _strip_status_prefix(line: str) -> str:
-    """Remove generated status emojis and marked linked-failure prefixes."""
+def strip_project_prefix(line: str) -> str:
+    """Remove generated status, failure-link, and star prefixes from a bullet."""
 
-    content = line[2:].lstrip()
+    content = line[2:].lstrip() if line.startswith("- ") else line.lstrip()
     while True:
+        original = content
         match = re.match(r"^([✅❌❓])\s*", content)
-        if not match:
+        if match:
+            content = content[match.end() :].lstrip()
+            if match.group(1) == "❌":
+                content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
+                content = LEGACY_STACKED_FAILURE_LINKS_RE.sub(
+                    "", content, count=1
+                ).lstrip()
+                content = LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE.sub(
+                    "", content, count=1
+                ).lstrip()
+        content = GENERATED_STAR_RE.sub("", content, count=1).lstrip()
+        if content == original:
             return content
-        content = content[match.end() :].lstrip()
-        if match.group(1) == "❌":
-            content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
-            content = LEGACY_STACKED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
-            content = LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE.sub(
-                "", content, count=1
-            ).lstrip()
+
+
+# Backward-compatible private name used by older tests and callers.
+def _strip_status_prefix(line: str) -> str:
+    return strip_project_prefix(line)
+
+
+def _project_name(markdown: str, repo: str | None) -> str:
+    match = VISIBLE_PROJECT_LINK_RE.search(markdown)
+    if match:
+        return (match.group(1) or match.group(2) or "").strip()
+    if repo:
+        return repo.rsplit("/", 1)[-1]
+    return markdown.strip()
+
+
+def parse_related_project_items(lines: list[str]) -> list[ProjectItem]:
+    """Parse Markdown project bullets, preserving wrapped continuation lines."""
+
+    items: list[ProjectItem] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if not line.startswith("- "):
+            index += 1
+            continue
+        item_lines = [line]
+        index += 1
+        while index < len(lines) and not lines[index].startswith("- "):
+            if lines[index].startswith(" "):
+                item_lines.append(lines[index])
+                index += 1
+                continue
+            break
+        cleaned = strip_project_prefix(item_lines[0])
+        cleaned = re.sub(r"\s+\(failing runs: [^)]*\)$", "", cleaned)
+        match = GITHUB_RE.search(cleaned)
+        if not match:
+            continue
+        repo = f"{match.group(1)}/{match.group(2)}"
+        branch = match.group(3)
+        items.append(
+            ProjectItem(tuple(item_lines), repo, branch, _project_name(cleaned, repo))
+        )
+    return items
+
+
+def render_project_item(item: ProjectItem, details: RepoStatus) -> list[str]:
+    """Render a project item with fresh status and star prefixes."""
+
+    cleaned = strip_project_prefix(item.lines[0])
+    cleaned = re.sub(r"\s+\(failing runs: [^)]*\)$", "", cleaned)
+    link_suffix = _format_failure_links(details.failure_links)
+    first = (
+        f"- {details.emoji}{link_suffix} {format_star_count(details.stars)} {cleaned}"
+    )
+    return [first, *item.lines[1:]]
+
+
+def _sort_key(item: ProjectItem) -> tuple[int, str]:
+    stars = (
+        item.details.stars if item.details and item.details.stars is not None else -1
+    )
+    return (-stars, item.name.casefold())
+
+
+def sort_project_items(items: list[ProjectItem]) -> list[ProjectItem]:
+    """Sort known-star projects above unknowns, then alphabetically for ties."""
+
+    return sorted(items, key=_sort_key)
+
+
+def _update_related_project_lines(lines: list[str], token: str | None) -> list[str]:
+    items = parse_related_project_items(lines)
+    if not items:
+        return lines
+
+    enriched: list[ProjectItem] = []
+    for item in items:
+        if item.repo:
+            details = fetch_repo_status_details(item.repo, token, item.branch)
+        else:
+            details = RepoStatus("❓")
+        enriched.append(
+            ProjectItem(item.lines, item.repo, item.branch, item.name, details)
+        )
+
+    sorted_items = sort_project_items(enriched)
+    rendered_items: list[str] = []
+    for item in sorted_items:
+        rendered_items.extend(
+            render_project_item(item, item.details or RepoStatus("❓"))
+        )
+
+    project_starts = {item.lines[0] for item in items}
+    output: list[str] = []
+    inserted = False
+    index = 0
+    while index < len(lines):
+        if lines[index].startswith("- ") and lines[index] in project_starts:
+            if not inserted:
+                output.extend(rendered_items)
+                inserted = True
+            index += 1
+            while index < len(lines) and not lines[index].startswith("- "):
+                if lines[index].startswith(" "):
+                    index += 1
+                    continue
+                break
+            continue
+        output.append(lines[index])
+        index += 1
+    return output
 
 
 def update_readme(
@@ -466,35 +643,31 @@ def update_readme(
     token: str | None = None,
     now: datetime | None = None,
 ) -> None:
-    """Update README with status emojis, failure links, and a timestamp."""
+    """Update README with status emojis, failure links, star counts, and a timestamp."""
     lines = readme_path.read_text(encoding="utf-8").splitlines()
-    in_section = False
     if now is None:
         now = datetime.now(UTC)
     timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
     ts_line = f"_Last updated: {timestamp}; checks hourly_"
+
     output: list[str] = []
-    for line in lines:
-        if line.strip() == "## Related Projects":
-            in_section = True
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if line.strip() != "## Related Projects":
             output.append(line)
-            output.append(ts_line)
+            index += 1
             continue
-        if in_section and line.startswith("## "):
-            in_section = False
-        if in_section and line.startswith("_Last updated:"):
-            continue
-        if in_section and line.startswith("- "):
-            cleaned = _strip_status_prefix(line)
-            cleaned = re.sub(r"\s+\(failing runs: [^)]*\)$", "", cleaned)
-            match = GITHUB_RE.search(cleaned)
-            if match:
-                repo = f"{match.group(1)}/{match.group(2)}"
-                branch = match.group(3)
-                report = fetch_repo_status_details(repo, token, branch)
-                link_suffix = _format_failure_links(report.failure_links)
-                line = f"- {report.emoji}{link_suffix} {cleaned}"
+
         output.append(line)
+        output.append(ts_line)
+        index += 1
+        section_lines: list[str] = []
+        while index < len(lines) and not lines[index].startswith("## "):
+            if not lines[index].startswith("_Last updated:"):
+                section_lines.append(lines[index])
+            index += 1
+        output.extend(_update_related_project_lines(section_lines, token))
 
     # Ensure output file encoded as UTF-8 so emoji render correctly on Windows
     readme_path.write_text("\n".join(output) + "\n", encoding="utf-8")
