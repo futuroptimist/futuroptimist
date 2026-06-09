@@ -466,7 +466,11 @@ GENERATED_FAILURE_LINKS_RE = re.compile(
 LEGACY_STACKED_FAILURE_LINKS_RE = re.compile(
     rf"^\((?:{GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*(?=[✅❌❓⭐])"
 )
-LEGACY_GENERATED_LABEL_RE = r"(?:\\.|[^\]\\])*?(?:ci|test|lint|build)(?:\\.|[^\]\\])*?"
+LEGACY_GENERATED_LABEL_RE = (
+    r"(?:\\.|[^\]\\])*?"
+    r"(?:ci|test|lint|build|deploy|release|security|scan|docker|update|publish|workflow|action|check)"
+    r"(?:\\.|[^\]\\])*?"
+)
 LEGACY_GENERATED_ACTION_RUN_LINK_RE = (
     rf"\[{LEGACY_GENERATED_LABEL_RE}\]"
     r"\(https://github\.com/[\w.-]+/[\w.-]+/actions/runs/[^)]*\)"
@@ -543,7 +547,8 @@ def parse_related_project_items(lines: list[str]) -> list[RelatedProjectItem]:
         while block and block[-1] == "":
             block.pop()
         cleaned = strip_project_prefix(line)
-        match = GITHUB_RE.search(cleaned)
+        searchable_block = "\n".join([cleaned, *block[1:]])
+        match = GITHUB_RE.search(searchable_block)
         if not match:
             continue
         repo = f"{match.group(1)}/{match.group(2)}"
