@@ -14,26 +14,26 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-06-08 19:41 UTC; checks hourly_
+_Last updated: 2026-06-08 20:04 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
-Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs need attention; linked failures point to the run or asset to inspect; ❓ no completed relevant run was found or GitHub could not be queried.
+Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs need attention; linked failures point to the run or asset to inspect; ❓ no completed relevant run was found or GitHub could not be queried; ⭐ shows the current GitHub star count, and projects are sorted by stars descending, then alphabetically for ties.
 
-- ✅ **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
-- ✅ **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
-- ❓ **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/v3))
-- ❌ **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
-- ❌ **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
-- ✅ **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
-- ✅ **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
-- ✅ **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
-- ✅ **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
-- ✅ **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
-- ❌ **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
-- ✅ **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
-- ✅ **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
-- ✅ **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
+- ✅ ⭐ 6 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
+- ❓ ⭐ 3 **[DSPACE](https://democratized.space)** @v3 – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/v3))
+- ❌ ([Update Repo Statuses](https://github.com/futuroptimist/flywheel/actions/runs/27123196602)) <!-- repo-status:failure-links --> ⭐ 2 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
+- ✅ ⭐ 1 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
+- ✅ ⭐ 1 **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
+- ✅ ⭐ 0 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
+- ✅ ⭐ 0 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
+- ✅ ⭐ 0 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
+- ❌ ([docker in /docker - Update #1154241084](https://github.com/futuroptimist/gabriel/actions/runs/19421904742), [Security Scans #10](https://github.com/futuroptimist/gabriel/actions/runs/20566165837), [Security Scans #11](https://github.com/futuroptimist/gabriel/actions/runs/20706713112), [Security Scans #12](https://github.com/futuroptimist/gabriel/actions/runs/20909714496), [Security Scans #13](https://github.com/futuroptimist/gabriel/actions/runs/21127165452), [Security Scans #14](https://github.com/futuroptimist/gabriel/actions/runs/21348015488), [Security Scans #15](https://github.com/futuroptimist/gabriel/actions/runs/21579647496), [Security Scans #7](https://github.com/futuroptimist/gabriel/actions/runs/20018430344), [Security Scans #8](https://github.com/futuroptimist/gabriel/actions/runs/20222249132), [Security Scans #9](https://github.com/futuroptimist/gabriel/actions/runs/20423408130)) <!-- repo-status:failure-links --> ⭐ 0 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
+- ✅ ⭐ 0 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
+- ✅ ⭐ 0 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
+- ✅ ⭐ 0 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
+- ❌ ([.github/workflows/tests.yml](https://github.com/futuroptimist/sugarkube/actions/runs/27055466699)) <!-- repo-status:failure-links --> ⭐ 0 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
+- ✅ ⭐ 0 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
 
 ## Values
 
