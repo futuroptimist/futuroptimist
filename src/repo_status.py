@@ -96,6 +96,119 @@ def status_to_emoji(conclusion: str | None) -> str:
     return "❓"
 
 
+def _normalize_identifier(value: object) -> str:
+    """Return a stable, case-insensitive identifier fragment."""
+
+    if value is None:
+        return ""
+    return re.sub(r"[\s-]+", "_", str(value).strip().lower())
+
+
+def _normalize_conclusion(value: object) -> str:
+    """Normalize GitHub workflow conclusion strings for comparisons."""
+
+    if not isinstance(value, str):
+        return ""
+    return _normalize_identifier(value)
+
+
+def _workflow_identity(run: dict) -> tuple[str, object]:
+    """Return the strongest durable workflow identity available for ``run``."""
+
+    workflow_id = run.get("workflow_id")
+    if workflow_id is not None:
+        return ("workflow_id", workflow_id)
+
+    path = run.get("path")
+    if isinstance(path, str) and path.strip():
+        return ("path", path.strip().casefold())
+
+    name = run.get("name") or run.get("workflow_name") or run.get("display_title")
+    normalized_name = _normalize_identifier(name)
+    if normalized_name:
+        return ("name", normalized_name)
+
+    run_id = run.get("id")
+    if run_id is not None:
+        return ("run_id", run_id)
+    return ("unknown", "")
+
+
+def _timestamp_key(value: object) -> tuple[int, str]:
+    if not isinstance(value, str) or not value.strip():
+        return (0, "")
+    normalized = value.strip()
+    try:
+        parsed = datetime.fromisoformat(normalized.replace("Z", "+00:00"))
+    except ValueError:
+        return (1, normalized)
+    return (2, parsed.astimezone(UTC).isoformat())
+
+
+def _integer_key(value: object) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _run_recency_key(run: dict) -> tuple[tuple[int, str], int, int, int]:
+    """Return a deterministic key for selecting the newest completed run."""
+
+    timestamp = run.get("created_at") or run.get("updated_at")
+    return (
+        _timestamp_key(timestamp),
+        _integer_key(run.get("run_number")),
+        _integer_key(run.get("run_attempt")),
+        _integer_key(run.get("id")),
+    )
+
+
+def _run_attempt_key(run: dict) -> tuple[int, tuple[int, str], int, int]:
+    """Return a key that keeps rerun attempts of the same run ordered correctly."""
+
+    timestamp = run.get("updated_at") or run.get("created_at")
+    return (
+        _integer_key(run.get("run_attempt")),
+        _timestamp_key(timestamp),
+        _integer_key(run.get("run_number")),
+        _integer_key(run.get("id")),
+    )
+
+
+def _run_instance_identity(run: dict) -> tuple[object, object, object]:
+    workflow_id = run.get("workflow_id")
+    run_number = run.get("run_number")
+    run_id = run.get("id")
+    if workflow_id is not None and run_number is not None:
+        return ("workflow_run", workflow_id, run_number)
+    if run_id is not None:
+        return ("run_id", run_id, None)
+    return ("workflow_identity", _workflow_identity(run), run_number)
+
+
+def _latest_attempts_by_run(runs: Iterable[dict]) -> list[dict]:
+    latest_runs: dict[tuple[object, object, object], dict] = {}
+    for run in runs:
+        key = _run_instance_identity(run)
+        current = latest_runs.get(key)
+        if current is None or _run_attempt_key(run) > _run_attempt_key(current):
+            latest_runs[key] = run
+    return list(latest_runs.values())
+
+
+def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
+    """Return the latest completed run for each workflow identity."""
+
+    latest_by_workflow: dict[tuple[str, object], dict] = {}
+    for run in _latest_attempts_by_run(runs):
+        identity = _workflow_identity(run)
+        current = latest_by_workflow.get(identity)
+        if current is None or _run_recency_key(run) > _run_recency_key(current):
+            latest_by_workflow[identity] = run
+    return list(latest_by_workflow.values())
+
+
 def fetch_repo_metadata(repo: str, token: str | None = None) -> RepoMetadata:
     """Fetch default branch and star count for ``repo`` without raising."""
 
@@ -165,11 +278,6 @@ def fetch_repo_status_details(
         "startup_failure",
         "action_required",
     }
-
-    def _normalize_conclusion(value: str | None) -> str:
-        if not isinstance(value, str):
-            return ""
-        return re.sub(r"[\s-]+", "_", value.strip().lower())
 
     def _should_skip_commit(commit: dict) -> bool:
         message = commit.get("commit", {}).get("message", "")
@@ -275,46 +383,19 @@ def fetch_repo_status_details(
         )
 
     def _evaluate_runs(runs: Iterable[dict]) -> tuple[str, tuple[StatusLink, ...]]:
-        """Return conclusion and failure links for each workflow latest attempt."""
-
-        latest_runs: dict[tuple[object, object, object], dict] = {}
-
-        def _attempt_key(run: dict) -> tuple[int, str]:
-            raw_attempt = run.get("run_attempt")
-            try:
-                attempt = int(raw_attempt)
-            except (TypeError, ValueError):
-                attempt = 0
-            updated = run.get("updated_at")
-            return (attempt, str(updated) if updated is not None else "")
-
-        for run in runs:
-            workflow_id = run.get("workflow_id")
-            run_number = run.get("run_number")
-            run_id = run.get("id")
-            if workflow_id is not None and run_number is not None:
-                key = (workflow_id, run_number, None)
-            elif run_id is not None:
-                key = (None, None, run_id)
-            else:
-                key = (None, None, run.get("name"))
-            current = latest_runs.get(key)
-            if current is None or _attempt_key(run) > _attempt_key(current):
-                latest_runs[key] = run
+        """Return conclusion and failure links for each workflow latest run."""
 
         latest = sorted(
-            latest_runs.values(),
+            _latest_completed_runs_by_workflow(runs),
             key=lambda run: (
                 _run_label(run).casefold(),
-                str(run.get("workflow_id") or ""),
+                str(_workflow_identity(run)),
                 str(run.get("run_number") or ""),
                 str(run.get("id") or ""),
             ),
         )
         failed_links = _disambiguated_failure_links(latest)
-        conclusions = {
-            _normalize_conclusion(r.get("conclusion")) for r in latest_runs.values()
-        }
+        conclusions = {_normalize_conclusion(r.get("conclusion")) for r in latest}
         if any(c in failures for c in conclusions):
             return "failure", failed_links
         if "success" in conclusions:
@@ -372,25 +453,25 @@ def fetch_repo_status_details(
             )
             return None, ()
 
-        runs_by_sha: dict[str, list[dict]] = {}
+        candidate_runs: list[dict] = []
         for run in runs:
-            sha = run.get("head_sha")
-            if not isinstance(sha, str):
+            head_branch = run.get("head_branch")
+            if isinstance(head_branch, str) and head_branch != branch:
                 continue
-            runs_by_sha.setdefault(sha, []).append(run)
+            candidate_runs.append(run)
+
+        if candidate_runs:
+            important = [
+                r for r in candidate_runs if keywords.search(str(r.get("name", "")))
+            ]
+            if important:
+                candidate_runs = important
+            return _evaluate_runs(candidate_runs)
 
         for commit in commits:
             sha = commit.get("sha")
             if not isinstance(sha, str):
                 continue
-            commit_runs = runs_by_sha.get(sha, [])
-            if commit_runs:
-                important = [
-                    r for r in commit_runs if keywords.search(r.get("name", ""))
-                ]
-                if important:
-                    commit_runs = important
-                return _evaluate_runs(commit_runs)
             if _should_skip_commit(commit):
                 continue
             return None, ()
