@@ -35,6 +35,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ❌ ([.github/workflows/tests.yml](https://github.com/futuroptimist/sugarkube/actions/runs/27055466699)) <!-- repo-status:failure-links --> ⭐ 0 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 - ✅ ⭐ 0 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
 
+
 ## Values
 
 I’m drawn to tools that are open, inspectable, optimistic without being naive, and useful to people who want to understand the systems they depend on. If a project helps someone build, repair, teach, or explore with more confidence, it belongs in this orbit.
