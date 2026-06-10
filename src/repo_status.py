@@ -64,6 +64,29 @@ SKIP_COMMIT_RE = re.compile(
 )
 
 
+def _run_text_values(run: dict, *keys: str) -> list[str]:
+    """Return non-empty string values from snake_case or camelCase run fields."""
+
+    values: list[str] = []
+    for key in keys:
+        candidates = [key]
+        if "_" in key:
+            parts = key.split("_")
+            candidates.append(parts[0] + "".join(part.title() for part in parts[1:]))
+        for candidate in candidates:
+            value = run.get(candidate)
+            if isinstance(value, str) and value.strip():
+                values.append(value.strip())
+    return values
+
+
+def _first_run_text(run: dict, *keys: str) -> str | None:
+    """Return the first non-empty run text value for snake/camel field names."""
+
+    values = _run_text_values(run, *keys)
+    return values[0] if values else None
+
+
 def status_to_emoji(conclusion: str | None) -> str:
     """Return an emoji representing the run conclusion.
 
@@ -104,10 +127,74 @@ def _normalize_run_name(value: object) -> str:
     return re.sub(r"\s+", " ", value.strip().casefold())
 
 
+def _is_version_ref(value: str | None) -> bool:
+    """Return whether ``value`` contains a release/version label."""
+
+    if not isinstance(value, str) or not value.strip():
+        return False
+    normalized = value.strip()
+    version_pattern = re.compile(
+        r"(?ix)"
+        r"(?:^|[\s/_-])"
+        r"(?:[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*[-_])?"
+        r"v?\d+\.\d+\.\d+"
+        r"(?:[-+][0-9a-z.-]+)?"
+        r"(?:$|[\s/_-])"
+    )
+    return bool(version_pattern.search(normalized))
+
+
+def _is_release_like_workflow(run: dict) -> bool:
+    """Return whether a run appears to build or publish release artifacts."""
+
+    if not isinstance(run, dict):
+        return False
+    haystack = " ".join(
+        _run_text_values(
+            run,
+            "name",
+            "workflow_name",
+            "display_title",
+            "path",
+        )
+    ).casefold()
+    return bool(
+        re.search(
+            r"release|publish|package|desktop|deploy|artifact|installer|build",
+            haystack,
+        )
+    )
+
+
+def _run_dashboard_scope(run: dict, selected_branch: str | None) -> str:
+    """Classify how ``run`` can apply to the README status dashboard."""
+
+    head_branch = _first_run_text(run, "head_branch")
+    if selected_branch and head_branch == selected_branch:
+        return "selected_branch"
+    version_values = _run_text_values(
+        run, "head_branch", "display_title", "name", "workflow_name"
+    )
+    if _is_release_like_workflow(run) and any(
+        _is_version_ref(v) for v in version_values
+    ):
+        return "release_version"
+    return "unrelated"
+
+
+def _run_applies_to_dashboard(run: dict, selected_branch: str | None) -> bool:
+    """Return whether a completed run is relevant to the README dashboard."""
+
+    status = _first_run_text(run, "status")
+    if status and status.casefold() != "completed":
+        return False
+    return _run_dashboard_scope(run, selected_branch) != "unrelated"
+
+
 def _workflow_identity(run: dict) -> tuple[str, object] | None:
     """Return the strongest durable workflow identity available for ``run``."""
 
-    workflow_id = run.get("workflow_id")
+    workflow_id = run.get("workflow_id", run.get("workflowDatabaseId"))
     if workflow_id is not None:
         return ("workflow_id", str(workflow_id))
 
@@ -115,11 +202,11 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
     if isinstance(path, str) and path.strip():
         return ("path", path.strip().casefold())
 
-    workflow_name = _normalize_run_name(run.get("workflow_name"))
+    workflow_name = _normalize_run_name(_first_run_text(run, "workflow_name"))
     if workflow_name:
         return ("workflow_name", workflow_name)
 
-    name = _normalize_run_name(run.get("name") or run.get("display_title"))
+    name = _normalize_run_name(_first_run_text(run, "name", "display_title"))
     if name:
         return ("name", name)
 
@@ -132,8 +219,8 @@ def _workflow_identity(run: dict) -> tuple[str, object] | None:
 def _workflow_name_bridge_identity(run: dict) -> tuple[str, object] | None:
     """Return the weak name bridge for strong same-name workflow payloads."""
 
-    workflow_name = _normalize_run_name(run.get("workflow_name"))
-    fallback_name = _normalize_run_name(run.get("name") or run.get("display_title"))
+    workflow_name = _normalize_run_name(_first_run_text(run, "workflow_name"))
+    fallback_name = _normalize_run_name(_first_run_text(run, "name", "display_title"))
     if workflow_name and workflow_name == fallback_name:
         return ("name", fallback_name)
     return None
@@ -161,20 +248,18 @@ def _coerce_int(value: object) -> int:
         return 0
 
 
-def _run_recency_key(run: dict) -> tuple[int, int, int, tuple[int, str], int]:
+def _run_recency_key(run: dict) -> tuple[tuple[int, str], int, int, int]:
     """Return a deterministic key for comparing completed workflow runs."""
 
     timestamp = max(
-        _parse_github_timestamp(run.get("created_at")),
-        _parse_github_timestamp(run.get("updated_at")),
+        _parse_github_timestamp(run.get("created_at", run.get("createdAt"))),
+        _parse_github_timestamp(run.get("updated_at", run.get("updatedAt"))),
     )
-    run_number = run.get("run_number")
     return (
-        int(run_number is not None),
-        _coerce_int(run_number),
-        _coerce_int(run.get("run_attempt")),
         timestamp,
-        _coerce_int(run.get("id")),
+        _coerce_int(run.get("run_number", run.get("runNumber"))),
+        _coerce_int(run.get("run_attempt", run.get("runAttempt"))),
+        _coerce_int(run.get("id", run.get("databaseId"))),
     )
 
 
@@ -188,8 +273,8 @@ def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
         identity = _workflow_identity(run)
         if identity is None:
             continue
-        run_number = run.get("run_number")
-        run_id = run.get("id")
+        run_number = run.get("run_number", run.get("runNumber"))
+        run_id = run.get("id", run.get("databaseId"))
         if run_id is not None:
             attempt_key = (identity, None, run_id)
         elif run_number is not None:
@@ -236,10 +321,10 @@ def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
     return sorted(
         {id(run): run for run in latest_by_workflow.values()}.values(),
         key=lambda run: (
-            _normalize_run_name(run.get("name") or run.get("display_title")),
+            _normalize_run_name(_first_run_text(run, "name", "display_title")),
             str(_workflow_identity(run) or ""),
-            _coerce_int(run.get("run_number")),
-            _coerce_int(run.get("id")),
+            _coerce_int(run.get("run_number", run.get("runNumber"))),
+            _coerce_int(run.get("id", run.get("databaseId"))),
         ),
     )
 
@@ -300,7 +385,8 @@ def fetch_repo_status_details(
         if branch is None:
             return RepoStatus(status_to_emoji(None), stars=metadata.stars)
 
-    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    base_runs_url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    url = base_runs_url
     if branch:
         url += f"&branch={branch}"
 
@@ -334,16 +420,16 @@ def fetch_repo_status_details(
         return False
 
     def _failure_url(run: dict) -> str | None:
-        html_url = run.get("html_url")
+        html_url = run.get("html_url", run.get("url"))
         if isinstance(html_url, str) and html_url:
             return html_url
-        run_id = run.get("id")
+        run_id = run.get("id", run.get("databaseId"))
         if run_id is not None:
             return f"https://github.com/{repo}/actions/runs/{run_id}"
         return None
 
     def _run_label(run: dict) -> str:
-        name = run.get("name") or run.get("display_title") or "workflow run"
+        name = _first_run_text(run, "name", "display_title") or "workflow run"
         return str(name).strip() or "workflow run"
 
     def _disambiguated_failure_links(runs: Iterable[dict]) -> tuple[StatusLink, ...]:
@@ -462,40 +548,46 @@ def fetch_repo_status_details(
             return None, ()
         commits = commits_data
 
-        try:
-            resp = requests.get(url, headers=headers, timeout=10)
-            resp.raise_for_status()
-            runs_data = resp.json()
-        except (requests.exceptions.RequestException, ValueError) as exc:
-            LOGGER.warning(
-                "Unable to fetch workflow runs for %s@%s: %s", repo, branch, exc
-            )
-            return None, ()
-        if not isinstance(runs_data, dict):
-            LOGGER.warning(
-                "Unexpected workflow payload for %s@%s: %r",
-                repo,
-                branch,
-                type(runs_data),
-            )
-            return None, ()
+        def _fetch_runs(runs_url: str) -> list[dict] | None:
+            try:
+                resp = requests.get(runs_url, headers=headers, timeout=10)
+                resp.raise_for_status()
+                runs_data = resp.json()
+            except (requests.exceptions.RequestException, ValueError) as exc:
+                LOGGER.warning(
+                    "Unable to fetch workflow runs for %s@%s: %s", repo, branch, exc
+                )
+                return None
+            if not isinstance(runs_data, dict):
+                LOGGER.warning(
+                    "Unexpected workflow payload for %s@%s: %r",
+                    repo,
+                    branch,
+                    type(runs_data),
+                )
+                return None
 
-        runs = runs_data.get("workflow_runs", [])
-        if not isinstance(runs, list):
-            LOGGER.warning(
-                "Unexpected workflow run list for %s@%s: %r",
-                repo,
-                branch,
-                type(runs),
-            )
+            fetched_runs = runs_data.get("workflow_runs", [])
+            if not isinstance(fetched_runs, list):
+                LOGGER.warning(
+                    "Unexpected workflow run list for %s@%s: %r",
+                    repo,
+                    branch,
+                    type(fetched_runs),
+                )
+                return None
+            return fetched_runs
+
+        runs = _fetch_runs(url)
+        if runs is None:
             return None, ()
 
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
-            run_branch = run.get("head_branch")
-            if isinstance(run_branch, str) and branch and run_branch != branch:
+            run_branch = _first_run_text(run, "head_branch")
+            if run_branch and branch and run_branch != branch:
                 continue
-            sha = run.get("head_sha")
+            sha = _first_run_text(run, "head_sha")
             if not isinstance(sha, str):
                 continue
             runs_by_sha.setdefault(sha, []).append(run)
@@ -515,7 +607,43 @@ def fetch_repo_status_details(
 
         if not selected_runs:
             return None, ()
-        important = [r for r in selected_runs if keywords.search(r.get("name", ""))]
+
+        selected_identities = {
+            identity
+            for run in selected_runs
+            for identity in [_workflow_identity(run)]
+            if identity
+        }
+        selected_release_failure_identities = {
+            identity
+            for run in selected_runs
+            for identity in [_workflow_identity(run)]
+            if identity
+            and re.search(
+                r"release|publish|package|desktop|artifact|installer|build",
+                " ".join(
+                    _run_text_values(run, "name", "workflow_name", "path")
+                ).casefold(),
+            )
+            and _normalize_conclusion(run.get("conclusion")) in failures
+        }
+        if selected_release_failure_identities and url != base_runs_url:
+            all_runs = _fetch_runs(base_runs_url)
+            if all_runs is not None:
+                for run in all_runs:
+                    identity = _workflow_identity(run)
+                    if identity not in selected_identities:
+                        continue
+                    if not _run_applies_to_dashboard(run, branch):
+                        continue
+                    if run not in selected_runs:
+                        selected_runs.append(run)
+
+        important = [
+            r
+            for r in selected_runs
+            if keywords.search(" ".join(_run_text_values(r, "name", "workflow_name")))
+        ]
         if important:
             selected_runs = important
         return _evaluate_runs(selected_runs)
