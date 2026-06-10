@@ -14,6 +14,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from itertools import count
 from pathlib import Path
 
 import requests
@@ -688,7 +689,7 @@ def fetch_repo_status_details(
         }
 
         all_runs: list[dict] = []
-        for page in range(1, 11):
+        for page in count(1):
             page_url = all_runs_url if page == 1 else f"{all_runs_url}&page={page}"
             try:
                 all_resp = requests.get(page_url, headers=headers, timeout=10)

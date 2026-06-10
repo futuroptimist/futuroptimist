@@ -937,7 +937,7 @@ def test_fetch_repo_status_feature_semver_branch_does_not_supersede_failure(
     assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "❌"
 
 
-def test_fetch_repo_status_paginates_release_runs(
+def test_fetch_repo_status_paginates_release_runs_beyond_page_ten(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     failed = _workflow_run(
@@ -960,16 +960,19 @@ def test_fetch_repo_status_paginates_release_runs(
         run_id=2,
         branch="desktop-v1.2.3",
     )
-    first_page = [
-        _workflow_run(
-            "success",
-            sha=f"filler-{index}",
-            name="Test Suite",
-            workflow_id=1000 + index,
-            run_id=1000 + index,
-            branch="main",
-        )
-        for index in range(100)
+    filler_pages = [
+        [
+            _workflow_run(
+                "success",
+                sha=f"filler-{page}-{index}",
+                name="Test Suite",
+                workflow_id=100_000 + (page * 100) + index,
+                run_id=100_000 + (page * 100) + index,
+                branch="main",
+            )
+            for index in range(100)
+        ]
+        for page in range(1, 11)
     ]
     calls: list[str] = []
 
@@ -986,21 +989,22 @@ def test_fetch_repo_status_paginates_release_runs(
             "per_page=100&status=completed&branch=main"
         ):
             return DummyResp({"workflow_runs": [failed]})
-        if url == (
+        base_url = (
             "https://api.github.com/repos/user/repo/actions/runs?"
             "per_page=100&status=completed"
-        ):
-            return DummyResp({"workflow_runs": first_page})
-        assert url == (
-            "https://api.github.com/repos/user/repo/actions/runs?"
-            "per_page=100&status=completed&page=2"
         )
+        if url == base_url:
+            return DummyResp({"workflow_runs": filler_pages[0]})
+        for page in range(2, 11):
+            if url == f"{base_url}&page={page}":
+                return DummyResp({"workflow_runs": filler_pages[page - 1]})
+        assert url == f"{base_url}&page=11"
         return DummyResp({"workflow_runs": [fixed]})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
 
     assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "✅"
-    assert calls[-1].endswith("&page=2")
+    assert calls[-1].endswith("&page=11")
 
 
 def test_fetch_repo_status_run_number_outranks_updated_at_retry(
