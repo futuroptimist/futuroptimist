@@ -59,6 +59,14 @@ GITHUB_URL_RE = re.compile(r"https://github\.com/([\w-]+)/([\w.-]+)(/[^\s)>]*)?"
 GITHUB_MARKDOWN_LINK_RE = re.compile(
     r"\[([^\]]+)\]\((https://github\.com/[\w-]+/[\w.-]+(?:/[^\s)]*)?)\)"
 )
+VERSION_REF_RE = re.compile(
+    r"(?i)(?:^|[^a-z0-9])(?:[a-z][a-z0-9_.]*-)*v?\d+\.\d+\.\d+"
+    r"(?:[-+][a-z0-9][a-z0-9_.-]*)?(?=$|[^a-z0-9])"
+)
+RELEASE_WORKFLOW_RE = re.compile(
+    r"(?i)(release|publish|package|packaging|desktop|deploy|deployment|"
+    r"artifact|installer|distribution|dist|binary)"
+)
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
@@ -104,10 +112,85 @@ def _normalize_run_name(value: object) -> str:
     return re.sub(r"\s+", " ", value.strip().casefold())
 
 
+def _run_value(run: dict, *keys: str) -> object:
+    """Return the first present workflow-run value across REST and gh keys."""
+
+    for key in keys:
+        if key in run:
+            return run[key]
+    return None
+
+
+def _is_version_ref(value: str | None) -> bool:
+    """Return whether ``value`` contains a release/version-like label."""
+
+    return isinstance(value, str) and VERSION_REF_RE.search(value) is not None
+
+
+def _is_release_like_workflow(run: dict) -> bool:
+    """Return whether workflow metadata describes a release/artifact workflow."""
+
+    fields = (
+        _run_value(run, "workflow_name", "workflowName"),
+        run.get("name"),
+        _run_value(run, "display_title", "displayTitle"),
+        run.get("path"),
+    )
+    return any(
+        isinstance(value, str) and RELEASE_WORKFLOW_RE.search(value) is not None
+        for value in fields
+    )
+
+
+def _run_has_version_label(run: dict) -> bool:
+    """Return whether a run ref/title carries a version-like release label."""
+
+    return any(
+        _is_version_ref(value)
+        for value in (
+            _run_value(run, "head_branch", "headBranch"),
+            run.get("ref"),
+            run.get("head_ref"),
+            _run_value(run, "display_title", "displayTitle"),
+        )
+        if isinstance(value, str)
+    )
+
+
+def _run_dashboard_scope(run: dict, selected_branch: str | None) -> str:
+    """Classify whether a run belongs to the branch or release dashboard scope."""
+
+    head_branch = _run_value(run, "head_branch", "headBranch")
+    if (
+        isinstance(head_branch, str)
+        and selected_branch
+        and head_branch == selected_branch
+    ):
+        return "branch"
+
+    event = _run_value(run, "event")
+    allowed_event = not isinstance(event, str) or event not in {
+        "pull_request",
+        "pull_request_target",
+    }
+    if allowed_event and _is_release_like_workflow(run) and _run_has_version_label(run):
+        return "release"
+    return "other"
+
+
+def _run_applies_to_dashboard(run: dict, selected_branch: str | None) -> bool:
+    """Return whether a completed run is relevant to README dashboard status."""
+
+    status = run.get("status")
+    if isinstance(status, str) and status.casefold() != "completed":
+        return False
+    return _run_dashboard_scope(run, selected_branch) in {"branch", "release"}
+
+
 def _workflow_identity(run: dict) -> tuple[str, object] | None:
     """Return the strongest durable workflow identity available for ``run``."""
 
-    workflow_id = run.get("workflow_id")
+    workflow_id = _run_value(run, "workflow_id", "workflowDatabaseId")
     if workflow_id is not None:
         return ("workflow_id", str(workflow_id))
 
@@ -164,17 +247,19 @@ def _coerce_int(value: object) -> int:
 def _run_recency_key(run: dict) -> tuple[int, int, int, tuple[int, str], int]:
     """Return a deterministic key for comparing completed workflow runs."""
 
-    timestamp = max(
-        _parse_github_timestamp(run.get("created_at")),
-        _parse_github_timestamp(run.get("updated_at")),
+    timestamp = _parse_github_timestamp(_run_value(run, "created_at", "createdAt")) or (
+        0,
+        "",
     )
-    run_number = run.get("run_number")
+    if timestamp == (0, ""):
+        timestamp = _parse_github_timestamp(_run_value(run, "updated_at", "updatedAt"))
+    run_number = _run_value(run, "run_number", "runNumber")
     return (
+        timestamp,
         int(run_number is not None),
         _coerce_int(run_number),
-        _coerce_int(run.get("run_attempt")),
-        timestamp,
-        _coerce_int(run.get("id")),
+        _coerce_int(_run_value(run, "run_attempt", "runAttempt")),
+        _coerce_int(_run_value(run, "id", "databaseId")),
     )
 
 
@@ -188,8 +273,8 @@ def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
         identity = _workflow_identity(run)
         if identity is None:
             continue
-        run_number = run.get("run_number")
-        run_id = run.get("id")
+        run_number = _run_value(run, "run_number", "runNumber")
+        run_id = _run_value(run, "id", "databaseId")
         if run_id is not None:
             attempt_key = (identity, None, run_id)
         elif run_number is not None:
@@ -300,9 +385,10 @@ def fetch_repo_status_details(
         if branch is None:
             return RepoStatus(status_to_emoji(None), stars=metadata.stars)
 
-    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    runs_url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    branch_runs_url = runs_url
     if branch:
-        url += f"&branch={branch}"
+        branch_runs_url += f"&branch={branch}"
 
     keywords = re.compile(r"(test|lint|build|ci)", re.I)
     failures = {
@@ -334,10 +420,10 @@ def fetch_repo_status_details(
         return False
 
     def _failure_url(run: dict) -> str | None:
-        html_url = run.get("html_url")
+        html_url = _run_value(run, "html_url", "url")
         if isinstance(html_url, str) and html_url:
             return html_url
-        run_id = run.get("id")
+        run_id = _run_value(run, "id", "databaseId")
         if run_id is not None:
             return f"https://github.com/{repo}/actions/runs/{run_id}"
         return None
@@ -369,13 +455,13 @@ def fetch_repo_status_details(
 
             def workflow_label(run: dict, url: str) -> str | None:
                 run_number = run.get("run_number")
-                workflow_id = run.get("workflow_id")
+                workflow_id = _run_value(run, "workflow_id", "workflowDatabaseId")
                 if run_number is None or workflow_id is None:
                     return None
                 return f"{base_label} #{run_number} workflow {workflow_id}"
 
             def workflow_only_label(run: dict, url: str) -> str | None:
-                workflow_id = run.get("workflow_id")
+                workflow_id = _run_value(run, "workflow_id", "workflowDatabaseId")
                 if workflow_id is None:
                     return None
                 return f"{base_label} workflow {workflow_id}"
@@ -463,9 +549,9 @@ def fetch_repo_status_details(
         commits = commits_data
 
         try:
-            resp = requests.get(url, headers=headers, timeout=10)
-            resp.raise_for_status()
-            runs_data = resp.json()
+            branch_resp = requests.get(branch_runs_url, headers=headers, timeout=10)
+            branch_resp.raise_for_status()
+            runs_data = branch_resp.json()
         except (requests.exceptions.RequestException, ValueError) as exc:
             LOGGER.warning(
                 "Unable to fetch workflow runs for %s@%s: %s", repo, branch, exc
@@ -492,10 +578,10 @@ def fetch_repo_status_details(
 
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
-            run_branch = run.get("head_branch")
+            run_branch = _run_value(run, "head_branch", "headBranch")
             if isinstance(run_branch, str) and branch and run_branch != branch:
                 continue
-            sha = run.get("head_sha")
+            sha = _run_value(run, "head_sha", "headSha")
             if not isinstance(sha, str):
                 continue
             runs_by_sha.setdefault(sha, []).append(run)
@@ -513,9 +599,36 @@ def fetch_repo_status_details(
                 continue
             break
 
+        if selected_runs and any(
+            _is_release_like_workflow(run) for run in selected_runs
+        ):
+            try:
+                all_resp = requests.get(runs_url, headers=headers, timeout=10)
+                all_resp.raise_for_status()
+                all_runs_data = all_resp.json()
+            except (requests.exceptions.RequestException, ValueError) as exc:
+                LOGGER.warning(
+                    "Unable to fetch unfiltered workflow runs for %s: %s", repo, exc
+                )
+                all_runs_data = {}
+            all_runs = all_runs_data.get("workflow_runs", [])
+            if isinstance(all_runs, list):
+                release_runs = [
+                    run
+                    for run in all_runs
+                    if _run_dashboard_scope(run, branch) == "release"
+                ]
+                selected_runs.extend(release_runs)
+
         if not selected_runs:
             return None, ()
-        important = [r for r in selected_runs if keywords.search(r.get("name", ""))]
+        important = [
+            r
+            for r in selected_runs
+            if keywords.search(str(r.get("name") or ""))
+            or (_is_release_like_workflow(r) and _run_has_version_label(r))
+            or _run_dashboard_scope(r, branch) == "release"
+        ]
         if important:
             selected_runs = important
         return _evaluate_runs(selected_runs)

@@ -168,9 +168,14 @@ def _mock_repo_status_requests(
             f"https://api.github.com/repos/user/repo/commits?sha={branch}&per_page=20"
         ):
             return DummyResp(commits or [_human_commit("abc")])
-        assert url == (
+        if url == (
             "https://api.github.com/repos/user/repo/actions/runs?"
             f"per_page=100&status=completed&branch={branch}"
+        ):
+            return DummyResp({"workflow_runs": runs})
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed"
         )
         return DummyResp({"workflow_runs": runs})
 
@@ -615,6 +620,274 @@ def test_parse_github_timestamp_treats_naive_iso_as_utc() -> None:
     assert repo_status._parse_github_timestamp("2025-09-25T12:00:00") == (
         1,
         "2025-09-25T12:00:00+00:00",
+    )
+
+
+def test_is_version_ref_accepts_prefixed_semver_labels() -> None:
+    assert repo_status._is_version_ref("desktop-v0.1.0")
+    assert repo_status._is_version_ref("v0.1.0")
+    assert repo_status._is_version_ref("cli-v1.2.3")
+    assert not repo_status._is_version_ref("feature-desktop-build")
+
+
+def test_fetch_repo_status_token_place_release_success_supersedes_stale_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                name="Build Desktop App",
+                workflow_id=271,
+                path=".github/workflows/desktop-release.yml",
+                workflow_name="Build Desktop App",
+                run_number=31,
+                created_at="2026-06-10T01:00:00Z",
+                run_id=27191220631,
+                branch="main",
+            ),
+            _workflow_run(
+                "success",
+                sha="release-sha",
+                name="Build Desktop App",
+                workflow_id=271,
+                path=".github/workflows/desktop-release.yml",
+                workflow_name="Build Desktop App",
+                run_number=32,
+                created_at="2026-06-10T01:30:00Z",
+                run_id=27192437756,
+                branch="desktop-v0.1.0",
+            )
+            | {"display_title": "desktop-v0.1.0", "event": "workflow_dispatch"},
+        ],
+        commits=[_human_commit("main-sha")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_release_tag_success_supersedes_same_workflow_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                name="Package CLI",
+                workflow_id=7,
+                run_number=1,
+                run_id=1,
+                branch="main",
+            )
+            | {"display_title": "Package CLI v1.2.2"},
+            _workflow_run(
+                "success",
+                sha="tag-sha",
+                name="Package CLI",
+                workflow_id=7,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+                branch="cli-v1.2.3",
+            )
+            | {"display_title": "cli-v1.2.3", "event": "push"},
+        ],
+        commits=[_human_commit("main-sha")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_non_version_feature_branch_success_does_not_supersede(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                name="Package CLI",
+                workflow_id=7,
+                run_number=1,
+                run_id=1,
+                branch="main",
+            )
+            | {"display_title": "Package CLI v1.2.2"},
+            _workflow_run(
+                "success",
+                sha="feature-sha",
+                name="Package CLI",
+                workflow_id=7,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+                branch="feature/package-fix",
+            )
+            | {"display_title": "feature package fix", "event": "push"},
+        ],
+        commits=[_human_commit("main-sha")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Package CLI", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_release_success_different_workflow_keeps_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                name="Package CLI",
+                workflow_id=7,
+                run_number=1,
+                run_id=1,
+                branch="main",
+            )
+            | {"display_title": "Package CLI v1.2.2"},
+            _workflow_run(
+                "success",
+                sha="tag-sha",
+                name="Publish Website",
+                workflow_id=8,
+                path=".github/workflows/publish.yml",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+                branch="v1.2.3",
+            )
+            | {"display_title": "v1.2.3", "event": "release"},
+        ],
+        commits=[_human_commit("main-sha")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Package CLI", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_release_success_does_not_hide_test_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                name="Test Suite",
+                workflow_id=1,
+                path=".github/workflows/tests.yml",
+                run_number=1,
+                run_id=1,
+                branch="main",
+            ),
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                name="Package CLI",
+                workflow_id=7,
+                path=".github/workflows/package.yml",
+                run_number=1,
+                run_id=7,
+                branch="main",
+            )
+            | {"display_title": "Package CLI v1.2.2"},
+            _workflow_run(
+                "success",
+                sha="tag-sha",
+                name="Package CLI",
+                workflow_id=7,
+                path=".github/workflows/package.yml",
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+                branch="v1.2.3",
+            )
+            | {"display_title": "v1.2.3", "event": "release"},
+        ],
+        commits=[_human_commit("main-sha")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_latest_release_tag_failure_links_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                sha="main-sha",
+                name="Package CLI",
+                workflow_id=7,
+                run_number=1,
+                run_id=1,
+                branch="main",
+            )
+            | {"display_title": "Package CLI v1.2.2"},
+            _workflow_run(
+                "failure",
+                sha="tag-sha",
+                name="Package CLI",
+                workflow_id=7,
+                run_number=2,
+                created_at="2025-09-25T13:00:00Z",
+                run_id=2,
+                branch="v1.2.3",
+            )
+            | {"display_title": "v1.2.3", "event": "release"},
+        ],
+        commits=[_human_commit("main-sha")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Package CLI", "https://github.com/user/repo/actions/runs/2"
+                ),
+            ),
+        )
     )
 
 
