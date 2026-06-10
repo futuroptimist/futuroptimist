@@ -66,8 +66,11 @@ RELEASE_WORKFLOW_RE = re.compile(
     r"(?i)(release|publish|package|desktop|deploy|artifact)"
 )
 VERSION_REF_RE = re.compile(
-    r"(?ix)(?:^|[\s/_-])(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+"
-    r"(?:[-+][0-9a-z.-]+)?(?:$|[\s/_-])"
+    r"(?ix)^(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+" r"(?:[-+][0-9a-z.-]+)?$"
+)
+VERSION_LABEL_RE = re.compile(
+    r"(?ix)(?:^|[\s_-])(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+"
+    r"(?:[-+][0-9a-z.-]+)?(?:$|[\s_-])"
 )
 RELEASE_EVENTS = {"push", "release", "workflow_dispatch", "repository_dispatch"}
 
@@ -105,15 +108,7 @@ def status_to_emoji(conclusion: str | None) -> str:
 
 
 def _is_version_ref(value: str | None) -> bool:
-    """Return whether ``value`` looks like a release/version ref label."""
-
-    if not isinstance(value, str) or not value.strip():
-        return False
-    return VERSION_REF_RE.search(value.strip()) is not None
-
-
-def _is_release_version_ref(value: str | None) -> bool:
-    """Return whether ``value`` is a concrete tag/release version ref."""
+    """Return whether ``value`` is a concrete release/version ref label."""
 
     if not isinstance(value, str):
         return False
@@ -124,11 +119,23 @@ def _is_release_version_ref(value: str | None) -> bool:
         normalized = normalized.removeprefix("refs/tags/")
     elif normalized.startswith("refs/heads/"):
         normalized = normalized.removeprefix("refs/heads/")
-        if "/" in normalized:
-            return False
-    elif "/" in normalized:
+    if "/" in normalized:
         return False
-    return _is_version_ref(normalized)
+    return VERSION_REF_RE.fullmatch(normalized) is not None
+
+
+def _is_release_version_ref(value: str | None) -> bool:
+    """Return whether ``value`` is a concrete tag/release version ref."""
+
+    return _is_version_ref(value)
+
+
+def _has_version_label(value: str | None) -> bool:
+    """Return whether prose like a release title contains a version token."""
+
+    if not isinstance(value, str) or not value.strip():
+        return False
+    return VERSION_LABEL_RE.search(value.strip()) is not None
 
 
 def _is_release_like_workflow(run: dict) -> bool:
@@ -157,6 +164,34 @@ def _run_ref_values(run: dict) -> tuple[str, ...]:
     return tuple(value for value in values if isinstance(value, str) and value)
 
 
+def _run_title_values(run: dict) -> tuple[str, ...]:
+    """Return title strings that may carry dispatch/release labels."""
+
+    values = (run.get("display_title"), run.get("name"), run.get("workflow_name"))
+    return tuple(value for value in values if isinstance(value, str) and value)
+
+
+def _run_has_release_version_label(run: dict) -> bool:
+    """Return whether a run has a version label on a release ref or title."""
+
+    if any(_is_release_version_ref(value) for value in _run_ref_values(run)):
+        return True
+    event = run.get("event")
+    if event in {"release", "workflow_dispatch", "repository_dispatch"}:
+        return any(_has_version_label(value) for value in _run_title_values(run))
+    return False
+
+
+def _run_head_sha(run: dict) -> str | None:
+    """Return a run SHA from either REST or GraphQL-style payload keys."""
+
+    for key in ("head_sha", "headSha"):
+        value = run.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
 def _run_dashboard_scope(run: dict, selected_branch: str | None) -> str:
     """Classify whether a workflow run belongs to the dashboard scope."""
 
@@ -172,9 +207,7 @@ def _run_dashboard_scope(run: dict, selected_branch: str | None) -> str:
     if isinstance(event, str) and event not in RELEASE_EVENTS:
         return "ignored"
 
-    if _is_release_like_workflow(run) and any(
-        _is_release_version_ref(value) for value in _run_ref_values(run)
-    ):
+    if _is_release_like_workflow(run) and _run_has_release_version_label(run):
         return "release-version"
 
     return "ignored"
@@ -608,7 +641,15 @@ def fetch_repo_status_details(
 
         if not selected_runs:
             return None, ()
-        important = [r for r in selected_runs if keywords.search(r.get("name", ""))]
+        important = [
+            r
+            for r in selected_runs
+            if keywords.search(r.get("name", ""))
+            or (
+                _is_release_like_workflow(r)
+                and (_workflow_identity(r) or ("", ""))[0] != "name"
+            )
+        ]
         if important:
             selected_runs = important
 
@@ -619,17 +660,11 @@ def fetch_repo_status_details(
         if not needs_release_runs:
             return selected_report
 
-        selected_identities = {
-            identity
-            for run in selected_runs
+        selected_by_identity = {
+            identity: run
+            for run in _latest_completed_runs_by_workflow(selected_runs)
             for identity in [_workflow_identity(run)]
             if identity is not None
-        }
-        selected_shas = {
-            sha
-            for run in selected_runs
-            for sha in [run.get("head_sha")]
-            if isinstance(sha, str)
         }
 
         all_runs: list[dict] = []
@@ -669,14 +704,36 @@ def fetch_repo_status_details(
             if len(page_runs) < 100:
                 break
 
-        release_runs = [
-            run
-            for run in all_runs
-            if _run_applies_to_dashboard(run, branch)
-            and _run_dashboard_scope(run, branch) == "release-version"
-            and _workflow_identity(run) in selected_identities
-            and run.get("head_sha") in selected_shas
-        ]
+        def _is_applicable_release_run(run: dict) -> bool:
+            if not _run_applies_to_dashboard(run, branch):
+                return False
+            if _run_dashboard_scope(run, branch) != "release-version":
+                return False
+            identity = _workflow_identity(run)
+            if identity is None:
+                return False
+            selected = selected_by_identity.get(identity)
+            if selected is None:
+                return False
+            if _run_recency_key(run) <= _run_recency_key(selected):
+                return False
+            candidate_sha = _run_head_sha(run)
+            selected_sha = _run_head_sha(selected)
+            if candidate_sha is not None and selected_sha is not None:
+                if candidate_sha != selected_sha:
+                    return False
+            candidate_conclusion = _normalize_conclusion(run.get("conclusion"))
+            selected_conclusion = _normalize_conclusion(selected.get("conclusion"))
+            if (
+                candidate_conclusion not in passing
+                and candidate_conclusion not in failures
+            ):
+                return False
+            if selected_conclusion in failures and candidate_conclusion not in passing:
+                return candidate_conclusion in failures
+            return True
+
+        release_runs = [run for run in all_runs if _is_applicable_release_run(run)]
         if not release_runs:
             return selected_report
         return _evaluate_runs([*selected_runs, *release_runs])

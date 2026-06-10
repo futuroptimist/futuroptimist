@@ -85,6 +85,56 @@ def test_workflow_identity_order_and_unknown_fallback() -> None:
     assert repo_status._workflow_identity({}) is None
 
 
+def test_version_ref_detection_accepts_only_concrete_release_refs() -> None:
+    release_refs = (
+        "desktop-v0.1.0",
+        "v0.1.0",
+        "cli-v1.2.3",
+        "refs/tags/desktop-v0.1.0",
+    )
+    for ref in release_refs:
+        assert repo_status._is_version_ref(ref), ref
+
+    ordinary_branches = (
+        "feature/v1.2.3",
+        "feature/desktop-v0.1.0",
+        "dependabot/npm/foo-1.2.3",
+        "codex/fix-v1.2.3-build",
+    )
+    for ref in ordinary_branches:
+        assert not repo_status._is_version_ref(ref), ref
+
+
+def test_run_dashboard_scope_requires_concrete_release_refs() -> None:
+    for branch in (
+        "desktop-v0.1.0",
+        "v0.1.0",
+        "cli-v1.2.3",
+        "refs/tags/desktop-v0.1.0",
+    ):
+        run = _workflow_run(
+            "success",
+            name="Package CLI",
+            path=".github/workflows/package.yml",
+            branch=branch,
+        )
+        assert repo_status._run_dashboard_scope(run, "main") == "release-version"
+
+    for branch in (
+        "feature/v1.2.3",
+        "feature/desktop-v0.1.0",
+        "dependabot/npm/foo-1.2.3",
+        "codex/fix-v1.2.3-build",
+    ):
+        run = _workflow_run(
+            "success",
+            name="Package CLI",
+            path=".github/workflows/package.yml",
+            branch=branch,
+        )
+        assert repo_status._run_dashboard_scope(run, "main") == "ignored"
+
+
 class DummyResp:
     def __init__(self, data, *, json_error: Exception | None = None):
         self._data = data
@@ -606,6 +656,49 @@ def test_fetch_repo_status_version_release_success_supersedes_selected_branch_fa
     )
 
 
+def test_fetch_repo_status_preserves_release_workflows_with_test_workflows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    tests_passed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Test Suite",
+        workflow_id=100,
+        path=".github/workflows/tests.yml",
+        run_number=5,
+        run_id=5,
+    )
+    package_failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package CLI",
+        workflow_id=77,
+        path=".github/workflows/package.yml",
+        run_number=1,
+        run_id=1,
+    )
+    package_fixed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package CLI",
+        workflow_id=77,
+        path=".github/workflows/package.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="cli-v1.2.3",
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [tests_passed, package_failed],
+        all_runs=[tests_passed, package_failed, package_fixed],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
 def test_fetch_repo_status_feature_branch_success_does_not_supersede_failure(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -685,8 +778,9 @@ def test_fetch_repo_status_release_success_different_sha_does_not_hide_failure(
     )
 
 
+@pytest.mark.parametrize("branch", ["feature/v1.2.3", "feature/desktop-v0.1.0"])
 def test_fetch_repo_status_feature_semver_branch_does_not_supersede_failure(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, branch: str
 ) -> None:
     failed = _workflow_run(
         "failure",
@@ -706,7 +800,7 @@ def test_fetch_repo_status_feature_semver_branch_does_not_supersede_failure(
         run_number=2,
         created_at="2025-09-25T13:00:00Z",
         run_id=2,
-        branch="feature/v1.2.3",
+        branch=branch,
     )
     _mock_repo_status_requests(monkeypatch, [failed], all_runs=[failed, feature])
 
