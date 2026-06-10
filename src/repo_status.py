@@ -63,6 +63,83 @@ SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
 
+VERSION_REF_RE = re.compile(
+    r"(?i)(?:^|[\s/#:_-])(?:[a-z][a-z0-9._-]*-)?v?\d+\.\d+\.\d+"
+    r"(?:[-+][0-9a-z][0-9a-z.-]*)?(?=$|[\s/#:_-])"
+)
+RELEASE_WORKFLOW_RE = re.compile(
+    r"(?i)(release|publish|package|packag(?:e|ing)|desktop|deploy|build|artifact|"
+    r"installer|distribut(?:e|ion))"
+)
+RELEASE_EVENTS = {
+    "create",
+    "release",
+    "workflow_dispatch",
+    "push",
+    "repository_dispatch",
+}
+
+
+def _is_version_ref(value: str | None) -> bool:
+    """Return whether ``value`` contains a version-like release label."""
+
+    return bool(isinstance(value, str) and VERSION_REF_RE.search(value.strip()))
+
+
+def _is_release_like_workflow(run: dict) -> bool:
+    """Return whether run metadata describes a release/build artifact workflow."""
+
+    values = (
+        run.get("name"),
+        run.get("workflow_name"),
+        run.get("display_title"),
+        run.get("path"),
+    )
+    return any(
+        isinstance(value, str) and RELEASE_WORKFLOW_RE.search(value) for value in values
+    )
+
+
+def _run_dashboard_scope(run: dict, selected_branch: str | None) -> str:
+    """Classify whether a run belongs to the branch or release dashboard scope."""
+
+    run_branch = run.get("head_branch")
+    if (
+        selected_branch
+        and isinstance(run_branch, str)
+        and run_branch == selected_branch
+    ):
+        return "branch"
+
+    if not _is_release_like_workflow(run):
+        return "other"
+
+    version_values = (
+        run.get("head_branch"),
+        run.get("display_title"),
+        run.get("name"),
+        run.get("ref"),
+        run.get("head_ref"),
+    )
+    if not any(_is_version_ref(value) for value in version_values):
+        return "other"
+
+    event = run.get("event")
+    if isinstance(event, str) and event and event not in RELEASE_EVENTS:
+        return "other"
+
+    status = run.get("status")
+    if isinstance(status, str) and status and status != "completed":
+        return "other"
+
+    return "release"
+
+
+def _run_applies_to_dashboard(run: dict, selected_branch: str | None) -> bool:
+    """Return whether a completed run can affect the README dashboard status."""
+
+    return _run_dashboard_scope(run, selected_branch) in {"branch", "release"}
+
 
 def status_to_emoji(conclusion: str | None) -> str:
     """Return an emoji representing the run conclusion.
@@ -161,7 +238,7 @@ def _coerce_int(value: object) -> int:
         return 0
 
 
-def _run_recency_key(run: dict) -> tuple[int, int, int, tuple[int, str], int]:
+def _run_recency_key(run: dict) -> tuple[tuple[int, str], int, int, int, int]:
     """Return a deterministic key for comparing completed workflow runs."""
 
     timestamp = max(
@@ -170,10 +247,10 @@ def _run_recency_key(run: dict) -> tuple[int, int, int, tuple[int, str], int]:
     )
     run_number = run.get("run_number")
     return (
+        timestamp,
         int(run_number is not None),
         _coerce_int(run_number),
         _coerce_int(run.get("run_attempt")),
-        timestamp,
         _coerce_int(run.get("id")),
     )
 
@@ -300,9 +377,10 @@ def fetch_repo_status_details(
         if branch is None:
             return RepoStatus(status_to_emoji(None), stars=metadata.stars)
 
-    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    base_runs_url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    branch_runs_url = base_runs_url
     if branch:
-        url += f"&branch={branch}"
+        branch_runs_url += f"&branch={branch}"
 
     keywords = re.compile(r"(test|lint|build|ci)", re.I)
     failures = {
@@ -463,7 +541,7 @@ def fetch_repo_status_details(
         commits = commits_data
 
         try:
-            resp = requests.get(url, headers=headers, timeout=10)
+            resp = requests.get(branch_runs_url, headers=headers, timeout=10)
             resp.raise_for_status()
             runs_data = resp.json()
         except (requests.exceptions.RequestException, ValueError) as exc:
@@ -490,6 +568,31 @@ def fetch_repo_status_details(
             )
             return None, ()
 
+        all_runs: list[dict] = []
+        try:
+            all_resp = requests.get(base_runs_url, headers=headers, timeout=10)
+            all_resp.raise_for_status()
+            all_runs_data = all_resp.json()
+        except (requests.exceptions.RequestException, ValueError) as exc:
+            LOGGER.warning("Unable to fetch all workflow runs for %s: %s", repo, exc)
+        else:
+            if isinstance(all_runs_data, dict):
+                all_runs_value = all_runs_data.get("workflow_runs", [])
+                if isinstance(all_runs_value, list):
+                    all_runs = all_runs_value
+                else:
+                    LOGGER.warning(
+                        "Unexpected all-workflow run list for %s: %r",
+                        repo,
+                        type(all_runs_value),
+                    )
+            else:
+                LOGGER.warning(
+                    "Unexpected all-workflow payload for %s: %r",
+                    repo,
+                    type(all_runs_data),
+                )
+
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
             run_branch = run.get("head_branch")
@@ -513,9 +616,28 @@ def fetch_repo_status_details(
                 continue
             break
 
+        release_runs = [
+            run
+            for run in all_runs
+            if isinstance(run, dict) and _run_dashboard_scope(run, branch) == "release"
+        ]
+        if release_runs:
+            selected_run_ids = {id(run) for run in selected_runs}
+            selected_runs.extend(
+                run for run in release_runs if id(run) not in selected_run_ids
+            )
+
         if not selected_runs:
             return None, ()
-        important = [r for r in selected_runs if keywords.search(r.get("name", ""))]
+        important = [
+            r
+            for r in selected_runs
+            if (
+                keywords.search(str(r.get("name", "")))
+                or _run_dashboard_scope(r, branch) == "release"
+                or (_is_release_like_workflow(r) and release_runs)
+            )
+        ]
         if important:
             selected_runs = important
         return _evaluate_runs(selected_runs)
