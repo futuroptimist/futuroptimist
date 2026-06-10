@@ -105,6 +105,25 @@ def test_version_ref_detection_accepts_only_concrete_release_refs() -> None:
         assert not repo_status._is_version_ref(ref), ref
 
 
+def test_release_like_workflow_ignores_title_only_build_text() -> None:
+    assert (
+        repo_status._is_release_like_workflow(
+            {
+                "name": "Quality",
+                "path": ".github/workflows/quality.yml",
+                "display_title": "fix build docs",
+            }
+        )
+        is False
+    )
+    assert (
+        repo_status._is_release_like_workflow(
+            {"name": "Build", "path": ".github/workflows/build.yml"}
+        )
+        is True
+    )
+
+
 def test_run_dashboard_scope_requires_concrete_release_refs() -> None:
     for branch in (
         "desktop-v0.1.0",
@@ -726,6 +745,87 @@ def test_fetch_repo_status_preserves_release_workflows_with_test_workflows(
 
     assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
         repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_release_success_missing_sha_does_not_hide_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    release_without_sha = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="desktop-v1.2.3",
+    )
+    release_without_sha.pop("head_sha")
+    _mock_repo_status_requests(
+        monkeypatch,
+        [failed],
+        all_runs=[failed, release_without_sha],
+        commits=[_human_commit("abc")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Package Desktop", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_keeps_non_keyword_failure_with_title_only_build_success(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    title_only_build_success = _workflow_run(
+        "success",
+        sha="abc",
+        name="Quality",
+        workflow_id=77,
+        path=".github/workflows/quality.yml",
+        display_title="fix build docs",
+        run_id=1,
+    )
+    docs_failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Docs",
+        workflow_id=88,
+        path=".github/workflows/docs.yml",
+        run_id=2,
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [title_only_build_success, docs_failed],
+        all_runs=[title_only_build_success, docs_failed],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Docs", "https://github.com/user/repo/actions/runs/2"
+                ),
+            ),
+        )
     )
 
 

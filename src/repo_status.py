@@ -65,6 +65,7 @@ SKIP_COMMIT_RE = re.compile(
 RELEASE_WORKFLOW_RE = re.compile(
     r"(?i)(release|publish|package|desktop|deploy|artifact|build)"
 )
+RELEASE_TITLE_RE = re.compile(r"(?i)(release|publish|package|desktop|deploy|artifact)")
 VERSION_REF_RE = re.compile(
     r"(?ix)^(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+" r"(?:[-+][0-9a-z.-]+)?$"
 )
@@ -141,15 +142,18 @@ def _has_version_label(value: str | None) -> bool:
 def _is_release_like_workflow(run: dict) -> bool:
     """Return whether a run is for release/build artifact work."""
 
-    values = (
-        run.get("name"),
-        run.get("workflow_name"),
-        run.get("display_title"),
-        run.get("path"),
-    )
-    return any(
-        isinstance(value, str) and RELEASE_WORKFLOW_RE.search(value) for value in values
-    )
+    identity_values = (run.get("name"), run.get("workflow_name"), run.get("path"))
+    if any(
+        isinstance(value, str) and RELEASE_WORKFLOW_RE.search(value)
+        for value in identity_values
+    ):
+        return True
+
+    # ``display_title`` usually comes from a commit or PR title.  Keep strong
+    # release words here, but avoid treating ordinary commits like
+    # ``fix build docs`` as release workflows.
+    title = run.get("display_title")
+    return isinstance(title, str) and RELEASE_TITLE_RE.search(title) is not None
 
 
 def _run_ref_values(run: dict) -> tuple[str, ...]:
@@ -641,17 +645,33 @@ def fetch_repo_status_details(
 
         if not selected_runs:
             return None, ()
-        important = [
-            r
-            for r in selected_runs
-            if keywords.search(r.get("name", ""))
-            or (
-                _is_release_like_workflow(r)
-                and (_workflow_identity(r) or ("", ""))[0] != "name"
+
+        def _is_keyword_run(run: dict) -> bool:
+            return keywords.search(run.get("name", "")) is not None
+
+        def _has_strong_identity(run: dict) -> bool:
+            return (_workflow_identity(run) or ("", ""))[0] != "name"
+
+        important_identities = {
+            identity
+            for run in selected_runs
+            for identity in [_workflow_identity(run)]
+            if identity is not None
+            and (
+                _is_keyword_run(run)
+                or (_is_release_like_workflow(run) and _has_strong_identity(run))
+                or (
+                    _normalize_conclusion(run.get("conclusion")) in failures
+                    and _has_strong_identity(run)
+                )
             )
-        ]
-        if important:
-            selected_runs = important
+        }
+        if important_identities:
+            selected_runs = [
+                run
+                for run in selected_runs
+                if _workflow_identity(run) in important_identities
+            ]
 
         selected_report = _evaluate_runs(selected_runs)
         needs_release_runs = any(
@@ -719,9 +739,10 @@ def fetch_repo_status_details(
                 return False
             candidate_sha = _run_head_sha(run)
             selected_sha = _run_head_sha(selected)
-            if candidate_sha is not None and selected_sha is not None:
-                if candidate_sha != selected_sha:
-                    return False
+            if candidate_sha is None or selected_sha is None:
+                return False
+            if candidate_sha != selected_sha:
+                return False
             candidate_conclusion = _normalize_conclusion(run.get("conclusion"))
             selected_conclusion = _normalize_conclusion(selected.get("conclusion"))
             if (
