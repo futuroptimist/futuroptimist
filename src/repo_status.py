@@ -62,6 +62,14 @@ GITHUB_MARKDOWN_LINK_RE = re.compile(
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
+RELEASE_WORKFLOW_RE = re.compile(
+    r"(?i)(release|publish|package|desktop|deploy|artifact|build)"
+)
+VERSION_REF_RE = re.compile(
+    r"(?ix)(?:^|[\s/_-])(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+"
+    r"(?:[-+][0-9a-z.-]+)?(?:$|[\s/_-])"
+)
+RELEASE_EVENTS = {"push", "release", "workflow_dispatch", "repository_dispatch"}
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -94,6 +102,72 @@ def status_to_emoji(conclusion: str | None) -> str:
     }:
         return "❌"
     return "❓"
+
+
+def _is_version_ref(value: str | None) -> bool:
+    """Return whether ``value`` looks like a release/version ref label."""
+
+    if not isinstance(value, str) or not value.strip():
+        return False
+    return VERSION_REF_RE.search(value.strip()) is not None
+
+
+def _is_release_like_workflow(run: dict) -> bool:
+    """Return whether a run is for release/build artifact work."""
+
+    values = (
+        run.get("name"),
+        run.get("workflow_name"),
+        run.get("display_title"),
+        run.get("path"),
+    )
+    return any(
+        isinstance(value, str) and RELEASE_WORKFLOW_RE.search(value) for value in values
+    )
+
+
+def _run_ref_values(run: dict) -> tuple[str, ...]:
+    """Return ref/title strings that may carry release labels."""
+
+    values = (
+        run.get("head_branch"),
+        run.get("display_title"),
+        run.get("head_ref"),
+        run.get("ref"),
+        run.get("head_ref_name"),
+    )
+    return tuple(value for value in values if isinstance(value, str) and value)
+
+
+def _run_dashboard_scope(run: dict, selected_branch: str | None) -> str:
+    """Classify whether a workflow run belongs to the dashboard scope."""
+
+    run_branch = run.get("head_branch")
+    if (
+        isinstance(run_branch, str)
+        and selected_branch
+        and run_branch == selected_branch
+    ):
+        return "selected-branch"
+
+    event = run.get("event")
+    if isinstance(event, str) and event not in RELEASE_EVENTS:
+        return "ignored"
+
+    if _is_release_like_workflow(run) and any(
+        _is_version_ref(value) for value in _run_ref_values(run)
+    ):
+        return "release-version"
+
+    return "ignored"
+
+
+def _run_applies_to_dashboard(run: dict, selected_branch: str | None) -> bool:
+    """Return whether a completed run is safe to consider for README status."""
+
+    if run.get("status") not in (None, "completed"):
+        return False
+    return _run_dashboard_scope(run, selected_branch) != "ignored"
 
 
 def _normalize_run_name(value: object) -> str:
@@ -161,7 +235,7 @@ def _coerce_int(value: object) -> int:
         return 0
 
 
-def _run_recency_key(run: dict) -> tuple[int, int, int, tuple[int, str], int]:
+def _run_recency_key(run: dict) -> tuple[tuple[int, str], int, int, int, int]:
     """Return a deterministic key for comparing completed workflow runs."""
 
     timestamp = max(
@@ -170,10 +244,10 @@ def _run_recency_key(run: dict) -> tuple[int, int, int, tuple[int, str], int]:
     )
     run_number = run.get("run_number")
     return (
+        timestamp,
         int(run_number is not None),
         _coerce_int(run_number),
         _coerce_int(run.get("run_attempt")),
-        timestamp,
         _coerce_int(run.get("id")),
     )
 
@@ -300,7 +374,8 @@ def fetch_repo_status_details(
         if branch is None:
             return RepoStatus(status_to_emoji(None), stars=metadata.stars)
 
-    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    all_runs_url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    url = all_runs_url
     if branch:
         url += f"&branch={branch}"
 
@@ -518,7 +593,62 @@ def fetch_repo_status_details(
         important = [r for r in selected_runs if keywords.search(r.get("name", ""))]
         if important:
             selected_runs = important
-        return _evaluate_runs(selected_runs)
+
+        selected_report = _evaluate_runs(selected_runs)
+        needs_release_runs = any(
+            _is_release_like_workflow(run) for run in selected_runs
+        )
+        if not needs_release_runs:
+            return selected_report
+
+        try:
+            all_resp = requests.get(all_runs_url, headers=headers, timeout=10)
+            all_resp.raise_for_status()
+            all_runs_data = all_resp.json()
+        except (requests.exceptions.RequestException, ValueError) as exc:
+            LOGGER.warning(
+                "Unable to fetch cross-branch workflow runs for %s@%s: %s",
+                repo,
+                branch,
+                exc,
+            )
+            return selected_report
+        if not isinstance(all_runs_data, dict):
+            LOGGER.warning(
+                "Unexpected cross-branch workflow payload for %s@%s: %r",
+                repo,
+                branch,
+                type(all_runs_data),
+            )
+            return selected_report
+
+        all_runs = all_runs_data.get("workflow_runs", [])
+        if not isinstance(all_runs, list):
+            LOGGER.warning(
+                "Unexpected cross-branch workflow run list for %s@%s: %r",
+                repo,
+                branch,
+                type(all_runs),
+            )
+            return selected_report
+
+        selected_identities = {
+            identity
+            for run in selected_runs
+            for identity in [_workflow_identity(run)]
+            if identity is not None
+        }
+        release_runs = [
+            run
+            for run in all_runs
+            if isinstance(run, dict)
+            and _run_applies_to_dashboard(run, branch)
+            and _run_dashboard_scope(run, branch) == "release-version"
+            and _workflow_identity(run) in selected_identities
+        ]
+        if not release_runs:
+            return selected_report
+        return _evaluate_runs([*selected_runs, *release_runs])
 
     reports = [_fetch() for _ in range(attempts)]
     conclusions = [report[0] for report in reports]
