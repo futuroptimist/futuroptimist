@@ -14,13 +14,13 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-06-10 07:23 UTC; checks hourly_
+_Last updated: 2026-06-10 09:09 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
 Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs need attention; linked failures point to the run or asset to inspect; ❓ no completed relevant run was found or GitHub could not be queried; ⭐ shows GitHub stars. Projects sort by stars descending, then alphabetically for ties; unknown star counts sort last.
 
-- ❌ ([Build Desktop App](https://github.com/futuroptimist/token.place/actions/runs/27252614266), [Publish Helm chart](https://github.com/futuroptimist/token.place/actions/runs/27252614285)) <!-- repo-status:failure-links --> ⭐ 6 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
+- ❌ ([Publish Helm chart](https://github.com/futuroptimist/token.place/actions/runs/27261565478)) <!-- repo-status:failure-links --> ⭐ 6 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
 - ❌ ([.github/workflows/deploy-to-raspi.yml](https://github.com/democratizedspace/dspace/actions/runs/26786728813), [.github/workflows/rpi-deploy.yml](https://github.com/democratizedspace/dspace/actions/runs/26786729098)) <!-- repo-status:failure-links --> ⭐ 3 **[DSPACE](https://democratized.space)** @main – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/main))
 - ✅ ⭐ 2 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
 - ✅ ⭐ 1 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
@@ -32,7 +32,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 0 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
 - ✅ ⭐ 0 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
 - ✅ ⭐ 0 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
-- ❌ ([pi-image-release](https://github.com/futuroptimist/sugarkube/actions/runs/27224912360)) <!-- repo-status:failure-links --> ⭐ 0 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
+- ❌ ([pi-image-release](https://github.com/futuroptimist/sugarkube/actions/runs/27260726173)) <!-- repo-status:failure-links --> ⭐ 0 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 - ✅ ⭐ 0 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
 
 
