@@ -47,6 +47,44 @@ def test_status_to_emoji_failure_variants() -> None:
     assert status_to_emoji("action required") == "❌"
 
 
+def test_status_to_emoji_unrecognized_status_is_unknown() -> None:
+    assert status_to_emoji("queued") == "❓"
+    assert status_to_emoji("mysterious") == "❓"
+
+
+def test_workflow_identity_order_and_unknown_fallback() -> None:
+    assert repo_status._workflow_identity(
+        {
+            "workflow_id": 7,
+            "path": ".github/workflows/ci.yml",
+            "workflow_name": "Deploy",
+            "name": "CI",
+            "display_title": "Fallback",
+        }
+    ) == ("workflow_id", "7")
+    assert repo_status._workflow_identity(
+        {
+            "path": " .github/workflows/ci.yml ",
+            "workflow_name": "Deploy",
+            "name": "CI",
+            "display_title": "Fallback",
+        }
+    ) == ("path", ".github/workflows/ci.yml")
+    assert repo_status._workflow_identity(
+        {"workflow_name": " Deploy  Checks ", "name": "CI"}
+    ) == ("workflow_name", "deploy checks")
+    assert repo_status._workflow_identity({"name": " CI  Checks "}) == (
+        "name",
+        "ci checks",
+    )
+    assert repo_status._workflow_identity({"display_title": " CI  Checks "}) == (
+        "name",
+        "ci checks",
+    )
+    assert repo_status._workflow_identity({"id": 123}) == ("run_id", "123")
+    assert repo_status._workflow_identity({}) is None
+
+
 class DummyResp:
     def __init__(self, data, *, json_error: Exception | None = None):
         self._data = data
