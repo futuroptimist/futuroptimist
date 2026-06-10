@@ -656,6 +656,36 @@ def test_fetch_repo_status_version_release_success_supersedes_selected_branch_fa
     )
 
 
+def test_fetch_repo_status_generic_build_tag_success_supersedes_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Build",
+        workflow_id=77,
+        path=".github/workflows/build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    fixed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Build",
+        workflow_id=77,
+        path=".github/workflows/build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="v1.2.3",
+    )
+    _mock_repo_status_requests(monkeypatch, [failed], all_runs=[failed, fixed])
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
 def test_fetch_repo_status_preserves_release_workflows_with_test_workflows(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

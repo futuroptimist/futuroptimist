@@ -63,7 +63,7 @@ SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
 RELEASE_WORKFLOW_RE = re.compile(
-    r"(?i)(release|publish|package|desktop|deploy|artifact)"
+    r"(?i)(release|publish|package|desktop|deploy|artifact|build)"
 )
 VERSION_REF_RE = re.compile(
     r"(?ix)^(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+" r"(?:[-+][0-9a-z.-]+)?$"
