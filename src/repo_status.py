@@ -14,6 +14,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from itertools import count
 from pathlib import Path
 
 import requests
@@ -62,6 +63,18 @@ GITHUB_MARKDOWN_LINK_RE = re.compile(
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
+RELEASE_WORKFLOW_RE = re.compile(
+    r"(?i)(release|publish|package|desktop|deploy|artifact|build)"
+)
+RELEASE_TITLE_RE = re.compile(r"(?i)(release|publish|package|desktop|deploy|artifact)")
+VERSION_REF_RE = re.compile(
+    r"(?ix)^(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+" r"(?:[-+][0-9a-z.-]+)?$"
+)
+VERSION_LABEL_RE = re.compile(
+    r"(?ix)(?:^|[\s_-])(?:[a-z][a-z0-9]*[-_])?v?\d+\.\d+\.\d+"
+    r"(?:[-+][0-9a-z.-]+)?(?:$|[\s_-])"
+)
+RELEASE_EVENTS = {"push", "release", "workflow_dispatch", "repository_dispatch"}
 
 
 def status_to_emoji(conclusion: str | None) -> str:
@@ -94,6 +107,123 @@ def status_to_emoji(conclusion: str | None) -> str:
     }:
         return "❌"
     return "❓"
+
+
+def _is_version_ref(value: str | None) -> bool:
+    """Return whether ``value`` is a concrete release/version ref label."""
+
+    if not isinstance(value, str):
+        return False
+    normalized = value.strip()
+    if not normalized:
+        return False
+    if normalized.startswith("refs/tags/"):
+        normalized = normalized.removeprefix("refs/tags/")
+    elif normalized.startswith("refs/heads/"):
+        normalized = normalized.removeprefix("refs/heads/")
+    if "/" in normalized:
+        return False
+    return VERSION_REF_RE.fullmatch(normalized) is not None
+
+
+def _is_release_version_ref(value: str | None) -> bool:
+    """Return whether ``value`` is a concrete tag/release version ref."""
+
+    return _is_version_ref(value)
+
+
+def _has_version_label(value: str | None) -> bool:
+    """Return whether prose like a release title contains a version token."""
+
+    if not isinstance(value, str) or not value.strip():
+        return False
+    return VERSION_LABEL_RE.search(value.strip()) is not None
+
+
+def _is_release_like_workflow(run: dict) -> bool:
+    """Return whether a run is for release/build artifact work."""
+
+    identity_values = (run.get("name"), run.get("workflow_name"), run.get("path"))
+    if any(
+        isinstance(value, str) and RELEASE_WORKFLOW_RE.search(value)
+        for value in identity_values
+    ):
+        return True
+
+    # ``display_title`` usually comes from a commit or PR title.  Keep strong
+    # release words here, but avoid treating ordinary commits like
+    # ``fix build docs`` as release workflows.
+    title = run.get("display_title")
+    return isinstance(title, str) and RELEASE_TITLE_RE.search(title) is not None
+
+
+def _run_ref_values(run: dict) -> tuple[str, ...]:
+    """Return ref strings that may carry release labels."""
+
+    values = (
+        run.get("head_branch"),
+        run.get("head_ref"),
+        run.get("ref"),
+        run.get("head_ref_name"),
+    )
+    return tuple(value for value in values if isinstance(value, str) and value)
+
+
+def _run_title_values(run: dict) -> tuple[str, ...]:
+    """Return title strings that may carry dispatch/release labels."""
+
+    values = (run.get("display_title"), run.get("name"), run.get("workflow_name"))
+    return tuple(value for value in values if isinstance(value, str) and value)
+
+
+def _run_has_release_version_label(run: dict) -> bool:
+    """Return whether a run has a version label on a release ref or title."""
+
+    if any(_is_release_version_ref(value) for value in _run_ref_values(run)):
+        return True
+    event = run.get("event")
+    if event in {"release", "workflow_dispatch", "repository_dispatch"}:
+        return any(_has_version_label(value) for value in _run_title_values(run))
+    return False
+
+
+def _run_head_sha(run: dict) -> str | None:
+    """Return a run SHA from either REST or GraphQL-style payload keys."""
+
+    for key in ("head_sha", "headSha"):
+        value = run.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def _run_dashboard_scope(run: dict, selected_branch: str | None) -> str:
+    """Classify whether a workflow run belongs to the dashboard scope."""
+
+    run_branch = run.get("head_branch")
+    if (
+        isinstance(run_branch, str)
+        and selected_branch
+        and run_branch == selected_branch
+    ):
+        return "selected-branch"
+
+    event = run.get("event")
+    if isinstance(event, str) and event not in RELEASE_EVENTS:
+        return "ignored"
+
+    if _is_release_like_workflow(run) and _run_has_release_version_label(run):
+        return "release-version"
+
+    return "ignored"
+
+
+def _run_applies_to_dashboard(run: dict, selected_branch: str | None) -> bool:
+    """Return whether a completed run is safe to consider for README status."""
+
+    if run.get("status") not in (None, "completed"):
+        return False
+    return _run_dashboard_scope(run, selected_branch) != "ignored"
 
 
 def _normalize_run_name(value: object) -> str:
@@ -300,7 +430,8 @@ def fetch_repo_status_details(
         if branch is None:
             return RepoStatus(status_to_emoji(None), stars=metadata.stars)
 
-    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    all_runs_url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
+    url = all_runs_url
     if branch:
         url += f"&branch={branch}"
 
@@ -515,10 +646,119 @@ def fetch_repo_status_details(
 
         if not selected_runs:
             return None, ()
-        important = [r for r in selected_runs if keywords.search(r.get("name", ""))]
-        if important:
-            selected_runs = important
-        return _evaluate_runs(selected_runs)
+
+        def _is_keyword_run(run: dict) -> bool:
+            return keywords.search(run.get("name", "")) is not None
+
+        def _has_strong_identity(run: dict) -> bool:
+            return (_workflow_identity(run) or ("", ""))[0] != "name"
+
+        important_identities = {
+            identity
+            for run in selected_runs
+            for identity in [_workflow_identity(run)]
+            if identity is not None
+            and (
+                _is_keyword_run(run)
+                or (_is_release_like_workflow(run) and _has_strong_identity(run))
+                or (
+                    _normalize_conclusion(run.get("conclusion")) in failures
+                    and _has_strong_identity(run)
+                )
+            )
+        }
+        if important_identities:
+            selected_runs = [
+                run
+                for run in selected_runs
+                if _workflow_identity(run) in important_identities
+            ]
+
+        selected_report = _evaluate_runs(selected_runs)
+        needs_release_runs = any(
+            _is_release_like_workflow(run) for run in selected_runs
+        )
+        if not needs_release_runs:
+            return selected_report
+
+        selected_by_identity = {
+            identity: run
+            for run in _latest_completed_runs_by_workflow(selected_runs)
+            for identity in [_workflow_identity(run)]
+            if identity is not None
+        }
+
+        all_runs: list[dict] = []
+        for page in count(1):
+            page_url = all_runs_url if page == 1 else f"{all_runs_url}&page={page}"
+            try:
+                all_resp = requests.get(page_url, headers=headers, timeout=10)
+                all_resp.raise_for_status()
+                all_runs_data = all_resp.json()
+            except (requests.exceptions.RequestException, ValueError) as exc:
+                LOGGER.warning(
+                    "Unable to fetch cross-branch workflow runs for %s@%s: %s",
+                    repo,
+                    branch,
+                    exc,
+                )
+                return selected_report
+            if not isinstance(all_runs_data, dict):
+                LOGGER.warning(
+                    "Unexpected cross-branch workflow payload for %s@%s: %r",
+                    repo,
+                    branch,
+                    type(all_runs_data),
+                )
+                return selected_report
+
+            page_runs = all_runs_data.get("workflow_runs", [])
+            if not isinstance(page_runs, list):
+                LOGGER.warning(
+                    "Unexpected cross-branch workflow run list for %s@%s: %r",
+                    repo,
+                    branch,
+                    type(page_runs),
+                )
+                return selected_report
+            all_runs.extend(run for run in page_runs if isinstance(run, dict))
+            if len(page_runs) < 100:
+                break
+
+        def _is_applicable_release_run(run: dict) -> bool:
+            if not _run_applies_to_dashboard(run, branch):
+                return False
+            if _run_dashboard_scope(run, branch) != "release-version":
+                return False
+            identity = _workflow_identity(run)
+            if identity is None:
+                return False
+            selected = selected_by_identity.get(identity)
+            if selected is None:
+                return False
+            if _run_recency_key(run) <= _run_recency_key(selected):
+                return False
+            candidate_sha = _run_head_sha(run)
+            selected_sha = _run_head_sha(selected)
+            if candidate_sha is None or selected_sha is None:
+                return False
+            if candidate_sha != selected_sha:
+                return False
+            candidate_conclusion = _normalize_conclusion(run.get("conclusion"))
+            selected_conclusion = _normalize_conclusion(selected.get("conclusion"))
+            if (
+                candidate_conclusion not in passing
+                and candidate_conclusion not in failures
+            ):
+                return False
+            if selected_conclusion in failures and candidate_conclusion not in passing:
+                return candidate_conclusion in failures
+            return True
+
+        release_runs = [run for run in all_runs if _is_applicable_release_run(run)]
+        if not release_runs:
+            return selected_report
+        return _evaluate_runs([*selected_runs, *release_runs])
 
     reports = [_fetch() for _ in range(attempts)]
     conclusions = [report[0] for report in reports]

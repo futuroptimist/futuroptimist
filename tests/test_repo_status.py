@@ -85,6 +85,75 @@ def test_workflow_identity_order_and_unknown_fallback() -> None:
     assert repo_status._workflow_identity({}) is None
 
 
+def test_version_ref_detection_accepts_only_concrete_release_refs() -> None:
+    release_refs = (
+        "desktop-v0.1.0",
+        "v0.1.0",
+        "cli-v1.2.3",
+        "refs/tags/desktop-v0.1.0",
+    )
+    for ref in release_refs:
+        assert repo_status._is_version_ref(ref), ref
+
+    ordinary_branches = (
+        "feature/v1.2.3",
+        "feature/desktop-v0.1.0",
+        "dependabot/npm/foo-1.2.3",
+        "codex/fix-v1.2.3-build",
+    )
+    for ref in ordinary_branches:
+        assert not repo_status._is_version_ref(ref), ref
+
+
+def test_release_like_workflow_ignores_title_only_build_text() -> None:
+    assert (
+        repo_status._is_release_like_workflow(
+            {
+                "name": "Quality",
+                "path": ".github/workflows/quality.yml",
+                "display_title": "fix build docs",
+            }
+        )
+        is False
+    )
+    assert (
+        repo_status._is_release_like_workflow(
+            {"name": "Build", "path": ".github/workflows/build.yml"}
+        )
+        is True
+    )
+
+
+def test_run_dashboard_scope_requires_concrete_release_refs() -> None:
+    for branch in (
+        "desktop-v0.1.0",
+        "v0.1.0",
+        "cli-v1.2.3",
+        "refs/tags/desktop-v0.1.0",
+    ):
+        run = _workflow_run(
+            "success",
+            name="Package CLI",
+            path=".github/workflows/package.yml",
+            branch=branch,
+        )
+        assert repo_status._run_dashboard_scope(run, "main") == "release-version"
+
+    for branch in (
+        "feature/v1.2.3",
+        "feature/desktop-v0.1.0",
+        "dependabot/npm/foo-1.2.3",
+        "codex/fix-v1.2.3-build",
+    ):
+        run = _workflow_run(
+            "success",
+            name="Package CLI",
+            path=".github/workflows/package.yml",
+            branch=branch,
+        )
+        assert repo_status._run_dashboard_scope(run, "main") == "ignored"
+
+
 class DummyResp:
     def __init__(self, data, *, json_error: Exception | None = None):
         self._data = data
@@ -120,6 +189,9 @@ def _workflow_run(
     workflow_id: int | str | None = 123,
     path: str | None = ".github/workflows/tests.yml",
     workflow_name: str | None = None,
+    display_title: str | None = None,
+    event: str = "push",
+    status: str = "completed",
     run_number: int = 1,
     run_attempt: int = 1,
     created_at: str = "2025-09-25T12:00:00Z",
@@ -132,6 +204,8 @@ def _workflow_run(
         "head_sha": sha,
         "head_branch": branch,
         "name": name,
+        "event": event,
+        "status": status,
         "run_number": run_number,
         "run_attempt": run_attempt,
         "created_at": created_at,
@@ -143,6 +217,8 @@ def _workflow_run(
         run["path"] = path
     if workflow_name is not None:
         run["workflow_name"] = workflow_name
+    if display_title is not None:
+        run["display_title"] = display_title
     if updated_at is not None:
         run["updated_at"] = updated_at
     if run_id is not None:
@@ -154,6 +230,7 @@ def _mock_repo_status_requests(
     monkeypatch: pytest.MonkeyPatch,
     runs: list[dict],
     *,
+    all_runs: list[dict] | None = None,
     commits: list[dict] | None = None,
     branch: str = "main",
     stars: int | None = None,
@@ -168,6 +245,13 @@ def _mock_repo_status_requests(
             f"https://api.github.com/repos/user/repo/commits?sha={branch}&per_page=20"
         ):
             return DummyResp(commits or [_human_commit("abc")])
+        if (
+            url
+            == "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed"
+        ):
+            return DummyResp(
+                {"workflow_runs": all_runs if all_runs is not None else runs}
+            )
         assert url == (
             "https://api.github.com/repos/user/repo/actions/runs?"
             f"per_page=100&status=completed&branch={branch}"
@@ -519,6 +603,558 @@ def test_fetch_repo_status_newer_success_overrides_failed_workflow_id(
     )
 
 
+def test_fetch_repo_status_token_place_release_success_supersedes_stale_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="d99cb50d62672bff35d9642951679e90059ddadc",
+        name="Build Desktop App",
+        workflow_id=176183450,
+        path=".github/workflows/desktop-build.yml",
+        display_title="Merge pull request #1168 from futuroptimist/codex/add-visible-run_all…",
+        run_number=625,
+        created_at="2026-06-09T07:36:39Z",
+        updated_at="2026-06-09T07:45:55Z",
+        run_id=27191220631,
+        branch="main",
+    )
+    fixed = _workflow_run(
+        "success",
+        sha="d99cb50d62672bff35d9642951679e90059ddadc",
+        name="Build Desktop App",
+        workflow_id=176183450,
+        path=".github/workflows/desktop-build.yml",
+        display_title="Merge pull request #1168 from futuroptimist/codex/add-visible-run_all…",
+        run_number=626,
+        created_at="2026-06-09T08:02:14Z",
+        updated_at="2026-06-09T08:15:32Z",
+        run_id=27192437756,
+        branch="desktop-v0.1.0",
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [failed],
+        all_runs=[failed, fixed],
+        commits=[_human_commit("d99cb50d62672bff35d9642951679e90059ddadc")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_version_release_success_supersedes_selected_branch_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package CLI",
+        workflow_id=77,
+        path=".github/workflows/package.yml",
+        run_number=1,
+        run_id=1,
+    )
+    fixed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package CLI",
+        workflow_id=77,
+        path=".github/workflows/package.yml",
+        display_title="Release cli-v1.2.3",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="cli-v1.2.3",
+    )
+    _mock_repo_status_requests(monkeypatch, [failed], all_runs=[failed, fixed])
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_generic_build_tag_success_supersedes_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Build",
+        workflow_id=77,
+        path=".github/workflows/build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    fixed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Build",
+        workflow_id=77,
+        path=".github/workflows/build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="v1.2.3",
+    )
+    _mock_repo_status_requests(monkeypatch, [failed], all_runs=[failed, fixed])
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_preserves_release_workflows_with_test_workflows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    tests_passed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Test Suite",
+        workflow_id=100,
+        path=".github/workflows/tests.yml",
+        run_number=5,
+        run_id=5,
+    )
+    package_failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package CLI",
+        workflow_id=77,
+        path=".github/workflows/package.yml",
+        run_number=1,
+        run_id=1,
+    )
+    package_fixed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package CLI",
+        workflow_id=77,
+        path=".github/workflows/package.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="cli-v1.2.3",
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [tests_passed, package_failed],
+        all_runs=[tests_passed, package_failed, package_fixed],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_release_success_missing_sha_does_not_hide_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    release_without_sha = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="desktop-v1.2.3",
+    )
+    release_without_sha.pop("head_sha")
+    _mock_repo_status_requests(
+        monkeypatch,
+        [failed],
+        all_runs=[failed, release_without_sha],
+        commits=[_human_commit("abc")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Package Desktop", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_keeps_non_keyword_failure_with_title_only_build_success(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    title_only_build_success = _workflow_run(
+        "success",
+        sha="abc",
+        name="Quality",
+        workflow_id=77,
+        path=".github/workflows/quality.yml",
+        display_title="fix build docs",
+        run_id=1,
+    )
+    docs_failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Docs",
+        workflow_id=88,
+        path=".github/workflows/docs.yml",
+        run_id=2,
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [title_only_build_success, docs_failed],
+        all_runs=[title_only_build_success, docs_failed],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Docs", "https://github.com/user/repo/actions/runs/2"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_feature_branch_success_does_not_supersede_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Build Desktop App",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    feature = _workflow_run(
+        "success",
+        sha="abc",
+        name="Build Desktop App",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="feature/build-fix",
+    )
+    _mock_repo_status_requests(monkeypatch, [failed], all_runs=[failed, feature])
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Build Desktop App", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_release_success_different_sha_does_not_hide_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    unrelated_release = _workflow_run(
+        "success",
+        sha="def",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="desktop-v1.2.3",
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [failed],
+        all_runs=[failed, unrelated_release],
+        commits=[_human_commit("abc")],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Package Desktop", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+        )
+    )
+
+
+@pytest.mark.parametrize("branch", ["feature/v1.2.3", "feature/desktop-v0.1.0"])
+def test_fetch_repo_status_feature_semver_branch_does_not_supersede_failure(
+    monkeypatch: pytest.MonkeyPatch, branch: str
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    feature = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch=branch,
+    )
+    _mock_repo_status_requests(monkeypatch, [failed], all_runs=[failed, feature])
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "❌"
+
+
+def test_fetch_repo_status_paginates_release_runs_beyond_page_ten(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    fixed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="desktop-v1.2.3",
+    )
+    filler_pages = [
+        [
+            _workflow_run(
+                "success",
+                sha=f"filler-{page}-{index}",
+                name="Test Suite",
+                workflow_id=100_000 + (page * 100) + index,
+                run_id=100_000 + (page * 100) + index,
+                branch="main",
+            )
+            for index in range(100)
+        ]
+        for page in range(1, 11)
+    ]
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp([_human_commit("abc")])
+        if url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed&branch=main"
+        ):
+            return DummyResp({"workflow_runs": [failed]})
+        base_url = (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed"
+        )
+        if url == base_url:
+            return DummyResp({"workflow_runs": filler_pages[0]})
+        for page in range(2, 11):
+            if url == f"{base_url}&page={page}":
+                return DummyResp({"workflow_runs": filler_pages[page - 1]})
+        assert url == f"{base_url}&page=11"
+        return DummyResp({"workflow_runs": [fixed]})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "✅"
+    assert calls[-1].endswith("&page=11")
+
+
+def test_fetch_repo_status_run_number_outranks_updated_at_retry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    older_retried_failure = _workflow_run(
+        "failure",
+        sha="abc",
+        workflow_id=77,
+        run_number=1,
+        run_id=1,
+        created_at="2025-09-25T12:00:00Z",
+        updated_at="2025-09-25T14:00:00Z",
+    )
+    newer_success = _workflow_run(
+        "success",
+        sha="abc",
+        workflow_id=77,
+        run_number=2,
+        run_id=2,
+        created_at="2025-09-25T13:00:00Z",
+        updated_at="2025-09-25T13:05:00Z",
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [older_retried_failure, newer_success],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "✅"
+
+
+def test_fetch_repo_status_release_success_different_workflow_does_not_hide_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Build Desktop App",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    other = _workflow_run(
+        "success",
+        sha="abc",
+        name="Build Desktop App",
+        workflow_id=88,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="v1.2.3",
+    )
+    _mock_repo_status_requests(monkeypatch, [failed], all_runs=[failed, other])
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "❌"
+
+
+def test_fetch_repo_status_release_success_does_not_hide_test_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    build_failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Build Desktop App",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    tests_failed = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Test Suite",
+        workflow_id=99,
+        path=".github/workflows/tests.yml",
+        run_number=1,
+        run_id=3,
+    )
+    build_fixed = _workflow_run(
+        "success",
+        sha="abc",
+        name="Build Desktop App",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="v1.2.3",
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [build_failed, tests_failed],
+        all_runs=[build_failed, tests_failed, build_fixed],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Test Suite", "https://github.com/user/repo/actions/runs/3"
+                ),
+            ),
+        )
+    )
+
+
+def test_fetch_repo_status_latest_release_failure_links_latest_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    branch_success = _workflow_run(
+        "success",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=1,
+        run_id=1,
+    )
+    release_failure = _workflow_run(
+        "failure",
+        sha="abc",
+        name="Package Desktop",
+        workflow_id=77,
+        path=".github/workflows/desktop-build.yml",
+        run_number=2,
+        created_at="2025-09-25T13:00:00Z",
+        run_id=2,
+        branch="desktop-v1.2.3",
+    )
+    _mock_repo_status_requests(
+        monkeypatch,
+        [branch_success],
+        all_runs=[branch_success, release_failure],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "Package Desktop", "https://github.com/user/repo/actions/runs/2"
+                ),
+            ),
+        )
+    )
+
+
 def test_fetch_repo_status_preserves_id_only_failed_run(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -578,7 +1214,7 @@ def test_fetch_repo_status_mixed_workflow_id_types_share_identity(
     )
 
 
-def test_fetch_repo_status_run_number_beats_later_updated_at(
+def test_fetch_repo_status_later_run_number_beats_updated_at(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _mock_repo_status_requests(
