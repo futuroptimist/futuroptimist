@@ -12,7 +12,7 @@ import logging
 import os
 import re
 from collections.abc import Iterable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from itertools import count
 from pathlib import Path
@@ -390,7 +390,8 @@ def fetch_merged_pr_count(repo: str, token: str | None = None) -> int | None:
 
     try:
         resp = requests.get(
-            "https://api.github.com/search/issues?" f"q=repo:{repo}+is:pr+is:merged",
+            "https://api.github.com/search/issues?"
+            f"q=repo:{repo}+is:pr+is:merged&per_page=1",
             headers=_github_headers(token),
             timeout=10,
         )
@@ -402,6 +403,10 @@ def fetch_merged_pr_count(repo: str, token: str | None = None) -> int | None:
 
     if not isinstance(data, dict):
         LOGGER.warning("Unexpected merged PR payload for %s: %r", repo, type(data))
+        return None
+
+    if data.get("incomplete_results") is True:
+        LOGGER.warning("Incomplete merged PR search results for %s", repo)
         return None
 
     total_count = data.get("total_count")
@@ -916,7 +921,42 @@ class RelatedProjectItem:
     branch: str | None
     name: str
     start_index: int = 0
+    existing_merged_prs: int | None = None
     status: RepoStatus | None = None
+
+
+def _parse_count_marker_value(value: str) -> int | None:
+    """Parse a generated compact count marker value, preserving unknowns."""
+
+    if value == "?":
+        return None
+    try:
+        return int(value.replace(",", ""))
+    except ValueError:  # pragma: no cover - guarded by marker regexes
+        return None
+
+
+def existing_merged_pr_count(line: str) -> int | None:
+    """Return the generated merged-PR prefix count already present on a bullet."""
+
+    content = line[2:].lstrip() if line.startswith("- ") else line.lstrip()
+    while True:
+        original = content
+        content = re.sub(r"^[✅❌❓]\s*", "", content, count=1).lstrip()
+        content = GENERATED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
+        content = GENERATED_LEADING_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
+        content = LEGACY_STACKED_FAILURE_LINKS_RE.sub("", content, count=1).lstrip()
+        content = _strip_legacy_failure_links_before_markdown_repo(content)
+        content = _strip_keyworded_legacy_failure_links_before_raw_repo(content)
+        content = STAR_PREFIX_RE.sub("", content, count=1).lstrip()
+        marker = MERGED_PR_PREFIX_RE.match(content)
+        if marker:
+            value_match = re.search(r"(?:\?|[\d,]+)", marker.group(0))
+            if value_match:
+                return _parse_count_marker_value(value_match.group(0))
+            return None
+        if content == original:
+            return None
 
 
 def strip_project_prefix(line: str) -> str:
@@ -1036,6 +1076,7 @@ def parse_related_project_items(lines: list[str]) -> list[RelatedProjectItem]:
             index += 1
         while block and block[-1] == "":
             block.pop()
+        existing_merged_prs = existing_merged_pr_count(line)
         cleaned = strip_project_prefix(line)
         searchable_block = "\n".join([cleaned, *block[1:]])
         selected_repo = select_project_repo_url(searchable_block)
@@ -1050,6 +1091,7 @@ def parse_related_project_items(lines: list[str]) -> list[RelatedProjectItem]:
                 branch,
                 _project_name(cleaned, repo),
                 start_index=start_index,
+                existing_merged_prs=existing_merged_prs,
             )
         )
     return items
@@ -1078,15 +1120,9 @@ def _update_related_section(lines: list[str], token: str | None) -> list[str]:
     project_items = parse_related_project_items(lines)
     for item in project_items:
         status = fetch_repo_status_details(item.repo, token, item.branch)
-        items_by_start[item.start_index] = RelatedProjectItem(
-            item.lines,
-            item.cleaned_first_line,
-            item.repo,
-            item.branch,
-            item.name,
-            item.start_index,
-            status,
-        )
+        if status.merged_prs is None and item.existing_merged_prs is not None:
+            status = replace(status, merged_prs=item.existing_merged_prs)
+        items_by_start[item.start_index] = replace(item, status=status)
 
     sorted_items = sorted(items_by_start.values(), key=_sort_key)
     sorted_iter = iter(sorted_items)

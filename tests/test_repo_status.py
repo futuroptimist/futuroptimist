@@ -1,4 +1,4 @@
-from datetime import UTC
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -239,7 +239,7 @@ def _mock_repo_status_requests(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             data: dict = {}
             if merged_prs is not None:
@@ -277,7 +277,7 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
         calls.append(url)
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -313,7 +313,7 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", token="abc") == "✅"
     assert calls == [
-        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
+        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
@@ -331,7 +331,7 @@ def test_fetch_repo_status_no_runs_returns_unknown(
         calls.append(url)
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -361,7 +361,7 @@ def test_fetch_repo_status_no_runs_returns_unknown(
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "❓"
     assert calls == [
-        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
+        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
@@ -377,7 +377,7 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
         calls.append(url)
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -413,7 +413,7 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
     assert calls == [
-        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
+        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=dev",
@@ -436,7 +436,7 @@ def test_fetch_repo_status_invalid_commit_payload(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -460,7 +460,7 @@ def test_fetch_repo_status_nondeterministic(monkeypatch: pytest.MonkeyPatch) -> 
         calls.append(url)
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -519,7 +519,7 @@ def test_fetch_repo_status_ignores_non_ci_runs(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -568,7 +568,7 @@ def test_fetch_repo_status_prefers_latest_attempt(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -1027,7 +1027,7 @@ def test_fetch_repo_status_paginates_release_runs_beyond_page_ten(
         calls.append(url)
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -1911,7 +1911,7 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
         calls.append(url)
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -1966,7 +1966,7 @@ def test_fetch_repo_status_skip_ci_message(monkeypatch: pytest.MonkeyPatch) -> N
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2120,7 +2120,7 @@ def test_fetch_repo_status_details_includes_failed_run_link(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2173,7 +2173,7 @@ def test_fetch_repo_status_details_orders_multiple_failure_links(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2237,7 +2237,7 @@ def test_fetch_repo_status_details_falls_back_to_actions_run_url(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2290,7 +2290,7 @@ def test_fetch_repo_status_details_omits_unlinkable_failed_run(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2333,7 +2333,7 @@ def test_fetch_repo_status_details_links_only_failed_workflows(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2392,7 +2392,7 @@ def test_fetch_repo_status_details_success_and_unknown_have_no_links(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2448,7 +2448,7 @@ def test_fetch_repo_status_details_prefers_latest_attempt_without_stale_link(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2636,7 +2636,7 @@ def test_fetch_repo_status_report_returns_url_strings_for_compatibility(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2689,7 +2689,7 @@ def test_fetch_repo_status_details_collapses_renamed_latest_attempt(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -2751,7 +2751,7 @@ def test_fetch_repo_status_details_disambiguates_same_name_and_run_number(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -3019,7 +3019,7 @@ def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
     def fake_get(url: str, headers: dict, timeout: int):
         if url == (
             "https://api.github.com/search/issues?"
-            "q=repo:futuroptimist/flywheel+is:pr+is:merged"
+            "q=repo:futuroptimist/flywheel+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/futuroptimist/flywheel":
@@ -3106,7 +3106,7 @@ def test_fetch_repo_status_details_includes_star_count(
     def fake_get(url: str, headers: dict, timeout: int):
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
@@ -3157,7 +3157,7 @@ def test_fetch_repo_metadata_includes_merged_pr_count(
         calls.append((url, headers))
         if (
             url
-            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
         ):
             return DummyResp({"total_count": 42})
         assert url == "https://api.github.com/repos/user/repo"
@@ -3170,7 +3170,7 @@ def test_fetch_repo_metadata_includes_merged_pr_count(
     ) == repo_status.RepoMetadata(default_branch="main", stars=6, merged_prs=42)
     assert calls == [
         (
-            "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
+            "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
             {"Accept": "application/vnd.github+json", "Authorization": "Bearer secret"},
         ),
         (
@@ -3186,6 +3186,7 @@ def test_fetch_repo_metadata_includes_merged_pr_count(
         {},
         {"total_count": "42"},
         {"total_count": True},
+        {"total_count": 42, "incomplete_results": True},
         [],
     ],
 )
@@ -3228,6 +3229,56 @@ def test_fetch_repo_metadata_invalid_star_count_is_unknown(
 
     assert repo_status.fetch_repo_metadata("user/repo") == repo_status.RepoMetadata(
         default_branch="main", stars=None
+    )
+
+
+def test_update_readme_preserves_existing_merged_pr_count_when_fetch_unknown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ✅ ⭐ 8 🔀 123 **[repo](https://github.com/user/repo)** - existing count\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "✅", stars=9, merged_prs=None
+        ),
+    )
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert (
+        "- ✅ ⭐ 9 🔀 123 **[repo](https://github.com/user/repo)** - existing count"
+        in readme.read_text()
+    )
+
+
+def test_update_readme_replaces_existing_merged_pr_count_when_fetch_succeeds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ✅ ⭐ 8 🔀 123 **[repo](https://github.com/user/repo)** - stale count\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "✅", stars=9, merged_prs=456
+        ),
+    )
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+
+    assert (
+        "- ✅ ⭐ 9 🔀 456 **[repo](https://github.com/user/repo)** - stale count"
+        in readme.read_text()
     )
 
 
