@@ -234,10 +234,19 @@ def _mock_repo_status_requests(
     commits: list[dict] | None = None,
     branch: str = "main",
     stars: int | None = None,
+    merged_prs: int | None = None,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            data: dict = {}
+            if merged_prs is not None:
+                data["total_count"] = merged_prs
+            return DummyResp(data)
         if url == "https://api.github.com/repos/user/repo":
-            data: dict = {"default_branch": branch}
+            data = {"default_branch": branch}
             if stars is not None:
                 data["stargazers_count"] = stars
             return DummyResp(data)
@@ -266,6 +275,11 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
     def fake_get(url: str, headers: dict, timeout: int):
         calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -299,6 +313,7 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", token="abc") == "✅"
     assert calls == [
+        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
@@ -314,6 +329,11 @@ def test_fetch_repo_status_no_runs_returns_unknown(
 
     def fake_get(url: str, headers: dict, timeout: int):
         calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -341,6 +361,7 @@ def test_fetch_repo_status_no_runs_returns_unknown(
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "❓"
     assert calls == [
+        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
@@ -354,6 +375,11 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
 
     def fake_get(url: str, headers: dict, timeout: int):
         calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main", "stargazers_count": 42})
         if url.startswith(
@@ -387,6 +413,7 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo", branch="dev") == "✅"
     assert calls == [
+        "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=dev",
@@ -407,6 +434,11 @@ def test_fetch_repo_status_invalid_commit_payload(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -426,6 +458,11 @@ def test_fetch_repo_status_nondeterministic(monkeypatch: pytest.MonkeyPatch) -> 
     def fake_get(url: str, headers: dict, timeout: int):
         nonlocal run_calls
         calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -480,6 +517,11 @@ def test_fetch_repo_status_ignores_non_ci_runs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -524,6 +566,11 @@ def test_fetch_repo_status_prefers_latest_attempt(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -978,6 +1025,11 @@ def test_fetch_repo_status_paginates_release_runs_beyond_page_ten(
 
     def fake_get(url: str, headers: dict, timeout: int):
         calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -1857,6 +1909,11 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
 
     def fake_get(url: str, headers: dict, timeout: int):
         calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -1907,6 +1964,11 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
 
 def test_fetch_repo_status_skip_ci_message(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -1980,7 +2042,7 @@ def test_update_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     lines = readme.read_text().splitlines()
     assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
-    assert lines[4] == "- ✅ ⭐ 2 https://github.com/user/repo"
+    assert lines[4] == "- ✅ ⭐ 2 🔀 ? https://github.com/user/repo"
 
 
 def test_update_readme_uses_current_time(
@@ -2014,7 +2076,7 @@ def test_update_readme_uses_current_time(
     repo_status.update_readme(readme)
     lines = readme.read_text().splitlines()
     assert lines[1] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
-    assert lines[2] == "- ✅ ⭐ ? https://github.com/user/repo"
+    assert lines[2] == "- ✅ ⭐ ? 🔀 ? https://github.com/user/repo"
 
 
 def test_update_readme_existing_timestamp(
@@ -2049,13 +2111,18 @@ def test_update_readme_existing_timestamp(
 
     lines = readme.read_text().splitlines()
     assert lines[3] == "_Last updated: 2020-01-02 03:04 UTC; checks hourly_"
-    assert lines[4] == "- ✅ ⭐ ? https://github.com/user/repo"
+    assert lines[4] == "- ✅ ⭐ ? 🔀 ? https://github.com/user/repo"
 
 
 def test_fetch_repo_status_details_includes_failed_run_link(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2104,6 +2171,11 @@ def test_fetch_repo_status_details_orders_multiple_failure_links(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2163,6 +2235,11 @@ def test_fetch_repo_status_details_falls_back_to_actions_run_url(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2211,6 +2288,11 @@ def test_fetch_repo_status_details_omits_unlinkable_failed_run(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2249,6 +2331,11 @@ def test_fetch_repo_status_details_links_only_failed_workflows(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2303,6 +2390,11 @@ def test_fetch_repo_status_details_success_and_unknown_have_no_links(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2354,6 +2446,11 @@ def test_fetch_repo_status_details_prefers_latest_attempt_without_stale_link(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2414,7 +2511,7 @@ def test_update_readme_includes_failure_links_and_removes_duplicates(
         "## Related Projects\n"
         "_Last updated: 1999-01-01 00:00 UTC; checks hourly_\n"
         "_Last updated: 1998-01-01 00:00 UTC; checks hourly_\n"
-        "- ✅ ⭐ ? https://github.com/user/repo (failing runs: https://old.example/run)\n"
+        "- ✅ ⭐ ? 🔀 ? https://github.com/user/repo (failing runs: https://old.example/run)\n"
     )
     readme = tmp_path / "README.md"
     readme.write_text(content)
@@ -2446,7 +2543,7 @@ def test_update_readme_includes_failure_links_and_removes_duplicates(
         (
             "- ❌ ([tests](https://github.com/user/repo/actions/runs/1), "
             "[lint](https://github.com/user/repo/actions/runs/2)) "
-            "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo"
+            "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? https://github.com/user/repo"
         ),
     ]
 
@@ -2495,7 +2592,7 @@ def test_update_readme_strips_linked_failure_prefixes_idempotently(
             "- ❌ ([tests](https://github.com/user/repo/actions/runs/1), "
             "[lint](https://github.com/user/repo/actions/runs/2)) "
             "<!-- repo-status:failure-links --> "
-            "⭐ ? **[repo](https://github.com/user/repo)** - description"
+            "⭐ ? 🔀 ? **[repo](https://github.com/user/repo)** - description"
         ),
     ]
 
@@ -2529,7 +2626,7 @@ def test_update_readme_uses_status_details_not_compatibility_report(
 
     assert (
         "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo"
+        "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? https://github.com/user/repo"
     ) in readme.read_text().splitlines()
 
 
@@ -2537,6 +2634,11 @@ def test_fetch_repo_status_report_returns_url_strings_for_compatibility(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2585,6 +2687,11 @@ def test_fetch_repo_status_details_collapses_renamed_latest_attempt(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2642,6 +2749,11 @@ def test_fetch_repo_status_details_disambiguates_same_name_and_run_number(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
@@ -2710,7 +2822,7 @@ def test_update_readme_strips_escaped_failure_label_idempotently(
     readme.write_text(
         "## Related Projects\n"
         "- ❌ ([bad\\]name](https://github.com/user/repo/actions/runs/0)) "
-        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo\n"
+        "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? https://github.com/user/repo\n"
     )
 
     monkeypatch.setattr(
@@ -2737,7 +2849,7 @@ def test_update_readme_strips_escaped_failure_label_idempotently(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([bad\\]name](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? https://github.com/user/repo",
     ]
 
 
@@ -2748,7 +2860,7 @@ def test_update_readme_strips_bracketed_failure_label_idempotently(
     readme.write_text(
         "## Related Projects\n"
         "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/0)) "
-        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo\n"
+        "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? https://github.com/user/repo\n"
     )
 
     monkeypatch.setattr(
@@ -2775,7 +2887,7 @@ def test_update_readme_strips_bracketed_failure_label_idempotently(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([CI [lint\\]](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? https://github.com/user/repo",
     ]
 
 
@@ -2813,7 +2925,7 @@ def test_update_readme_migrates_legacy_unmarked_failure_links_before_raw_repo(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> ⭐ ? https://github.com/user/repo",
+        "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? https://github.com/user/repo",
     ]
 
 
@@ -2849,10 +2961,10 @@ def test_update_readme_preserves_hand_authored_leading_notes(
     assert readme.read_text().splitlines() == [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
-        "- ✅ ⭐ 3 (archived) **[repo](https://github.com/user/repo)** - desc",
-        "- ✅ ⭐ 2 ([docs](https://example.com)) "
+        "- ✅ ⭐ 3 🔀 ? (archived) **[repo](https://github.com/user/repo)** - desc",
+        "- ✅ ⭐ 2 🔀 ? ([docs](https://example.com)) "
         "**[docs-repo](https://github.com/user/docs-repo)** - desc",
-        "- ✅ ⭐ 1 ([debug run](https://github.com/user/debug-repo/actions/runs/123)) "
+        "- ✅ ⭐ 1 🔀 ? ([debug run](https://github.com/user/debug-repo/actions/runs/123)) "
         "**[debug-repo](https://github.com/user/debug-repo)** - desc",
     ]
 
@@ -2883,7 +2995,7 @@ def test_update_readme_preserves_hand_authored_run_note_before_raw_repo(
     assert readme.read_text().splitlines() == [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
-        "- ✅ ⭐ ? ([debug run](https://github.com/user/repo/actions/runs/123)) "
+        "- ✅ ⭐ ? 🔀 ? ([debug run](https://github.com/user/repo/actions/runs/123)) "
         "https://github.com/user/repo - desc",
     ]
 
@@ -2905,6 +3017,11 @@ def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
     )
 
     def fake_get(url: str, headers: dict, timeout: int):
+        if url == (
+            "https://api.github.com/search/issues?"
+            "q=repo:futuroptimist/flywheel+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/futuroptimist/flywheel":
             return DummyResp({"default_branch": "main", "stargazers_count": 9})
         if url.startswith(
@@ -2950,9 +3067,10 @@ def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
 
     rendered = readme.read_text(encoding="utf-8")
     assert (
-        "- ✅ ⭐ 9 **[flywheel](https://github.com/futuroptimist/flywheel)** - automate the loop"
+        "- ✅ ⭐ 9 🔀 ? **[flywheel](https://github.com/futuroptimist/flywheel)**"
         in rendered
     )
+    assert "automate the loop" in rendered
     assert "27123196602" not in rendered
     assert "repo-status:failure-links" not in rendered
 
@@ -2971,6 +3089,7 @@ def test_profile_readme_related_projects_copy_is_parseable() -> None:
         in section
     )
     assert "⭐ shows GitHub stars" in section
+    assert "🔀 shows total merged pull requests" in section
     assert "Projects sort by stars descending" in section
     assert readme.count("docs/repository-guide.md") == 1
 
@@ -2978,12 +3097,18 @@ def test_profile_readme_related_projects_copy_is_parseable() -> None:
     assert project_lines
     assert all(repo_status.GITHUB_RE.search(line) for line in project_lines)
     assert all("⭐" in line for line in project_lines)
+    assert all("🔀" in line for line in project_lines)
 
 
 def test_fetch_repo_status_details_includes_star_count(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main", "stargazers_count": 42})
         if url.startswith(
@@ -3023,6 +3148,73 @@ def test_format_star_count_handles_unknowns() -> None:
     assert repo_status.format_star_count(None) == "⭐ ?"
 
 
+def test_fetch_repo_metadata_includes_merged_pr_count(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, dict]] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append((url, headers))
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged"
+        ):
+            return DummyResp({"total_count": 42})
+        assert url == "https://api.github.com/repos/user/repo"
+        return DummyResp({"default_branch": "main", "stargazers_count": 6})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_metadata(
+        "user/repo", token="secret"
+    ) == repo_status.RepoMetadata(default_branch="main", stars=6, merged_prs=42)
+    assert calls == [
+        (
+            "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged",
+            {"Accept": "application/vnd.github+json", "Authorization": "Bearer secret"},
+        ),
+        (
+            "https://api.github.com/repos/user/repo",
+            {"Accept": "application/vnd.github+json", "Authorization": "Bearer secret"},
+        ),
+    ]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {},
+        {"total_count": "42"},
+        {"total_count": True},
+        [],
+    ],
+)
+def test_fetch_merged_pr_count_invalid_payload_is_unknown(
+    monkeypatch: pytest.MonkeyPatch, payload: object
+) -> None:
+    monkeypatch.setattr(
+        repo_status.requests, "get", lambda url, headers, timeout: DummyResp(payload)
+    )
+
+    assert repo_status.fetch_merged_pr_count("user/repo") is None
+
+
+def test_fetch_merged_pr_count_request_error_is_unknown(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_get(url: str, headers: dict, timeout: int):
+        raise repo_status.requests.exceptions.RequestException("rate limited")
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_merged_pr_count("user/repo") is None
+
+
+def test_format_merged_pr_count_handles_unknowns() -> None:
+    assert repo_status.format_merged_pr_count(42) == "🔀 42"
+    assert repo_status.format_merged_pr_count(None) == "🔀 ?"
+
+
 def test_fetch_repo_metadata_invalid_star_count_is_unknown(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -3037,6 +3229,45 @@ def test_fetch_repo_metadata_invalid_star_count_is_unknown(
     assert repo_status.fetch_repo_metadata("user/repo") == repo_status.RepoMetadata(
         default_branch="main", stars=None
     )
+
+
+def test_update_readme_upgrades_and_replaces_merged_pr_prefixes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ✅ ⭐ 1 **[old-star](https://github.com/user/old-star)** - needs PR marker\n"
+        "- ✅ ⭐ 2 🔀 999 **[stale](https://github.com/user/stale)** - stale count\n"
+        "- **[unknown-stars](https://github.com/user/unknown-stars)** - known PRs\n"
+        "- **[unknown-prs](https://github.com/user/unknown-prs)** - known stars\n"
+    )
+
+    details = {
+        "user/old-star": repo_status.RepoStatus("✅", stars=1, merged_prs=11),
+        "user/stale": repo_status.RepoStatus("✅", stars=2, merged_prs=22),
+        "user/unknown-stars": repo_status.RepoStatus("❓", stars=None, merged_prs=33),
+        "user/unknown-prs": repo_status.RepoStatus("✅", stars=4, merged_prs=None),
+    }
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: details[repo],
+    )
+    from datetime import datetime
+
+    now = datetime(2020, 1, 2, 3, 4, tzinfo=UTC)
+    repo_status.update_readme(readme, now=now)
+    first = readme.read_text()
+    repo_status.update_readme(readme, now=now)
+
+    assert readme.read_text() == first
+    assert readme.read_text().splitlines()[2:] == [
+        "- ✅ ⭐ 4 🔀 ? **[unknown-prs](https://github.com/user/unknown-prs)** - known stars",
+        "- ✅ ⭐ 2 🔀 22 **[stale](https://github.com/user/stale)** - stale count",
+        "- ✅ ⭐ 1 🔀 11 **[old-star](https://github.com/user/old-star)** - needs PR marker",
+        "- ❓ ⭐ ? 🔀 33 **[unknown-stars](https://github.com/user/unknown-stars)** - known PRs",
+    ]
 
 
 def test_update_readme_sorts_by_stars_then_name_and_unknowns_last(
@@ -3064,10 +3295,10 @@ def test_update_readme_sorts_by_stars_then_name_and_unknowns_last(
     repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
 
     assert readme.read_text().splitlines()[2:] == [
-        "- ✅ ⭐ 5 **[alpha](https://github.com/user/alpha)** - same stars",
-        "- ✅ ⭐ 5 **[Beta](https://github.com/user/beta)** - same stars",
-        "- ✅ ⭐ 0 **[Zero](https://github.com/user/zero)** - zero stars",
-        "- ✅ ⭐ ? **[Unknown](https://github.com/user/unknown)** - unknown stars",
+        "- ✅ ⭐ 5 🔀 ? **[alpha](https://github.com/user/alpha)** - same stars",
+        "- ✅ ⭐ 5 🔀 ? **[Beta](https://github.com/user/beta)** - same stars",
+        "- ✅ ⭐ 0 🔀 ? **[Zero](https://github.com/user/zero)** - zero stars",
+        "- ✅ ⭐ ? 🔀 ? **[Unknown](https://github.com/user/unknown)** - unknown stars",
     ]
 
 
@@ -3104,7 +3335,7 @@ def test_update_readme_star_and_failure_prefix_is_idempotent(
     assert readme.read_text() == first
     assert readme.read_text().splitlines()[2] == (
         "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> ⭐ 7 "
+        "<!-- repo-status:failure-links --> ⭐ 7 🔀 ? "
         "**[repo](https://github.com/user/repo)** - desc"
     )
 
@@ -3138,10 +3369,10 @@ def test_update_readme_preserves_multiline_and_external_display_links(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "Intro stays put.",
-        "- ✅ ⭐ 10 **[token.place](https://token.place)** - external first "
+        "- ✅ ⭐ 10 🔀 ? **[token.place](https://token.place)** - external first "
         "([repo](https://github.com/futuroptimist/token.place))",
         "  continuation stays with token.place",
-        "- ✅ ⭐ 1 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** - hub",
+        "- ✅ ⭐ 1 🔀 ? **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** - hub",
     ]
 
 
@@ -3172,9 +3403,9 @@ def test_update_readme_uses_repo_link_from_continuation_line(
     assert readme.read_text().splitlines() == [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
-        "- ✅ ⭐ 10 **[external](https://example.com)** - homepage first",
+        "- ✅ ⭐ 10 🔀 ? **[external](https://example.com)** - homepage first",
         "  ([repo](https://github.com/user/external/tree/main))",
-        "- ✅ ⭐ 1 **[local](https://github.com/user/local)** - repo first",
+        "- ✅ ⭐ 1 🔀 ? **[local](https://github.com/user/local)** - repo first",
     ]
 
 
@@ -3205,7 +3436,7 @@ def test_update_readme_ignores_issue_action_and_note_links_before_repo(
     assert readme.read_text().splitlines() == [
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
-        "- ✅ ⭐ 9 ([note](https://github.com/user/notes)) "
+        "- ✅ ⭐ 9 🔀 ? ([note](https://github.com/user/notes)) "
         "([issue](https://github.com/user/issue-tracker/issues/7)) "
         "([run](https://github.com/user/automation/actions/runs/99)) "
         "**[Site](https://example.com)** - external display "
@@ -3248,7 +3479,7 @@ def test_update_readme_strips_arbitrary_label_legacy_failure_link_before_repo(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([Production](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> ⭐ 4 "
+        "<!-- repo-status:failure-links --> ⭐ 4 🔀 ? "
         "**[repo](https://github.com/user/repo)** - desc",
     ]
 
@@ -3286,7 +3517,7 @@ def test_update_readme_strips_legacy_deploy_failure_link_before_repo(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "- ❌ ([Deploy](https://github.com/user/repo/actions/runs/1)) "
-        "<!-- repo-status:failure-links --> ⭐ ? "
+        "<!-- repo-status:failure-links --> ⭐ ? 🔀 ? "
         "**[repo](https://github.com/user/repo)** - desc",
     ]
 
@@ -3312,4 +3543,6 @@ def test_update_readme_branch_url_uses_branch_for_status_and_repo_for_stars(
     repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
 
     assert calls == [("democratizedspace/dspace", "main")]
-    assert "- ✅ ⭐ 12 **[DSPACE](https://democratized.space)**" in readme.read_text()
+    assert (
+        "- ✅ ⭐ 12 🔀 ? **[DSPACE](https://democratized.space)**" in readme.read_text()
+    )
