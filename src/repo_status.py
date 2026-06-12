@@ -36,6 +36,7 @@ class RepoMetadata:
 
     default_branch: str | None = None
     stars: int | None = None
+    merged_prs: int | None = None
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,7 @@ class RepoStatus:
     emoji: str
     failure_links: tuple[StatusLink, ...] = field(default_factory=tuple)
     stars: int | None = None
+    merged_prs: int | None = None
 
 
 @dataclass(frozen=True)
@@ -374,16 +376,55 @@ def _latest_completed_runs_by_workflow(runs: Iterable[dict]) -> list[dict]:
     )
 
 
-def fetch_repo_metadata(repo: str, token: str | None = None) -> RepoMetadata:
-    """Fetch default branch and star count for ``repo`` without raising."""
+def _github_headers(token: str | None = None) -> dict[str, str]:
+    """Return common GitHub REST API headers."""
 
     headers = {"Accept": "application/vnd.github+json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def fetch_merged_pr_count(repo: str, token: str | None = None) -> int | None:
+    """Fetch the total number of merged pull requests for ``repo`` without raising."""
+
+    try:
+        resp = requests.get(
+            f"https://api.github.com/search/issues?q=repo:{repo}+is:pr+is:merged",
+            headers=_github_headers(token),
+            timeout=10,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except (requests.exceptions.RequestException, ValueError) as exc:
+        LOGGER.warning(
+            "Unable to fetch merged pull request count for %s: %s", repo, exc
+        )
+        return None
+
+    if not isinstance(data, dict):
+        LOGGER.warning(
+            "Unexpected merged pull request payload for %s: %r", repo, type(data)
+        )
+        return None
+
+    total_count = data.get("total_count")
+    if type(total_count) is not int:
+        LOGGER.warning(
+            "Unexpected merged pull request count for %s: %r", repo, total_count
+        )
+        return None
+    return total_count
+
+
+def fetch_repo_metadata(repo: str, token: str | None = None) -> RepoMetadata:
+    """Fetch default branch, star count, and merged PR count for ``repo`` without raising."""
 
     try:
         repo_resp = requests.get(
-            f"https://api.github.com/repos/{repo}", headers=headers, timeout=10
+            f"https://api.github.com/repos/{repo}",
+            headers=_github_headers(token),
+            timeout=10,
         )
         repo_resp.raise_for_status()
         repo_data = repo_resp.json()
@@ -403,7 +444,12 @@ def fetch_repo_metadata(repo: str, token: str | None = None) -> RepoMetadata:
 
     stars_value = repo_data.get("stargazers_count")
     stars = stars_value if type(stars_value) is int else None
-    return RepoMetadata(default_branch=default_branch, stars=stars)
+    merged_prs = (
+        fetch_merged_pr_count(repo, token) if "stargazers_count" in repo_data else None
+    )
+    return RepoMetadata(
+        default_branch=default_branch, stars=stars, merged_prs=merged_prs
+    )
 
 
 def fetch_repo_status_details(
@@ -420,15 +466,17 @@ def fetch_repo_status_details(
     ``RuntimeError`` so the calling workflow fails loudly.
     """
 
-    headers = {"Accept": "application/vnd.github+json"}
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
+    headers = _github_headers(token)
 
     metadata = fetch_repo_metadata(repo, token)
     if branch is None:
         branch = metadata.default_branch
         if branch is None:
-            return RepoStatus(status_to_emoji(None), stars=metadata.stars)
+            return RepoStatus(
+                status_to_emoji(None),
+                stars=metadata.stars,
+                merged_prs=metadata.merged_prs,
+            )
 
     all_runs_url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&status=completed"
     url = all_runs_url
@@ -772,7 +820,10 @@ def fetch_repo_status_details(
             if link not in failure_links:
                 failure_links.append(link)
     return RepoStatus(
-        status_to_emoji(conclusions[0]), tuple(failure_links), metadata.stars
+        status_to_emoji(conclusions[0]),
+        tuple(failure_links),
+        metadata.stars,
+        metadata.merged_prs,
     )
 
 
@@ -822,6 +873,12 @@ def format_star_count(stars: int | None) -> str:
     return f"⭐ {stars}" if stars is not None else "⭐ ?"
 
 
+def format_merged_pr_count(count: int | None) -> str:
+    """Format a compact merged pull request count marker."""
+
+    return f"🔀 {count}" if count is not None else "🔀 ?"
+
+
 GENERATED_ACTION_RUN_LINK_RE = (
     r"\[(?:\\.|[^\]\\])+\]"
     r"\(https://github\.com/[\w.-]+/[\w.-]+/actions/runs/[^)]*\)"
@@ -844,15 +901,16 @@ LEGACY_GENERATED_ACTION_RUN_LINK_RE = (
 )
 LEGACY_UNMARKED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
     rf"^\((?:{LEGACY_GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
-    r"(?=(?:⭐\s*(?:\?|[\d,]+)\s*)?(?:\*\*?\[[^\]]+\]\(|\[[^\]]+\]\())",
+    r"(?=(?:⭐\s*(?:\?|[\d,]+)\s*)?(?:🔀\s*(?:\?|[\d,]+)\s*)?(?:\*\*?\[[^\]]+\]\(|\[[^\]]+\]\())",
     re.IGNORECASE,
 )
 LEGACY_KEYWORDED_FAILURE_LINKS_BEFORE_REPO_RE = re.compile(
     rf"^\((?:{LEGACY_GENERATED_ACTION_RUN_LINK_RE}(?:,\s*)?)+\)\s*"
-    r"(?=(?:⭐\s*(?:\?|[\d,]+)\s*)?https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?)",
+    r"(?=(?:⭐\s*(?:\?|[\d,]+)\s*)?(?:🔀\s*(?:\?|[\d,]+)\s*)?https://github\.com/[\w.-]+/[\w.-]+(?:/tree/[\w./-]+)?)",
     re.IGNORECASE,
 )
 STAR_PREFIX_RE = re.compile(r"^⭐\s*(?:\?|[\d,]+)\s*")
+MERGED_PR_PREFIX_RE = re.compile(r"^🔀\s*(?:\?|[\d,]+)\s*")
 LEGACY_FAILING_RUNS_RE = re.compile(r"\s+\(failing runs: [^)]*\)$")
 
 
@@ -882,6 +940,7 @@ def strip_project_prefix(line: str) -> str:
         content = _strip_legacy_failure_links_before_markdown_repo(content)
         content = _strip_keyworded_legacy_failure_links_before_raw_repo(content)
         content = STAR_PREFIX_RE.sub("", content, count=1).lstrip()
+        content = MERGED_PR_PREFIX_RE.sub("", content, count=1).lstrip()
         if content == original:
             return LEGACY_FAILING_RUNS_RE.sub("", content)
 
@@ -1010,7 +1069,8 @@ def render_project_item(item: RelatedProjectItem, details: RepoStatus) -> list[s
     link_suffix = _format_failure_links(details.failure_links)
     first = (
         f"- {details.emoji}{link_suffix} "
-        f"{format_star_count(details.stars)} {item.cleaned_first_line}"
+        f"{format_star_count(details.stars)} "
+        f"{format_merged_pr_count(details.merged_prs)} {item.cleaned_first_line}"
     )
     return [first, *item.lines[1:]]
 
