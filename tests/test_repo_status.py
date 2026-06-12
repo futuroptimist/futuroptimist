@@ -3148,6 +3148,28 @@ def test_format_star_count_handles_unknowns() -> None:
     assert repo_status.format_star_count(None) == "⭐ ?"
 
 
+def test_fetch_merged_pr_count_success_uses_search_endpoint_and_headers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, dict, int]] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append((url, headers, timeout))
+        return DummyResp({"total_count": 12, "incomplete_results": False})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_merged_pr_count("user/repo", token="secret") == 12
+    assert calls == [
+        (
+            "https://api.github.com/search/issues?"
+            "q=repo:user/repo+is:pr+is:merged&per_page=1",
+            {"Accept": "application/vnd.github+json", "Authorization": "Bearer secret"},
+            10,
+        )
+    ]
+
+
 def test_fetch_repo_metadata_includes_merged_pr_count(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -3289,15 +3311,19 @@ def test_update_readme_upgrades_and_replaces_merged_pr_prefixes(
     readme.write_text(
         "## Related Projects\n"
         "- ✅ ⭐ 1 **[old-star](https://github.com/user/old-star)** - needs PR marker\n"
+        "- ✅ ⭐ ? **[old-q](https://github.com/user/old-q)** - needs PR marker\n"
         "- ✅ ⭐ 2 🔀 999 **[stale](https://github.com/user/stale)** - stale count\n"
+        "- ✅ ⭐ ? 🔀 888 **[stale-q](https://github.com/user/stale-q)** - stale count\n"
+        "- ✅ ⭐ 4 🔀 ? **[unknown-prs](https://github.com/user/unknown-prs)** - known stars\n"
         "- **[unknown-stars](https://github.com/user/unknown-stars)** - known PRs\n"
-        "- **[unknown-prs](https://github.com/user/unknown-prs)** - known stars\n"
     )
 
     details = {
         "user/old-star": repo_status.RepoStatus("✅", stars=1, merged_prs=11),
+        "user/old-q": repo_status.RepoStatus("✅", stars=None, merged_prs=12),
         "user/stale": repo_status.RepoStatus("✅", stars=2, merged_prs=22),
-        "user/unknown-stars": repo_status.RepoStatus("❓", stars=None, merged_prs=33),
+        "user/stale-q": repo_status.RepoStatus("✅", stars=None, merged_prs=33),
+        "user/unknown-stars": repo_status.RepoStatus("❓", stars=None, merged_prs=44),
         "user/unknown-prs": repo_status.RepoStatus("✅", stars=4, merged_prs=None),
     }
     monkeypatch.setattr(
@@ -3313,12 +3339,58 @@ def test_update_readme_upgrades_and_replaces_merged_pr_prefixes(
     repo_status.update_readme(readme, now=now)
 
     assert readme.read_text() == first
-    assert readme.read_text().splitlines()[2:] == [
+    rendered_lines = readme.read_text().splitlines()[2:]
+    assert rendered_lines == [
         "- ✅ ⭐ 4 🔀 ? **[unknown-prs](https://github.com/user/unknown-prs)** - known stars",
         "- ✅ ⭐ 2 🔀 22 **[stale](https://github.com/user/stale)** - stale count",
         "- ✅ ⭐ 1 🔀 11 **[old-star](https://github.com/user/old-star)** - needs PR marker",
-        "- ❓ ⭐ ? 🔀 33 **[unknown-stars](https://github.com/user/unknown-stars)** - known PRs",
+        "- ✅ ⭐ ? 🔀 12 **[old-q](https://github.com/user/old-q)** - needs PR marker",
+        "- ✅ ⭐ ? 🔀 33 **[stale-q](https://github.com/user/stale-q)** - stale count",
+        "- ❓ ⭐ ? 🔀 44 **[unknown-stars](https://github.com/user/unknown-stars)** - known PRs",
     ]
+    assert all(
+        line.count("⭐") == 1 and line.count("🔀") == 1 for line in rendered_lines
+    )
+    assert "🔀 888" not in readme.read_text()
+    assert "🔀 999" not in readme.read_text()
+
+
+def test_update_readme_replaces_stale_pr_prefix_after_failure_links_marker(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "## Related Projects\n"
+        "- ❌ ([old tests](https://github.com/user/repo/actions/runs/0)) "
+        "<!-- repo-status:failure-links --> ⭐ 8 🔀 1 "
+        "**[repo](https://github.com/user/repo)** - desc\n"
+    )
+
+    monkeypatch.setattr(
+        repo_status,
+        "fetch_repo_status_details",
+        lambda repo, token=None, branch=None: repo_status.RepoStatus(
+            "❌",
+            (
+                repo_status.StatusLink(
+                    "tests", "https://github.com/user/repo/actions/runs/1"
+                ),
+            ),
+            stars=9,
+            merged_prs=2,
+        ),
+    )
+
+    repo_status.update_readme(readme, now=datetime(2020, 1, 2, 3, 4, tzinfo=UTC))
+    rendered = readme.read_text()
+
+    assert rendered.splitlines()[2] == (
+        "- ❌ ([tests](https://github.com/user/repo/actions/runs/1)) "
+        "<!-- repo-status:failure-links --> ⭐ 9 🔀 2 "
+        "**[repo](https://github.com/user/repo)** - desc"
+    )
+    assert rendered.count("<!-- repo-status:failure-links -->") == 1
+    assert "🔀 1" not in rendered
 
 
 def test_update_readme_sorts_by_stars_then_name_and_unknowns_last(
@@ -3404,12 +3476,15 @@ def test_update_readme_preserves_multiline_and_external_display_links(
         "- **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** - hub\n"
     )
 
-    stars = {"futuroptimist/token.place": 10, "futuroptimist/futuroptimist": 1}
+    metadata = {
+        "futuroptimist/token.place": (10, 1),
+        "futuroptimist/futuroptimist": (1, 99),
+    }
     monkeypatch.setattr(
         repo_status,
         "fetch_repo_status_details",
         lambda repo, token=None, branch=None: repo_status.RepoStatus(
-            "✅", stars=stars[repo]
+            "✅", stars=metadata[repo][0], merged_prs=metadata[repo][1]
         ),
     )
     from datetime import datetime
@@ -3420,10 +3495,10 @@ def test_update_readme_preserves_multiline_and_external_display_links(
         "## Related Projects",
         "_Last updated: 2020-01-02 03:04 UTC; checks hourly_",
         "Intro stays put.",
-        "- ✅ ⭐ 10 🔀 ? **[token.place](https://token.place)** - external first "
+        "- ✅ ⭐ 10 🔀 1 **[token.place](https://token.place)** - external first "
         "([repo](https://github.com/futuroptimist/token.place))",
         "  continuation stays with token.place",
-        "- ✅ ⭐ 1 🔀 ? **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** - hub",
+        "- ✅ ⭐ 1 🔀 99 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** - hub",
     ]
 
 
