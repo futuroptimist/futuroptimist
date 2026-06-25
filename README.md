@@ -14,7 +14,7 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-06-25 22:28 UTC; checks hourly_
+_Last updated: 2026-06-25 23:27 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
