@@ -14,7 +14,7 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-07-04 00:01 UTC; checks hourly_
+_Last updated: 2026-07-04 04:27 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
@@ -22,7 +22,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 
 - ✅ ⭐ 6 🔀 703 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
 - ✅ ⭐ 3 🔀 2388 **[DSPACE](https://democratized.space)** @main – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/main))
-- ✅ ⭐ 2 🔀 483 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
+- ❓ ⭐ 2 🔀 483 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
 - ✅ ⭐ 1 🔀 125 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
 - ✅ ⭐ 1 🔀 162 **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
 - ✅ ⭐ 0 🔀 201 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
@@ -32,7 +32,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 0 🔀 187 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
 - ✅ ⭐ 0 🔀 762 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
 - ✅ ⭐ 0 🔀 48 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
-- ✅ ⭐ 0 🔀 1438 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
+- ✅ ⭐ 0 🔀 1439 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 - ✅ ⭐ 0 🔀 274 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
 
 
