@@ -1,0 +1,25 @@
+{
+  "youtube_id": "",
+  "title": "Sugarkube",
+  "publish_date": "2026-09-01",
+  "duration_seconds": 705,
+  "keywords": [
+    "sugarkube",
+    "raspberry pi",
+    "homelab",
+    "micro data center",
+    "kubernetes",
+    "k3s",
+    "self-hosting",
+    "open source",
+    "local AI",
+    "token.place"
+  ],
+  "status": "draft",
+  "description": "Daniel introduces Sugarkube, a bright-yellow Raspberry Pi micro data center that deploys and hosts his connected open-source projects. He explores the hardware, Kubernetes workflows, local AI ecosystem, electricity use, AWS cost comparison, infrastructure ownership, and future off-grid solar plans.",
+  "slug": "sugarkube",
+  "thumbnail": "thumbnails/20260901.jpg",
+  "transcript_file": "",
+  "summary": "Daniel shows how Sugarkube makes self-hosting his connected open-source projects repeatable and measurable.",
+  "view_count": 0
+}
