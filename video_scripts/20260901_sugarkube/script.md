@@ -6,10 +6,10 @@
 
 > 0:00–0:40: physical hook, environmental concern, and honest thesis
 > 0:40–1:30: deployment tax and SRE motivation
-> 1:30–3:00: Sugarkube hardware, k3s platform, and command layer
-> 3:00–5:55: DSPACE, token.place, and danielsmith.io as a connected ecosystem
-> 5:55–10:05: measured electricity, AWS cost comparison, and the efficiency-versus-agency tension
-> 10:05–11:15: participation and concluding vision
+> 1:30–3:30: Sugarkube hardware, k3s platform, and command layer
+> 3:30–6:25: DSPACE, token.place, and danielsmith.io as a connected ecosystem
+> 6:25–10:35: measured electricity, AWS cost comparison, and the efficiency-versus-agency tension
+> 10:35–11:45: participation and concluding vision
 
 ## Script
 
@@ -47,11 +47,26 @@
 [VISUAL]: Screen recording scrolling Daniel's public GitHub project list, then cut to a tidy terminal menu or `just --list` output. End with A-roll for the joke and thesis.
 
 
-> 1:30–3:00: What Sugarkube actually is
+> 1:30–3:30: What Sugarkube actually is
 
-[NARRATOR]: Cloud platforms already make small app deployments relatively easy, especially with a trusty LLM whispering in your ear. I wanted a homegrown path built on Kubernetes.
+[NARRATOR]: Cloud platforms already make small app deployments relatively easy, especially with a trusty LLM whispering in your ear.
 
 [VISUAL]: A-roll for the nuance, with a simple two-column title card: "Managed cloud convenience" vs "Homegrown Kubernetes path."
+
+
+[NARRATOR]: Full disclosure: this is not artisanal, farm-to-table software. I use agentic coding across all four projects. I know.
+
+[VISUAL]: Stay on A-roll as Daniel makes the disclosure, then cut on "I know" to a very brief, appropriately sourced Alexis Rose "Ew, David!" reaction clip from Schitt's Creek before returning to Daniel. If the clip cannot be appropriately sourced for the edit, Daniel should record his own reaction instead of using AI-generated media.
+
+
+[NARRATOR]: I get the skepticism. For one person maintaining an ecosystem this overambitious, though, coding agents are often the difference between an idea staying in my notes and becoming working software. I still make the architectural decisions, verify the results, and take responsibility when something breaks.
+
+[VISUAL]: Use A-roll plus a sanitized screen recording of a real agentic-coding workflow, such as reviewing a proposed diff, inspecting tests, or verifying a change. Do not expose secrets, tokens, private hostnames, or sensitive terminal history.
+
+
+[NARRATOR]: I wanted a homegrown path built on Kubernetes.
+
+[VISUAL]: Transition back to the rack and Kubernetes explanation, then reinforce the homegrown path with the two-column title card: "Managed cloud convenience" vs "Homegrown Kubernetes path."
 
 
 [NARRATOR]: Kubernetes coordinates containerized applications across one or more machines. You describe how an application should run, and Kubernetes places it, restarts it after failures, and rolls out updates.
@@ -74,7 +89,7 @@
 [VISUAL]: Screen recordings of the Sugarkube repository showing printable design files, image-building tooling, `justfile`, manifests, Helm charts, and documentation. Show representative sanitized `just` commands for bootstrap, deploy, verify, promote, and rollback.
 
 
-> 3:00–5:55: The ecosystem running through it
+> 3:30–6:25: The ecosystem running through it
 
 [NARRATOR]: The rack is only interesting if it runs something. Today, Sugarkube is my deployment path for three public projects: DSPACE, token.place, and my portfolio site, danielsmith.io. Watch this list grow over the next few years.
 
@@ -126,7 +141,7 @@
 [VISUAL]: Editor-made connected ecosystem diagram: Sugarkube deploys DSPACE, token.place, and danielsmith.io; Sugarkube hosts the token.place relay; token.place powers DSPACE dChat; danielsmith.io is the front door. Animate a feedback loop from application needs back to infrastructure improvements. Include a brief DSPACE dChat and NPC selector screen recording with visible "Powered by token.place" integration where practical.
 
 
-> 5:55–10:05: Electricity measurement and the efficiency-versus-agency tension
+> 6:25–10:35: Electricity measurement and the efficiency-versus-agency tension
 
 [NARRATOR]: My nine Raspberry Pi 5s each have 8 gigabytes of RAM, but only six are active, and even those are probably overkill for my traffic. I was lucky enough to buy everything before the current Rampocalypse was in full swing.
 
@@ -203,7 +218,7 @@
 [VISUAL]: Show the power meter, rack controls, terminal commands powering down or scaling environments, and deployment dashboards. Use licensed stock or real footage of solar panels, battery, and inverter only with a label: "Future off-grid goal."
 
 
-> 10:05–11:15: Participation and concluding vision
+> 10:35–11:45: Participation and concluding vision
 
 [NARRATOR]: All four projects are open source. You can play DSPACE and suggest quests, explore danielsmith.io, run a token.place compute node or relay, or try Sugarkube on your own Raspberry Pis. Even testing the documentation and telling me where it breaks would help.
 
