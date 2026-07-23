@@ -63,12 +63,20 @@
 
 [NARRATOR]: Cloud platforms already make small app deployments relatively easy, especially with a trusty LLM whispering in your ear.
 
-[NARRATOR]: Full disclosure: this is not artisanal, farm-to-table software. I use agentic coding across all four projects. I know.
+[NARRATOR]: Full disclosure: this is not artisanal, farm-to-table software.
+
+[NARRATOR]: I use agentic coding across all four projects.
+
+[NARRATOR]: I know.
 
 [VISUAL]: Stay on A-roll as Daniel says the disclosure, then cut on "I know" to a very brief, appropriately sourced Alexis Rose "Ew, David!" reaction clip from Schitt's Creek before returning to Daniel. If that clip cannot be sourced appropriately for the edit, Daniel should record his own quick reaction instead of using AI-generated media.
 
 
-[NARRATOR]: I get the skepticism. For one person maintaining an ecosystem this overambitious, though, coding agents are often the difference between an idea staying in my notes and becoming working software. I still make the architectural decisions, verify the results, and take responsibility when something breaks.
+[NARRATOR]: I get the skepticism.
+
+[NARRATOR]: For one person maintaining an ecosystem this overambitious, though, coding agents are often the difference between an idea staying in my notes and becoming working software.
+
+[NARRATOR]: I still make the architectural decisions, verify the results, and take responsibility when something breaks.
 
 [VISUAL]: A-roll plus a sanitized screen recording of a real agentic-coding workflow, such as reviewing a proposed diff, inspecting tests, or verifying a change. Do not expose secrets, tokens, private hostnames, or sensitive terminal history.
 
