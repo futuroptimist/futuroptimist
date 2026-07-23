@@ -14,7 +14,7 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-07-23 21:56 UTC; checks hourly_
+_Last updated: 2026-07-23 22:50 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
@@ -26,14 +26,14 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 2 🔀 125 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
 - ✅ ⭐ 2 🔀 162 **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
 - ✅ ⭐ 1 🔀 201 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
-- ❌ ([Publish Helm chart](https://github.com/futuroptimist/danielsmith.io/actions/runs/30047549721)) <!-- repo-status:failure-links --> ⭐ 1 🔀 558 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
+- ✅ ⭐ 1 🔀 558 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
 - ✅ ⭐ 1 🔀 168 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
 - ✅ ⭐ 1 🔀 187 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
 - ❌ ([Build and publish GHCR image](https://github.com/futuroptimist/jobbot3000/actions/runs/29972208786), [CI](https://github.com/futuroptimist/jobbot3000/actions/runs/29972208797)) <!-- repo-status:failure-links --> ⭐ 1 🔀 785 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
 - ✅ ⭐ 1 🔀 48 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
 - ✅ ⭐ 1 🔀 274 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
-- ✅ ⭐ 0 🔀 335 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
-- ✅ ⭐ 0 🔀 1465 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
+- ✅ ⭐ 0 🔀 336 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
+- ✅ ⭐ 0 🔀 1467 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 
 
 ## Values
