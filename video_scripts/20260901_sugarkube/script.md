@@ -5,10 +5,15 @@
 > Draft outline
 
 > 0:00–0:40: physical hook, environmental concern, and honest thesis
+> 
 > 0:40–1:30: deployment tax and SRE motivation
+> 
 > 1:30–3:30: Sugarkube hardware, k3s platform, and command layer
+> 
 > 3:30–6:25: DSPACE, token.place, and danielsmith.io as a connected ecosystem
+> 
 > 6:25–10:35: measured electricity, AWS cost comparison, and the efficiency-versus-agency tension
+> 
 > 10:35–11:45: participation and concluding vision
 
 ## Script
