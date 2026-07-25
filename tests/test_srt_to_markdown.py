@@ -4,7 +4,21 @@ import runpy
 import sys
 import warnings
 
+import pytest
+
 import src.srt_to_markdown as stm
+
+
+def test_to_markdown_rejects_empty_input():
+    with pytest.raises(ValueError, match="no usable narrator sentences"):
+        stm.to_markdown([], "Title", "XYZ")
+
+
+def test_non_dialogue_only_srt_cannot_generate_script(tmp_path):
+    path = tmp_path / "music.srt"
+    path.write_text("1\n00:00:00,000 --> 00:00:01,000\n[Music]\n")
+    with pytest.raises(ValueError, match="no usable narrator sentences"):
+        stm.to_markdown(stm.parse_srt(path), "Title", "XYZ")
 
 
 def test_parse_and_convert(tmp_path):

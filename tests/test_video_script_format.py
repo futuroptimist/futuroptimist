@@ -100,6 +100,35 @@ def test_legacy_migration_is_idempotent_and_preserves_text() -> None:
     assert vsf.format_document(vsf.parse_script(canonical)) == canonical
 
 
+@pytest.mark.parametrize(
+    "comment",
+    [
+        "<!--  00:00:00,000   ->  00:00:01,000  -->",
+        "<!-- 00:00:00,000 → 00:00:01,000 -->",
+    ],
+)
+def test_migration_preserves_exact_timing_comment(comment: str) -> None:
+    legacy = (
+        "# T\n> YouTube ID: draft\n## Script\n"
+        f"[NARRATOR]: Exact timing.  {comment}\n"
+    )
+    assert comment in vsf.format_document(vsf.parse_script(legacy, migrate=True))
+
+
+def test_write_rejects_editorial_body_blockquote_without_modifying_file(
+    tmp_path: Path, capsys
+) -> None:
+    script = tmp_path / "script.md"
+    original = (
+        "# T\n> YouTube ID: draft\n## Script\n"
+        "[NARRATOR]: Hi.\n> Editor note: revise this.\n"
+    )
+    script.write_text(original)
+    assert vsf.main(["--write", str(script)]) == 1
+    assert script.read_text() == original
+    assert f"{script}:5: cannot migrate body blockquote" in capsys.readouterr().err
+
+
 def test_metadata_mismatch(tmp_path: Path) -> None:
     script = tmp_path / "script.md"
     script.write_text(
@@ -108,6 +137,39 @@ def test_metadata_mismatch(tmp_path: Path) -> None:
     (tmp_path / "metadata.json").write_text(json.dumps({"youtube_id": "right"}))
     with pytest.raises(vsf.ScriptFormatError, match="does not match"):
         vsf.process(script, write=False)
+
+
+@pytest.mark.parametrize("metadata_id", [None, "", "draft", "<youtube_id>"])
+def test_metadata_sentinels_allow_script_sentinels(
+    tmp_path: Path, metadata_id: str | None
+) -> None:
+    script = tmp_path / "script.md"
+    script.write_text(
+        "# T\n\n> Draft script for video `draft`\n\n" "## Script\n\n[NARRATOR]: Hi.\n"
+    )
+    (tmp_path / "metadata.json").write_text(json.dumps({"youtube_id": metadata_id}))
+    assert vsf.process(script, write=False) is False
+
+
+def test_non_object_metadata_is_clean_cli_error(tmp_path: Path, capsys) -> None:
+    script = tmp_path / "script.md"
+    script.write_text(
+        "# T\n\n> Draft script for video `draft`\n\n" "## Script\n\n[NARRATOR]: Hi.\n"
+    )
+    (tmp_path / "metadata.json").write_text("[]")
+    assert vsf.main(["--check", str(script)]) == 1
+    assert "metadata.json must contain a JSON object" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("kind", ["missing", "empty_directory"])
+def test_invalid_input_is_clean_cli_error(tmp_path: Path, capsys, kind: str) -> None:
+    path = tmp_path / kind
+    if kind == "empty_directory":
+        path.mkdir()
+    assert vsf.main(["--check", str(path)]) == 1
+    error = capsys.readouterr().err
+    assert str(path) in error
+    assert "does not exist" in error or "contains no script.md" in error
 
 
 @pytest.mark.parametrize("placeholder", ["draft", "<youtube_id>"])

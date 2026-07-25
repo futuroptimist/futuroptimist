@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -26,9 +27,10 @@ def plain_text(text: str) -> str:
     """Remove non-spoken Markdown while retaining its visible text."""
     text = COMMENT_RE.sub("", text)
     text = LINK_RE.sub(r"\1", text)
-    text = text.replace("`", "")
+    text = re.sub(r"`([^`]+)`", r"\1", text)
     text = re.sub(r"(?<!\w)(\*\*|__)(?=\S)(.+?)(?<=\S)\1(?!\w)", r"\2", text)
     text = re.sub(r"(?<!\w)(\*|_)(?=\S)(.+?)(?<=\S)\1(?!\w)", r"\2", text)
+    text = re.sub(r"(?<!~)~~(?=\S)(.+?)(?<=\S)~~(?!~)", r"\1", text)
     return re.sub(r"\s+", " ", text).strip()
 
 
@@ -64,14 +66,24 @@ def export(
         for segment in document["segments"]
         if segment["type"] == "narrator" and not plain_text(segment["text"])
     ]
-    if empty_narrators and not allow_placeholders:
+    if empty_narrators:
         raise ValueError("narration is empty after removing non-spoken Markdown")
     rendered = "\n\n".join(chapters) + "\n"
     placeholders = sorted(set(PLACEHOLDER_RE.findall(rendered)))
     if placeholders and not allow_placeholders:
         raise ValueError("unresolved placeholders: " + ", ".join(placeholders))
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(rendered, encoding="utf-8")
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=output.parent, delete=False
+        ) as handle:
+            handle.write(rendered)
+            temporary = Path(handle.name)
+        temporary.replace(output)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
     return len(chapters), narrator_count
 
 

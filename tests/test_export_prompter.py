@@ -27,10 +27,11 @@ def test_visual_grouping_and_markdown_cleanup(tmp_path: Path) -> None:
     assert output.read_text() == "Hello site code. Next.\n\nEnd.\n"
 
 
-def test_markdown_cleanup_preserves_identifier_underscores() -> None:
-    assert export_prompter.plain_text("Use `foo_bar` and foo_bar, not _italics_.") == (
-        "Use foo_bar and foo_bar, not italics."
-    )
+def test_markdown_cleanup_only_removes_actual_markup() -> None:
+    assert export_prompter.plain_text(
+        "Use `some_file_name`, 2 * 3, [the docs](https://x), **bold**, "
+        "_italics_, and ~~removed~~; keep x~y."
+    ) == ("Use some_file_name, 2 * 3, the docs, bold, italics, and removed; keep x~y.")
 
 
 def test_transcript_fallback_has_one_chapter_per_segment(tmp_path: Path) -> None:
@@ -59,7 +60,7 @@ def test_placeholder_failure_leaves_existing_output_untouched(
     )
 
 
-def test_empty_cleaned_narration_requires_rehearsal_mode(tmp_path: Path) -> None:
+def test_empty_cleaned_narration_is_always_rejected(tmp_path: Path) -> None:
     script = tmp_path / "script.md"
     _write(script, "[NARRATOR]: <!-- narrator lines here -->\n")
     output = tmp_path / "prompter.txt"
@@ -68,7 +69,41 @@ def test_empty_cleaned_narration_requires_rehearsal_mode(tmp_path: Path) -> None
     with pytest.raises(ValueError, match="narration is empty"):
         export_prompter.export(script, output)
     assert output.read_text() == "old\n"
-    assert export_prompter.export(script, output, allow_placeholders=True) == (1, 1)
+    with pytest.raises(ValueError, match="narration is empty"):
+        export_prompter.export(script, output, allow_placeholders=True)
+    assert output.read_text() == "old\n"
+
+
+def test_repeated_placeholders_are_reported_once(tmp_path: Path) -> None:
+    script = tmp_path / "script.md"
+    _write(script, "[NARRATOR]: <value> then <value>.\n")
+    output = tmp_path / "prompter.txt"
+    with pytest.raises(ValueError) as error:
+        export_prompter.export(script, output)
+    assert str(error.value).count("<value>") == 1
+    assert not output.exists()
+
+
+def test_cli_script_custom_and_default_output(tmp_path: Path, capsys) -> None:
+    script = tmp_path / "script.md"
+    _write(script, "[NARRATOR]: Hello.\n")
+    custom = tmp_path / "custom.txt"
+    assert export_prompter.main(["--script", str(script), "--output", str(custom)]) == 0
+    assert capsys.readouterr().out == f"Wrote {custom} (1 chapters)\n"
+    assert export_prompter.main(["--script", str(script)]) == 0
+    assert (tmp_path / "prompter.txt").read_text() == "Hello.\n"
+
+
+def test_cli_slug_uses_default_output(tmp_path: Path, monkeypatch, capsys) -> None:
+    root = tmp_path
+    script = root / "video_scripts" / "demo" / "script.md"
+    script.parent.mkdir(parents=True)
+    _write(script, "[NARRATOR]: Hello.\n")
+    monkeypatch.setattr(export_prompter, "REPO_ROOT", root)
+    assert export_prompter.main(["--slug", "demo"]) == 0
+    output = script.parent / "prompter.txt"
+    assert output.read_text() == "Hello.\n"
+    assert capsys.readouterr().out == f"Wrote {output} (1 chapters)\n"
 
 
 def test_sugarkube_invariant(tmp_path: Path) -> None:

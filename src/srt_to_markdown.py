@@ -124,6 +124,8 @@ def _split_sentences(text: str) -> List[str]:
 def to_markdown(
     entries: List[Tuple[str, str, str]], title: str, youtube_id: str
 ) -> str:
+    if not any(_split_sentences(text) for _, _, text in entries):
+        raise ValueError("SRT contains no usable narrator sentences")
     parts = []
     if title:
         parts.append(f"# {title}")

@@ -16,6 +16,11 @@ SOURCE_RE = re.compile(r"^> (Draft script|Transcript) for video `([^`]+)`$")
 LEGACY_SOURCE_RE = re.compile(r"^> YouTube ID:\s*(\S+)\s*$")
 TAG_RE = re.compile(r"^\[(NARRATOR|VISUAL)\]:(?: (.*))?$")
 TIMING_RE = re.compile(r"\s*<!--\s*(.*?)\s*(?:->|→)\s*(.*?)\s*-->\s*$")
+TIMED_SECTION_RE = re.compile(
+    r"^\d{1,2}:\d{2}(?::\d{2})?\s*(?:-|–|—|→)\s*"
+    r"\d{1,2}:\d{2}(?::\d{2})?\s*:\s*\S.*$"
+)
+SENTINEL_VIDEO_IDS = {"draft", "<youtube_id>"}
 
 
 class ScriptFormatError(ValueError):
@@ -92,7 +97,14 @@ def parse_script(text: str, *, migrate: bool = False) -> dict:
         if value.startswith("### ") and value[4:].strip():
             segments.append({"type": "section", "text": value[4:].strip()})
         elif migrate and value.startswith(">") and value[1:].strip():
-            segments.append({"type": "section", "text": value[1:].strip()})
+            section_text = value[1:].strip()
+            if not TIMED_SECTION_RE.fullmatch(section_text):
+                raise ScriptFormatError(
+                    "cannot migrate body blockquote; expected a timed section label "
+                    "such as '> 0:01-0:02: Section title'",
+                    i + 1,
+                )
+            segments.append({"type": "section", "text": section_text})
         else:
             tag = TAG_RE.fullmatch(raw)
             if not tag:
@@ -154,10 +166,16 @@ def validate_metadata(path: Path, document: dict) -> None:
     metadata_path = path.with_name("metadata.json")
     if not metadata_path.exists():
         return
-    youtube_id = str(
-        json.loads(metadata_path.read_text(encoding="utf-8")).get("youtube_id", "")
-    ).strip()
-    if youtube_id and document["video_id"] != youtube_id:
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if not isinstance(metadata, dict):
+        raise ScriptFormatError("metadata.json must contain a JSON object")
+    metadata_youtube_id = metadata.get("youtube_id", "")
+    youtube_id = "" if metadata_youtube_id is None else str(metadata_youtube_id).strip()
+    if (
+        youtube_id
+        and youtube_id not in SENTINEL_VIDEO_IDS
+        and document["video_id"] != youtube_id
+    ):
         raise ScriptFormatError(
             f"video id {document['video_id']!r} does not match metadata {youtube_id!r}",
             3,
@@ -197,12 +215,30 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("paths", nargs="+", type=Path)
     args = parser.parse_args(argv)
     failed = False
-    for path in discover(args.paths):
+    scripts: set[Path] = set()
+    for path in args.paths:
+        if not path.exists():
+            print(f"{path}:1: input does not exist", file=sys.stderr)
+            failed = True
+        elif path.is_dir():
+            discovered = set(path.rglob("script.md"))
+            if not discovered:
+                print(
+                    f"{path}:1: directory contains no script.md files", file=sys.stderr
+                )
+                failed = True
+            scripts.update(discovered)
+        elif path.name == "script.md":
+            scripts.add(path)
+        else:
+            print(f"{path}:1: input is not a script.md file", file=sys.stderr)
+            failed = True
+    for path in sorted(scripts):
         try:
             changed = process(path, write=args.write)
             if changed:
                 print(f"Formatted {path}")
-        except (ScriptFormatError, json.JSONDecodeError) as error:
+        except (OSError, ScriptFormatError, json.JSONDecodeError) as error:
             line = getattr(error, "line", 1)
             print(f"{path}:{line}: {error}", file=sys.stderr)
             failed = True
