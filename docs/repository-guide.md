@@ -84,11 +84,13 @@ Run `make help` to see the current target list.
 Video folders under `video_scripts/` use `metadata.json` plus Markdown script files to keep drafts structured and retrievable.
 
 - Scripts begin with a title heading, a YouTube ID blockquote, and a `## Script` section.
+- `script.md` is canonical; run `make check_scripts` for a read-only recursive schema and format check, or `make format_scripts` to migrate known structural variants.
 - Spoken lines use `[NARRATOR]:`; b-roll and graphics cues use `[VISUAL]:` directly after the dialogue they support.
 - `metadata.json` files are validated against [`schemas/video_metadata.schema.json`](../schemas/video_metadata.schema.json).
 - Optional `assets.json` manifests are validated against [`schemas/assets_manifest.schema.json`](../schemas/assets_manifest.schema.json).
 - Optional `sources.txt` files list one URL per line for reference collection; downloaded materials are for citation/reference only.
-- Optional `footage.md` files track archive clips, new footage, CGI, and generative AI shots.
+- Optional `footage.md` master indexes link detailed `production/` plans. Raw media remains in the ignored top-level `footage/` tree.
+- `make prompter SLUG=...` generates ignored `prompter.txt` from narration. Blank lines separate chapters; scripts with visuals (including Sugarkube) group narrator runs by the following visual beat.
 
 Subtitle and transcript helpers:
 

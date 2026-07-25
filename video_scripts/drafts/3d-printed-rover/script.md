@@ -1,5 +1,6 @@
 # 3D-Printed Rover (Draft)
-> YouTube ID: draft
+
+> Draft script for video `draft`
 
 ## Script
 
