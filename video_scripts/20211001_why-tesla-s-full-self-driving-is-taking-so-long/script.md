@@ -157,4 +157,3 @@
 [NARRATOR]: That's it for this video. I'd greatly appreciate if you smashed that subscribe button and let me know in the comments if you have any criticisms or suggestions for future videos.
 
 [NARRATOR]: I'll see you in the next one.
-

@@ -86,10 +86,7 @@ def generate_scripts(
         entries = srt_to_markdown.parse_srt(transcript_path)
         title = str(data.get("title") or slug_dir.name.replace("_", " ").title())
         markdown = srt_to_markdown.to_markdown(entries, title, youtube_id)
-        if not markdown.endswith("\n"):
-            markdown += "\n"
-        if not markdown.endswith("\n\n"):
-            markdown += "\n"
+        markdown = markdown.rstrip("\n") + "\n"
         if dry_run:
             written.append(script_path)
             continue

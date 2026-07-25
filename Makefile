@@ -2,11 +2,11 @@
 
 VENV := .venv
 ifeq ($(OS),Windows_NT)
-    PY := $(VENV)/Scripts/python
+	PY := $(if $(wildcard $(VENV)/Scripts/python.exe),$(VENV)/Scripts/python,python)
     REMOVE := rmdir /s /q
     CLEANCACHE := del /s /q **\__pycache__
 else
-    PY := $(VENV)/bin/python
+	PY := $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,python)
     REMOVE := rm -rf
     CLEANCACHE := find . -name '__pycache__' -type d -exec rm -rf {} +
 endif
@@ -14,9 +14,9 @@ PIP := uv pip
 
 # NOTE: Keep recipe indentation as tabs; GNU Make treats spaces as errors.
 .PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images \
-        convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
-        process update_metadata scripts_from_subtitles assets_manifest render upload_video \
-        format lint typecheck serve serve-http
+	convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
+	process update_metadata scripts_from_subtitles assets_manifest render upload_video \
+	format lint typecheck serve serve-http check_scripts format_scripts prompter
 
 help:
 	@echo "Targets:"
@@ -32,12 +32,25 @@ help:
 	@echo "  verify_assets  Verify converted/ matches originals/ dimensions/aspect"
 	@echo "  convert_missing Convert only missing items from verify_report.json"
 	@echo "  scripts_from_subtitles Generate script.md files from subtitles"
-        @echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
-        @echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
-        @echo "  assets_manifest Generate assets.json from footage (SLUG=... OVERWRITE=1)"
-        @echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
+	@echo "  convert_all    Convert images+videos for all footage (or SLUG=...)"
+	@echo "  report_funnel  Write selections.json for a slug (use SLUG=...)"
+	@echo "  assets_manifest Generate assets.json from footage (SLUG=... OVERWRITE=1)"
+	@echo "  newsletter    Generate newsletter markdown (SINCE=YYYY-MM-DD STATUS=live OUTPUT=path)"
 	@echo "  update_metadata  Refresh metadata via YouTube API (SLUG=...)"
 	@echo "  process       One-command: convert+verify+report (requires SLUG=...)"
+	@echo "  check_scripts Validate canonical video scripts (read-only)"
+	@echo "  format_scripts Canonically format every video script"
+	@echo "  prompter      Export narration (requires SLUG=...)"
+
+check_scripts:
+	$(PY) src/video_script_format.py --check video_scripts
+
+format_scripts:
+	$(PY) src/video_script_format.py --write video_scripts
+
+prompter:
+	@if [ -z "$(SLUG)" ]; then echo "Usage: make prompter SLUG=YYYYMMDD_slug [OUTPUT=path] [ALLOW_PLACEHOLDERS=1]"; exit 1; fi
+	$(PY) video_scripts/export_prompter.py --slug $(SLUG) $(if $(OUTPUT),--output $(OUTPUT),) $(if $(ALLOW_PLACEHOLDERS),--allow-placeholders,)
 
 setup:
 	python -m venv $(VENV)
@@ -50,16 +63,16 @@ subtitles:
 	$(PY) src/fetch_subtitles.py
 
 fmt:
-        $(PY) -m black .
-        $(PY) -m ruff check --fix .
+	$(PY) -m black .
+	$(PY) -m ruff check --fix .
 
 format: fmt
 
 lint:
-        $(PY) -m ruff check tools/youtube_mcp tests
+	$(PY) -m ruff check tools/youtube_mcp tests
 
 typecheck:
-        $(PY) -m mypy tools/youtube_mcp
+	$(PY) -m mypy tools/youtube_mcp
 
 clean:
 	@$(REMOVE) $(VENV) 2>/dev/null || true
@@ -100,16 +113,16 @@ report_funnel:
 	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
 
 assets_manifest:
-        $(PY) src/generate_assets_manifest.py \
-                $(if $(SLUG),--slug $(SLUG),) \
-                $(if $(FOOTAGE),--footage-root $(FOOTAGE),) \
-                $(if $(OVERWRITE),--overwrite,) \
-                $(if $(DRY_RUN),--dry-run,)
+	$(PY) src/generate_assets_manifest.py \
+	        $(if $(SLUG),--slug $(SLUG),) \
+	        $(if $(FOOTAGE),--footage-root $(FOOTAGE),) \
+	        $(if $(OVERWRITE),--overwrite,) \
+	        $(if $(DRY_RUN),--dry-run,)
 
 newsletter:
-        $(PY) src/newsletter_builder.py \
-                $(if $(OUTPUT),--output $(OUTPUT),) \
-                $(if $(SINCE),--since $(SINCE),) \
+	$(PY) src/newsletter_builder.py \
+	        $(if $(OUTPUT),--output $(OUTPUT),) \
+	        $(if $(SINCE),--since $(SINCE),) \
 		$(if $(STATUS),--status $(STATUS),) \
 		$(if $(LIMIT),--limit $(LIMIT),) \
 		$(if $(DATE),--date $(DATE),)
@@ -123,23 +136,23 @@ process:
 	$(PY) src/report_funnel.py --slug $(SLUG) $(if $(SELECTS),--selects-file $(SELECTS),)
 
 render:
-        @if [ -z "$(VIDEO)" ]; then echo "Usage: make render VIDEO=YYYYMMDD_slug [CAPTIONS=path]"; exit 1; fi
-        $(PY) src/render_video.py \
-                --slug $(VIDEO) \
-                $(if $(FOOTAGE),--footage-root $(FOOTAGE),) \
-                $(if $(OUTPUT),--output-dir $(OUTPUT),) \
-                $(if $(CAPTIONS),--captions $(CAPTIONS),)
+	@if [ -z "$(VIDEO)" ]; then echo "Usage: make render VIDEO=YYYYMMDD_slug [CAPTIONS=path]"; exit 1; fi
+	$(PY) src/render_video.py \
+	        --slug $(VIDEO) \
+	        $(if $(FOOTAGE),--footage-root $(FOOTAGE),) \
+	        $(if $(OUTPUT),--output-dir $(OUTPUT),) \
+	        $(if $(CAPTIONS),--captions $(CAPTIONS),)
 
 upload_video:
-        @if [ -z "$(SLUG)" ]; then echo "Usage: make upload_video SLUG=YYYYMMDD_slug [VIDEO=path] [CLIENT=client.json] [TOKEN=token.json]"; exit 1; fi
-        $(PY) src/upload_to_youtube.py \
-                --slug $(SLUG) \
-                $(if $(VIDEO),--video $(VIDEO),) \
-                $(if $(CLIENT),--client-secrets $(CLIENT),) \
-                $(if $(TOKEN),--credentials $(TOKEN),)
+	@if [ -z "$(SLUG)" ]; then echo "Usage: make upload_video SLUG=YYYYMMDD_slug [VIDEO=path] [CLIENT=client.json] [TOKEN=token.json]"; exit 1; fi
+	$(PY) src/upload_to_youtube.py \
+	        --slug $(SLUG) \
+	        $(if $(VIDEO),--video $(VIDEO),) \
+	        $(if $(CLIENT),--client-secrets $(CLIENT),) \
+	        $(if $(TOKEN),--credentials $(TOKEN),)
 
 serve:
-        $(PY) tools/youtube_mcp/mcp_server.py
+	$(PY) tools/youtube_mcp/mcp_server.py
 
 serve-http:
-        $(PY) -m tools.youtube_mcp $(if $(HOST),--host $(HOST),) $(if $(PORT),--port $(PORT),)
+	$(PY) -m tools.youtube_mcp $(if $(HOST),--host $(HOST),) $(if $(PORT),--port $(PORT),)

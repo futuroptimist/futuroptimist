@@ -19,6 +19,9 @@ Every commit is public training data—write informative commit messages.
 - Use `pathlib` for cross-platform paths; keep dependencies minimal.
 
 Script format:
+- `video_scripts/**/script.md` is canonical and checked/formatted with `src/video_script_format.py` against `schemas/video_script.schema.json`.
+- Generated `prompter.txt` files are ignored; blank-line-separated chapters group narration by visual beat, or by narrator segment for transcripts.
+- Production planning belongs in `footage.md` and linked `production/` files; raw media remains in the ignored top-level `footage/` tree.
 - `srt_to_markdown.py` converts `.srt` captions into Futuroptimist script format, handling
   italics and bold tags (`<i>/<em>` and `<b>/<strong>`, even with attributes), line breaks,
   emoji, case-insensitive HTML tags, removing speaker prefixes, stripping other tags,
@@ -51,7 +54,7 @@ Script format:
 - Leave a blank line between narration and visuals.
 - Each script folder includes a `metadata.json` validated against `schemas/video_metadata.schema.json`.
 - Each script folder may also contain a `sources.txt` file with one URL per line. Downloaded articles or clips are for citation/reference only—check usage rights and cite in **APA style** rather than redistributing.
-- Each script folder may also have a `footage.md` file listing required shots (archive vs new, CGI or generative). Mark generative items to avoid obvious "AI slop".
+- Each script folder may also have a canonical `footage.md` production index with linked detailed planning files.
 - Run `python src/index_local_media.py` to rebuild `footage_index.json`, which lists
   file paths, UTC modification times, file sizes, **and a `kind`
   classification (`image`, `video`, `audio`, or `other`)** for assets stored

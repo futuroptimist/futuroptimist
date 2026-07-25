@@ -167,3 +167,11 @@ Before committing, format code, run focused tests, and scan staged changes for c
 ```bash
 git diff --cached | ./scripts/scan-secrets.py
 ```
+
+## Canonical scripts, Prompter, and production plans
+
+Video `script.md` files are canonical and validated with `make check_scripts`; use `make format_scripts` for deterministic structural normalization. See [`video_scripts/README.md`](../video_scripts/README.md) for the schema and format.
+
+Generate a disposable Prompter file with `make prompter SLUG=YYYYMMDD_slug`. Set `OUTPUT=path` for a custom destination and `ALLOW_PLACEHOLDERS=1` only for rehearsal. Blank lines delimit chapters; cue-bearing scripts such as Sugarkube group narration by visual beat. Generated `prompter.txt` files are ignored.
+
+Production planning lives in each video's `footage.md` and its linked `production/` checklists. Raw media remains in the ignored top-level `footage/` tree.
