@@ -1,5 +1,6 @@
 # Lunar Greenhouses (Draft)
-> YouTube ID: draft
+
+> Draft script for video `draft`
 
 ## Script
 

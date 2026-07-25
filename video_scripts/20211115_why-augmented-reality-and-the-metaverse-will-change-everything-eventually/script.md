@@ -325,4 +325,3 @@
 [NARRATOR]: If you have a suggestion for a future topic, let me know in the comments, and go ahead and follow me on Twitter at @futuroptimist to participate in planning upcoming videos, link in the description.
 
 [NARRATOR]: I'll see you in the next one.
-

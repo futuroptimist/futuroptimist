@@ -124,6 +124,8 @@ def _split_sentences(text: str) -> List[str]:
 def to_markdown(
     entries: List[Tuple[str, str, str]], title: str, youtube_id: str
 ) -> str:
+    if not any(_split_sentences(text) for _, _, text in entries):
+        raise ValueError("SRT contains no usable narrator sentences")
     parts = []
     if title:
         parts.append(f"# {title}")
@@ -137,7 +139,7 @@ def to_markdown(
         for sentence in _split_sentences(text):
             parts.append(f"[NARRATOR]: {sentence}  <!-- {start} -> {end} -->")
             parts.append("")
-    return "\n".join(parts)
+    return "\n".join(parts).rstrip() + "\n"
 
 
 def generate_script_for_slug(
