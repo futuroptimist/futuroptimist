@@ -4,7 +4,6 @@
 
 ## Script
 
-
 [NARRATOR]: Elon Musk unveiled Tesla's upcoming humanoid robot, dubbed Tesla Bot, at Tesla AI Day on August 19th, 2021.
 
 [NARRATOR]: While the bot is only a concept right now, they'll supposedly have a prototype arrive as soon as 2022.

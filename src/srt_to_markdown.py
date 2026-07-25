@@ -137,7 +137,7 @@ def to_markdown(
         for sentence in _split_sentences(text):
             parts.append(f"[NARRATOR]: {sentence}  <!-- {start} -> {end} -->")
             parts.append("")
-    return "\n".join(parts)
+    return "\n".join(parts).rstrip() + "\n"
 
 
 def generate_script_for_slug(

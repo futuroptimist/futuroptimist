@@ -90,6 +90,8 @@ Video folders under `video_scripts/` use `metadata.json` plus Markdown script fi
 - Optional `sources.txt` files list one URL per line for reference collection; downloaded materials are for citation/reference only.
 - Optional `footage.md` files track archive clips, new footage, CGI, and generative AI shots.
 
+`script.md` is canonical and `prompter.txt` is ignored generated output. Validate with `make check_scripts`, migrate structure with `make format_scripts`, and export with `make prompter SLUG=...` (optionally `OUTPUT=... ALLOW_PLACEHOLDERS=1`). Blank lines delimit Prompter chapters: visual scripts group narration by the following visual beat, while transcript-only scripts use one narration segment per chapter. Sugarkube production planning uses `footage.md` plus linked `production/` files; raw media remains in the ignored top-level `footage/` tree.
+
 Subtitle and transcript helpers:
 
 - `make subtitles` / `python src/fetch_subtitles.py` downloads captions into `subtitles/`.

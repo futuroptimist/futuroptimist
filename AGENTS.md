@@ -58,12 +58,12 @@ instead of collecting them at the end.
 - Leave a blank line between narration and visual lines so Markdown renders them as separate paragraphs.
 - When importing transcripts from `.srt` files, strip prefix markers like `- [Narrator]` and split sentences into individual `[NARRATOR]` lines for clarity.
 - Break long transcript sentences at punctuation boundaries so each `[NARRATOR]` line contains a single, complete thought.
-- Start each script with a level-one heading containing the video title,
-  followed by a blockquote referencing the YouTube ID and a `## Script` section header.
+- Treat `script.md` as canonical and follow `video_scripts/README.md`: one H1, one canonical draft/transcript video-ID blockquote, optional `## Outline`, then `## Script`; separate every one-line section, narrator, and visual block with one blank line. Run `make check_scripts` before committing.
+- Treat `prompter.txt` as ignored generated output. The exporter turns blank-line-separated narration runs into chapters, groups Sugarkube narration by visual beat, and rejects unresolved spoken placeholders unless rehearsal mode is explicit.
 - Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`. Optional fields like `slug`, `thumbnail`, `transcript_file`, and `summary` enrich automation but aren't required.
 - Each script folder may include an `assets.json` file conforming to `schemas/assets_manifest.schema.json` that lists associated `footage/` directories, optional label files, tags, and capture date.
 - Each script folder may include a `sources.txt` file with one URL per line. Any downloaded articles or clips are for reference only—check usage rights and cite sources in **APA style** rather than redistributing content.
-- Each script folder may also contain a `footage.md` checklist to track B-roll or CGI shots to gather. Note existing archive vs new footage, and flag generative AI segments so they don't look like "AI slop".
+- Each script folder may also contain a canonical `footage.md` production index linked to detailed `production/` plans. Raw media remains in the ignored top-level `footage/` tree; record licensing and clearly identify any generative-media policy for the production.
 - Large photos or video files belong in a local `footage/` folder (ignored by git).
   Run `python src/index_local_media.py` whenever assets change to rebuild
   `footage_index.json` for quick lookup during editing. Use `--exclude PATH`
@@ -149,4 +149,3 @@ Tests under `tests/` cover folder naming (`test_folder_names.py`), schema valida
 
 ---
 *For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).* 
-

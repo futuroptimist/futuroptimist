@@ -1,5 +1,6 @@
 # Solarpunk Weather Station (Draft)
-> YouTube ID: draft
+
+> Draft script for video `draft`
 
 ## Script
 

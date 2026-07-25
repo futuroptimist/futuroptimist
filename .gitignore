@@ -52,6 +52,7 @@ footage/
 footage_index.json
 assets_index.json
 video_scripts/20240101_dummy/
+video_scripts/**/prompter.txt
 
 # Adobe Premiere Pro project files and caches
 *.prproj
