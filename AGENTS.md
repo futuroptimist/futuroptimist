@@ -51,19 +51,28 @@ Avoid adding setup, asset, or automation instructions there; link to `docs/repos
 
 ## Script Format
 
-Video scripts (`video_scripts/YYYYMMDD_slug/script.md`) combine narration and stage
-directions. Use `[NARRATOR]:` for spoken lines and `[VISUAL]:` for b-roll or
-graphics cues. Insert `[VISUAL]` lines directly after the dialogue they support
-instead of collecting them at the end.
+Video scripts (`video_scripts/**/script.md`) are canonical and validate against the
+normalized `schemas/video_script.schema.json` representation. Run
+`python src/video_script_format.py --check video_scripts` to check them or use
+`--write` to migrate/format them. Use `[NARRATOR]:` for spoken lines and
+`[VISUAL]:` for b-roll or graphics cues. Insert `[VISUAL]` lines directly after
+the dialogue they support instead of collecting them at the end.
 - Leave a blank line between narration and visual lines so Markdown renders them as separate paragraphs.
 - When importing transcripts from `.srt` files, strip prefix markers like `- [Narrator]` and split sentences into individual `[NARRATOR]` lines for clarity.
 - Break long transcript sentences at punctuation boundaries so each `[NARRATOR]` line contains a single, complete thought.
-- Start each script with a level-one heading containing the video title,
-  followed by a blockquote referencing the YouTube ID and a `## Script` section header.
+- Start each script with one level-one title, a canonical draft/transcript video-ID
+  blockquote, an optional `## Outline`, and a `## Script` header. Separate all
+  structural and script-body blocks with one blank line; only optional `###`
+  sections and nonempty, single-line narrator/visual segments belong in the body.
+- Generate ignored `prompter.txt` files with `make prompter SLUG=...`. Blank-line
+  paragraphs are Prompter chapters; visual scripts group narration by visual beat,
+  while transcript-only scripts use one narrator segment per chapter.
 - Each script folder must include a `metadata.json` file conforming to `schemas/video_metadata.schema.json`. Optional fields like `slug`, `thumbnail`, `transcript_file`, and `summary` enrich automation but aren't required.
 - Each script folder may include an `assets.json` file conforming to `schemas/assets_manifest.schema.json` that lists associated `footage/` directories, optional label files, tags, and capture date.
 - Each script folder may include a `sources.txt` file with one URL per line. Any downloaded articles or clips are for reference only—check usage rights and cite sources in **APA style** rather than redistributing content.
-- Each script folder may also contain a `footage.md` checklist to track B-roll or CGI shots to gather. Note existing archive vs new footage, and flag generative AI segments so they don't look like "AI slop".
+- Each script folder may also contain a canonical `footage.md` production index
+  linked to detailed `production/` checklists. Record media policy and rights;
+  raw media remains in the ignored top-level `footage/` tree.
 - Large photos or video files belong in a local `footage/` folder (ignored by git).
   Run `python src/index_local_media.py` whenever assets change to rebuild
   `footage_index.json` for quick lookup during editing. Use `--exclude PATH`
@@ -149,4 +158,3 @@ Tests under `tests/` cover folder naming (`test_folder_names.py`), schema valida
 
 ---
 *For creative context, tone, and thematic constraints refer to [`llms.txt`](llms.txt).* 
-

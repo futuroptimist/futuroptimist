@@ -66,3 +66,4 @@ Peak Files/
 *.pek
 *.ims
 *.prmdc
+video_scripts/**/prompter.txt

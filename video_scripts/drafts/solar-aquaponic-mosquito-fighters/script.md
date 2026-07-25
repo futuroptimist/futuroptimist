@@ -1,5 +1,6 @@
 # Solar-Powered Aquaponic Mosquito Fighters (Draft)
-> YouTube ID: draft
+
+> Draft script for video `draft`
 
 ## Script
 
@@ -14,4 +15,3 @@
 [NARRATOR]: Mosquito-eating fish like Gambusia keep larvae in check.
 
 [VISUAL]: Close-up of fish snapping up larvae near the surface.
-

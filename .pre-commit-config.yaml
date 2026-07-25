@@ -12,6 +12,11 @@ repos:
         entry: python scripts/validate_outages.py
         language: system
         pass_filenames: false
+      - id: video-script-format
+        name: validate canonical video scripts
+        entry: python src/video_script_format.py --check video_scripts
+        language: system
+        pass_filenames: false
       - id: ruff
         name: ruff
         entry: python -m ruff check --fix .

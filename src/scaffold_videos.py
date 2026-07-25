@@ -17,6 +17,7 @@ TEMPLATE_MD = """# {title}
 ## Script
 
 [NARRATOR]: <!-- narrator lines here -->
+
 [VISUAL]: <!-- b-roll, graphics, or stage directions -->
 """
 

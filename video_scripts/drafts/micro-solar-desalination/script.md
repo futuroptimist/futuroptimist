@@ -1,5 +1,6 @@
 # Micro Solar Desalination (Draft)
-> YouTube ID: draft
+
+> Draft script for video `draft`
 
 ## Script
 
