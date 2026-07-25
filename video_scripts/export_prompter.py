@@ -8,7 +8,8 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from src.video_script_format import (  # noqa: E402
     ScriptFormatError,
@@ -26,7 +27,8 @@ def plain_text(text: str) -> str:
     text = COMMENT_RE.sub("", text)
     text = LINK_RE.sub(r"\1", text)
     text = text.replace("`", "")
-    text = re.sub(r"(\*\*|__|\*|_)(.+?)\1", r"\2", text)
+    text = re.sub(r"(?<!\w)(\*\*|__)(?=\S)(.+?)(?<=\S)\1(?!\w)", r"\2", text)
+    text = re.sub(r"(?<!\w)(\*|_)(?=\S)(.+?)(?<=\S)\1(?!\w)", r"\2", text)
     return re.sub(r"\s+", " ", text).strip()
 
 
@@ -57,6 +59,13 @@ def export(
     document = parse_script(script.read_text(encoding="utf-8"))
     validate_document(document)
     chapters, narrator_count = build_chapters(document)
+    empty_narrators = [
+        segment
+        for segment in document["segments"]
+        if segment["type"] == "narrator" and not plain_text(segment["text"])
+    ]
+    if empty_narrators and not allow_placeholders:
+        raise ValueError("narration is empty after removing non-spoken Markdown")
     rendered = "\n\n".join(chapters) + "\n"
     placeholders = sorted(set(PLACEHOLDER_RE.findall(rendered)))
     if placeholders and not allow_placeholders:

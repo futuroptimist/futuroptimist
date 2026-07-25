@@ -96,7 +96,7 @@ format_scripts:
 	$(PY) src/video_script_format.py --write video_scripts
 
 prompter:
-	@if [ -z "$(SLUG)" ]; then echo "Usage: make prompter SLUG=YYYYMMDD_slug [OUTPUT=path] [ALLOW_PLACEHOLDERS=1]"; exit 1; fi
+	$(if $(strip $(SLUG)),,$(error Usage: make prompter SLUG=YYYYMMDD_slug [OUTPUT=path] [ALLOW_PLACEHOLDERS=1]))
 	$(PY) video_scripts/export_prompter.py --slug $(SLUG) $(if $(OUTPUT),--output $(OUTPUT),) $(if $(filter 1,$(ALLOW_PLACEHOLDERS)),--allow-placeholders,)
 
 # Convert images and videos in one command. Optionally limit to a slug:

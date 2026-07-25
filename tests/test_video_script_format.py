@@ -110,6 +110,18 @@ def test_metadata_mismatch(tmp_path: Path) -> None:
         vsf.process(script, write=False)
 
 
+@pytest.mark.parametrize("placeholder", ["draft", "<youtube_id>"])
+def test_metadata_rejects_stale_placeholder(tmp_path: Path, placeholder: str) -> None:
+    script = tmp_path / "script.md"
+    script.write_text(
+        f"# T\n\n> Draft script for video `{placeholder}`\n\n"
+        "## Script\n\n[NARRATOR]: Hi.\n"
+    )
+    (tmp_path / "metadata.json").write_text(json.dumps({"youtube_id": "assigned-id"}))
+    with pytest.raises(vsf.ScriptFormatError, match="does not match"):
+        vsf.process(script, write=True)
+
+
 def test_check_is_read_only_and_write_migrates_recursively(tmp_path: Path) -> None:
     script = tmp_path / "drafts" / "demo" / "script.md"
     script.parent.mkdir(parents=True)

@@ -157,7 +157,7 @@ def validate_metadata(path: Path, document: dict) -> None:
     youtube_id = str(
         json.loads(metadata_path.read_text(encoding="utf-8")).get("youtube_id", "")
     ).strip()
-    if youtube_id and document["video_id"] not in {youtube_id, "draft", "<youtube_id>"}:
+    if youtube_id and document["video_id"] != youtube_id:
         raise ScriptFormatError(
             f"video id {document['video_id']!r} does not match metadata {youtube_id!r}",
             3,

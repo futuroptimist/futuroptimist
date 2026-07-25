@@ -18,7 +18,9 @@ def test_sugarkube_production_asset_coverage() -> None:
     for path in detail_paths:
         definitions.extend(
             re.findall(
-                r"^- \[ \] \*\*([ABCTG]\d{2})\*\* —", path.read_text(), re.MULTILINE
+                r"^- \[[ x!\-]\] \*\*([ABCTG]\d{2})\*\* —",
+                path.read_text(),
+                re.MULTILINE,
             )
         )
     assert len(definitions) == len(set(definitions))
