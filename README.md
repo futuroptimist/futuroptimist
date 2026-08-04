@@ -14,22 +14,22 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-08-04 00:07 UTC; checks hourly_
+_Last updated: 2026-08-04 03:57 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
 Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs need attention; linked failures point to the run or asset to inspect; ❓ no completed relevant run was found or GitHub could not be queried; ⭐ shows GitHub stars; 🔀 shows total merged pull requests. Projects sort by stars descending, then alphabetically for ties; unknown star counts sort last.
 
 - ✅ ⭐ 7 🔀 757 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
-- ❌ ([Build and publish GHCR image](https://github.com/democratizedspace/dspace/actions/runs/30848995383)) <!-- repo-status:failure-links --> ⭐ 4 🔀 2403 **[DSPACE](https://democratized.space)** @main – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/main))
-- ✅ ⭐ 3 🔀 487 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
+- ❌ ([Build and publish GHCR image](https://github.com/democratizedspace/dspace/actions/runs/30873115109)) <!-- repo-status:failure-links --> ⭐ 4 🔀 2404 **[DSPACE](https://democratized.space)** @main – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/main))
+- ❓ ⭐ 3 🔀 487 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
 - ✅ ⭐ 2 🔀 125 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
 - ✅ ⭐ 2 🔀 162 **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
 - ✅ ⭐ 1 🔀 201 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
-- ✅ ⭐ 1 🔀 560 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
+- ✅ ⭐ 1 🔀 561 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
 - ✅ ⭐ 1 🔀 168 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
 - ✅ ⭐ 1 🔀 187 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
-- ✅ ⭐ 1 🔀 807 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
+- ✅ ⭐ 1 🔀 808 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
 - ✅ ⭐ 1 🔀 49 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
 - ✅ ⭐ 1 🔀 274 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
 - ✅ ⭐ 0 🔀 337 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
