@@ -14,7 +14,7 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-08-09 17:08 UTC; checks hourly_
+_Last updated: 2026-08-09 18:07 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
@@ -23,17 +23,17 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 7 🔀 764 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
 - ✅ ⭐ 4 🔀 2412 **[DSPACE](https://democratized.space)** @main – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/main))
 - ✅ ⭐ 3 🔀 487 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
-- ❌ ([lint-and-test](https://github.com/futuroptimist/f2clipboard/actions/runs/31305675566), [Test Suite](https://github.com/futuroptimist/f2clipboard/actions/runs/31305675545)) <!-- repo-status:failure-links --> ⭐ 2 🔀 127 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
-- ✅ ⭐ 2 🔀 163 **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
-- ✅ ⭐ 1 🔀 202 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
+- ❌ ([lint-and-test](https://github.com/futuroptimist/f2clipboard/actions/runs/31328141854), [Test Suite](https://github.com/futuroptimist/f2clipboard/actions/runs/31328141852)) <!-- repo-status:failure-links --> ⭐ 2 🔀 128 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
+- ✅ ⭐ 2 🔀 164 **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
+- ✅ ⭐ 1 🔀 203 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
 - ✅ ⭐ 1 🔀 563 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
-- ✅ ⭐ 1 🔀 169 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
-- ❌ ([Lint & Format](https://github.com/futuroptimist/gitshelves/actions/runs/31305666950)) <!-- repo-status:failure-links --> ⭐ 1 🔀 189 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
+- ✅ ⭐ 1 🔀 170 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
+- ❌ ([Lint & Format](https://github.com/futuroptimist/gitshelves/actions/runs/31328139764)) <!-- repo-status:failure-links --> ⭐ 1 🔀 190 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
 - ✅ ⭐ 1 🔀 812 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
-- ✅ ⭐ 1 🔀 50 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
-- ❌ ([Lint & Format](https://github.com/futuroptimist/wove/actions/runs/31306505868)) <!-- repo-status:failure-links --> ⭐ 1 🔀 275 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
-- ✅ ⭐ 0 🔀 338 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
-- ✅ ⭐ 0 🔀 1529 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
+- ✅ ⭐ 1 🔀 51 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
+- ❌ ([Lint & Format](https://github.com/futuroptimist/wove/actions/runs/31328152043)) <!-- repo-status:failure-links --> ⭐ 1 🔀 276 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
+- ✅ ⭐ 0 🔀 339 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
+- ✅ ⭐ 0 🔀 1530 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 
 
 ## Values
