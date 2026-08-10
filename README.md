@@ -32,6 +32,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 1 🔀 812 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
 - ✅ ⭐ 1 🔀 51 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
 - ✅ ⭐ 1 🔀 277 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
+- ✅ ⭐ 0 🔀 5 **[aquiloop](https://github.com/futuroptimist/aquiloop)** – parametric aquarium tools in OpenSCAD for makers and 3D printing
 - ❌ ([Update Repo Statuses](https://github.com/futuroptimist/futuroptimist/actions/runs/31407946844)) <!-- repo-status:failure-links --> ⭐ 0 🔀 340 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
 - ✅ ⭐ 0 🔀 1534 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 
