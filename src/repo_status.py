@@ -88,11 +88,17 @@ SELF_STATUS_WORKFLOW_NAME = "update repo statuses"
 
 
 def _is_self_status_workflow_run(run: dict) -> bool:
-    """Return whether ``run`` belongs to this dashboard-updater workflow itself."""
+    """Return whether ``run`` belongs to this dashboard-updater workflow itself.
+
+    Trusts ``path`` exclusively when present, since a tracked repo could have
+    an unrelated workflow that merely shares this workflow's display name at a
+    different path. The name-based check only applies as a fallback when the
+    payload has no path at all.
+    """
 
     path = run.get("path")
-    if isinstance(path, str) and path == SELF_STATUS_WORKFLOW_PATH:
-        return True
+    if isinstance(path, str):
+        return path == SELF_STATUS_WORKFLOW_PATH
     name = run.get("name")
     if isinstance(name, str) and name.strip().casefold() == SELF_STATUS_WORKFLOW_NAME:
         return True

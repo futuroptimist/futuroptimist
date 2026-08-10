@@ -1673,6 +1673,11 @@ def test_is_self_status_workflow_run_matches_path_and_name() -> None:
     assert not repo_status._is_self_status_workflow_run(
         {"path": ".github/workflows/tests.yml", "name": "Test Suite"}
     )
+    # A distinct workflow that merely shares this display name at a different
+    # path must not be excluded: path is authoritative whenever present.
+    assert not repo_status._is_self_status_workflow_run(
+        {"path": ".github/workflows/other.yml", "name": "Update Repo Statuses"}
+    )
 
 
 def test_fetch_repo_status_ignores_own_dashboard_updater_failure(
