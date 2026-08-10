@@ -1663,6 +1663,71 @@ def test_fetch_repo_status_bot_success_overrides_older_same_workflow_failure(
     )
 
 
+def test_is_self_status_workflow_run_matches_path_and_name() -> None:
+    assert repo_status._is_self_status_workflow_run(
+        {"path": ".github/workflows/update-repo-status.yml", "name": "anything"}
+    )
+    assert repo_status._is_self_status_workflow_run(
+        {"path": None, "name": "Update Repo Statuses"}
+    )
+    assert not repo_status._is_self_status_workflow_run(
+        {"path": ".github/workflows/tests.yml", "name": "Test Suite"}
+    )
+
+
+def test_fetch_repo_status_ignores_own_dashboard_updater_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A failed self-run of this dashboard updater must not poison the badge.
+
+    Regression test for the dashboard-updater workflow's own transient failure
+    (e.g. a GitHub API race) getting picked up as the "important" failing run
+    for the bot commit it happens to land on, permanently showing a red badge
+    even though the repo's real CI (tests/lint) is green.
+    """
+
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "success",
+                sha="old",
+                name="Test Suite",
+                workflow_id=1,
+                path=".github/workflows/tests.yml",
+                run_number=1,
+                run_id=1,
+            ),
+            _workflow_run(
+                "failure",
+                sha="bot",
+                name="Update Repo Statuses",
+                workflow_id=99,
+                path=".github/workflows/update-repo-status.yml",
+                run_number=5,
+                run_id=5,
+            ),
+        ],
+        commits=[
+            {
+                "sha": "bot",
+                "commit": {
+                    "message": "docs: update repo statuses",
+                    "author": {"name": "github-actions[bot]"},
+                    "committer": {"name": "github-actions[bot]"},
+                },
+                "author": {"login": "github-actions[bot]"},
+                "committer": {"login": "github-actions[bot]"},
+            },
+            _human_commit("old"),
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=2) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
 def test_fetch_repo_status_neutral_and_skipped_are_passing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -3003,6 +3068,11 @@ def test_update_readme_preserves_hand_authored_run_note_before_raw_repo(
 def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """The dashboard-updater's own runs must never drive the badge (see
+    ``_is_self_status_workflow_run``); a real "Test Suite" run on the current
+    commit is what should determine the outcome here.
+    """
+
     from datetime import datetime
 
     readme = tmp_path / "README.md"
@@ -3041,6 +3111,7 @@ def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
                         "head_branch": "main",
                         "name": "Update Repo Statuses",
                         "workflow_id": 99,
+                        "path": ".github/workflows/update-repo-status.yml",
                         "run_number": 20,
                         "run_attempt": 1,
                         "created_at": "2025-09-25T12:00:00Z",
@@ -3052,10 +3123,23 @@ def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
                         "head_branch": "main",
                         "name": "Update Repo Statuses",
                         "workflow_id": 99,
+                        "path": ".github/workflows/update-repo-status.yml",
                         "run_number": 21,
                         "run_attempt": 1,
                         "created_at": "2025-09-25T13:00:00Z",
                         "html_url": "https://github.com/futuroptimist/flywheel/actions/runs/27199999999",
+                    },
+                    {
+                        "conclusion": "success",
+                        "head_sha": "new",
+                        "head_branch": "main",
+                        "name": "Test Suite",
+                        "workflow_id": 50,
+                        "path": ".github/workflows/test.yml",
+                        "run_number": 8,
+                        "run_attempt": 1,
+                        "created_at": "2025-09-25T13:05:00Z",
+                        "html_url": "https://github.com/futuroptimist/flywheel/actions/runs/27200000001",
                     },
                 ]
             }
