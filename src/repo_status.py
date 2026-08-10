@@ -78,6 +78,32 @@ VERSION_LABEL_RE = re.compile(
 )
 RELEASE_EVENTS = {"push", "release", "workflow_dispatch", "repository_dispatch"}
 
+# This dashboard updater's own workflow (whichever repo it runs in). Its runs must
+# never count as CI signal for the repo it maintains: a transient failure here
+# (e.g. a GitHub API race) would otherwise mark itself as the "important" failing
+# run and keep re-pointing the badge at itself indefinitely, even once the repo's
+# real CI (tests/lint) is green again.
+SELF_STATUS_WORKFLOW_PATH = ".github/workflows/update-repo-status.yml"
+SELF_STATUS_WORKFLOW_NAME = "update repo statuses"
+
+
+def _is_self_status_workflow_run(run: dict) -> bool:
+    """Return whether ``run`` belongs to this dashboard-updater workflow itself.
+
+    Trusts ``path`` exclusively when present, since a tracked repo could have
+    an unrelated workflow that merely shares this workflow's display name at a
+    different path. The name-based check only applies as a fallback when the
+    payload has no path at all.
+    """
+
+    path = run.get("path")
+    if isinstance(path, str):
+        return path == SELF_STATUS_WORKFLOW_PATH
+    name = run.get("name")
+    if isinstance(name, str) and name.strip().casefold() == SELF_STATUS_WORKFLOW_NAME:
+        return True
+    return False
+
 
 def status_to_emoji(conclusion: str | None) -> str:
     """Return an emoji representing the run conclusion.
@@ -668,6 +694,8 @@ def fetch_repo_status_details(
 
         runs_by_sha: dict[str, list[dict]] = {}
         for run in runs:
+            if _is_self_status_workflow_run(run):
+                continue
             run_branch = run.get("head_branch")
             if isinstance(run_branch, str) and branch and run_branch != branch:
                 continue
