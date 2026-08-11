@@ -86,6 +86,10 @@ RELEASE_EVENTS = {"push", "release", "workflow_dispatch", "repository_dispatch"}
 SELF_STATUS_WORKFLOW_PATH = ".github/workflows/update-repo-status.yml"
 SELF_STATUS_WORKFLOW_NAME = "update repo statuses"
 
+# How many pages of 20 commits the commit lookback walk may fetch while
+# skipping past skip-worthy (e.g. bot-authored) commits before giving up.
+COMMIT_LOOKBACK_MAX_PAGES = 10
+
 
 def _is_self_status_workflow_run(run: dict) -> bool:
     """Return whether ``run`` belongs to this dashboard-updater workflow itself.
@@ -662,7 +666,7 @@ def fetch_repo_status_details(
                 type(commits_data),
             )
             return None, ()
-        commits = commits_data
+        first_page_commits = commits_data
 
         try:
             resp = requests.get(url, headers=headers, timeout=10)
@@ -704,18 +708,62 @@ def fetch_repo_status_details(
                 continue
             runs_by_sha.setdefault(sha, []).append(run)
 
+        # A repo whose default GITHUB_TOKEN pushes commits on a schedule (like
+        # this dashboard updater's own commits) can pile up many consecutive
+        # skip-worthy commits between real ones, since such pushes never
+        # trigger other workflows. `_should_skip_commit` already knows to
+        # walk past those, but a single page of commits may not be deep
+        # enough to reach the last real commit. Paginate further back, capped
+        # so a repo that is skip-worthy commits all the way down can't spin
+        # forever.
         selected_runs: list[dict] = []
-        for commit in commits:
-            sha = commit.get("sha")
-            if not isinstance(sha, str):
-                continue
-            commit_runs = runs_by_sha.get(sha, [])
-            if commit_runs:
-                selected_runs.extend(commit_runs)
-                continue
-            if _should_skip_commit(commit):
-                continue
-            break
+        hit_boundary = False
+        page_commits = first_page_commits
+        for page in range(1, COMMIT_LOOKBACK_MAX_PAGES + 1):
+            if page > 1:
+                commits_url = (
+                    f"https://api.github.com/repos/{repo}/commits"
+                    f"?sha={branch}&per_page=20&page={page}"
+                )
+                try:
+                    commits_resp = requests.get(
+                        commits_url, headers=headers, timeout=10
+                    )
+                    commits_resp.raise_for_status()
+                    commits_data = commits_resp.json()
+                except (requests.exceptions.RequestException, ValueError) as exc:
+                    LOGGER.warning(
+                        "Unable to fetch commits for %s@%s: %s", repo, branch, exc
+                    )
+                    return None, ()
+                if not isinstance(commits_data, list):
+                    LOGGER.warning(
+                        "Unexpected commits payload for %s@%s: %r",
+                        repo,
+                        branch,
+                        type(commits_data),
+                    )
+                    return None, ()
+                page_commits = commits_data
+
+            if not page_commits:
+                break
+
+            for commit in page_commits:
+                sha = commit.get("sha")
+                if not isinstance(sha, str):
+                    continue
+                commit_runs = runs_by_sha.get(sha, [])
+                if commit_runs:
+                    selected_runs.extend(commit_runs)
+                    continue
+                if _should_skip_commit(commit):
+                    continue
+                hit_boundary = True
+                break
+
+            if hit_boundary or len(page_commits) < 20:
+                break
 
         if not selected_runs:
             return None, ()
