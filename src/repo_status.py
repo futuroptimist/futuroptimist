@@ -497,8 +497,14 @@ def fetch_repo_status_details(
 
     The GitHub API occasionally returns inconsistent data if a workflow is
     updating while we query it. To catch this non-determinism we fetch the
-    status multiple times and ensure all results match. If they differ we raise
-    ``RuntimeError`` so the calling workflow fails loudly.
+    status multiple times and ensure all *resolved* results match. If two or
+    more attempts each successfully resolve a conclusion but disagree, we
+    raise ``RuntimeError`` so the calling workflow fails loudly. An attempt
+    that fails outright (e.g. a transient network/SSL error) resolves to
+    ``None`` rather than a real conclusion, and is not itself treated as
+    disagreement -- otherwise a single flaky request out of ``attempts``
+    tries, on any one of the many repos this is called for in a batch,
+    would take down the entire batch instead of just that repo's status.
     """
 
     headers = _github_headers(token)
@@ -938,17 +944,19 @@ def fetch_repo_status_details(
 
     reports = [_fetch() for _ in range(attempts)]
     conclusions = [report[0] for report in reports]
-    if len(set(conclusions)) > 1:
+    resolved_conclusions = {c for c in conclusions if c is not None}
+    if len(resolved_conclusions) > 1:
         raise RuntimeError(
             f"Non-deterministic workflow conclusion for {repo}: {conclusions}"
         )
+    final_conclusion = next(iter(resolved_conclusions), None)
     failure_links: list[StatusLink] = []
     for _, links in reports:
         for link in links:
             if link not in failure_links:
                 failure_links.append(link)
     return RepoStatus(
-        status_to_emoji(conclusions[0]),
+        status_to_emoji(final_conclusion),
         tuple(failure_links),
         metadata.stars,
         metadata.merged_prs,

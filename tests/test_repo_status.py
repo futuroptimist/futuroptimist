@@ -526,6 +526,54 @@ def test_fetch_repo_status_nondeterministic(monkeypatch: pytest.MonkeyPatch) -> 
     )
 
 
+def test_fetch_repo_status_tolerates_one_failed_attempt(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A transient network failure on only one of the two attempts must not
+    be treated as non-determinism.
+
+    Regression test: `futuroptimist/futuroptimist`'s own hourly updater
+    crashed outright (RuntimeError, no README update at all) when a single
+    SSL error on one of two attempts for one repo produced conclusions
+    `[None, "success"]` -- previously `None` was compared for equality
+    against a real conclusion just like any other value, so a single flaky
+    request anywhere in a batch of ~16 repos x 2 attempts took down the
+    whole run instead of just leaving that repo unresolved for this pass.
+    """
+
+    run_calls = 0
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        nonlocal run_calls
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp([_human_commit("abc")])
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main"
+        )
+        run_calls += 1
+        if run_calls == 1:
+            raise repo_status.requests.exceptions.SSLError("certificate verify failed")
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {"conclusion": "success", "head_sha": "abc", "name": "tests"}
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+
+
 def test_fetch_repo_status_ignores_non_ci_runs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
