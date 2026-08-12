@@ -2089,8 +2089,7 @@ def test_fetch_repo_status_paginates_past_long_bot_streak(
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "✅"
     assert (
-        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
-        in calls
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20" in calls
     )
     assert (
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20&page=2"
