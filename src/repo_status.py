@@ -697,16 +697,20 @@ def fetch_repo_status_details(
             return None, ()
 
         runs_by_sha: dict[str, list[dict]] = {}
-        for run in runs:
-            if _is_self_status_workflow_run(run):
-                continue
-            run_branch = run.get("head_branch")
-            if isinstance(run_branch, str) and branch and run_branch != branch:
-                continue
-            sha = run.get("head_sha")
-            if not isinstance(sha, str):
-                continue
-            runs_by_sha.setdefault(sha, []).append(run)
+
+        def _index_runs(runs_page: Iterable[dict]) -> None:
+            for run in runs_page:
+                if _is_self_status_workflow_run(run):
+                    continue
+                run_branch = run.get("head_branch")
+                if isinstance(run_branch, str) and branch and run_branch != branch:
+                    continue
+                sha = run.get("head_sha")
+                if not isinstance(sha, str):
+                    continue
+                runs_by_sha.setdefault(sha, []).append(run)
+
+        _index_runs(runs)
 
         # A repo whose default GITHUB_TOKEN pushes commits on a schedule (like
         # this dashboard updater's own commits) can pile up many consecutive
@@ -715,7 +719,14 @@ def fetch_repo_status_details(
         # walk past those, but a single page of commits may not be deep
         # enough to reach the last real commit. Paginate further back, capped
         # so a repo that is skip-worthy commits all the way down can't spin
-        # forever.
+        # forever. Only paginate while we still have nothing to go on: once a
+        # page yields a match (or a real, un-skippable commit), stop exactly
+        # like the original single-page walk did, so repos that already
+        # resolve within page 1 see no behavior or request-count change. Each
+        # extra commit page is paired with an extra runs page so the runs
+        # window grows in step with the commit window — otherwise a commit
+        # reachable only through pagination could have runs that fell outside
+        # the first page of completed runs.
         selected_runs: list[dict] = []
         hit_boundary = False
         page_commits = first_page_commits
@@ -735,7 +746,7 @@ def fetch_repo_status_details(
                     LOGGER.warning(
                         "Unable to fetch commits for %s@%s: %s", repo, branch, exc
                     )
-                    return None, ()
+                    break
                 if not isinstance(commits_data, list):
                     LOGGER.warning(
                         "Unexpected commits payload for %s@%s: %r",
@@ -743,7 +754,39 @@ def fetch_repo_status_details(
                         branch,
                         type(commits_data),
                     )
-                    return None, ()
+                    break
+
+                runs_page_url = f"{url}&page={page}"
+                try:
+                    runs_resp = requests.get(runs_page_url, headers=headers, timeout=10)
+                    runs_resp.raise_for_status()
+                    runs_page_data = runs_resp.json()
+                except (requests.exceptions.RequestException, ValueError) as exc:
+                    LOGGER.warning(
+                        "Unable to fetch workflow runs for %s@%s: %s",
+                        repo,
+                        branch,
+                        exc,
+                    )
+                    break
+                if not isinstance(runs_page_data, dict):
+                    LOGGER.warning(
+                        "Unexpected workflow payload for %s@%s: %r",
+                        repo,
+                        branch,
+                        type(runs_page_data),
+                    )
+                    break
+                runs_page = runs_page_data.get("workflow_runs", [])
+                if not isinstance(runs_page, list):
+                    LOGGER.warning(
+                        "Unexpected workflow run list for %s@%s: %r",
+                        repo,
+                        branch,
+                        type(runs_page),
+                    )
+                    break
+                _index_runs(runs_page)
                 page_commits = commits_data
 
             if not page_commits:
@@ -762,7 +805,7 @@ def fetch_repo_status_details(
                 hit_boundary = True
                 break
 
-            if hit_boundary or len(page_commits) < 20:
+            if hit_boundary or selected_runs or len(page_commits) < 20:
                 break
 
         if not selected_runs:

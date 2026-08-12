@@ -2122,6 +2122,135 @@ def test_fetch_repo_status_gives_up_after_lookback_cap(
     assert repo_status.fetch_repo_status("user/repo") == "❓"
 
 
+def test_fetch_repo_status_stops_pagination_once_resolved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A full first page that already resolves must not fetch page 2.
+
+    Regression test for a review finding on the pagination fix: continuing
+    to paginate even after finding matching runs on page 1 would add
+    unneeded API calls and could let older, unrelated runs change an
+    already-resolved result.
+    """
+
+    page_one = [*[_bot_commit(f"bot{i}") for i in range(19)], _human_commit("abc")]
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(page_one)
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {"conclusion": "success", "head_sha": "abc", "name": "tests"}
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+    assert not any("&page=2" in call for call in calls)
+
+
+def test_fetch_repo_status_paginates_runs_window_with_commits(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A commit reachable only via pagination must be matched against runs
+    fetched for that same page, not just the first page of completed runs.
+
+    Regression test for a review finding: extending the commit lookback
+    without extending the runs lookback in step would let a real, green
+    commit resolve as unknown once it's deep enough that its runs fall
+    outside the first 100 completed runs.
+    """
+
+    page_one_commits = [_bot_commit(f"bot{i}") for i in range(20)]
+    page_two_commits = [_human_commit("old-real"), _bot_commit("older-bot")]
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url == (
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20&page=2"
+        ):
+            return DummyResp(page_two_commits)
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(page_one_commits)
+        if url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed&branch=main&page=2"
+        ):
+            return DummyResp(
+                {
+                    "workflow_runs": [
+                        {
+                            "conclusion": "success",
+                            "head_sha": "old-real",
+                            "name": "tests",
+                        }
+                    ]
+                }
+            )
+        # First page of runs deliberately has nothing for "old-real" — its
+        # run only shows up once the runs window is paginated alongside
+        # the commit window.
+        return DummyResp({"workflow_runs": []})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+    assert (
+        "https://api.github.com/repos/user/repo/actions/runs?"
+        "per_page=100&status=completed&branch=main&page=2" in calls
+    )
+
+
+def test_fetch_repo_status_later_page_failure_returns_unknown(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A transient failure fetching a later commit page must not crash —
+    it should stop expanding and fall back to the unknown status."""
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url == (
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20&page=2"
+        ):
+            raise repo_status.requests.exceptions.ConnectionError("boom")
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp([_bot_commit(f"bot{i}") for i in range(20)])
+        return DummyResp({"workflow_runs": []})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
+
+
 def test_fetch_repo_status_skip_ci_message(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_get(url: str, headers: dict, timeout: int):
         if (
