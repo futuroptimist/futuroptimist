@@ -65,6 +65,14 @@ GITHUB_MARKDOWN_LINK_RE = re.compile(
 SKIP_COMMIT_RE = re.compile(
     r"(?i)(?:\[(?:ci|actions)[-_/\s]*skip\]|\[skip[-_/\s]*(?:ci|actions)\]|skip[-_/\s]*(?:ci|actions))"
 )
+# Some workflows commit via `git config user.name github-actions` /
+# `user.email github-actions@github.com` instead of the documented
+# `github-actions[bot]` identity. GitHub can't resolve that email to a real
+# account, so its API reports the commit author as a synthetic
+# "invalid-email-address" user with no "[bot]" suffix anywhere to key off of.
+# Recognize the raw git identity directly so these still count as
+# skip-worthy automated commits.
+BOT_COMMIT_EMAILS = {"github-actions@github.com"}
 RELEASE_WORKFLOW_RE = re.compile(
     r"(?i)(release|publish|package|desktop|deploy|artifact|build)"
 )
@@ -532,10 +540,14 @@ def fetch_repo_status_details(
             return True
         for key in ("author", "committer"):
             login = (commit.get(key) or {}).get("login")
-            name = commit.get("commit", {}).get(key, {}).get("name")
+            raw_identity = commit.get("commit", {}).get(key) or {}
+            name = raw_identity.get("name")
+            email = raw_identity.get("email")
             if isinstance(login, str) and login.endswith("[bot]"):
                 return True
             if isinstance(name, str) and name.endswith("[bot]"):
+                return True
+            if isinstance(email, str) and email.strip().lower() in BOT_COMMIT_EMAILS:
                 return True
         return False
 

@@ -2045,6 +2045,77 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
     )
 
 
+def test_fetch_repo_status_skips_unresolvable_bot_identity_commit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A commit from `git config user.name/email github-actions` (no
+    `[bot]` suffix) must still be recognized as skip-worthy.
+
+    Regression test for `futuroptimist/flywheel`: its prompt-docs workflow
+    commits as raw git identity name "github-actions" / email
+    "github-actions@github.com" (not "github-actions[bot]"). GitHub can't
+    resolve that email to an account, so the API reports the commit's
+    resolved author/committer as a synthetic "invalid-email-address" user —
+    neither the login nor the raw git name ends in "[bot]", so the walk
+    used to treat it as a real, untested commit and stop immediately.
+    """
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url.startswith(
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+        ):
+            return DummyResp(
+                [
+                    {
+                        "sha": "unresolvable",
+                        "commit": {
+                            "message": "chore: update prompt docs summary",
+                            "author": {
+                                "name": "github-actions",
+                                "email": "github-actions@github.com",
+                            },
+                            "committer": {
+                                "name": "github-actions",
+                                "email": "github-actions@github.com",
+                            },
+                        },
+                        "author": {"login": "invalid-email-address"},
+                        "committer": {"login": "invalid-email-address"},
+                    },
+                    {
+                        "sha": "abc",
+                        "commit": {
+                            "message": "feat: add api",
+                            "author": {"name": "Alice", "email": "alice@example.com"},
+                            "committer": {
+                                "name": "Alice",
+                                "email": "alice@example.com",
+                            },
+                        },
+                        "author": {"login": "alice"},
+                        "committer": {"login": "alice"},
+                    },
+                ]
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {"conclusion": "success", "head_sha": "abc", "name": "tests"}
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+
+
 def test_fetch_repo_status_paginates_past_long_bot_streak(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
