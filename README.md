@@ -14,13 +14,13 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-08-11 23:13 UTC; checks hourly_
+_Last updated: 2026-08-12 00:14 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
 Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs need attention; linked failures point to the run or asset to inspect; ❓ no completed relevant run was found or GitHub could not be queried; ⭐ shows GitHub stars; 🔀 shows total merged pull requests. Projects sort by stars descending, then alphabetically for ties; unknown star counts sort last.
 
-- ✅ ⭐ 7 🔀 768 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
+- ❌ ([Desktop Tauri Release](https://github.com/futuroptimist/token.place/actions/runs/31544333348)) <!-- repo-status:failure-links --> ⭐ 7 🔀 768 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
 - ✅ ⭐ 4 🔀 2413 **[DSPACE](https://democratized.space)** – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/main))
 - ✅ ⭐ 3 🔀 488 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
 - ✅ ⭐ 2 🔀 129 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
@@ -29,11 +29,11 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 1 🔀 567 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
 - ✅ ⭐ 1 🔀 170 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
 - ✅ ⭐ 1 🔀 191 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
-- ✅ ⭐ 1 🔀 814 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
+- ✅ ⭐ 1 🔀 815 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
 - ✅ ⭐ 1 🔀 51 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
 - ✅ ⭐ 1 🔀 277 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
-- ❓ ⭐ 0 🔀 6 **[aquiloop](https://github.com/futuroptimist/aquiloop)** – parametric aquarium tools in OpenSCAD for makers and 3D printing
-- ❓ ⭐ 0 🔀 343 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
+- ✅ ⭐ 0 🔀 6 **[aquiloop](https://github.com/futuroptimist/aquiloop)** – parametric aquarium tools in OpenSCAD for makers and 3D printing
+- ✅ ⭐ 0 🔀 343 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
 - ✅ ⭐ 0 🔀 1539 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 
 
