@@ -745,9 +745,44 @@ def fetch_repo_status_details(
         # window grows in step with the commit window — otherwise a commit
         # reachable only through pagination could have runs that fell outside
         # the first page of completed runs.
+        def _fetch_runs_page(page_number: int) -> list[dict] | None:
+            runs_page_url = f"{url}&page={page_number}"
+            try:
+                runs_resp = requests.get(runs_page_url, headers=headers, timeout=10)
+                runs_resp.raise_for_status()
+                runs_page_data = runs_resp.json()
+            except (requests.exceptions.RequestException, ValueError) as exc:
+                LOGGER.warning(
+                    "Unable to fetch workflow runs for %s@%s: %s",
+                    repo,
+                    branch,
+                    exc,
+                )
+                return None
+            if not isinstance(runs_page_data, dict):
+                LOGGER.warning(
+                    "Unexpected workflow payload for %s@%s: %r",
+                    repo,
+                    branch,
+                    type(runs_page_data),
+                )
+                return None
+            runs_page = runs_page_data.get("workflow_runs", [])
+            if not isinstance(runs_page, list):
+                LOGGER.warning(
+                    "Unexpected workflow run list for %s@%s: %r",
+                    repo,
+                    branch,
+                    type(runs_page),
+                )
+                return None
+            return runs_page
+
         selected_runs: list[dict] = []
         hit_boundary = False
         page_commits = first_page_commits
+        # Page 1 of runs was already fetched and indexed above.
+        runs_page_number = 1
         for page in range(1, COMMIT_LOOKBACK_MAX_PAGES + 1):
             if page > 1:
                 commits_url = (
@@ -774,52 +809,66 @@ def fetch_repo_status_details(
                     )
                     break
 
-                runs_page_url = f"{url}&page={page}"
-                try:
-                    runs_resp = requests.get(runs_page_url, headers=headers, timeout=10)
-                    runs_resp.raise_for_status()
-                    runs_page_data = runs_resp.json()
-                except (requests.exceptions.RequestException, ValueError) as exc:
-                    LOGGER.warning(
-                        "Unable to fetch workflow runs for %s@%s: %s",
-                        repo,
-                        branch,
-                        exc,
-                    )
-                    break
-                if not isinstance(runs_page_data, dict):
-                    LOGGER.warning(
-                        "Unexpected workflow payload for %s@%s: %r",
-                        repo,
-                        branch,
-                        type(runs_page_data),
-                    )
-                    break
-                runs_page = runs_page_data.get("workflow_runs", [])
-                if not isinstance(runs_page, list):
-                    LOGGER.warning(
-                        "Unexpected workflow run list for %s@%s: %r",
-                        repo,
-                        branch,
-                        type(runs_page),
-                    )
-                    break
-                _index_runs(runs_page)
+                # Only fetch the runs page paired with this commits page if a
+                # boundary commit on an earlier commits page hasn't already
+                # pulled the runs window this far ahead (see below).
+                if runs_page_number < page:
+                    runs_page_number = page
+                    runs_page = _fetch_runs_page(page)
+                    if runs_page is None:
+                        break
+                    _index_runs(runs_page)
                 page_commits = commits_data
 
             if not page_commits:
                 break
 
-            for commit in page_commits:
+            commit_index = 0
+            while commit_index < len(page_commits):
+                commit = page_commits[commit_index]
                 sha = commit.get("sha")
                 if not isinstance(sha, str):
+                    commit_index += 1
                     continue
                 commit_runs = runs_by_sha.get(sha, [])
                 if commit_runs:
                     selected_runs.extend(commit_runs)
+                    commit_index += 1
                     continue
                 if _should_skip_commit(commit):
+                    commit_index += 1
                     continue
+
+                # A real, unresolved commit. Before treating this as the
+                # lookback boundary, try widening the *runs* window: a repo
+                # whose completed-runs listing is dominated by frequent,
+                # non-CI-signal workflow runs (this dashboard's own hourly
+                # commits, a chatty PR-comment bot, etc.) can bury a recent
+                # commit's real CI runs several runs-pages deep even though
+                # the commit itself is on the very first commits page. Only
+                # do this while nothing is selected yet -- once we've found
+                # the newest relevant run(s), a boundary commit genuinely
+                # means "stop walking further back".
+                if not selected_runs and runs_page_number < COMMIT_LOOKBACK_MAX_PAGES:
+                    runs_page_number += 1
+                    more_runs = _fetch_runs_page(runs_page_number)
+                    if more_runs is None:
+                        hit_boundary = True
+                        break
+                    _index_runs(more_runs)
+                    if len(more_runs) < 100:
+                        # No more runs exist upstream; give this commit one
+                        # final check against the now-exhausted index rather
+                        # than requesting empty pages up to the cap.
+                        commit_runs = runs_by_sha.get(sha, [])
+                        if commit_runs:
+                            selected_runs.extend(commit_runs)
+                            commit_index += 1
+                            continue
+                        hit_boundary = True
+                        break
+                    continue  # retry the same commit against the wider index
+
                 hit_boundary = True
                 break
 
