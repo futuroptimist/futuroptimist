@@ -1,4 +1,9 @@
 ## Unreleased
+- fix: widen the `update-repo-status` commit lookback's runs-page window
+  independently of its commits-page window so a real commit still on
+  commits-page 1 whose CI runs are buried behind noisy, non-CI workflow
+  traffic (e.g. the dashboard's own hourly commits, a chatty PR-comment bot)
+  no longer resolves to an unknown (❓) status.
 - feat: add `render_video` CLI to assemble rough-cut MP4s with optional subtitle
   burn-in from `footage/<slug>/converted` clips.
 - test: cover render_video clip discovery, ffmpeg command construction,

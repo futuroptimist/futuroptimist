@@ -367,12 +367,15 @@ def test_fetch_repo_status_no_runs_returns_unknown(
                 ]
             )
         assert url == (
-            "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main"
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed&branch=main"
         )
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "❓"
+    # The short first runs page proves that the listing is exhausted, so the
+    # unresolved commit must not trigger a pointless page-2 request.
     assert calls == [
         "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
@@ -2329,10 +2332,21 @@ def test_fetch_repo_status_paginates_runs_window_with_commits(
                     ]
                 }
             )
-        # First page of runs deliberately has nothing for "old-real" — its
+        # First page of runs is full of unrelated noise for "old-real" — its
         # run only shows up once the runs window is paginated alongside
         # the commit window.
-        return DummyResp({"workflow_runs": []})
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "success",
+                        "head_sha": f"noise{i}",
+                        "name": "noise",
+                    }
+                    for i in range(100)
+                ]
+            }
+        )
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "✅"
@@ -2340,6 +2354,105 @@ def test_fetch_repo_status_paginates_runs_window_with_commits(
         "https://api.github.com/repos/user/repo/actions/runs?"
         "per_page=100&status=completed&branch=main&page=2" in calls
     )
+
+
+def test_fetch_repo_status_widens_runs_window_within_first_commits_page(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A real commit *within* commits-page 1 can still need more runs pages.
+
+    Regression test for the token.place/flywheel dashboard bug: a repo whose
+    `/actions/runs` listing is dominated by frequent, non-CI-signal workflow
+    runs (this dashboard's own hourly commits, a chatty PR-comment bot, etc.)
+    can bury the newest real commit's actual CI runs several runs-pages deep,
+    even though that commit is the very first, most recent one -- so the walk
+    never advances to commits-page 2 at all. Extending the runs window only
+    when a new *commits* page is fetched (the old behavior) never kicks in
+    here, and the lookback used to give up with "unknown" immediately.
+    """
+
+    target_commit = _human_commit("real", message="Merge pull request #1")
+    page_one_commits = [target_commit, *[_bot_commit(f"bot{i}") for i in range(19)]]
+    noise_page = [
+        {"conclusion": "success", "head_sha": f"noise{i}", "name": "Claude Code"}
+        for i in range(100)
+    ]
+    real_run_page = [{"conclusion": "success", "head_sha": "real", "name": "tests"}]
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url == "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20":
+            return DummyResp(page_one_commits)
+        if url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed&branch=main"
+        ):
+            return DummyResp({"workflow_runs": noise_page})
+        if url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed&branch=main&page=2"
+        ):
+            return DummyResp({"workflow_runs": noise_page})
+        if url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed&branch=main&page=3"
+        ):
+            return DummyResp({"workflow_runs": real_run_page})
+        raise AssertionError(f"unexpected request: {url}")
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+    assert (
+        "https://api.github.com/repos/user/repo/actions/runs?"
+        "per_page=100&status=completed&branch=main&page=2" in calls
+    )
+    assert (
+        "https://api.github.com/repos/user/repo/actions/runs?"
+        "per_page=100&status=completed&branch=main&page=3" in calls
+    )
+    assert not any("commits?sha=main&per_page=20&page=2" in call for call in calls)
+
+
+def test_fetch_repo_status_widening_runs_window_respects_cap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Widening the runs window must still respect the lookback page cap."""
+
+    target_commit = _human_commit("real", message="Merge pull request #1")
+    page_one_commits = [target_commit, *[_bot_commit(f"bot{i}") for i in range(19)]]
+    noise_page = [
+        {"conclusion": "success", "head_sha": f"noise{i}", "name": "Claude Code"}
+        for i in range(100)
+    ]
+    runs_calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url == "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20":
+            return DummyResp(page_one_commits)
+        # Every runs page, forever, is full of unrelated noise -- the real
+        # commit's run (if it exists at all) is never found.
+        runs_calls.append(url)
+        return DummyResp({"workflow_runs": noise_page})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
+    # One base fetch plus widening up to the shared lookback cap, per attempt.
+    assert len(runs_calls) <= repo_status.COMMIT_LOOKBACK_MAX_PAGES * 2
 
 
 def test_fetch_repo_status_later_page_failure_returns_unknown(
