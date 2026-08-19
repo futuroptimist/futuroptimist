@@ -366,28 +366,23 @@ def test_fetch_repo_status_no_runs_returns_unknown(
                     }
                 ]
             )
-        assert url in (
-            "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
-            "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main&page=2",
+        assert url == (
+            "https://api.github.com/repos/user/repo/actions/runs?"
+            "per_page=100&status=completed&branch=main"
         )
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "❓"
-    # The lone commit has no matching run on runs-page 1. Since nothing has
-    # been selected yet, the lookback widens the runs window by one more
-    # page before giving up on that commit -- runs-page 2 comes back empty
-    # (fewer than 100 results), so it stops there instead of paginating all
-    # the way to the cap.
+    # The short first runs page proves that the listing is exhausted, so the
+    # unresolved commit must not trigger a pointless page-2 request.
     assert calls == [
         "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main&page=2",
         "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
-        "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main&page=2",
     ]
 
 
@@ -2337,10 +2332,21 @@ def test_fetch_repo_status_paginates_runs_window_with_commits(
                     ]
                 }
             )
-        # First page of runs deliberately has nothing for "old-real" — its
+        # First page of runs is full of unrelated noise for "old-real" — its
         # run only shows up once the runs window is paginated alongside
         # the commit window.
-        return DummyResp({"workflow_runs": []})
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "success",
+                        "head_sha": f"noise{i}",
+                        "name": "noise",
+                    }
+                    for i in range(100)
+                ]
+            }
+        )
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "✅"
@@ -2389,7 +2395,7 @@ def test_fetch_repo_status_widens_runs_window_within_first_commits_page(
             "https://api.github.com/repos/user/repo/actions/runs?"
             "per_page=100&status=completed&branch=main"
         ):
-            return DummyResp({"workflow_runs": []})
+            return DummyResp({"workflow_runs": noise_page})
         if url == (
             "https://api.github.com/repos/user/repo/actions/runs?"
             "per_page=100&status=completed&branch=main&page=2"
@@ -2412,9 +2418,7 @@ def test_fetch_repo_status_widens_runs_window_within_first_commits_page(
         "https://api.github.com/repos/user/repo/actions/runs?"
         "per_page=100&status=completed&branch=main&page=3" in calls
     )
-    assert not any(
-        "commits?sha=main&per_page=20&page=2" in call for call in calls
-    )
+    assert not any("commits?sha=main&per_page=20&page=2" in call for call in calls)
 
 
 def test_fetch_repo_status_widening_runs_window_respects_cap(

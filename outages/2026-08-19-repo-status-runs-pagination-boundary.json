@@ -1,8 +1,8 @@
 {
-    "$schema": "./schema.json",
-    "date": "2026-08-19",
-    "workflow": "update-repo-status",
-    "run_url": "https://github.com/futuroptimist/futuroptimist/actions/workflows/update-repo-status.yml",
-    "root_cause": "The commit lookback in fetch_repo_status_details only fetched another /actions/runs page when it also fetched another /commits page, so a real commit still on commits-page 1 whose CI runs were buried behind frequent non-CI workflow noise (this dashboard's own hourly commits, a chatty PR-comment bot) never got a wider runs window and resolved to unknown.",
-    "resolution": "Decouple runs-page pagination from commits-page pagination: widen the runs window (up to the existing lookback cap) and retry the same unresolved commit whenever nothing has been selected yet, instead of giving up after a single runs page."
+  "$schema": "./schema.json",
+  "date": "2026-08-19",
+  "workflow": "update-repo-status",
+  "run_url": "https://github.com/futuroptimist/futuroptimist/actions/workflows/update-repo-status.yml",
+  "root_cause": "The commit lookback in fetch_repo_status_details only fetched another /actions/runs page when it also fetched another /commits page, so a real commit still on commits-page 1 whose CI runs were buried behind frequent non-CI workflow noise (this dashboard's own hourly commits, a chatty PR-comment bot) never got a wider runs window and resolved to unknown.",
+  "resolution": "Decouple runs-page pagination from commits-page pagination: widen the runs window (up to the existing lookback cap) and retry the same unresolved commit whenever nothing has been selected yet, instead of giving up after a single runs page."
 }

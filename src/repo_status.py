@@ -729,6 +729,10 @@ def fetch_repo_status_details(
                 runs_by_sha.setdefault(sha, []).append(run)
 
         _index_runs(runs)
+        # A short page means GitHub has already returned the entire completed-
+        # runs listing. Remember that fact so unresolved commits do not trigger
+        # requests for pages that cannot exist.
+        runs_exhausted = len(runs) < 100
 
         # A repo whose default GITHUB_TOKEN pushes commits on a schedule (like
         # this dashboard updater's own commits) can pile up many consecutive
@@ -740,11 +744,10 @@ def fetch_repo_status_details(
         # forever. Only paginate while we still have nothing to go on: once a
         # page yields a match (or a real, un-skippable commit), stop exactly
         # like the original single-page walk did, so repos that already
-        # resolve within page 1 see no behavior or request-count change. Each
-        # extra commit page is paired with an extra runs page so the runs
-        # window grows in step with the commit window — otherwise a commit
-        # reachable only through pagination could have runs that fell outside
-        # the first page of completed runs.
+        # resolve within page 1 see no behavior or request-count change.
+        # Commit and runs cursors advance independently. A later commit page
+        # may require a matching runs page, while a boundary commit on the
+        # current commit page may widen the runs window on its own.
         def _fetch_runs_page(page_number: int) -> list[dict] | None:
             runs_page_url = f"{url}&page={page_number}"
             try:
@@ -812,12 +815,13 @@ def fetch_repo_status_details(
                 # Only fetch the runs page paired with this commits page if a
                 # boundary commit on an earlier commits page hasn't already
                 # pulled the runs window this far ahead (see below).
-                if runs_page_number < page:
+                if runs_page_number < page and not runs_exhausted:
                     runs_page_number = page
                     runs_page = _fetch_runs_page(page)
                     if runs_page is None:
                         break
                     _index_runs(runs_page)
+                    runs_exhausted = len(runs_page) < 100
                 page_commits = commits_data
 
             if not page_commits:
@@ -849,7 +853,11 @@ def fetch_repo_status_details(
                 # do this while nothing is selected yet -- once we've found
                 # the newest relevant run(s), a boundary commit genuinely
                 # means "stop walking further back".
-                if not selected_runs and runs_page_number < COMMIT_LOOKBACK_MAX_PAGES:
+                if (
+                    not selected_runs
+                    and not runs_exhausted
+                    and runs_page_number < COMMIT_LOOKBACK_MAX_PAGES
+                ):
                     runs_page_number += 1
                     more_runs = _fetch_runs_page(runs_page_number)
                     if more_runs is None:
@@ -857,6 +865,7 @@ def fetch_repo_status_details(
                         break
                     _index_runs(more_runs)
                     if len(more_runs) < 100:
+                        runs_exhausted = True
                         # No more runs exist upstream; give this commit one
                         # final check against the now-exhausted index rather
                         # than requesting empty pages up to the cap.
