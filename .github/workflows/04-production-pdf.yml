@@ -1,0 +1,123 @@
+name: Production Plan PDF
+run-name: Production PDF — ${{ inputs.video_script }} (${{ inputs.page_size }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_script:
+        description: 'Eligible video-script slug or latest'
+        required: true
+        type: string
+        default: latest
+      page_size:
+        description: 'Printed page size'
+        required: true
+        type: choice
+        options:
+          - letter
+          - a4
+        default: letter
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      REQUESTED_VIDEO_SCRIPT: ${{ inputs.video_script }}
+      PAGE_SIZE: ${{ inputs.page_size }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install PDF system libraries and fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libpango-1.0-0 libpangoft2-1.0-0 fonts-dejavu-core fonts-liberation
+      - name: Install dependencies
+        run: |
+          uv venv
+          uv pip install -r requirements.txt
+      - name: Resolve requested video script
+        id: resolve
+        run: |
+          uv run python - <<'PY'
+          import os
+          from pathlib import Path
+          from src.render_production_pdf import ordered_sources, resolve_slug
+
+          requested = os.environ["REQUESTED_VIDEO_SCRIPT"]
+          slug = resolve_slug(requested)
+          output = Path("dist/production-pdfs") / f"{slug}-production-checklist.pdf"
+          sources = ordered_sources(slug)
+          github_output = Path(os.environ["GITHUB_OUTPUT"])
+          with github_output.open("a", encoding="utf-8") as handle:
+              handle.write(f"slug={slug}\n")
+              handle.write(f"output={output.as_posix()}\n")
+              handle.write("sources<<EOF\n")
+              handle.writelines(f"{path.relative_to(Path.cwd()).as_posix()}\n" for path in sources)
+              handle.write("EOF\n")
+          print(f"Requested video script: {requested}")
+          print(f"Resolved video script: {slug}")
+          PY
+      - name: Render PDF
+        env:
+          RESOLVED_SLUG: ${{ steps.resolve.outputs.slug }}
+          PDF_OUTPUT: ${{ steps.resolve.outputs.output }}
+        run: |
+          uv run python src/render_production_pdf.py \
+            --slug "$RESOLVED_SLUG" \
+            --page-size "$PAGE_SIZE" \
+            --output "$PDF_OUTPUT"
+      - name: Validate PDF
+        env:
+          PDF_OUTPUT: ${{ steps.resolve.outputs.output }}
+        run: |
+          uv run python - <<'PY'
+          import os
+          from pathlib import Path
+
+          output = Path(os.environ["PDF_OUTPUT"])
+          matches = list(output.parent.glob("*.pdf"))
+          if matches != [output]:
+              raise SystemExit(f"expected exactly {output}, found: {matches}")
+          if output.stat().st_size == 0 or output.read_bytes()[:5] != b"%PDF-":
+              raise SystemExit(f"not a nonempty PDF: {output}")
+          PY
+      - name: Write job summary
+        env:
+          RESOLVED_SLUG: ${{ steps.resolve.outputs.slug }}
+          PDF_OUTPUT: ${{ steps.resolve.outputs.output }}
+          INCLUDED_SOURCES: ${{ steps.resolve.outputs.sources }}
+        run: |
+          uv run python - <<'PY'
+          import os
+          from pathlib import Path
+
+          lines = [
+              "## Production plan PDF",
+              "",
+              f"- Requested selector: `{os.environ['REQUESTED_VIDEO_SCRIPT']}`",
+              f"- Resolved slug: `{os.environ['RESOLVED_SLUG']}`",
+              f"- Page size: `{os.environ['PAGE_SIZE']}`",
+              f"- PDF filename: `{Path(os.environ['PDF_OUTPUT']).name}`",
+              "- Included sources, in render order:",
+          ]
+          lines.extend(f"  - `{source}`" for source in os.environ["INCLUDED_SOURCES"].splitlines())
+          lines += ["", "Download the artifact below from the run's **Artifacts** section; GitHub provides it as an archive containing the PDF."]
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+              handle.write("\n".join(lines) + "\n")
+          PY
+      - name: Upload production PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-pdf-${{ steps.resolve.outputs.slug }}
+          path: ${{ steps.resolve.outputs.output }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

@@ -43,3 +43,24 @@ def test_update_repo_status_pins_python_version() -> None:
     assert versions == [
         "3.12"
     ], "update-repo-status workflow must pin Python 3.12 to keep rawpy wheels available"
+
+
+def test_production_pdf_workflow_is_safe_and_dynamic() -> None:
+    path = WORKFLOWS_DIR / "04-production-pdf.yml"
+    text = path.read_text(encoding="utf-8")
+    data = yaml.safe_load(text)
+    dispatch = data[True]["workflow_dispatch"]["inputs"]
+    assert dispatch["video_script"] == {
+        "description": "Eligible video-script slug or latest",
+        "required": True,
+        "type": "string",
+        "default": "latest",
+    }
+    assert dispatch["page_size"]["type"] == "choice"
+    assert dispatch["page_size"]["options"] == ["letter", "a4"]
+    assert data["permissions"] == {"contents": "read"}
+    assert "src/render_production_pdf.py" in text
+    assert "actions/upload-artifact@v4" in text
+    assert "production-pdf-${{ steps.resolve.outputs.slug }}" in text
+    assert "path: ${{ steps.resolve.outputs.output }}" in text
+    assert "default: 20260901_sugarkube" not in text
