@@ -43,3 +43,23 @@ def test_update_repo_status_pins_python_version() -> None:
     assert versions == [
         "3.12"
     ], "update-repo-status workflow must pin Python 3.12 to keep rawpy wheels available"
+
+
+def test_production_pdf_workflow_is_safe_and_dynamic() -> None:
+    path = WORKFLOWS_DIR / "04-production-pdf.yml"
+    text = path.read_text(encoding="utf-8")
+    data = yaml.safe_load(text)
+    inputs = data[True]["workflow_dispatch"]["inputs"]
+    assert inputs["video_script"] == {
+        "description": "latest or an exact eligible video-script slug",
+        "required": True,
+        "type": "string",
+        "default": "latest",
+    }
+    assert inputs["page_size"]["type"] == "choice"
+    assert inputs["page_size"]["options"] == ["letter", "a4"]
+    assert data["permissions"] == {"contents": "read"}
+    assert "src/render_production_pdf.py" in text
+    assert "{slug}-production-checklist.pdf" in text
+    assert "actions/upload-artifact@v4" in text
+    assert "if-no-files-found: error" in text

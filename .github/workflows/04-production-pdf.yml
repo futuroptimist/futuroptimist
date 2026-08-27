@@ -1,0 +1,103 @@
+name: Production plan PDF
+run-name: Production PDF · ${{ inputs.video_script }} · ${{ inputs.page_size }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_script:
+        description: latest or an exact eligible video-script slug
+        required: true
+        type: string
+        default: latest
+      page_size:
+        description: Printed page size
+        required: true
+        type: choice
+        options:
+          - letter
+          - a4
+        default: letter
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install PDF system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-dejavu-core fonts-liberation
+      - name: Install Python dependencies
+        run: |
+          uv venv
+          uv pip install -r requirements.txt
+      - name: Render production PDF
+        env:
+          REQUESTED_VIDEO_SCRIPT: ${{ inputs.video_script }}
+          PAGE_SIZE: ${{ inputs.page_size }}
+        run: |
+          uv run python src/render_production_pdf.py \
+            --slug "$REQUESTED_VIDEO_SCRIPT" \
+            --page-size "$PAGE_SIZE" \
+            --output 'dist/production-pdfs/{slug}-production-checklist.pdf' \
+            --report-json dist/production-pdfs/render-result.json
+      - name: Validate and publish workflow metadata
+        id: result
+        env:
+          REQUESTED_VIDEO_SCRIPT: ${{ inputs.video_script }}
+          PAGE_SIZE: ${{ inputs.page_size }}
+        run: |
+          uv run python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report_path = Path("dist/production-pdfs/render-result.json")
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          slug = report["resolved_slug"]
+          expected = Path("dist/production-pdfs") / f"{slug}-production-checklist.pdf"
+          pdfs = list(Path("dist/production-pdfs").glob("*.pdf"))
+          if pdfs != [expected] or not expected.is_file() or expected.stat().st_size == 0:
+              raise SystemExit(f"expected exactly one nonempty PDF at {expected}; found {pdfs}")
+          if not expected.read_bytes().startswith(b"%PDF-"):
+              raise SystemExit(f"{expected} does not begin with a PDF signature")
+          output = Path(os.environ["GITHUB_OUTPUT"])
+          output.write_text(
+              f"slug={slug}\npdf={expected.as_posix()}\nartifact={slug}-production-checklist\n",
+              encoding="utf-8",
+          )
+          summary = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          sources = "\n".join(f"  - `{source}`" for source in report["sources"])
+          summary.write_text(
+              "## Production plan PDF\n\n"
+              f"- Requested selector: `{os.environ['REQUESTED_VIDEO_SCRIPT']}`\n"
+              f"- Resolved slug: `{slug}`\n"
+              f"- Page size: `{os.environ['PAGE_SIZE']}`\n"
+              f"- PDF filename: `{expected.name}`\n"
+              "- Included source files, in render order:\n"
+              f"{sources}\n\n"
+              "Download the artifact below from the run's **Artifacts** section; "
+              "GitHub provides it as an archive containing the PDF.\n",
+              encoding="utf-8",
+          )
+          print(f"Requested video script: {os.environ['REQUESTED_VIDEO_SCRIPT']}")
+          print(f"Resolved video script: {slug}")
+          PY
+          rm dist/production-pdfs/render-result.json
+      - name: Upload production PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.result.outputs.artifact }}
+          path: ${{ steps.result.outputs.pdf }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

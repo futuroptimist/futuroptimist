@@ -108,6 +108,17 @@ Asset and render helpers:
 - `make convert_assets`, `make verify_assets`, and related conversion targets prepare footage for editing.
 - `python src/render_video.py --slug SLUG` or `make render VIDEO=SLUG` builds rough-cut videos under `dist/`.
 - `python src/create_otio_timeline.py --slug SLUG` emits portable OpenTimelineIO timelines for editing suites.
+- `make production_pdf SLUG=latest` combines each direct `production/*.md` file into
+  a print-ready Letter PDF; use an exact eligible slug, `PAGE_SIZE=a4`, or
+  `OUTPUT=path.pdf` when needed. `python src/render_production_pdf.py --list` reports
+  eligible exact slugs and the current dynamic `latest` resolution.
+
+The manually dispatched **Production plan PDF** workflow has a required text field
+that accepts `latest` or an exact eligible slug. The symbolic default is resolved
+only after checkout to the newest eligible datestamped directory; GitHub therefore
+cannot show the actual resolved slug in the dispatch field beforehand. Logs and the
+job summary show both requested and resolved values, the page size, and source-file
+order. Its artifact is downloaded from the run as an archive containing the one PDF.
 
 Generated indexes, large media, render outputs, and downloaded per-video reference files should stay out of commits unless the repo explicitly tracks them.
 
