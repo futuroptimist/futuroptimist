@@ -169,3 +169,16 @@ Before committing, format code, run focused tests, and scan staged changes for c
 ```bash
 git diff --cached | ./scripts/scan-secrets.py
 ```
+
+## Printable production-plan PDFs
+
+Use `python src/render_production_pdf.py --list` to show eligible exact slugs and
+the dynamic `latest` mapping. Render with `make production_pdf SLUG=latest`;
+`PAGE_SIZE=letter|a4` and `OUTPUT=path.pdf` are optional. Default output stays
+under ignored `dist/production-pdfs/`.
+
+The read-only, manually dispatched **Production PDF** workflow accepts `latest`
+or an exact eligible slug. The newest eligible dated directory is resolved only
+after checkout, so the dispatch field necessarily shows literal `latest` before
+the run. Logs and the job summary show the requested and resolved values and
+source order. The artifact contains one PDF and downloads as an archive.

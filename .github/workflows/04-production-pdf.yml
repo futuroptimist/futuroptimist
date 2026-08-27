@@ -1,0 +1,63 @@
+name: Production PDF
+run-name: Production PDF — requested ${{ inputs.video_script }} (${{ inputs.page_size }})
+on:
+  workflow_dispatch:
+    inputs:
+      video_script:
+        description: "latest or an exact eligible video-script slug"
+        required: true
+        type: string
+        default: latest
+      page_size:
+        description: Print page size
+        required: true
+        type: choice
+        default: letter
+        options: [letter, a4]
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install dependencies
+        run: |
+          uv venv
+          uv pip install -r requirements.txt
+      - name: Render and validate production PDF
+        id: render
+        env:
+          REQUESTED_SLUG: ${{ inputs.video_script }}
+          PAGE_SIZE: ${{ inputs.page_size }}
+        run: |
+          mkdir -p dist/production-pdfs
+          uv run python src/render_production_pdf.py --slug "$REQUESTED_SLUG" --page-size "$PAGE_SIZE" --output 'dist/production-pdfs/{slug}-production-checklist.pdf' --metadata-json "$RUNNER_TEMP/production-pdf.json"
+          uv run python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads((Path(os.environ["RUNNER_TEMP"]) / "production-pdf.json").read_text())
+          output = Path(data["output_path"])
+          if list(output.parent.glob("*.pdf")) != [output] or output.stat().st_size == 0 or output.read_bytes()[:5] != b"%PDF-":
+              raise SystemExit("expected exactly one nonempty PDF output")
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as stream:
+              stream.write(f"slug={data['resolved_slug']}\npdf={output.as_posix()}\n")
+          sources = "\n".join(f"  {i}. `{p}`" for i, p in enumerate(data["included_sources"], 1))
+          Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text(
+              f"## Production PDF\n\n- Requested selector: `{data['requested_selector']}`\n- Resolved slug: `{data['resolved_slug']}`\n- Page size: `{os.environ['PAGE_SIZE']}`\n- PDF filename: `{output.name}`\n\n### Included sources\n{sources}\n\nDownload the artifact from the run's **Artifacts** section; GitHub provides it as an archive.\n"
+          )
+          PY
+      - name: Upload production PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.render.outputs.slug }}-production-checklist
+          path: ${{ steps.render.outputs.pdf }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
