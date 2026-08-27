@@ -1,0 +1,26 @@
+@page {
+  margin: 0.6in;
+  @bottom-left { font: 8pt "DejaVu Sans", sans-serif; color: #333; }
+  @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 8pt "DejaVu Sans", sans-serif; color: #333; }
+}
+* { box-sizing: border-box; }
+body { color: #111; font: 10.5pt/1.38 "DejaVu Sans", "Liberation Sans", sans-serif; }
+.production-document + .production-document { break-before: page; }
+h1, h2, h3 { break-after: avoid; line-height: 1.15; margin: 0 0 0.18in; }
+h1 { font-size: 19pt; border-bottom: 1.2pt solid #111; padding-bottom: 0.08in; }
+h2 { font-size: 14pt; margin-top: 0.25in; }
+p { orphans: 3; widows: 3; }
+ul, ol { padding-left: 0.27in; }
+li { break-inside: avoid; margin: 0.09in 0; }
+.status { display: inline-block; width: 4.5mm; height: 4.5mm; margin: 0 2mm -0.7mm 0; border: 1.2pt solid #111; position: relative; }
+.status-checked::after { content: "✓"; position: absolute; font-weight: 700; font-size: 12pt; line-height: 3.8mm; left: 0.25mm; top: -0.2mm; }
+.status-progress::after { content: "–"; position: absolute; font-weight: 700; font-size: 13pt; line-height: 3.5mm; left: 0.45mm; }
+.status-blocked::after { content: "!"; position: absolute; font-weight: 700; font-size: 11pt; line-height: 4mm; left: 1.25mm; }
+table { border-collapse: collapse; width: 100%; font-size: 8.3pt; table-layout: fixed; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th, td { border: 0.7pt solid #333; padding: 1.4mm; text-align: left; vertical-align: top; overflow-wrap: anywhere; word-break: break-word; }
+th { font-weight: 700; }
+code { font-family: "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 0.9em; overflow-wrap: anywhere; white-space: pre-wrap; }
+pre { border: 0.7pt solid #555; padding: 0.1in; white-space: pre-wrap; overflow-wrap: anywhere; }
+a { color: #111; text-decoration: underline; overflow-wrap: anywhere; }

@@ -79,6 +79,20 @@ The repository aims to make video creation as repeatable as software delivery. K
 
 Run `make help` to see the current target list.
 
+### Printable production plans
+
+Run `make production_pdf SLUG=latest` or provide an exact eligible video-script
+slug; `OUTPUT=path` and `PAGE_SIZE=a4` are optional. The default PDF is written to
+`dist/production-pdfs/<resolved-slug>-production-checklist.pdf`. Eligibility and
+the dynamic mapping are shown by `python src/render_production_pdf.py --list`.
+
+The manually dispatched **Production PDF** workflow has a required text field that
+accepts `latest` or an exact slug. `latest` is resolved after checkout to the
+eligible `YYYYMMDD_slug` directory with the newest date. Consequently, the actual
+slug cannot be displayed in the dispatch field before the run; it is shown in the
+logs and job summary instead. Choose Letter or A4. The named Actions artifact
+contains the single PDF and GitHub downloads that artifact as an archive.
+
 ## Script, metadata, subtitle, and asset workflow
 
 Video folders under `video_scripts/` use `metadata.json` plus Markdown script files to keep drafts structured and retrievable.

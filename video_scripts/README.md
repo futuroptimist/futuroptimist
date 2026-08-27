@@ -38,3 +38,16 @@ The exporter removes directions and Markdown presentation syntax. Blank lines se
 ## Production planning
 
 An episode's `footage.md` is its production-plan master index and may link focused files under `production/`. Raw media stays in the ignored top-level `footage/` tree. Do not add `assets.json` before matching media directories exist.
+
+Directories with direct `production/*.md` files can be combined into a print-ready
+checklist with `make production_pdf SLUG=latest` (or an exact slug). Optional
+`OUTPUT=path` and `PAGE_SIZE=letter|a4` select the destination and paper size. Use
+`python src/render_production_pdf.py --list` to see eligible slugs and the current
+`latest` resolution. Links in `footage.md` determine document order; unlinked files
+follow in case-insensitive filename order.
+
+The manually dispatched **Production PDF** workflow accepts `latest` or an exact
+slug. `latest` is resolved only after checkout to the newest eligible datestamped
+directory, so the resolved slug cannot appear in the dispatch text field before
+the run. Logs and the job summary report it. The resulting Actions artifact
+contains the PDF and is downloaded as an archive.

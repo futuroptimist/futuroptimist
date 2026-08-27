@@ -1,0 +1,88 @@
+name: Production PDF
+run-name: Production PDF — ${{ inputs.video_script }} (${{ inputs.page_size }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_script:
+        description: "latest or an exact eligible video-script slug"
+        required: true
+        type: string
+        default: latest
+      page_size:
+        description: Paper size
+        required: true
+        type: choice
+        options: [letter, a4]
+        default: letter
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-dejavu-core fonts-liberation
+      - name: Install Python dependencies
+        run: |
+          uv venv
+          uv pip install -r requirements.txt
+      - name: Resolve and render production plan
+        id: render
+        env:
+          REQUESTED_SLUG: ${{ inputs.video_script }}
+          PAGE_SIZE: ${{ inputs.page_size }}
+        run: |
+          set -euo pipefail
+          metadata="${RUNNER_TEMP}/production-pdf.json"
+          staging="dist/production-pdfs/rendered.pdf"
+          uv run python src/render_production_pdf.py \
+            --slug "$REQUESTED_SLUG" --page-size "$PAGE_SIZE" \
+            --output "$staging" --metadata-output "$metadata"
+          resolved="$(uv run python -c 'import json,sys; print(json.load(open(sys.argv[1]))["resolved_slug"])' "$metadata")"
+          final="dist/production-pdfs/${resolved}-production-checklist.pdf"
+          mv "$staging" "$final"
+          printf 'resolved_slug=%s\noutput_path=%s\nmetadata=%s\n' "$resolved" "$final" "$metadata" >> "$GITHUB_OUTPUT"
+      - name: Validate PDF and write summary
+        env:
+          REQUESTED_SLUG: ${{ inputs.video_script }}
+          PAGE_SIZE: ${{ inputs.page_size }}
+          RESOLVED_SLUG: ${{ steps.render.outputs.resolved_slug }}
+          OUTPUT_PATH: ${{ steps.render.outputs.output_path }}
+          METADATA_PATH: ${{ steps.render.outputs.metadata }}
+        run: |
+          set -euo pipefail
+          test -s "$OUTPUT_PATH"
+          test "$(find dist/production-pdfs -maxdepth 1 -type f -name '*.pdf' | wc -l)" -eq 1
+          test "$(head -c 5 "$OUTPUT_PATH")" = '%PDF-'
+          {
+            echo '## Production PDF'
+            echo
+            echo "- Requested selector: \`$REQUESTED_SLUG\`"
+            echo "- Resolved slug: \`$RESOLVED_SLUG\`"
+            echo "- Page size: \`$PAGE_SIZE\`"
+            echo '- Included source files (render order):'
+            uv run python -c 'import json,sys; [print(f"  - `{p}`") for p in json.load(open(sys.argv[1]))["source_paths"]]' "$METADATA_PATH"
+            echo "- PDF filename: \`$(basename "$OUTPUT_PATH")\`"
+            echo
+            echo 'Download the named artifact from this run; GitHub provides an archive containing the PDF.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload production PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-pdf-${{ steps.render.outputs.resolved_slug }}
+          path: ${{ steps.render.outputs.output_path }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

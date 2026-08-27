@@ -16,7 +16,7 @@ PIP := uv pip
 .PHONY: help setup test subtitles clean fmt index_footage index_assets describe_images \
 	convert_assets verify_assets convert_missing convert_all report_funnel newsletter \
 	process update_metadata scripts_from_subtitles assets_manifest render upload_video \
-	format lint typecheck serve serve-http check_scripts format_scripts prompter
+	format lint typecheck serve serve-http check_scripts format_scripts prompter production_pdf
 
 help:
 	@echo "Targets:"
@@ -41,6 +41,7 @@ help:
 	@echo "  check_scripts Validate canonical video script formatting"
 	@echo "  format_scripts Canonically format every video script"
 	@echo "  prompter      Export narration (requires SLUG=...)"
+	@echo "  production_pdf Build printable production plan (requires SLUG=latest or exact slug)"
 
 setup:
 	python -m venv $(VENV)
@@ -98,6 +99,10 @@ format_scripts:
 prompter:
 	$(if $(strip $(SLUG)),,$(error Usage: make prompter SLUG=YYYYMMDD_slug [OUTPUT=path] [ALLOW_PLACEHOLDERS=1]))
 	$(PY) video_scripts/export_prompter.py --slug $(SLUG) $(if $(OUTPUT),--output $(OUTPUT),) $(if $(filter 1,$(ALLOW_PLACEHOLDERS)),--allow-placeholders,)
+
+production_pdf:
+	$(if $(strip $(SLUG)),,$(error Usage: make production_pdf SLUG=latest [OUTPUT=path] [PAGE_SIZE=letter|a4]))
+	$(PY) src/render_production_pdf.py --slug "$(SLUG)" $(if $(OUTPUT),--output "$(OUTPUT)",) $(if $(PAGE_SIZE),--page-size "$(PAGE_SIZE)",)
 
 # Convert images and videos in one command. Optionally limit to a slug:
 #   make convert_all SLUG=20251001_indoor-aquariums-tour
