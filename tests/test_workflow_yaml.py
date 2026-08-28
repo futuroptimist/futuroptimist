@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import pytest
@@ -49,7 +50,7 @@ def test_production_pdf_workflow_is_safe_and_dynamic() -> None:
     path = WORKFLOWS_DIR / "04-production-pdf.yml"
     text = path.read_text(encoding="utf-8")
     data = yaml.safe_load(text)
-    dispatch = data[True]["workflow_dispatch"]["inputs"]
+    dispatch = data["on"]["workflow_dispatch"]["inputs"]
     assert dispatch["video_script"] == {
         "description": "Eligible video-script slug or latest",
         "required": True,
@@ -60,7 +61,13 @@ def test_production_pdf_workflow_is_safe_and_dynamic() -> None:
     assert dispatch["page_size"]["options"] == ["letter", "a4"]
     assert data["permissions"] == {"contents": "read"}
     assert "src/render_production_pdf.py" in text
-    assert "actions/upload-artifact@v4" in text
+    action_references = re.findall(r"uses:\s+([^\s#]+)", text)
+    assert action_references == [
+        "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+        "astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e",
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+    ]
     assert "production-pdf-${{ steps.resolve.outputs.slug }}" in text
     assert "path: ${{ steps.resolve.outputs.output }}" in text
     assert "default: 20260901_sugarkube" not in text

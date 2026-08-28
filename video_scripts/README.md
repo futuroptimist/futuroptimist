@@ -39,8 +39,8 @@ The exporter removes directions and Markdown presentation syntax. Blank lines se
 
 An episode's `footage.md` is its production-plan master index and may link focused files under `production/`. Raw media stays in the ignored top-level `footage/` tree. Do not add `assets.json` before matching media directories exist.
 
-To combine those linked plans into a printable checklist, run `make production_pdf
-SLUG=latest` or supply an exact eligible slug. `OUTPUT=path` and
+To combine those linked plans into a printable checklist, run
+`make production_pdf SLUG=latest` or supply an exact eligible slug. `OUTPUT=path` and
 `PAGE_SIZE=letter|a4` are optional; the default is
 `dist/production-pdfs/<resolved-slug>-production-checklist.pdf`. Use
 `python src/render_production_pdf.py --list` to see eligible slugs and the current

@@ -163,7 +163,7 @@ def ordered_sources(slug: str, video_scripts: Path = VIDEO_SCRIPTS) -> list[Path
     return ordered
 
 
-def _status_rule(state):  # noqa: ANN001
+def _status_rule(state):
     tokens = state.tokens
     for index, token in enumerate(tokens):
         if (
@@ -260,7 +260,10 @@ def render_pdf(
             temporary = Path(handle.name)
         HTML(string=html, url_fetcher=_deny_resources).write_pdf(
             temporary,
-            stylesheets=[CSS(filename=STYLESHEET), CSS(string=page_css)],
+            stylesheets=[
+                CSS(filename=repo_root / "assets" / "print" / "production.css"),
+                CSS(string=page_css),
+            ],
             presentational_hints=False,
         )
         if temporary.stat().st_size == 0:

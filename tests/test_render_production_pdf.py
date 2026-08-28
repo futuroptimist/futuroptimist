@@ -15,6 +15,12 @@ def add_plan(root: Path, slug: str, names=("plan.md",)) -> Path:
     return slug_dir
 
 
+def add_stylesheet(root: Path) -> None:
+    stylesheet = root / "assets" / "print" / "production.css"
+    stylesheet.parent.mkdir(parents=True)
+    stylesheet.write_text("body { color: black; }\n", encoding="utf-8")
+
+
 def test_discovery_is_deterministic_and_requires_a_direct_markdown(tmp_path):
     root = tmp_path / "video_scripts"
     add_plan(tmp_path, "Zulu")
@@ -139,6 +145,7 @@ def test_default_output_uses_resolved_slug(tmp_path):
 
 def test_atomic_failure_preserves_output_and_sources(tmp_path, monkeypatch):
     slug_dir = add_plan(tmp_path, "20250101_demo")
+    add_stylesheet(tmp_path)
     source = slug_dir / "production" / "plan.md"
     before = source.read_bytes()
     output = tmp_path / "existing.pdf"
@@ -157,13 +164,15 @@ def test_atomic_failure_preserves_output_and_sources(tmp_path, monkeypatch):
 def test_list_cli_reports_eligible_and_latest(capsys):
     assert renderer.main(["--list"]) == 0
     output = capsys.readouterr().out
-    assert "20260901_sugarkube" in output
-    assert "latest -> 20260901_sugarkube" in output
+    lines = output.splitlines()
+    assert lines[0] == "Eligible video scripts:"
+    assert lines[-1].startswith("latest -> ")
+    assert all(line.startswith("  - ") for line in lines[1:-1])
 
 
 def test_real_sugarkube_pdf_smoke(tmp_path):
     output = tmp_path / "sugarkube.pdf"
-    result = renderer.render_pdf("latest", output)
+    result = renderer.render_pdf("20260901_sugarkube", output)
     assert result.resolved_slug == "20260901_sugarkube"
     assert [Path(path).name for path in result.sources] == [
         "broll.md",
