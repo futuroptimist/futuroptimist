@@ -50,7 +50,9 @@ def test_production_pdf_workflow_is_safe_and_dynamic() -> None:
     path = WORKFLOWS_DIR / "04-production-pdf.yml"
     text = path.read_text(encoding="utf-8")
     data = yaml.safe_load(text)
-    dispatch = data["on"]["workflow_dispatch"]["inputs"]
+    triggers = data.get("on") or data.get(True)
+    assert list(triggers) == ["workflow_dispatch"]
+    dispatch = triggers["workflow_dispatch"]["inputs"]
     assert dispatch["video_script"] == {
         "description": "Eligible video-script slug or latest",
         "required": True,
@@ -59,9 +61,13 @@ def test_production_pdf_workflow_is_safe_and_dynamic() -> None:
     }
     assert dispatch["page_size"]["type"] == "choice"
     assert dispatch["page_size"]["options"] == ["letter", "a4"]
+    assert dispatch["page_size"]["default"] == "letter"
     assert data["permissions"] == {"contents": "read"}
     assert "src/render_production_pdf.py" in text
+    assert "REQUESTED_VIDEO_SCRIPT: ${{ inputs.video_script }}" in text
+    assert "PAGE_SIZE: ${{ inputs.page_size }}" in text
     action_references = re.findall(r"uses:\s+([^\s#]+)", text)
+    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", ref) for ref in action_references)
     assert action_references == [
         "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
         "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
@@ -70,4 +76,5 @@ def test_production_pdf_workflow_is_safe_and_dynamic() -> None:
     ]
     assert "production-pdf-${{ steps.resolve.outputs.slug }}" in text
     assert "path: ${{ steps.resolve.outputs.output }}" in text
+    assert 'f"{slug}-production-checklist.pdf"' in text
     assert "default: 20260901_sugarkube" not in text

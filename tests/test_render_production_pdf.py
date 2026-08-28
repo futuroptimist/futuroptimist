@@ -32,6 +32,18 @@ def test_discovery_is_deterministic_and_requires_a_direct_markdown(tmp_path):
     assert renderer.discover_eligible(root) == ["alpha", "Zulu"]
 
 
+def test_production_files_excludes_symlinked_markdown(tmp_path):
+    slug_dir = add_plan(tmp_path, "direct")
+    outside = tmp_path / "outside.md"
+    outside.write_text("# linked\n", encoding="utf-8")
+    (slug_dir / "production" / "linked.md").symlink_to(outside)
+
+    assert [
+        path.name
+        for path in renderer.production_files(slug_dir, tmp_path / "video_scripts")
+    ] == ["plan.md"]
+
+
 def test_latest_uses_valid_date_then_case_insensitive_full_slug_tiebreak(tmp_path):
     scripts = tmp_path / "video_scripts"
     add_plan(tmp_path, "20250101_old")
@@ -48,6 +60,21 @@ def test_latest_fails_without_a_dated_eligible_directory(tmp_path):
     add_plan(tmp_path, "undated")
     with pytest.raises(renderer.ProductionPDFError, match="latest requires"):
         renderer.resolve_slug("latest", scripts)
+
+
+def test_exact_and_latest_select_the_same_ordered_sources(tmp_path):
+    scripts = tmp_path / "video_scripts"
+    slug_dir = add_plan(tmp_path, "20250101_demo", ("z.md", "a.md"))
+    slug_dir.joinpath("footage.md").write_text(
+        "[Z](production/z.md)\n", encoding="utf-8"
+    )
+
+    exact = renderer.resolve_slug("20250101_demo", scripts)
+    latest = renderer.resolve_slug("latest", scripts)
+    assert exact == latest
+    assert renderer.ordered_sources(exact, scripts) == renderer.ordered_sources(
+        latest, scripts
+    )
 
 
 @pytest.mark.parametrize("selector", ["", "/tmp/x", "../x", "a/b", r"a\b", ".", ".."])
@@ -161,6 +188,21 @@ def test_atomic_failure_preserves_output_and_sources(tmp_path, monkeypatch):
     assert source.read_bytes() == before
 
 
+def test_invalid_temporary_pdf_preserves_existing_output(tmp_path, monkeypatch):
+    add_plan(tmp_path, "20250101_demo")
+    add_stylesheet(tmp_path)
+    output = tmp_path / "existing.pdf"
+    output.write_bytes(b"%PDF-prior")
+
+    def write_invalid(_self, target, **_kwargs):
+        Path(target).write_bytes(b"not a pdf")
+
+    monkeypatch.setattr(renderer.HTML, "write_pdf", write_invalid)
+    with pytest.raises(renderer.ProductionPDFError, match="invalid PDF"):
+        renderer.render_pdf("20250101_demo", output, repo_root=tmp_path)
+    assert output.read_bytes() == b"%PDF-prior"
+
+
 def test_list_cli_reports_eligible_and_latest(capsys):
     assert renderer.main(["--list"]) == 0
     output = capsys.readouterr().out
@@ -170,9 +212,10 @@ def test_list_cli_reports_eligible_and_latest(capsys):
     assert all(line.startswith("  - ") for line in lines[1:-1])
 
 
-def test_real_sugarkube_pdf_smoke(tmp_path):
-    output = tmp_path / "sugarkube.pdf"
-    result = renderer.render_pdf("20260901_sugarkube", output)
+@pytest.mark.parametrize("page_size", ["letter", "a4"])
+def test_real_sugarkube_pdf_smoke(tmp_path, page_size):
+    output = tmp_path / f"sugarkube-{page_size}.pdf"
+    result = renderer.render_pdf("20260901_sugarkube", output, page_size=page_size)
     assert result.resolved_slug == "20260901_sugarkube"
     assert [Path(path).name for path in result.sources] == [
         "broll.md",
@@ -181,7 +224,8 @@ def test_real_sugarkube_pdf_smoke(tmp_path):
     ]
     assert output.read_bytes().startswith(b"%PDF-")
     reader = PdfReader(output)
-    text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    page_text = [page.extract_text() or "" for page in reader.pages]
+    text = "\n".join(page_text)
     assert len(reader.pages) >= 3
     titles = [
         "Sugarkube Original Footage Plan",
@@ -190,5 +234,10 @@ def test_real_sugarkube_pdf_smoke(tmp_path):
     ]
     positions = [text.index(title) for title in titles]
     assert positions == sorted(positions)
+    title_pages = [
+        next(index for index, content in enumerate(page_text) if title in content)
+        for title in titles
+    ]
+    assert title_pages == sorted(set(title_pages))
     for expected in ("A04", "C09", "T06", "G19", "Rights ledger"):
         assert expected in text

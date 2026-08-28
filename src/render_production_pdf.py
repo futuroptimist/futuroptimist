@@ -67,6 +67,7 @@ def production_files(slug_dir: Path, video_scripts: Path = VIDEO_SCRIPTS) -> lis
         if (
             path.suffix.casefold() == ".md"
             and path.is_file()
+            and not path.is_symlink()
             and _contained(path, production)
         ):
             files.append(path)
@@ -266,8 +267,8 @@ def render_pdf(
             ],
             presentational_hints=False,
         )
-        if temporary.stat().st_size == 0:
-            raise ProductionPDFError("renderer produced an empty PDF")
+        if temporary.stat().st_size == 0 or temporary.read_bytes()[:5] != b"%PDF-":
+            raise ProductionPDFError("renderer produced an invalid PDF")
         temporary.replace(destination)
     finally:
         if temporary is not None and temporary.exists():
