@@ -92,6 +92,24 @@ Video folders under `video_scripts/` use `metadata.json` plus Markdown script fi
 
 `script.md` is canonical and `prompter.txt` is ignored generated output. Validate with `make check_scripts`, migrate structure with `make format_scripts`, and export with `make prompter SLUG=...` (optionally `OUTPUT=... ALLOW_PLACEHOLDERS=1`). Blank lines delimit Prompter chapters: visual scripts group narration by the following visual beat, while transcript-only scripts use one narration segment per chapter. Sugarkube production planning uses `footage.md` plus linked `production/` files; raw media remains in the ignored top-level `footage/` tree.
 
+### Printable production plans
+
+Run `make production_pdf SLUG=latest` to merge every direct `production/*.md`
+plan for the newest eligible datestamped episode into a print-ready Letter PDF.
+Pass an exact eligible slug instead, or optionally set `PAGE_SIZE=a4` and
+`OUTPUT=path`. `python src/render_production_pdf.py --list` reports all eligible
+exact slugs and the current dynamic `latest` resolution. The renderer follows
+valid direct production links from `footage.md`, then appends unlinked plans in
+case-insensitive filename order.
+
+The manually dispatched **Production Plan PDF** workflow has a required text
+field accepting `latest` or an exact slug and a static Letter/A4 choice. Because
+`latest` is resolved after checkout, the actual slug cannot be displayed in the
+dispatch text field before the run. Both logs and the job summary show the
+requested and resolved values. The workflow uploads the single resolved-slug PDF
+as an Actions artifact; downloading the artifact produces an archive containing
+the PDF, rather than a direct PDF URL.
+
 Subtitle and transcript helpers:
 
 - `make subtitles` / `python src/fetch_subtitles.py` downloads captions into `subtitles/`.
