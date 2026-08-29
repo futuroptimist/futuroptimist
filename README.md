@@ -14,13 +14,13 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-08-29 06:05 UTC; checks hourly_
+_Last updated: 2026-08-29 07:03 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
 Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs need attention; linked failures point to the run or asset to inspect; ❓ no completed relevant run was found or GitHub could not be queried; ⭐ shows GitHub stars; 🔀 shows total merged pull requests. Projects sort by stars descending, then alphabetically for ties; unknown star counts sort last.
 
-- ✅ ⭐ 7 🔀 788 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
+- ✅ ⭐ 7 🔀 789 **[token.place](https://token.place)** – peer-to-peer generative AI network for people sharing idle compute through ephemeral, encrypted tokens ([repo](https://github.com/futuroptimist/token.place))
 - ✅ ⭐ 4 🔀 2420 **[DSPACE](https://democratized.space)** – retro-futurist idle sim where quests teach real-world hobbies with NPC guides and offline-first progression ([repo](https://github.com/democratizedspace/dspace/tree/main))
 - ✅ ⭐ 3 🔀 490 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
 - ✅ ⭐ 2 🔀 129 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
