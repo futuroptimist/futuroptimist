@@ -211,6 +211,7 @@ def _workflow_run(
     updated_at: str | None = None,
     run_id: int | None = None,
     branch: str = "main",
+    actor: dict | None = None,
 ) -> dict:
     run: dict = {
         "conclusion": conclusion,
@@ -224,6 +225,8 @@ def _workflow_run(
         "created_at": created_at,
         "html_url": f"https://github.com/user/repo/actions/runs/{run_id or run_number}",
     }
+    if actor is not None:
+        run["actor"] = actor
     if workflow_id is not None:
         run["workflow_id"] = workflow_id
     if path is not None:
@@ -2093,6 +2096,55 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
             "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main"
         )
         == 2
+    )
+
+
+def test_fetch_repo_status_excludes_bot_workflow_runs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A bot-started action must not override CI run by a human for the commit."""
+
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                name="Automated maintenance",
+                workflow_id=999,
+                path=".github/workflows/maintenance.yml",
+                actor={"login": "maintenance-app", "type": "Bot"},
+            ),
+            _workflow_run(
+                "success",
+                name="Test Suite",
+                workflow_id=123,
+                actor={"login": "alice", "type": "User"},
+            ),
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("✅")
+    )
+
+
+def test_fetch_repo_status_excludes_bot_workflow_run_by_login(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The conventional ``[bot]`` login remains useful without a type field."""
+
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                actor={"login": "renovate[bot]"},
+            )
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("❓")
     )
 
 

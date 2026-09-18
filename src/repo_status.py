@@ -103,6 +103,24 @@ COMMIT_LOOKBACK_PAGE_SIZE = 100
 COMMIT_LOOKBACK_MAX_PAGES = 10
 
 
+def _is_bot_account(account: object) -> bool:
+    """Return whether a GitHub user payload identifies an automated account."""
+
+    if not isinstance(account, dict):
+        return False
+    account_type = account.get("type")
+    if isinstance(account_type, str) and account_type.casefold() == "bot":
+        return True
+    login = account.get("login")
+    return isinstance(login, str) and login.casefold().endswith("[bot]")
+
+
+def _is_bot_workflow_run(run: dict) -> bool:
+    """Return whether a workflow run was initiated by a bot account."""
+
+    return _is_bot_account(run.get("actor"))
+
+
 def _is_self_status_workflow_run(run: dict) -> bool:
     """Return whether ``run`` belongs to this dashboard-updater workflow itself.
 
@@ -549,11 +567,11 @@ def fetch_repo_status_details(
         if SKIP_COMMIT_RE.search(message):
             return True
         for key in ("author", "committer"):
-            login = (commit.get(key) or {}).get("login")
+            account = commit.get(key)
             raw_identity = commit.get("commit", {}).get(key) or {}
             name = raw_identity.get("name")
             email = raw_identity.get("email")
-            if isinstance(login, str) and login.endswith("[bot]"):
+            if _is_bot_account(account):
                 return True
             if isinstance(name, str) and name.endswith("[bot]"):
                 return True
@@ -723,7 +741,7 @@ def fetch_repo_status_details(
 
         def _index_runs(runs_page: Iterable[dict]) -> None:
             for run in runs_page:
-                if _is_self_status_workflow_run(run):
+                if _is_self_status_workflow_run(run) or _is_bot_workflow_run(run):
                     continue
                 run_branch = run.get("head_branch")
                 if isinstance(run_branch, str) and branch and run_branch != branch:
