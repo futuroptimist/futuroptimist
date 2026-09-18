@@ -904,7 +904,11 @@ def fetch_repo_status_details(
                 hit_boundary = True
                 break
 
-            if hit_boundary or selected_runs or len(page_commits) < 20:
+            if (
+                hit_boundary
+                or selected_runs
+                or len(page_commits) < COMMIT_LOOKBACK_PAGE_SIZE
+            ):
                 break
 
         if not selected_runs:

@@ -2362,6 +2362,36 @@ def test_fetch_repo_status_gives_up_after_lookback_cap(
     assert repo_status.fetch_repo_status("user/repo") == "❓"
 
 
+def test_fetch_repo_status_stops_after_partial_terminal_commit_page(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A partial page of skipped commits exhausts the commit listing."""
+
+    page_one = [_bot_commit(f"bot{i}") for i in range(50)]
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url == (
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
+        ):
+            return DummyResp(page_one)
+        if "/commits?" in url:
+            return DummyResp([])
+        return DummyResp({"workflow_runs": []})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
+    assert not any("commits?sha=main&per_page=100&page=2" in call for call in calls)
+
+
 def test_fetch_repo_status_stops_pagination_once_resolved(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
