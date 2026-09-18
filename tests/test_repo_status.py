@@ -2099,10 +2099,10 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
     )
 
 
-def test_fetch_repo_status_excludes_bot_workflow_runs(
+def test_fetch_repo_status_surfaces_failed_bot_workflow_runs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A bot-started action must not override CI run by a human for the commit."""
+    """A failed bot-started action indicates a problem with the workflow."""
 
     _mock_repo_status_requests(
         monkeypatch,
@@ -2123,15 +2123,21 @@ def test_fetch_repo_status_excludes_bot_workflow_runs(
         ],
     )
 
-    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
-        repo_status.RepoStatus("✅")
+    result = repo_status.fetch_repo_status_details("user/repo", attempts=1)
+
+    assert result.emoji == "❌"
+    assert result.failure_links == (
+        repo_status.StatusLink(
+            "Automated maintenance",
+            "https://github.com/user/repo/actions/runs/1",
+        ),
     )
 
 
-def test_fetch_repo_status_excludes_bot_workflow_run_by_login(
+def test_fetch_repo_status_surfaces_failed_bot_workflow_run_by_login(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The conventional ``[bot]`` login remains useful without a type field."""
+    """A failed ``[bot]`` run remains visible without an account type field."""
 
     _mock_repo_status_requests(
         monkeypatch,
@@ -2139,6 +2145,32 @@ def test_fetch_repo_status_excludes_bot_workflow_run_by_login(
             _workflow_run(
                 "failure",
                 actor={"login": "renovate[bot]"},
+            )
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "❌"
+
+
+@pytest.mark.parametrize(
+    "actor",
+    [
+        {"login": "maintenance-app", "type": "Bot"},
+        {"login": "renovate[bot]"},
+    ],
+)
+def test_fetch_repo_status_excludes_successful_bot_workflow_run(
+    monkeypatch: pytest.MonkeyPatch,
+    actor: dict,
+) -> None:
+    """Successful bot actions identified by type or login are not CI signals."""
+
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "success",
+                actor=actor,
             )
         ],
     )

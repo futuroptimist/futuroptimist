@@ -115,10 +115,15 @@ def _is_bot_account(account: object) -> bool:
     return isinstance(login, str) and login.casefold().endswith("[bot]")
 
 
-def _is_bot_workflow_run(run: dict) -> bool:
-    """Return whether a workflow run was initiated by a bot account."""
+def _is_successful_bot_workflow_run(run: dict) -> bool:
+    """Return whether a successful workflow run was initiated by a bot account."""
 
-    return _is_bot_account(run.get("actor"))
+    conclusion = run.get("conclusion")
+    return (
+        isinstance(conclusion, str)
+        and conclusion.strip().casefold() == "success"
+        and _is_bot_account(run.get("actor"))
+    )
 
 
 def _is_self_status_workflow_run(run: dict) -> bool:
@@ -741,7 +746,9 @@ def fetch_repo_status_details(
 
         def _index_runs(runs_page: Iterable[dict]) -> None:
             for run in runs_page:
-                if _is_self_status_workflow_run(run) or _is_bot_workflow_run(run):
+                if _is_self_status_workflow_run(run) or _is_successful_bot_workflow_run(
+                    run
+                ):
                     continue
                 run_branch = run.get("head_branch")
                 if isinstance(run_branch, str) and branch and run_branch != branch:
