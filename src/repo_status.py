@@ -94,9 +94,36 @@ RELEASE_EVENTS = {"push", "release", "workflow_dispatch", "repository_dispatch"}
 SELF_STATUS_WORKFLOW_PATH = ".github/workflows/update-repo-status.yml"
 SELF_STATUS_WORKFLOW_NAME = "update repo statuses"
 
-# How many pages of 20 commits the commit lookback walk may fetch while
+# Fetch the largest GitHub API page so hourly status-only commits do not crowd a
+# real, CI-bearing commit out of the bounded lookback window.
+COMMIT_LOOKBACK_PAGE_SIZE = 100
+
+# How many pages of commits the commit lookback walk may fetch while
 # skipping past skip-worthy (e.g. bot-authored) commits before giving up.
 COMMIT_LOOKBACK_MAX_PAGES = 10
+
+
+def _is_bot_account(account: object) -> bool:
+    """Return whether a GitHub user payload identifies an automated account."""
+
+    if not isinstance(account, dict):
+        return False
+    account_type = account.get("type")
+    if isinstance(account_type, str) and account_type.casefold() == "bot":
+        return True
+    login = account.get("login")
+    return isinstance(login, str) and login.casefold().endswith("[bot]")
+
+
+def _is_successful_bot_workflow_run(run: dict) -> bool:
+    """Return whether a successful workflow run was initiated by a bot account."""
+
+    conclusion = run.get("conclusion")
+    return (
+        isinstance(conclusion, str)
+        and conclusion.strip().casefold() == "success"
+        and _is_bot_account(run.get("actor"))
+    )
 
 
 def _is_self_status_workflow_run(run: dict) -> bool:
@@ -545,11 +572,11 @@ def fetch_repo_status_details(
         if SKIP_COMMIT_RE.search(message):
             return True
         for key in ("author", "committer"):
-            login = (commit.get(key) or {}).get("login")
+            account = commit.get(key)
             raw_identity = commit.get("commit", {}).get(key) or {}
             name = raw_identity.get("name")
             email = raw_identity.get("email")
-            if isinstance(login, str) and login.endswith("[bot]"):
+            if _is_bot_account(account):
                 return True
             if isinstance(name, str) and name.endswith("[bot]"):
                 return True
@@ -667,7 +694,8 @@ def fetch_repo_status_details(
     def _fetch() -> tuple[str | None, tuple[StatusLink, ...]]:
         try:
             commits_resp = requests.get(
-                f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
+                f"https://api.github.com/repos/{repo}/commits"
+                f"?sha={branch}&per_page={COMMIT_LOOKBACK_PAGE_SIZE}",
                 headers=headers,
                 timeout=10,
             )
@@ -718,7 +746,9 @@ def fetch_repo_status_details(
 
         def _index_runs(runs_page: Iterable[dict]) -> None:
             for run in runs_page:
-                if _is_self_status_workflow_run(run):
+                if _is_self_status_workflow_run(run) or _is_successful_bot_workflow_run(
+                    run
+                ):
                     continue
                 run_branch = run.get("head_branch")
                 if isinstance(run_branch, str) and branch and run_branch != branch:
@@ -790,7 +820,7 @@ def fetch_repo_status_details(
             if page > 1:
                 commits_url = (
                     f"https://api.github.com/repos/{repo}/commits"
-                    f"?sha={branch}&per_page=20&page={page}"
+                    f"?sha={branch}&per_page={COMMIT_LOOKBACK_PAGE_SIZE}&page={page}"
                 )
                 try:
                     commits_resp = requests.get(
@@ -881,7 +911,11 @@ def fetch_repo_status_details(
                 hit_boundary = True
                 break
 
-            if hit_boundary or selected_runs or len(page_commits) < 20:
+            if (
+                hit_boundary
+                or selected_runs
+                or len(page_commits) < COMMIT_LOOKBACK_PAGE_SIZE
+            ):
                 break
 
         if not selected_runs:

@@ -211,6 +211,7 @@ def _workflow_run(
     updated_at: str | None = None,
     run_id: int | None = None,
     branch: str = "main",
+    actor: dict | None = None,
 ) -> dict:
     run: dict = {
         "conclusion": conclusion,
@@ -224,6 +225,8 @@ def _workflow_run(
         "created_at": created_at,
         "html_url": f"https://github.com/user/repo/actions/runs/{run_id or run_number}",
     }
+    if actor is not None:
+        run["actor"] = actor
     if workflow_id is not None:
         run["workflow_id"] = workflow_id
     if path is not None:
@@ -264,7 +267,7 @@ def _mock_repo_status_requests(
                 data["stargazers_count"] = stars
             return DummyResp(data)
         if url.startswith(
-            f"https://api.github.com/repos/user/repo/commits?sha={branch}&per_page=20"
+            f"https://api.github.com/repos/user/repo/commits?sha={branch}&per_page=100"
         ):
             return DummyResp(commits or [_human_commit("abc")])
         if (
@@ -296,7 +299,7 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -328,9 +331,9 @@ def test_fetch_repo_status_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert calls == [
         "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
-        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
-        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
     ]
 
@@ -350,7 +353,7 @@ def test_fetch_repo_status_no_runs_returns_unknown(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -379,9 +382,9 @@ def test_fetch_repo_status_no_runs_returns_unknown(
     assert calls == [
         "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
-        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
-        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20",
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=main",
     ]
 
@@ -399,7 +402,7 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main", "stargazers_count": 42})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=100"
         ):
             return DummyResp(
                 [
@@ -431,9 +434,9 @@ def test_fetch_repo_status_with_branch(monkeypatch: pytest.MonkeyPatch) -> None:
     assert calls == [
         "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1",
         "https://api.github.com/repos/user/repo",
-        "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
+        "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=100",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=dev",
-        "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=20",
+        "https://api.github.com/repos/user/repo/commits?sha=dev&per_page=100",
         "https://api.github.com/repos/user/repo/actions/runs?per_page=100&status=completed&branch=dev",
     ]
 
@@ -458,7 +461,7 @@ def test_fetch_repo_status_invalid_commit_payload(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(None, json_error=ValueError("bad json"))
         raise AssertionError("runs API should not be queried when commits fail")
@@ -482,7 +485,7 @@ def test_fetch_repo_status_nondeterministic(monkeypatch: pytest.MonkeyPatch) -> 
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -556,7 +559,7 @@ def test_fetch_repo_status_tolerates_one_failed_attempt(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp([_human_commit("abc")])
         assert url == (
@@ -589,7 +592,7 @@ def test_fetch_repo_status_ignores_non_ci_runs(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -638,7 +641,7 @@ def test_fetch_repo_status_prefers_latest_attempt(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -1097,7 +1100,7 @@ def test_fetch_repo_status_paginates_release_runs_beyond_page_ten(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp([_human_commit("abc")])
         if url == (
@@ -2051,7 +2054,7 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2096,6 +2099,87 @@ def test_fetch_repo_status_skips_bot_commit(monkeypatch: pytest.MonkeyPatch) -> 
     )
 
 
+def test_fetch_repo_status_surfaces_failed_bot_workflow_runs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A failed bot-started action indicates a problem with the workflow."""
+
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                name="Automated maintenance",
+                workflow_id=999,
+                path=".github/workflows/maintenance.yml",
+                actor={"login": "maintenance-app", "type": "Bot"},
+            ),
+            _workflow_run(
+                "success",
+                name="Test Suite",
+                workflow_id=123,
+                actor={"login": "alice", "type": "User"},
+            ),
+        ],
+    )
+
+    result = repo_status.fetch_repo_status_details("user/repo", attempts=1)
+
+    assert result.emoji == "❌"
+    assert result.failure_links == (
+        repo_status.StatusLink(
+            "Automated maintenance",
+            "https://github.com/user/repo/actions/runs/1",
+        ),
+    )
+
+
+def test_fetch_repo_status_surfaces_failed_bot_workflow_run_by_login(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A failed ``[bot]`` run remains visible without an account type field."""
+
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "failure",
+                actor={"login": "renovate[bot]"},
+            )
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1).emoji == "❌"
+
+
+@pytest.mark.parametrize(
+    "actor",
+    [
+        {"login": "maintenance-app", "type": "Bot"},
+        {"login": "renovate[bot]"},
+    ],
+)
+def test_fetch_repo_status_excludes_successful_bot_workflow_run(
+    monkeypatch: pytest.MonkeyPatch,
+    actor: dict,
+) -> None:
+    """Successful bot actions identified by type or login are not CI signals."""
+
+    _mock_repo_status_requests(
+        monkeypatch,
+        [
+            _workflow_run(
+                "success",
+                actor=actor,
+            )
+        ],
+    )
+
+    assert repo_status.fetch_repo_status_details("user/repo", attempts=1) == (
+        repo_status.RepoStatus("❓")
+    )
+
+
 def test_fetch_repo_status_skips_unresolvable_bot_identity_commit(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -2120,7 +2204,7 @@ def test_fetch_repo_status_skips_unresolvable_bot_identity_commit(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2170,16 +2254,16 @@ def test_fetch_repo_status_skips_unresolvable_bot_identity_commit(
 def test_fetch_repo_status_paginates_past_long_bot_streak(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A 20-deep run of skip-worthy bot commits must not stop the lookback.
+    """A full page of skip-worthy bot commits must not stop the lookback.
 
     Regression test for the ``futuroptimist`` self-repo bug: the hourly
     status-updater commits with the default ``GITHUB_TOKEN``, which never
     triggers other workflows, so a long-enough streak of those commits could
-    exhaust the single 20-commit page before reaching the last real, tested
+    exhaust the first commit page before reaching the last real, tested
     commit.
     """
 
-    page_one = [_bot_commit(f"bot{i}") for i in range(20)]
+    page_one = [_bot_commit(f"bot{i}") for i in range(100)]
     page_two = [_human_commit("real"), *[_bot_commit(f"old{i}") for i in range(5)]]
     calls: list[str] = []
 
@@ -2193,11 +2277,11 @@ def test_fetch_repo_status_paginates_past_long_bot_streak(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url == (
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20&page=2"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100&page=2"
         ):
             return DummyResp(page_two)
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(page_one)
         return DummyResp(
@@ -2211,12 +2295,78 @@ def test_fetch_repo_status_paginates_past_long_bot_streak(
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "✅"
     assert (
-        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20" in calls
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100" in calls
     )
     assert (
-        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20&page=2"
+        "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100&page=2"
         in calls
     )
+
+
+def test_fetch_repo_status_finds_ci_beyond_legacy_200_commit_window(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Hundreds of hourly dashboard commits must not hide the last real CI run.
+
+    The live ``futuroptimist`` row became unknown after 484 consecutive hourly
+    status commits pushed its latest human commit beyond the former ten pages
+    of 20 commits. GitHub supports 100 commits per page, so the same bounded
+    ten-page walk should still reach that commit and its corresponding run.
+    """
+
+    commit_pages = {
+        page: [_bot_commit(f"bot-{page}-{index}") for index in range(100)]
+        for page in range(1, 5)
+    }
+    commit_pages[5] = [
+        *[_bot_commit(f"bot-5-{index}") for index in range(84)],
+        _human_commit("last-real"),
+    ]
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if "/commits?" in url:
+            page = int(url.rsplit("&page=", 1)[1]) if "&page=" in url else 1
+            return DummyResp(commit_pages[page])
+        if "&page=5" in url:
+            return DummyResp(
+                {
+                    "workflow_runs": [
+                        {
+                            "conclusion": "success",
+                            "head_sha": "last-real",
+                            "name": "Test Suite",
+                        }
+                    ]
+                }
+            )
+        return DummyResp(
+            {
+                "workflow_runs": [
+                    {
+                        "conclusion": "success",
+                        "head_sha": f"dashboard-{index}",
+                        "name": "Update Repo Statuses",
+                        "path": ".github/workflows/update-repo-status.yml",
+                    }
+                    for index in range(100)
+                ]
+            }
+        )
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+
+    assert repo_status.fetch_repo_status("user/repo") == "✅"
+    assert any("commits?sha=main&per_page=100&page=5" in call for call in calls)
+    assert any("status=completed&branch=main&page=5" in call for call in calls)
 
 
 def test_fetch_repo_status_gives_up_after_lookback_cap(
@@ -2233,15 +2383,45 @@ def test_fetch_repo_status_gives_up_after_lookback_cap(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             # Every page is a full page of skip-worthy commits with no
             # matching runs, forever.
-            return DummyResp([_bot_commit(f"bot-{url}-{i}") for i in range(20)])
+            return DummyResp([_bot_commit(f"bot-{url}-{i}") for i in range(100)])
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
     assert repo_status.fetch_repo_status("user/repo") == "❓"
+
+
+def test_fetch_repo_status_stops_after_partial_terminal_commit_page(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A partial page of skipped commits exhausts the commit listing."""
+
+    page_one = [_bot_commit(f"bot{i}") for i in range(50)]
+    calls: list[str] = []
+
+    def fake_get(url: str, headers: dict, timeout: int):
+        calls.append(url)
+        if (
+            url
+            == "https://api.github.com/search/issues?q=repo:user/repo+is:pr+is:merged&per_page=1"
+        ):
+            return DummyResp({})
+        if url == "https://api.github.com/repos/user/repo":
+            return DummyResp({"default_branch": "main"})
+        if url == (
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
+        ):
+            return DummyResp(page_one)
+        if "/commits?" in url:
+            return DummyResp([])
+        return DummyResp({"workflow_runs": []})
+
+    monkeypatch.setattr(repo_status.requests, "get", fake_get)
+    assert repo_status.fetch_repo_status("user/repo") == "❓"
+    assert not any("commits?sha=main&per_page=100&page=2" in call for call in calls)
 
 
 def test_fetch_repo_status_stops_pagination_once_resolved(
@@ -2268,7 +2448,7 @@ def test_fetch_repo_status_stops_pagination_once_resolved(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(page_one)
         return DummyResp(
@@ -2296,7 +2476,7 @@ def test_fetch_repo_status_paginates_runs_window_with_commits(
     outside the first 100 completed runs.
     """
 
-    page_one_commits = [_bot_commit(f"bot{i}") for i in range(20)]
+    page_one_commits = [_bot_commit(f"bot{i}") for i in range(100)]
     page_two_commits = [_human_commit("old-real"), _bot_commit("older-bot")]
     calls: list[str] = []
 
@@ -2310,11 +2490,11 @@ def test_fetch_repo_status_paginates_runs_window_with_commits(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url == (
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20&page=2"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100&page=2"
         ):
             return DummyResp(page_two_commits)
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(page_one_commits)
         if url == (
@@ -2389,7 +2569,10 @@ def test_fetch_repo_status_widens_runs_window_within_first_commits_page(
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
-        if url == "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20":
+        if (
+            url
+            == "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
+        ):
             return DummyResp(page_one_commits)
         if url == (
             "https://api.github.com/repos/user/repo/actions/runs?"
@@ -2418,7 +2601,7 @@ def test_fetch_repo_status_widens_runs_window_within_first_commits_page(
         "https://api.github.com/repos/user/repo/actions/runs?"
         "per_page=100&status=completed&branch=main&page=3" in calls
     )
-    assert not any("commits?sha=main&per_page=20&page=2" in call for call in calls)
+    assert not any("commits?sha=main&per_page=100&page=2" in call for call in calls)
 
 
 def test_fetch_repo_status_widening_runs_window_respects_cap(
@@ -2442,7 +2625,10 @@ def test_fetch_repo_status_widening_runs_window_respects_cap(
             return DummyResp({})
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
-        if url == "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20":
+        if (
+            url
+            == "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
+        ):
             return DummyResp(page_one_commits)
         # Every runs page, forever, is full of unrelated noise -- the real
         # commit's run (if it exists at all) is never found.
@@ -2470,13 +2656,13 @@ def test_fetch_repo_status_later_page_failure_returns_unknown(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url == (
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20&page=2"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100&page=2"
         ):
             raise repo_status.requests.exceptions.ConnectionError("boom")
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
-            return DummyResp([_bot_commit(f"bot{i}") for i in range(20)])
+            return DummyResp([_bot_commit(f"bot{i}") for i in range(100)])
         return DummyResp({"workflow_runs": []})
 
     monkeypatch.setattr(repo_status.requests, "get", fake_get)
@@ -2493,7 +2679,7 @@ def test_fetch_repo_status_skip_ci_message(monkeypatch: pytest.MonkeyPatch) -> N
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2647,7 +2833,7 @@ def test_fetch_repo_status_details_includes_failed_run_link(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2700,7 +2886,7 @@ def test_fetch_repo_status_details_orders_multiple_failure_links(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2764,7 +2950,7 @@ def test_fetch_repo_status_details_falls_back_to_actions_run_url(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2817,7 +3003,7 @@ def test_fetch_repo_status_details_omits_unlinkable_failed_run(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2860,7 +3046,7 @@ def test_fetch_repo_status_details_links_only_failed_workflows(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2919,7 +3105,7 @@ def test_fetch_repo_status_details_success_and_unknown_have_no_links(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -2975,7 +3161,7 @@ def test_fetch_repo_status_details_prefers_latest_attempt_without_stale_link(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -3163,7 +3349,7 @@ def test_fetch_repo_status_report_returns_url_strings_for_compatibility(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -3216,7 +3402,7 @@ def test_fetch_repo_status_details_collapses_renamed_latest_attempt(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -3278,7 +3464,7 @@ def test_fetch_repo_status_details_disambiguates_same_name_and_run_number(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main"})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
@@ -3551,7 +3737,7 @@ def test_update_readme_flywheel_regression_suppresses_stale_failure_link(
         if url == "https://api.github.com/repos/futuroptimist/flywheel":
             return DummyResp({"default_branch": "main", "stargazers_count": 9})
         if url.startswith(
-            "https://api.github.com/repos/futuroptimist/flywheel/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/futuroptimist/flywheel/commits?sha=main&per_page=100"
         ):
             return DummyResp([_human_commit("new"), _human_commit("old")])
         assert url == (
@@ -3652,7 +3838,7 @@ def test_fetch_repo_status_details_includes_star_count(
         if url == "https://api.github.com/repos/user/repo":
             return DummyResp({"default_branch": "main", "stargazers_count": 42})
         if url.startswith(
-            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=20"
+            "https://api.github.com/repos/user/repo/commits?sha=main&per_page=100"
         ):
             return DummyResp(
                 [
