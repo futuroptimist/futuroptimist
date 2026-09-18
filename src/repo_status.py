@@ -94,7 +94,11 @@ RELEASE_EVENTS = {"push", "release", "workflow_dispatch", "repository_dispatch"}
 SELF_STATUS_WORKFLOW_PATH = ".github/workflows/update-repo-status.yml"
 SELF_STATUS_WORKFLOW_NAME = "update repo statuses"
 
-# How many pages of 20 commits the commit lookback walk may fetch while
+# Fetch the largest GitHub API page so hourly status-only commits do not crowd a
+# real, CI-bearing commit out of the bounded lookback window.
+COMMIT_LOOKBACK_PAGE_SIZE = 100
+
+# How many pages of commits the commit lookback walk may fetch while
 # skipping past skip-worthy (e.g. bot-authored) commits before giving up.
 COMMIT_LOOKBACK_MAX_PAGES = 10
 
@@ -667,7 +671,8 @@ def fetch_repo_status_details(
     def _fetch() -> tuple[str | None, tuple[StatusLink, ...]]:
         try:
             commits_resp = requests.get(
-                f"https://api.github.com/repos/{repo}/commits?sha={branch}&per_page=20",
+                f"https://api.github.com/repos/{repo}/commits"
+                f"?sha={branch}&per_page={COMMIT_LOOKBACK_PAGE_SIZE}",
                 headers=headers,
                 timeout=10,
             )
@@ -790,7 +795,7 @@ def fetch_repo_status_details(
             if page > 1:
                 commits_url = (
                     f"https://api.github.com/repos/{repo}/commits"
-                    f"?sha={branch}&per_page=20&page={page}"
+                    f"?sha={branch}&per_page={COMMIT_LOOKBACK_PAGE_SIZE}&page={page}"
                 )
                 try:
                     commits_resp = requests.get(
