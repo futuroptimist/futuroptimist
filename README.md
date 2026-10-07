@@ -14,7 +14,7 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-10-07 18:05 UTC; checks hourly_
+_Last updated: 2026-10-07 19:04 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
@@ -27,7 +27,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 2 🔀 164 **[sigma](https://github.com/futuroptimist/sigma)** – open-source ESP32 AI pin with push-to-talk voice control and a 3D-printed enclosure
 - ✅ ⭐ 1 🔀 205 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
 - ✅ ⭐ 1 🔀 582 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
-- ❓ ⭐ 1 🔀 170 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
+- ✅ ⭐ 1 🔀 170 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
 - ✅ ⭐ 1 🔀 192 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
 - ✅ ⭐ 1 🔀 817 **[jobbot3000](https://github.com/futuroptimist/jobbot3000)** – self-hosted job-search copilot built on the same automation scaffold as this repo
 - ✅ ⭐ 1 🔀 51 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
