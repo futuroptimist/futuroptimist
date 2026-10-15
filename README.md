@@ -10,7 +10,7 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 
 - **Creative automation** that turns repeatable production work into tested scripts and checklists.
 - **Maker tools** for 3D printing, electronics, aquariums, textiles, off-grid computing, and physical interfaces.
-- **AI-adjacent workflows** that keep humans in the loop while making research, writing, and debugging easier.
+- **AI-adjacent workflows** that keep humans in the loop while making research, writing, debugging, and planning easier.
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
