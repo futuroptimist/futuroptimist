@@ -14,7 +14,7 @@ Repo internals: automation, scripts, metadata, subtitles, and MCP service detail
 - **Open learning systems** that document the path from rough idea to reusable project.
 
 ## Related Projects
-_Last updated: 2026-11-22 21:02 UTC; checks hourly_
+_Last updated: 2026-11-22 22:02 UTC; checks hourly_
 
 Selected projects across this GitHub account, grouped as a compact portfolio map rather than a dependency list. Each entry links to its GitHub repo so the hourly status updater can keep the health marker current; failure links, when present, point directly to the run or artifact worth inspecting.
 
@@ -26,7 +26,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 3 🔀 503 **[flywheel](https://github.com/futuroptimist/flywheel)** – GitHub template for solo builders who want linting, tests, docs, releases, and LLM-agent workflows in one starter kit
 - ✅ ⭐ 2 🔀 136 **[f2clipboard](https://github.com/futuroptimist/f2clipboard)** – CLI for turning Codex task pages and failing GitHub logs into concise debugging reports
 - ✅ ⭐ 1 🔀 216 **[axel](https://github.com/futuroptimist/axel)** – LLM-powered quest tracker that analyzes repositories and suggests next steps for side-project momentum
-- ❌ ([Tests](https://github.com/futuroptimist/danielsmith.io/actions/runs/44976786292)) <!-- repo-status:failure-links --> ⭐ 1 🔀 606 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
+- ✅ ⭐ 1 🔀 607 **[danielsmith.io](https://github.com/futuroptimist/danielsmith.io)** – Vite + Three.js playground for an orthographic, keyboard-navigable portfolio scene
 - ✅ ⭐ 1 🔀 349 **[futuroptimist](https://github.com/futuroptimist/futuroptimist)** – profile hub and production notebook for converting maker experiments into scripts, metadata, and reusable video workflows
 - ✅ ⭐ 1 🔀 170 **[gabriel](https://github.com/futuroptimist/gabriel)** – privacy-first “guardian angel” LLM concept for local, actionable security coaching
 - ✅ ⭐ 1 🔀 198 **[gitshelves](https://github.com/futuroptimist/gitshelves)** – 3D-printable Gridfinity blocks generated from GitHub contribution patterns
@@ -34,7 +34,7 @@ Status legend: ✅ latest relevant run succeeded; ❌ one or more relevant runs 
 - ✅ ⭐ 1 🔀 51 **[pr-reaper](https://github.com/futuroptimist/pr-reaper)** – GitHub workflow for safely closing stale pull requests in bulk with dry-run support
 - ✅ ⭐ 1 🔀 1653 **[sugarkube](https://github.com/futuroptimist/sugarkube)** – solar-powered k3s platform and cube art installation for off-grid Raspberry Pi clusters
 - ✅ ⭐ 1 🔀 280 **[wove](https://github.com/futuroptimist/wove)** – textile-learning toolkit for knitting, crochet, and CAD-to-fiber experiments
-- ✅ ⭐ 0 🔀 48 **[aquiloop](https://github.com/futuroptimist/aquiloop)** – parametric aquarium tools in OpenSCAD for makers and 3D printing
+- ✅ ⭐ 0 🔀 49 **[aquiloop](https://github.com/futuroptimist/aquiloop)** – parametric aquarium tools in OpenSCAD for makers and 3D printing
 
 
 ## Values
